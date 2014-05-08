@@ -3,5 +3,9 @@
 	"username": "Username",
 	"password": "Password",
 	"login": "Login",
-	"forgotpassword": "Forgot your password?"
+	"forgotpassword": "Forgot your password?",
+	"invalid_password_syntax": "Invalid password syntax",
+	"invalid_username_syntax": "Invalid username syntax",
+	"invalid_password": "Invalid password",
+	"ajax_failed": "Server request failed"
 }
