@@ -59,8 +59,10 @@ router.post('/process', function(req, res) {
 		res.send(JSON.stringify({ result: 0, field: "auth_password", error: i18nm.__("invalid_password") }));
 		return;
 	}
-	// End: Debug only	
-	req.session.username = username;	
+	// End: Debug only
+	if (typeof req.session != 'undefined' && req.session.username != 'undefined') {
+		req.session.username = username;	
+	}
 	res.send(JSON.stringify({ result: 1 }));
 });
 
