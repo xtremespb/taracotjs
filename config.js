@@ -12,13 +12,21 @@ var config = {
 	modules : [
 							{  
 								'name': 'auth',
-								'prefix': '/auth/'
+								'prefix': '/auth/',
+								'cp_prefix': ''
 						 	},
 						 	{  
 								'name': 'cp',
-								'prefix': '/cp/'
+								'prefix': '/cp/',
+								'cp_prefix': ''
+						 	},
+						 	{
+						 		'name': 'test',
+						 		'prefix': '/test/',
+						 		'cp_id': 'test',
+						 		'cp_prefix': '/cp/test/'
 						 	}
-						 ]
+			  ]
 
 };
 

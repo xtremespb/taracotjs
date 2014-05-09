@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html dir="ltr" class="uk-height-1-1">
+<html dir="ltr">
     <head>
     	<meta charset="utf-8">
-        <title>!{root.lang.__("control_panel")}</title>
+        <title>!{root.cp_lang.__("control_panel")}</title>
         <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" href="/css/uikit.min.css">
         <link rel="stylesheet" href="/modules/cp/css/main.css">
@@ -10,13 +10,12 @@
         <script src="/js/uikit.min.js"></script> 
         <script src="/js/helper.js"></script> 
     </head>
-    <body class="uk-height-1-1">
-        <nav class="cp-navbar uk-navbar uk-navbar-attached">
+    <body>
+        <nav class="cp-navbar uk-navbar uk-navbar-attached uk-margin-bottom">
             <div class="uk-container uk-container-center">
                 <a class="uk-navbar-brand" href="/">TaracotJS</a>
-                <ul class="uk-navbar-nav">
-                    <li class="uk-active taracot-cp-top-navbar"><a href="/cp">!{root.lang.__("dashboard")}</a></li>
-                    <li><a href="#">Another one</a></li>
+                <ul class="uk-navbar-nav" id="taracot-modules">
+                    <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item" id="taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a></li>
                 </ul>
                 <div class="uk-navbar-flip">
                     <ul class="uk-navbar-nav">
@@ -24,7 +23,7 @@
                             <a href="#" id="cp_logout_submenu"><b>User</b>: !{root.username}&nbsp;<i class="uk-icon-caret-down"></i></a>
                             <div class="uk-dropdown uk-dropdown-navbar">
                                 <ul class="uk-nav uk-nav-navbar">
-                                    <li><a href="/auth/logout">!{root.lang.__("logout")}</a></li>
+                                    <li><a href="/auth/logout">!{root.cp_lang.__("logout")}</a></li>
                                 </ul>
                             </div>
                         </li>                        
@@ -32,10 +31,16 @@
                 </div>
             </div>            
         </nav>
+        <div class="uk-container uk-container-center">
+        !{root.data.body}
+        </div>
         <script type="text/javascript">
-            var _lang_vars = {
-                ajax_failed: "!{root.lang.__("ajax_failed")}"
-            }
+            var _modules = !{root.modules};
+            for (var i = 0; i < _modules.length; i++) {
+                $('#taracot-modules').append('<li id="taracot-module-id-' + _modules[i].id + '" class="taracot-module-menu-item"><a href="' + _modules[i].prefix + '">' + _modules[i].name + '</a></li>');
+            }            
+            $('.taracot-module-menu-item').removeClass('uk-active');
+            $('#taracot-module-id-!{root.active_module}').addClass('uk-active');
         </script>
         <script src="/modules/cp/js/main.js"></script>
     </body>
