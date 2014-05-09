@@ -48,6 +48,9 @@ app.use(function(req, res, next) {
 config.modules.forEach(function(module) {
     app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
     app.use(module.prefix, require('./modules/' + module.name + '/module'));
+    if (module.cp_prefix.length > 0) {
+        app.use(module.cp_prefix, require('./modules/' + module.name + '/admin'));
+    }
 });
 
 // Error 404 (not found)
