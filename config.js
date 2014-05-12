@@ -8,6 +8,7 @@ var config = {
 	session_prefix : 'taracotjs',
 	admin_username : 'admin',
 	admin_password : 'a59a5399bb3b181d9cbc6230b9bb87ca',
+	mongo_url: 'mongodb://localhost/taracotjs',
 	salt : 'LtONCvBnPtXmFk1H49aMGOWe4U4LHMLqQoDeS0v42pypepFeinQkMnnAVrxqTNG2',
 	modules : [
 							{  
@@ -21,10 +22,10 @@ var config = {
 								'cp_prefix': ''
 						 	},
 						 	{
-						 		'name': 'test',
-						 		'prefix': '/test/',
-						 		'cp_id': 'test',
-						 		'cp_prefix': '/cp/test/'
+						 		'name': 'user',
+						 		'prefix': '/user/',
+						 		'cp_id': 'users',
+						 		'cp_prefix': '/cp/users/'
 						 	}
 			  ]
 

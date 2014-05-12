@@ -1,6 +1,8 @@
 // Taracot JS
 // Content management systems written with Node.js and Express.js
 
+// Load libraries
+
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
@@ -15,10 +17,32 @@ var redis_client = redis.createClient();
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var gaikan = require('gaikan');
+var cp = require('./modules/cp/cp')(app);
+var auth = require('./core/auth');
+var renderer = require('./core/renderer');
+var mongoclient = require('mongodb').MongoClient;
+var mongodb; 
 
+// Connect to the database and set the corresponding variable
+
+mongoclient.connect(config.mongo_url, function(err, _db) {
+  if (err) throw err;
+  app.set('mongodb', _db);
+})
+
+// Set variables
+
+app.set('config', config);
+app.set('express', express);
+app.set('cp', cp);
+app.set('auth', auth);
+app.set('path', path);
+app.set('renderer', renderer);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.html');
 app.engine('html', gaikan);
+
+// Use items
 
 app.use(favicon());
 app.use(logger('dev'));
@@ -47,9 +71,9 @@ app.use(function(req, res, next) {
 
 config.modules.forEach(function(module) {
     app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
-    app.use(module.prefix, require('./modules/' + module.name + '/module'));
+    app.use(module.prefix, require('./modules/' + module.name + '/module')(app));
     if (module.cp_prefix.length > 0) {
-        app.use(module.cp_prefix, require('./modules/' + module.name + '/admin'));
+        app.use(module.cp_prefix, require('./modules/' + module.name + '/admin')(app));
     }
 });
 

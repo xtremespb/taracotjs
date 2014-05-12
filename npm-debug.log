@@ -1,0 +1,307 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'mongodb' ]
+2 info using npm@1.3.21
+3 info using node@v0.10.24
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 verbose readDependencies using package.json deps
+6 verbose cache add [ 'mongodb', null ]
+7 verbose cache add name=undefined spec="mongodb" args=["mongodb",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: 'mongodb',
+8 verbose parsed url   path: 'mongodb',
+8 verbose parsed url   href: 'mongodb' }
+9 silly lockFile 7f1c982e-mongodb mongodb
+10 verbose lock mongodb C:\Users\mma2\AppData\Roaming\npm-cache\7f1c982e-mongodb.lock
+11 silly lockFile 7f1c982e-mongodb mongodb
+12 silly lockFile 7f1c982e-mongodb mongodb
+13 verbose addNamed [ 'mongodb', '' ]
+14 verbose addNamed [ null, '*' ]
+15 silly lockFile 886df635-mongodb mongodb@
+16 verbose lock mongodb@ C:\Users\mma2\AppData\Roaming\npm-cache\886df635-mongodb.lock
+17 silly addNameRange { name: 'mongodb', range: '*', hasData: false }
+18 verbose url raw mongodb
+19 verbose url resolving [ 'https://registry.npmjs.org/', './mongodb' ]
+20 verbose url resolved https://registry.npmjs.org/mongodb
+21 info trying registry request attempt 1 at 19:27:03
+22 verbose etag "7QKU0BW15PHJT12YLGKLL5PAY"
+23 http GET https://registry.npmjs.org/mongodb
+24 http 304 https://registry.npmjs.org/mongodb
+25 silly registry.get cb [ 304,
+25 silly registry.get   { date: 'Mon, 12 May 2014 15:27:43 GMT',
+25 silly registry.get     server: 'Apache',
+25 silly registry.get     via: '1.1 varnish',
+25 silly registry.get     'last-modified': 'Mon, 12 May 2014 15:27:43 GMT',
+25 silly registry.get     'cache-control': 'max-age=1',
+25 silly registry.get     etag: '"7QKU0BW15PHJT12YLGKLL5PAY"',
+25 silly registry.get     'x-served-by': 'cache-fra1223-FRA',
+25 silly registry.get     'x-cache': 'HIT',
+25 silly registry.get     'x-cache-hits': '1',
+25 silly registry.get     'x-timer': 'S1399908463.534244537,VS0,VE166',
+25 silly registry.get     vary: 'Accept',
+25 silly registry.get     'content-length': '0',
+25 silly registry.get     'keep-alive': 'timeout=10, max=50',
+25 silly registry.get     connection: 'Keep-Alive' } ]
+26 verbose etag mongodb from cache
+27 silly addNameRange number 2 { name: 'mongodb', range: '*', hasData: true }
+28 silly addNameRange versions [ 'mongodb',
+28 silly addNameRange   [ '0.9.4',
+28 silly addNameRange     '0.9.4-4',
+28 silly addNameRange     '0.9.3',
+28 silly addNameRange     '0.9.1',
+28 silly addNameRange     '0.9.2',
+28 silly addNameRange     '0.9.6-7',
+28 silly addNameRange     '0.9.6-8',
+28 silly addNameRange     '0.9.6-9',
+28 silly addNameRange     '0.9.6-10',
+28 silly addNameRange     '0.9.6-11',
+28 silly addNameRange     '0.9.6-12',
+28 silly addNameRange     '0.9.6-13',
+28 silly addNameRange     '0.9.6-14',
+28 silly addNameRange     '0.9.6-15',
+28 silly addNameRange     '0.9.6-16',
+28 silly addNameRange     '0.9.6-17',
+28 silly addNameRange     '0.9.6-18',
+28 silly addNameRange     '0.9.6-19',
+28 silly addNameRange     '0.9.6-20',
+28 silly addNameRange     '0.9.6-21',
+28 silly addNameRange     '0.9.6-22',
+28 silly addNameRange     '0.9.6-23',
+28 silly addNameRange     '0.9.7',
+28 silly addNameRange     '0.9.7-0',
+28 silly addNameRange     '0.9.7-1',
+28 silly addNameRange     '0.9.7-1.1',
+28 silly addNameRange     '0.9.7-1.2',
+28 silly addNameRange     '0.9.7-1.3',
+28 silly addNameRange     '0.9.7-1.4',
+28 silly addNameRange     '0.9.7-2',
+28 silly addNameRange     '0.9.7-2-1',
+28 silly addNameRange     '0.9.7-2-2',
+28 silly addNameRange     '0.9.7-2-3',
+28 silly addNameRange     '0.9.7-2-4',
+28 silly addNameRange     '0.9.7-2-5',
+28 silly addNameRange     '0.9.7-3',
+28 silly addNameRange     '0.9.7-3-1',
+28 silly addNameRange     '0.9.7-3-2',
+28 silly addNameRange     '0.9.7-3-3',
+28 silly addNameRange     '0.9.7-3-4',
+28 silly addNameRange     '0.9.7-3-5',
+28 silly addNameRange     '0.9.8',
+28 silly addNameRange     '0.9.8-1',
+28 silly addNameRange     '0.9.8-2',
+28 silly addNameRange     '0.9.8-3',
+28 silly addNameRange     '0.9.8-4',
+28 silly addNameRange     '0.9.8-5',
+28 silly addNameRange     '0.9.8-6',
+28 silly addNameRange     '0.9.8-7',
+28 silly addNameRange     '0.9.9',
+28 silly addNameRange     '0.9.9-1',
+28 silly addNameRange     '0.9.9-2',
+28 silly addNameRange     '0.9.9-3',
+28 silly addNameRange     '0.9.9-4',
+28 silly addNameRange     '0.9.9-5',
+28 silly addNameRange     '0.9.9-6',
+28 silly addNameRange     '0.9.9-7',
+28 silly addNameRange     '0.9.9-8',
+28 silly addNameRange     '1.0.0',
+28 silly addNameRange     '1.0.1',
+28 silly addNameRange     '1.0.2',
+28 silly addNameRange     '1.1.0-beta',
+28 silly addNameRange     '1.1.0',
+28 silly addNameRange     '1.1.1',
+28 silly addNameRange     '1.1.2',
+28 silly addNameRange     '1.1.3',
+28 silly addNameRange     '1.1.4',
+28 silly addNameRange     '1.1.5',
+28 silly addNameRange     '1.1.6',
+28 silly addNameRange     '1.1.7',
+28 silly addNameRange     '1.1.8',
+28 silly addNameRange     '1.1.9',
+28 silly addNameRange     '1.1.10',
+28 silly addNameRange     '1.1.11',
+28 silly addNameRange     '1.2.0',
+28 silly addNameRange     '1.2.1',
+28 silly addNameRange     '1.2.2',
+28 silly addNameRange     '1.2.3',
+28 silly addNameRange     '1.2.4',
+28 silly addNameRange     '1.2.5',
+28 silly addNameRange     '1.2.6',
+28 silly addNameRange     '1.2.7',
+28 silly addNameRange     '1.2.8',
+28 silly addNameRange     '1.2.9',
+28 silly addNameRange     '1.2.10',
+28 silly addNameRange     '1.2.11',
+28 silly addNameRange     '1.2.12',
+28 silly addNameRange     '1.2.13',
+28 silly addNameRange     '1.2.14',
+28 silly addNameRange     '1.3.0',
+28 silly addNameRange     '1.3.1',
+28 silly addNameRange     '1.3.2',
+28 silly addNameRange     '1.3.3',
+28 silly addNameRange     '1.3.4',
+28 silly addNameRange     '1.3.5',
+28 silly addNameRange     '1.3.6',
+28 silly addNameRange     '1.3.7',
+28 silly addNameRange     '1.3.8',
+28 silly addNameRange     '1.3.9',
+28 silly addNameRange     '1.3.10',
+28 silly addNameRange     '1.3.11',
+28 silly addNameRange     '1.3.12',
+28 silly addNameRange     '1.3.14',
+28 silly addNameRange     '1.3.15',
+28 silly addNameRange     '1.3.17',
+28 silly addNameRange     '1.3.18',
+28 silly addNameRange     '1.3.19',
+28 silly addNameRange     '1.4.0-rc2',
+28 silly addNameRange     '1.3.20',
+28 silly addNameRange     '1.4.0-rc3',
+28 silly addNameRange     '1.3.21',
+28 silly addNameRange     '1.3.22',
+28 silly addNameRange     '1.3.23',
+28 silly addNameRange     '1.4.0-rc4',
+28 silly addNameRange     '1.4.0-rc5',
+28 silly addNameRange     '1.4.0-rc6',
+28 silly addNameRange     '1.4.0-rc7',
+28 silly addNameRange     '1.4.0-rc8',
+28 silly addNameRange     '1.4.0-rc9',
+28 silly addNameRange     '1.4.0-rc10',
+28 silly addNameRange     '1.4.0',
+28 silly addNameRange     '1.4.1',
+28 silly addNameRange     '1.4.2',
+28 silly addNameRange     '1.4.3' ] ]
+29 verbose addNamed [ 'mongodb', '1.4.3' ]
+30 verbose addNamed [ '1.4.3', '1.4.3' ]
+31 silly lockFile 71be648b-mongodb-1-4-3 mongodb@1.4.3
+32 verbose lock mongodb@1.4.3 C:\Users\mma2\AppData\Roaming\npm-cache\71be648b-mongodb-1-4-3.lock
+33 silly lockFile 71be648b-mongodb-1-4-3 mongodb@1.4.3
+34 silly lockFile 71be648b-mongodb-1-4-3 mongodb@1.4.3
+35 silly lockFile 886df635-mongodb mongodb@
+36 silly lockFile 886df635-mongodb mongodb@
+37 silly resolved [ { name: 'mongodb',
+37 silly resolved     description: 'A node.js driver for MongoDB',
+37 silly resolved     keywords: [ 'mongodb', 'mongo', 'driver', 'db' ],
+37 silly resolved     version: '1.4.3',
+37 silly resolved     author: { name: 'Christian Amor Kvalheim', email: 'christkv@gmail.com' },
+37 silly resolved     contributors:
+37 silly resolved      [ [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object],
+37 silly resolved        [Object] ],
+37 silly resolved     repository:
+37 silly resolved      { type: 'git',
+37 silly resolved        url: 'http://github.com/mongodb/node-mongodb-native.git' },
+37 silly resolved     bugs: { url: 'http://github.com/mongodb/node-mongodb-native/issues' },
+37 silly resolved     dependencies: { bson: '0.2.7', kerberos: '0.0.3' },
+37 silly resolved     devDependencies:
+37 silly resolved      { dox: '0.4.4',
+37 silly resolved        'uglify-js': '1.2.5',
+37 silly resolved        ejs: '0.6.1',
+37 silly resolved        request: '2.12.0',
+37 silly resolved        nodeunit: '0.7.4',
+37 silly resolved        markdown: '0.3.1',
+37 silly resolved        gleak: '0.2.3',
+37 silly resolved        step: '0.0.5',
+37 silly resolved        async: '0.1.22',
+37 silly resolved        integra: '0.0.3',
+37 silly resolved        optimist: 'latest' },
+37 silly resolved     optionalDependencies: { kerberos: '0.0.3' },
+37 silly resolved     config: { native: false },
+37 silly resolved     main: './lib/mongodb/index',
+37 silly resolved     homepage: 'http://mongodb.github.com/node-mongodb-native/',
+37 silly resolved     directories: { lib: './lib/mongodb' },
+37 silly resolved     engines: { node: '>=0.6.19' },
+37 silly resolved     scripts: { test: 'make test_functional' },
+37 silly resolved     licenses: [ [Object] ],
+37 silly resolved     readme: '## MongoDB Node.JS Driver\n \n| what          | where                                          |\n|---------------|------------------------------------------------|\n| documentation | http://mongodb.github.io/node-mongodb-native/  |\n| apidoc        | http://mongodb.github.io/node-mongodb-native/  |\n| source        | https://github.com/mongodb/node-mongodb-native |\n| mongodb       | http://www.mongodb.org/                        |\n\n### Bugs / Feature Requests\n\nThink you’ve found a bug? Want to see a new feature in node-mongodb-native? Please open a\ncase in our issue management tool, JIRA:\n\n- Create an account and login <https://jira.mongodb.org>.\n- Navigate to the NODE project <https://jira.mongodb.org/browse/NODE>.\n- Click **Create Issue** - Please provide as much information as possible about the issue type and how to reproduce it.\n\nBug reports in JIRA for all driver projects (i.e. NODE, PYTHON, CSHARP, JAVA) and the\nCore Server (i.e. SERVER) project are **public**.\n\n### Questions and Bug Reports\n\n * mailing list: https://groups.google.com/forum/#!forum/node-mongodb-native\n * jira: http://jira.mongodb.org/\n\n### Change Log\n\nhttp://jira.mongodb.org/browse/NODE\n\n## Install\n\nTo install the most recent release from npm, run:\n\n    npm install mongodb\n\nThat may give you a warning telling you that bugs[\'web\'] should be bugs[\'url\'], it would be safe to ignore it (this has been fixed in the development version)\n\nTo install the latest from the repository, run::\n\n    npm install path/to/node-mongodb-native\n\n## Live Examples\n<a href="https://runnable.com/node-mongodb-native" target="_blank"><img src="https://runnable.com/external/styles/assets/runnablebtn.png" style="width:67px;height:25px;"></a>\n\n## Introduction\n\nThis is a node.js driver for MongoDB. It\'s a port (or close to a port) of the library for ruby at http://github.com/mongodb/mongo-ruby-driver/.\n\nA simple example of inserting a document.\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;\n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', function(err, db) {\n    if(err) throw err;\n\n    var collection = db.collection(\'test_insert\');\n    collection.insert({a:2}, function(err, docs) {\n      \n      collection.count(function(err, count) {\n        console.log(format("count = %s", count));\n      });\n\n      // Locate all the entries using find\n      collection.find().toArray(function(err, results) {\n        console.dir(results);\n        // Let\'s close the db\n        db.close();\n      });\n    });\n  })\n```\n\n## Data types\n\nTo store and retrieve the non-JSON MongoDb primitives ([ObjectID](http://www.mongodb.org/display/DOCS/Object+IDs), Long, Binary, [Timestamp](http://www.mongodb.org/display/DOCS/Timestamp+data+type), [DBRef](http://www.mongodb.org/display/DOCS/Database+References#DatabaseReferences-DBRef), Code).\n\nIn particular, every document has a unique `_id` which can be almost any type, and by default a 12-byte ObjectID is created. ObjectIDs can be represented as 24-digit hexadecimal strings, but you must convert the string back into an ObjectID before you can use it in the database. For example:\n\n```javascript\n  // Get the objectID type\n  var ObjectID = require(\'mongodb\').ObjectID;\n\n  var idString = \'4e4e1638c85e808431000003\';\n  collection.findOne({_id: new ObjectID(idString)}, console.log)  // ok\n  collection.findOne({_id: idString}, console.log)  // wrong! callback gets undefined\n```\n\nHere are the constructors the non-Javascript BSON primitive types:\n\n```javascript\n  // Fetch the library\n  var mongo = require(\'mongodb\');\n  // Create new instances of BSON types\n  new mongo.Long(numberString)\n  new mongo.ObjectID(hexString)\n  new mongo.Timestamp()  // the actual unique number is generated on insert.\n  new mongo.DBRef(collectionName, id, dbName)\n  new mongo.Binary(buffer)  // takes a string or Buffer\n  new mongo.Code(code, [context])\n  new mongo.Symbol(string)\n  new mongo.MinKey()\n  new mongo.MaxKey()\n  new mongo.Double(number)\t// Force double storage\n```\n\n### The C/C++ bson parser/serializer\n\nIf you are running a version of this library has the C/C++ parser compiled, to enable the driver to use the C/C++ bson parser pass it the option native_parser:true like below\n\n```javascript\n  // using native_parser:\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\'\n    , {db: {native_parser: true}}, function(err, db) {})\n```\n\nThe C++ parser uses the js objects both for serialization and deserialization.\n\n## GitHub information\n\nThe source code is available at http://github.com/mongodb/node-mongodb-native.\nYou can either clone the repository or download a tarball of the latest release.\n\nOnce you have the source you can test the driver by running\n\n    $ make test\n\nin the main directory. You will need to have a mongo instance running on localhost for the integration tests to pass.\n\n## Examples\n\nFor examples look in the examples/ directory. You can execute the examples using node.\n\n    $ cd examples\n    $ node queries.js\n\n## GridStore\n\nThe GridStore class allows for storage of binary files in mongoDB using the mongoDB defined files and chunks collection definition.\n\nFor more information have a look at [Gridstore](https://github.com/mongodb/node-mongodb-native/blob/master/docs/gridfs.md)\n\n## Replicasets\n\nFor more information about how to connect to a replicaset have a look at the extensive documentation [Documentation](http://mongodb.github.com/node-mongodb-native/)\n\n### Primary Key Factories\n\nDefining your own primary key factory allows you to generate your own series of id\'s\n(this could f.ex be to use something like ISBN numbers). The generated the id needs to be a 12 byte long "string".\n\nSimple example below\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;    \n\n  // Custom factory (need to provide a 12 byte array);\n  CustomPKFactory = function() {}\n  CustomPKFactory.prototype = new Object();\n  CustomPKFactory.createPk = function() {\n    return new ObjectID("aaaaaaaaaaaa");\n  }\n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', {\'pkFactory\':CustomPKFactory}, function(err, db) {\n    if(err) throw err;\n\n    db.dropDatabase(function(err, done) {\n      \n      db.createCollection(\'test_custom_key\', function(err, collection) {\n        \n        collection.insert({\'a\':1}, function(err, docs) {\n          \n          collection.find({\'_id\':new ObjectID("aaaaaaaaaaaa")}).toArray(function(err, items) {\n            console.dir(items);\n            // Let\'s close the db\n            db.close();\n          });\n        });\n      });\n    });\n  });\n```\n\n## Documentation\n\nIf this document doesn\'t answer your questions, see the source of\n[Collection](https://github.com/mongodb/node-mongodb-native/blob/master/lib/mongodb/collection.js)\nor [Cursor](https://github.com/mongodb/node-mongodb-native/blob/master/lib/mongodb/cursor.js),\nor the documentation at MongoDB for query and update formats.\n\n### Find\n\nThe find method is actually a factory method to create\nCursor objects. A Cursor lazily uses the connection the first time\nyou call `nextObject`, `each`, or `toArray`.\n\nThe basic operation on a cursor is the `nextObject` method\nthat fetches the next matching document from the database. The convenience\nmethods `each` and `toArray` call `nextObject` until the cursor is exhausted.\n\nSignatures:\n\n```javascript\n  var cursor = collection.find(query, [fields], options);\n  cursor.sort(fields).limit(n).skip(m).\n\n  cursor.nextObject(function(err, doc) {});\n  cursor.each(function(err, doc) {});\n  cursor.toArray(function(err, docs) {});\n\n  cursor.rewind()  // reset the cursor to its initial state.\n```\n\nUseful chainable methods of cursor. These can optionally be options of `find` instead of method calls:\n\n  * `.limit(n).skip(m)` to control paging.\n  * `.sort(fields)` Order by the given fields. There are several equivalent syntaxes:\n  * `.sort({field1: -1, field2: 1})` descending by field1, then ascending by field2.\n  * `.sort([[\'field1\', \'desc\'], [\'field2\', \'asc\']])` same as above\n  * `.sort([[\'field1\', \'desc\'], \'field2\'])` same as above\n  * `.sort(\'field1\')` ascending by field1\n\nOther options of `find`:\n\n* `fields` the fields to fetch (to avoid transferring the entire document)\n* `tailable` if true, makes the cursor [tailable](http://www.mongodb.org/display/DOCS/Tailable+Cursors).\n* `batchSize` The number of the subset of results to request the database\nto return for every request. This should initially be greater than 1 otherwise\nthe database will automatically close the cursor. The batch size can be set to 1\nwith `batchSize(n, function(err){})` after performing the initial query to the database.\n* `hint` See [Optimization: hint](http://www.mongodb.org/display/DOCS/Optimization#Optimization-Hint).\n* `explain` turns this into an explain query. You can also call\n`explain()` on any cursor to fetch the explanation.\n* `snapshot` prevents documents that are updated while the query is active\nfrom being returned multiple times. See more\n[details about query snapshots](http://www.mongodb.org/display/DOCS/How+to+do+Snapshotted+Queries+in+the+Mongo+Database).\n* `timeout` if false, asks MongoDb not to time out this cursor after an\ninactivity period.\n\nFor information on how to create queries, see the\n[MongoDB section on querying](http://www.mongodb.org/display/DOCS/Querying).\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;    \n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', function(err, db) {\n    if(err) throw err;\n\n    var collection = db\n      .collection(\'test\')\n      .find({})\n      .limit(10)\n      .toArray(function(err, docs) {\n        console.dir(docs);\n    });\n  });\n```\n\n### Insert\n\nSignature:\n\n```javascript\n  collection.insert(docs, options, [callback]);\n```\n\nwhere `docs` can be a single document or an array of documents.\n\nUseful options:\n\n* `safe:true` Should always set if you have a callback.\n\nSee also: [MongoDB docs for insert](http://www.mongodb.org/display/DOCS/Inserting).\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;    \n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', function(err, db) {\n    if(err) throw err;\n    \n    db.collection(\'test\').insert({hello: \'world\'}, {w:1}, function(err, objects) {\n      if (err) console.warn(err.message);\n      if (err && err.message.indexOf(\'E11000 \') !== -1) {\n        // this _id was already inserted in the database\n      }\n    });\n  });\n```\n\nNote that there\'s no reason to pass a callback to the insert or update commands\nunless you use the `safe:true` option. If you don\'t specify `safe:true`, then\nyour callback will be called immediately.\n\n### Update: update and insert (upsert)\n\nThe update operation will update the first document that matches your query\n(or all documents that match if you use `multi:true`).\nIf `safe:true`, `upsert` is not set, and no documents match, your callback will return 0 documents updated.\n\nSee the [MongoDB docs](http://www.mongodb.org/display/DOCS/Updating) for\nthe modifier (`$inc`, `$set`, `$push`, etc.) formats.\n\nSignature:\n\n```javascript\n  collection.update(criteria, objNew, options, [callback]);\n```\n\nUseful options:\n\n* `safe:true` Should always set if you have a callback.\n* `multi:true` If set, all matching documents are updated, not just the first.\n* `upsert:true` Atomically inserts the document if no documents matched.\n\nExample for `update`:\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;    \n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', function(err, db) {\n    if(err) throw err;\n\n    db.collection(\'test\').update({hi: \'here\'}, {$set: {hi: \'there\'}}, {w:1}, function(err) {\n      if (err) console.warn(err.message);\n      else console.log(\'successfully updated\');\n    });\n  });\n```\n\n### Find and modify\n\n`findAndModify` is like `update`, but it also gives the updated document to\nyour callback. But there are a few key differences between findAndModify and\nupdate:\n\n  1. The signatures differ.\n  2. You can only findAndModify a single item, not multiple items.\n\nSignature:\n\n```javascript\n    collection.findAndModify(query, sort, update, options, callback)\n```\n\nThe sort parameter is used to specify which object to operate on, if more than\none document matches. It takes the same format as the cursor sort (see\nConnection.find above).\n\nSee the\n[MongoDB docs for findAndModify](http://www.mongodb.org/display/DOCS/findAndModify+Command)\nfor more details.\n\nUseful options:\n\n* `remove:true` set to a true to remove the object before returning\n* `new:true` set to true if you want to return the modified object rather than the original. Ignored for remove.\n* `upsert:true` Atomically inserts the document if no documents matched.\n\nExample for `findAndModify`:\n\n```javascript\n  var MongoClient = require(\'mongodb\').MongoClient\n    , format = require(\'util\').format;    \n\n  MongoClient.connect(\'mongodb://127.0.0.1:27017/test\', function(err, db) {\n    if(err) throw err;\n    db.collection(\'test\').findAndModify({hello: \'world\'}, [[\'_id\',\'asc\']], {$set: {hi: \'there\'}}, {}, function(err, object) {\n      if (err) console.warn(err.message);\n      else console.dir(object);  // undefined if no matching object exists.\n    });\n  });\n```\n\n### Save\n\nThe `save` method is a shorthand for upsert if the document contains an\n`_id`, or an insert if there is no `_id`.\n\n## Release Notes\n\nSee HISTORY\n\n## Credits\n\n1. [10gen](http://github.com/mongodb/mongo-ruby-driver/)\n2. [Google Closure Library](http://code.google.com/closure/library/)\n3. [Jonas Raoni Soares Silva](http://jsfromhell.com/classes/binary-parser)\n\n## Contributors\n\nAaron Heckmann, Christoph Pojer, Pau Ramon Revilla, Nathan White, Emmerman, Seth LaForge, Boris Filipov, Stefan Schärmeli, Tedde Lundgren, renctan, Sergey Ukustov, Ciaran Jessup, kuno, srimonti, Erik Abele, Pratik Daga, Slobodan Utvic, Kristina Chodorow, Yonathan Randolph, Brian Noguchi, Sam Epstein, James Harrison Fisher, Vladimir Dronnikov, Ben Hockey, Henrik Johansson, Simon Weare, Alex Gorbatchev, Shimon Doodkin, Kyle Mueller, Eran Hammer-Lahav, Marcin Ciszak, François de Metz, Vinay Pulim, nstielau, Adam Wiggins, entrinzikyl, Jeremy Selier, Ian Millington, Public Keating, andrewjstone, Christopher Stott, Corey Jewett, brettkiefer, Rob Holland, Senmiao Liu, heroic, gitfy\n\n## License\n\n Copyright 2009 - 2013 MongoDb Inc.\n\n   Licensed under the Apache License, Version 2.0 (the "License");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an "AS IS" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n\n',
+37 silly resolved     readmeFilename: 'Readme.md',
+37 silly resolved     _id: 'mongodb@1.4.3',
+37 silly resolved     _from: 'mongodb@' } ]
+38 info install mongodb@1.4.3 into c:\XTreme\taracotjs
+39 info installOne mongodb@1.4.3
+40 info c:\XTreme\taracotjs\node_modules\mongodb unbuild
+41 info preuninstall mongodb@1.4.3
+42 info uninstall mongodb@1.4.3
+43 verbose true,c:\XTreme\taracotjs\node_modules,c:\XTreme\taracotjs\node_modules unbuild mongodb@1.4.3
+44 info postuninstall mongodb@1.4.3
+45 info c:\XTreme\taracotjs\node_modules\mongodb unbuild
+46 error error rolling back Error: EPERM, unlink 'c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node'
+46 error error rolling back  mongodb@1.4.3 { [Error: EPERM, unlink 'c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node']
+46 error error rolling back   errno: 50,
+46 error error rolling back   code: 'EPERM',
+46 error error rolling back   path: 'c:\\XTreme\\taracotjs\\node_modules\\mongodb\\node_modules\\bson\\ext\\win32\\x64\\bson.node' }
+47 error Error: EPERM, unlink 'c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node'
+47 error  { [Error: EPERM, unlink 'c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node']
+47 error   errno: 50,
+47 error   code: 'EPERM',
+47 error   path: 'c:\\XTreme\\taracotjs\\node_modules\\mongodb\\node_modules\\bson\\ext\\win32\\x64\\bson.node' }
+48 error Please try running this command again as root/Administrator.
+49 error System Windows_NT 6.1.7601
+50 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "mongodb"
+51 error cwd c:\XTreme\taracotjs
+52 error node -v v0.10.24
+53 error npm -v 1.3.21
+54 error path c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node
+55 error code EPERM
+56 error errno 50
+57 error stack Error: EPERM, unlink 'c:\XTreme\taracotjs\node_modules\mongodb\node_modules\bson\ext\win32\x64\bson.node'
+58 verbose exit [ 50, true ]
