@@ -25,10 +25,20 @@ var mongodb;
 
 // Connect to the database and set the corresponding variable
 
-mongoclient.connect(config.mongo_url, function(err, _db) {
-  if (err) throw err;
-  app.set('mongodb', _db);
-})
+var _connect_to_mongo_db = function() {
+    mongoclient.connect(config.mongo_url, config.mongo_options, function(err, _db) {
+      if (!err) {
+        _db.on('close', function() {
+          app.set('mongodb', undefined);
+        });
+        app.set('mongodb', _db);
+      } else {
+        console.log(err);
+        app.set('mongodb', undefined);
+      }
+    });
+}
+_connect_to_mongo_db();
 
 // Set variables
 
@@ -62,6 +72,15 @@ I18n.expressBind(app, {
  });
 
 app.use(function(req, res, next) {
+    // Check database connection
+    if (typeof app.get('mongodb') == 'undefined') {
+        var err = new Error(req.i18n.__("database_connection_failed"));
+        err.status = 500;
+        next(err);
+        _connect_to_mongo_db();
+        return;
+    }
+    // Set locales from query and from cookie
     req.i18n.setLocaleFromQuery();
     req.i18n.setLocaleFromCookie();
     next();

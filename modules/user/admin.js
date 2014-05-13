@@ -10,20 +10,21 @@ module.exports = function(app) {
 		return i18nm.__("module_name");
 	};	
 	router.get('/', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());		
 		// Check authorization
 		if (!app.get('auth').check(req)) {
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
-		}
-		i18nm.setLocale(req.i18n.getLocale());
-		var collection = app.get('mongodb').collection('users');
-		var data = app.get('mongodb').collection('users').find().toArray(function(err, items) {			
-			if (typeof items != 'undefined') {
-				console.log(items);
-			}
-		});		
-		var body = i18nm.__("module_name");
-		app.get('cp').render(req, res, { body: body }, i18nm, 'users' );		
+		}		
+		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'user_control', { lang: i18nm });
+		app.get('cp').render(req, res, { body: body }, i18nm, 'users' );
+		// var collection = app.get('mongodb').collection('users');
+		// var data = app.get('mongodb').collection('users').find().toArray(function(err, items) {			
+		// 	if (typeof items != 'undefined') {
+		// 		var body = JSON.stringify(items);
+		// 		app.get('cp').render(req, res, { body: body }, i18nm, 'users' );
+		// 	}
+		// });	
 	});
 	return router;
 }
