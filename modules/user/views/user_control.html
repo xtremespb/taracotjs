@@ -1,25 +1,17 @@
-<table class="uk-table" id="users_table">
+<table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
   <thead>
     <tr>
       <th style="width:80px">!{root.lang.__("username")}</th>
       <th>!{root.lang.__("realname")}</th>
       <th>!{root.lang.__("email")}</th>
+      <th style="width:82px;text-align:center">!{root.lang.__("status")}</th>
       <th style="width:102px;text-align:center">!{root.lang.__("actions")}</th>
     </tr>
   </thead>
   <tbody>    
   </tbody>
 </table>
-<ul class="uk-pagination">
-  <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
-  <li class="uk-active"><span>1</span></li>
-  <li><a href="#">2</a></li>
-  <li><a href="#">3</a></li>
-  <li><a href="#">4</a></li>
-  <li><span>...</span></li>
-  <li><a href="#">20</a></li>
-  <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
-</ul>
+<div id="taracot_table_pagination"></div>
 <script type="text/javascript">
   var _lang_vars = {
     ajax_failed: "!{root.lang.__("ajax_failed")}"
