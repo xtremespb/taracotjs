@@ -7,5 +7,15 @@
 	"ajax_failed": "Server request failed",
 	"unauth": "Unauthorized",
 	"invalid_query": "Invalid query",
-	"status": "Status"
+	"status": "Status",
+	"edit_user": "Edit user",
+	"add_user": "Add user",
+	"password": "Password",
+	"password_twice": "Password (twice)",
+	"save": "Save",
+	"cancel": "Cancel",
+	"status_0": "Disbaled/blocked user",
+	"status_1": "Active user",
+	"status_2": "Administator",
+	"close": "Close"
 }
