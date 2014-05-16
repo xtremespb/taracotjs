@@ -1,6 +1,8 @@
 var col_count = 5;
 var items_per_page = 0;
 var edit_modal = new $.UIkit.modal.Modal("#taracot-modal-edit");
+var current_id = '';
+var current_page = 1;
 
 var process_rows = [
     function(val, id) {
@@ -16,6 +18,15 @@ var process_rows = [
         return val;
     },
     function(val, id) {
+        if (val == 0) {
+            val = _lang_vars.status_0;
+        }
+        if (val == 1) {
+            val = _lang_vars.status_1;
+        }
+        if (val == 2) {
+            val = _lang_vars.status_2;
+        }
         return '<div style="text-align:center">' + val + '</div>';
     },
     function(val, id) {
@@ -125,6 +136,7 @@ var load_data = function(page) {
                     items_per_page = data.ipp;
                     render_table(data.users);
                     render_pagination(page, data.total);
+                    current_page = page;
                 }
             }
         },
@@ -189,8 +201,74 @@ var pagination_handler = function() {
 }
 
 var edit_user = function(id) {
+    current_id = id;
     edit_modal.show();
+    $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
+    $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
     load_edit_data(id);
 }
+
+$('#taracot-edit-btn-save').click(function() {
+    $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');    
+    var errors = false;
+    if (!$('#username').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+        $('#username').addClass('uk-form-danger');
+        errors = true;
+    }
+    if (!$('#realname').val().match(/^(([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])\s([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])+){0,40}$/)) {
+        $('#realname').addClass('uk-form-danger');
+        errors = true;
+    }
+    if (!$('#email').val().match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
+        $('#email').addClass('uk-form-danger');
+        errors = true;
+    }
+    if (current_id.length > 0) {
+        if ($('#password').val().length > 0 && (!$('#password').val().match(/^[.]{5,20}$/) || $('#password').val() != $('#password-repeat').val())) {
+            $('#password').addClass('uk-form-danger');
+            $('#password-repeat').addClass('uk-form-danger');
+        }
+    } else {
+        if (!$('#password').val().match(/^[.]{5,20}$/) || $('#password').val() != $('#password-repeat').val()) {
+            $('#password').addClass('uk-form-danger');
+            $('#password-repeat').addClass('uk-form-danger');
+        }
+    }
+    if (errors) {
+        $.growl.error({ title: _lang_vars.form_err_title, message: _lang_vars.form_err_msg });
+        return;
+    }
+    $('#taracot-modal-edit-wrap').addClass('uk-hidden');
+    $('#taracot-modal-edit-loading').removeClass('uk-hidden');
+    $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
+    $.ajax({
+        type: 'POST',
+        url: '/cp/users/data/save',
+        data: {
+            username: $('#username').val(),
+            realname: $('#realname').val(),
+            email: $('#email').val(),
+            status: $('#status').val(),
+            password: $('#password').val(),
+            id: current_id
+        },
+        dataType: "json",
+        success: function (data) {
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            if (data.status == 1) {
+                load_data(current_page);
+                edit_modal.hide();                                
+            } else {
+                $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+                $.growl.error({ title: _lang_vars.form_err_title, message: _lang_vars.form_err_msg });
+            }
+        },
+        error: function () {
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+            $.growl.error({ title: _lang_vars.form_err_title, message: _lang_vars.form_err_msg });
+        }
+    });
+});
 
 load_data(1);

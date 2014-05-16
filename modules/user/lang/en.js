@@ -14,8 +14,10 @@
 	"password_twice": "Password (twice)",
 	"save": "Save",
 	"cancel": "Cancel",
-	"status_0": "Disbaled/blocked user",
+	"status_0": "Disabled",
 	"status_1": "Active user",
 	"status_2": "Administator",
-	"close": "Close"
+	"close": "Close",
+	"form_err_title": "Error",
+	"form_err_msg": "Error while processing form data"
 }

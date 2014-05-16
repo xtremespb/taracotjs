@@ -104,5 +104,75 @@ module.exports = function(app) {
 			res.send(JSON.stringify(rep));
 		});
 	});
+	router.post('/data/save', function(req, res) {
+		var rep = {
+			err_fields: [],
+			status: 1
+		};	
+		var username = req.body.username,
+		    password = req.body.password,
+		    email = req.body.email,
+		    realname = req.body.realname,
+		    status = req.body.status,
+		    id = req.body.id;
+		if (typeof id != 'undefined') {
+			if (!id.match(/^[a-f0-9]{24}$/)) {
+				rep.status = 0;
+				rep.error = i18nm.__("invalid_query");
+				res.send(JSON.stringify(rep));
+				return;
+			}
+		}
+		if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+			rep.status = 0;
+			rep.err_fields.push('username');
+		}
+		if (!email.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
+			rep.status = 0;
+			rep.err_fields.push('email');
+		}
+		if (!realname.match(/^(([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])\s([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])+){0,40}$/)) {
+			rep.status = 0;
+			rep.err_fields.push('realname');
+		}
+		if (!status.match(/^[0-2]{1}$/)) {
+			rep.status = 0;
+			rep.err_fields.push('status');
+		}
+		if (!id) {
+			if (!password.match(/^[.]{5,20}$/)) {
+				rep.status = 0;
+				rep.err_fields.push('password');
+				rep.err_fields.push('password-repeat');
+			}
+		}
+		if (rep.status == 0) {
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		if (id) {
+			var data = app.get('mongodb').collection('users').find( { _id: new ObjectId(id) }, { limit : 1 }).toArray(function(err, items) {			
+				if (typeof items != 'undefined' && !err) {
+					if (items.length > 0) {
+						var update = { username: username, email: email, realname: realname, status: status };
+						if (id) {
+							update.password = password;
+						}
+						app.get('mongodb').collection('users').update( { _id: new ObjectId(id) }, update, function() {
+							rep.status = 1;
+							res.send(JSON.stringify(rep));
+						} );
+						return;
+					}
+				} else {
+					rep.status = 0;
+					rep.error = i18nm.__("id_not_found");
+					res.send(JSON.stringify(rep));
+				}				
+			});
+		} else {
+
+		}
+	});
 	return router;
 }
