@@ -28,7 +28,7 @@
         </div>
         <div id="taracot-modal-edit-wrap">
           <h1>!{root.lang.__("edit_user")}</h1>
-          <form class="uk-form uk-form-stacked">
+          <form class="uk-form uk-form-stacked taracot-edit-form">
             <fieldset>            
               <div class="uk-form-row">
                 <label class="uk-form-label">!{root.lang.__("username")}:</label>
@@ -60,22 +60,25 @@
             <fieldset>
               <div class="uk-form-row">
                 <label class="uk-form-label">!{root.lang.__("password_twice")}:</label>
-                <input class="uk-form-width-small" type="text" id="password">
-                <input class="uk-form-width-small" type="text" id="password-repeat">
+                <input class="uk-form-width-small" type="password" id="password">
+                <input class="uk-form-width-small" type="password" id="password-repeat">
               </div>
             </fieldset>          
           </form>
-          <hr>
-          <div>          
-            <button class="uk-button" type="button">!{root.lang.__("save")}</button>&nbsp;<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__("cancel")}</button>
+          <div class="taracot-buttons-area">          
+            <button class="uk-button" type="button" id="taracot-edit-btn-save">!{root.lang.__("save")}</button>&nbsp;<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__("cancel")}</button>
           </div>
         </div>
       </div>
 </div>
-
 <script type="text/javascript">
   var _lang_vars = {
-    ajax_failed: "!{root.lang.__("ajax_failed")}"
+    ajax_failed: "!{root.lang.__("ajax_failed")}",
+    form_err_title: "!{root.lang.__("form_err_title")}",
+    form_err_msg: "!{root.lang.__("form_err_msg")}",
+    status_0: "!{root.lang.__("status_0")}",
+    status_1: "!{root.lang.__("status_1")}",
+    status_2: "!{root.lang.__("status_2")}",
   }
 </script>
 <script src="/modules/user/js/main.js"></script>

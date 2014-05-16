@@ -10,7 +10,7 @@ $('#auth_login').click(function() {
         $('#auth_error_msg').html(_lang_vars.invalid_username_syntax);
         return;
     }
-    if (!$('#auth_password').val().match(/^[A-Za-z0-9_\-]{5,20}$/)) {
+    if (!$('#auth_password').val().match(/^[.]{5,20}$/)) {
         $('#auth_password').addClass('uk-form-danger');
         $('#auth_password').focus();
         $('#auth_error_box').removeClass('uk-hidden');
