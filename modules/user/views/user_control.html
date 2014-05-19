@@ -1,10 +1,25 @@
+<div class="uk-float-left uk-margin-bottom">
+  <button class="uk-button uk-button-success uk-float-left" id="btn-add-item"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__("add")}</button>
+  &nbsp;&nbsp;
+  <div class="uk-button-group">
+    <button class="uk-button" id="btn-select-all" data-uk-tooltip title="!{root.lang.__("select_all")}"><i class="uk-icon-square"></i></button>
+    <button class="uk-button" id="btn-select-none"data-uk-tooltip title="!{root.lang.__("select_none")}"><i class="uk-icon-square-o"></i></button>
+    <button class="uk-button uk-button-danger" id="btn-delete-selected"><i class="uk-icon-trash-o"></i>&nbsp;!{root.lang.__("delete_selected")}</button>    
+  </div>
+</div>
+<div class="uk-form uk-float-right">
+  <div class="uk-form-icon">
+    <i class="uk-icon-search"></i>
+    <input type="text" class="uk-form-width-medium" placeholder="!{root.lang.__("search_field")}" id="taracot-table-filter">
+  </div>
+</div>
 <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
   <thead>
     <tr>
-      <th style="width:80px">!{root.lang.__("username")}</th>
-      <th>!{root.lang.__("realname")}</th>
-      <th>!{root.lang.__("email")}</th>
-      <th style="width:82px;text-align:center">!{root.lang.__("status")}</th>
+      <th style="width:100px" class="taracot-table-sortable" rel="taracot-table-sortable_username">!{root.lang.__("username")}<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i></span></th>
+      <th class="taracot-table-sortable" rel="taracot-table-sortable_realname">!{root.lang.__("realname")}</th>
+      <th class="taracot-table-sortable" rel="taracot-table-sortable_email">!{root.lang.__("email")}</th>
+      <th class="taracot-table-sortable" rel="taracot-table-sortable_status" style="width:82px;text-align:center">!{root.lang.__("status")}</th>
       <th style="width:102px;text-align:center">!{root.lang.__("actions")}</th>
     </tr>
   </thead>
@@ -27,7 +42,7 @@
           !{root.lang.__("ajax_failed")}
         </div>
         <div id="taracot-modal-edit-wrap">
-          <h1>!{root.lang.__("edit_user")}</h1>
+          <h1><span id="taracot-modal-edit-h1-edit">!{root.lang.__("edit_user")}</span><span id="taracot-modal-edit-h1-add" class="uk-hidden">!{root.lang.__("add")}</span></h1>
           <form class="uk-form uk-form-stacked taracot-edit-form">
             <fieldset>            
               <div class="uk-form-row">
@@ -76,9 +91,12 @@
     ajax_failed: "!{root.lang.__("ajax_failed")}",
     form_err_title: "!{root.lang.__("form_err_title")}",
     form_err_msg: "!{root.lang.__("form_err_msg")}",
+    delete_err_msg: "!{root.lang.__("delete_err_msg")}",
     status_0: "!{root.lang.__("status_0")}",
     status_1: "!{root.lang.__("status_1")}",
     status_2: "!{root.lang.__("status_2")}",
+    del_confirm: "!{root.lang.__("delete_confirm")}",
+    no_res: "!{root.lang.__("no_results_in_table")}"
   }
 </script>
 <script src="/modules/user/js/main.js"></script>

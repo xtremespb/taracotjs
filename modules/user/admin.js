@@ -1,8 +1,13 @@
 module.exports = function(app) {
+	// Sort order hash
+	var sort_cells = {username: 1, realname: 1, email: 1, status: 1};
+	var sort_cell_default = 'username';
+	var sort_cell_default_mode = 1;
 	// Set items per page for this module
 	var items_per_page = 5;
 	// 
 	var router = app.get('express').Router();
+	var crypto = require('crypto');
 	var ObjectId = require('mongodb').ObjectID;
 	var i18nm = new (require('i18n-2'))({    
 	    locales: app.get('config').locales,
@@ -26,6 +31,9 @@ module.exports = function(app) {
 	router.post('/data/list', function(req, res) {
 		var rep = { ipp: items_per_page };
 		var skip = req.body.skip;
+		var query = req.body.query;
+		var sort_mode = req.body.sort_mode;
+		var sort_cell = req.body.sort_cell;
 		i18nm.setLocale(req.i18n.getLocale());
 		if (typeof skip != 'undefined') {		
 			if (!skip.match(/^[0-9]{1,10}$/)) {
@@ -34,7 +42,26 @@ module.exports = function(app) {
 				res.send(JSON.stringify(rep));
 				return;
 			}
-		}		
+		}	
+		if (typeof query != 'undefined') {		
+			if (!query.match(/^[\w\sА-Яа-я0-9_\-\.]{3,40}$/)) {
+				rep.status = 0;
+				rep.error = i18nm.__("invalid_query");
+				res.send(JSON.stringify(rep));
+				return;
+			}
+		}
+		var sort = {};
+		sort[sort_cell_default] = sort_cell_default_mode;
+		if (typeof sort_cell != 'undefined') {
+			if (typeof sort_cells[sort_cell] != 'undefined') {
+				sort = {};
+				sort[sort_cell] = 1;
+				if (typeof sort_mode != 'undefined' && sort_mode == -1) {
+					sort[sort_cell] = -1;
+				}
+			}
+		}
 		// Check authorization
 		if (!app.get('auth').check(req)) {
 			rep.status = 0;
@@ -44,11 +71,15 @@ module.exports = function(app) {
 		}
 		// Get users from MongoDB
 		rep.users = [];
+		var find_query = {};
+		if (query) {
+			find_query = { $or : [ {username: new RegExp(query, 'i')}, {realname: new RegExp(query, 'i')} ] };		
+		}
 		var collection = app.get('mongodb').collection('users');
-		var data = app.get('mongodb').collection('users').find().count(function (err, items_count) {			
+		var data = app.get('mongodb').collection('users').find(find_query).count(function (err, items_count) {			
 			if (!err && items_count > 0) {
 				rep.total = items_count;
-				var data = app.get('mongodb').collection('users').find({}, { skip: skip, limit : items_per_page }).toArray(function(err, items) {			
+				var data = app.get('mongodb').collection('users').find(find_query, { skip: skip, limit : items_per_page }).sort(sort).toArray(function(err, items) {			
 					if (typeof items != 'undefined' && !err) {
 						// Generate array
 						for (var i=0; i < items.length; i++) {
@@ -74,7 +105,7 @@ module.exports = function(app) {
 	});
 	router.post('/data/load', function(req, res) {
 		var rep = {};
-		var user_id = req.body.id;
+		var user_id = req.body.id;		
 		i18nm.setLocale(req.i18n.getLocale());
 		if (typeof user_id == 'undefined' || !user_id.match(/^[a-f0-9]{24}$/)) {
 			rep.status = 0;
@@ -115,18 +146,26 @@ module.exports = function(app) {
 		    realname = req.body.realname,
 		    status = req.body.status,
 		    id = req.body.id;
-		if (typeof id != 'undefined') {
+		if (typeof id != 'undefined' && id.length == 24) {
 			if (!id.match(/^[a-f0-9]{24}$/)) {
-				rep.status = 0;
+				rep.status = 0;				
 				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
 				return;
 			}
 		}
+		// Check authorization
+		if (!app.get('auth').check(req)) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
 		if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
 			rep.status = 0;
 			rep.err_fields.push('username');
 		}
+		username = username.toLowerCase();
 		if (!email.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
 			rep.status = 0;
 			rep.err_fields.push('email');
@@ -140,7 +179,7 @@ module.exports = function(app) {
 			rep.err_fields.push('status');
 		}
 		if (!id) {
-			if (!password.match(/^[.]{5,20}$/)) {
+			if (!password.match(/^.{5,20}$/)) {
 				rep.status = 0;
 				rep.err_fields.push('password');
 				rep.err_fields.push('password-repeat');
@@ -156,7 +195,8 @@ module.exports = function(app) {
 					if (items.length > 0) {
 						var update = { username: username, email: email, realname: realname, status: status };
 						if (id) {
-							update.password = password;
+							var md5 = crypto.createHash('md5');
+							update.password = md5.update(app.get('config').salt + '.' + password).digest('hex');
 						}
 						app.get('mongodb').collection('users').update( { _id: new ObjectId(id) }, update, function() {
 							rep.status = 1;
@@ -171,8 +211,38 @@ module.exports = function(app) {
 				}				
 			});
 		} else {
-
+			var md5 = crypto.createHash('md5');
+			var password_md5 = md5.update(app.get('config').salt + '.' + password).digest('hex');
+			app.get('mongodb').collection('users').insert({ username: username, email: email, realname: realname, status: status, password: password_md5 }, function() {
+				rep.status = 1;
+				res.send(JSON.stringify(rep));
+			});
 		}
+	});
+	router.post('/data/delete', function(req, res) {
+		var rep = {			
+			status: 1
+		};		
+		// Check authorization
+		if (!app.get('auth').check(req)) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}	
+		var ids = req.body.ids;
+		if (typeof ids != 'object' || ids.length < 1) {
+			rep.status = 0;				
+			rep.error = i18nm.__("invalid_query");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		for (var i=0; i<ids.length; i++) {
+			if (ids[i].match(/^[a-f0-9]{24}$/)) {
+				app.get('mongodb').collection('users').remove({ _id: new ObjectId(ids[i]) }, function(){} );
+			}			
+		}
+		res.send(JSON.stringify(rep));
 	});
 	return router;
 }
