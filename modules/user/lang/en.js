@@ -19,5 +19,13 @@
 	"status_2": "Administator",
 	"close": "Close",
 	"form_err_title": "Error",
-	"form_err_msg": "Error while processing form data"
+	"form_err_msg": "Error while processing form data",
+	"add": "Add user",
+	"select_all": "Select all",
+	"select_none": "Select none",
+	"delete_selected": "Delete selected",
+	"delete_confirm": "Are you sure to delete the following item(s)?",
+	"delete_err_msg": "Couldn't delete the requested item(s) on server",
+	"search_field": "Search",
+	"no_results_in_table": "No items found"
 }

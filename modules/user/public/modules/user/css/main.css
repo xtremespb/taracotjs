@@ -12,3 +12,13 @@
 	border-top: 1px solid #ddd;
 	text-align: right;
 }
+th.taracot-table-sortable {
+	cursor: pointer;
+}
+.uk-notify {
+	z-index: 5000;
+}
+.uk-notify-message-danger {
+	background: red;
+	color: #fff;
+};

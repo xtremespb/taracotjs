@@ -39,7 +39,7 @@ module.exports = function(app){
 	        res.send(JSON.stringify({ result: 0, field: "auth_username", error: i18nm.__("invalid_username_syntax") }));
 			return;
 	    }
-	    if (!password.match(/^[.]{5,20}$/)) {
+	    if (!password.match(/^.{5,20}$/)) {
 	        res.send(JSON.stringify({ result: 0, field: "auth_password", error: i18nm.__("invalid_password_syntax") }));
 			return;
 	    }
