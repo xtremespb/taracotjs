@@ -6,7 +6,7 @@ module.exports = function(app) {
 	// Set items per page for this module
 	var items_per_page = 5;
 	// 
-	var router = app.get('express').Router();
+	var router = app.get('express').Router();	
 	var crypto = require('crypto');
 	var ObjectId = require('mongodb').ObjectID;
 	var i18nm = new (require('i18n-2'))({    
