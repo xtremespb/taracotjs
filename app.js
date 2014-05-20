@@ -21,7 +21,7 @@ var cp = require('./modules/cp/cp')(app);
 var auth = require('./core/auth');
 var renderer = require('./core/renderer');
 var mongoclient = require('mongodb').MongoClient;
-var mongodb; 
+var mongodb;
 
 // Connect to the database and set the corresponding variable
 
