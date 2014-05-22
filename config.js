@@ -3,12 +3,22 @@ var config = {
 	taracotjs : '0.1',
 	default_layout : 'layout',
 	locales : ['en', 'ru'],
-	cookie_secret : 'taracot cookie secret',
-	session_secret : 'taracot session secret',
-	session_prefix : 'taracotjs',
+	cookie_secret : '9CVwDbfR6tjsw54A2YEbEVjrTmgM5jte',
+	session_secret: 'TegcujLc9ts9H2uzu9yR6zBfkZUytJ3p',
+	redis : {
+		host: 'localhost',
+		port: 6379,
+		prefix : 'taracotjs',
+		password: ''
+	},
+	log : {
+		console: { level: 'info', colorize: true },
+		file: { level: 'error', filename: '../logs/taracotjs.log', json: false, maxsize: 1048576, maxFiles: 3 },
+		stack: true
+	},
 	admin_username : 'admin',
 	admin_password : 'a59a5399bb3b181d9cbc6230b9bb87ca',
-	mongo_url: 'mongodb://localhost/taracotjs',
+	mongo_url: 'mongodb://localhost/taracotjs',	
 	mongo_options: {
 	    server:{
 	        auto_reconnect: false,

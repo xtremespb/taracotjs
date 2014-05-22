@@ -6,14 +6,16 @@ module.exports = function(app) {
 	    extension: '.js'
 	});	
 	router.get('/', function(req, res) {
-		// Check authorization
-		if (!app.get('auth').check(req)) {
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
-			return;
-		}
-		i18nm.setLocale(req.i18n.getLocale());
-		var body = i18nm.__("taracot_dashboard");
-		app.get('cp').render(req, res, { body: body }, i18nm, 'dashboard' );
+		app.get('auth').check(req, function(auth) {
+			if (!auth || auth.status < 2) {
+				req.session.auth_redirect = '/cp';
+				res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));			
+				return;
+			}
+			i18nm.setLocale(req.i18n.getLocale());
+			var body = i18nm.__("taracot_dashboard");
+			app.get('cp').render(req, res, { body: body }, i18nm, 'dashboard', auth );
+		});
 	});
 	return router;
 }

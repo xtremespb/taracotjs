@@ -11,19 +11,19 @@ module.exports = function(app){
 	});
 	router.get('/', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var username = '';
-		if (typeof req.session != 'undefined' && typeof req.session.username != 'undefined') {
-			username = req.session.username;
+		var id = '';
+		if (typeof req.session != 'undefined' && typeof req.session.user_id != 'undefined') {
+			id = req.session.user_id;
 		}
-		if (username.length > 0) {
+		if (id.length > 0) {
 			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
-		var render = renderer.render_file(path.join(__dirname, 'views'), 'login', { lang: i18nm, username: username });
+		var render = renderer.render_file(path.join(__dirname, 'views'), 'login', { lang: i18nm, redirect: req.session.auth_redirect });
 		res.send(render);
 	});
 	router.get('/logout', function(req, res) {
-		delete req.session.username;
+		delete req.session.user_id;
 		res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));	
 	});
 	router.post('/process', function(req, res) {
@@ -46,20 +46,18 @@ module.exports = function(app){
 	    username = username.toLowerCase();
 	    var md5 = crypto.createHash('md5');
 		var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-		// Debug only
-		if (username != config.admin_username) {
-			res.send(JSON.stringify({ result: 0, field: "auth_username", error: i18nm.__("invalid_username_syntax") }));
-			return;
-		}
-		if (password_hex != config.admin_password) {
-			res.send(JSON.stringify({ result: 0, field: "auth_password", error: i18nm.__("invalid_password") }));
-			return;
-		}
-		// End: Debug only
-		if (typeof req.session != 'undefined' && req.session.username != 'undefined') {
-			req.session.username = username;	
-		}
-		res.send(JSON.stringify({ result: 1 }));
+		var collection = app.get('mongodb').collection('users');
+		var data = app.get('mongodb').collection('users').find( { username: username, password: password_hex  }, { limit : 1 }).toArray(function(err, items) {			
+			if (typeof items != 'undefined' && !err) {
+				if (items.length > 0) {
+					req.session.user_id = items[0]._id.toHexString();
+					console.log(items[0]._id.toHexString());
+					res.send(JSON.stringify({ result: 1 }));
+					return;
+				}
+			}
+			res.send(JSON.stringify({ result: 0, error: i18nm.__("auth_failed") }));
+		});		
 	});
 	return router;
 }
