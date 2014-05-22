@@ -29,6 +29,12 @@
 			options = _options;
 			table_id = $(this).attr('id');
 			load_data(1);
+			$('#' + table_id + '_filter').on('input', function() {
+	        	search_event();
+			});
+			$('.' + table_id + '_sortable').click(function() {
+	    		sort_event(this);
+			});
 		},
 		update: function() {
 			load_data(current_page);
@@ -186,8 +192,8 @@
 
 	/* Handle sorting events */
 
-	$('.' + table_id + '_sortable').click(function() {
-	    var item = $(this).attr('rel').replace( table_id + '_sortable_', '');
+	var sort_event = function(what) {
+		var item = $(what).attr('rel').replace( table_id + '_sortable_', '');
 	    if (item == options.sort_cell) {
 	        options.sort_mode = options.sort_mode * -1;
 	    } else {
@@ -202,12 +208,12 @@
 	    $('.' + table_id +'_sortable[rel="' + table_id +'_sortable_' + options.sort_cell  + '"]').append('<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-' + _sm + '"></i></span>');
 	    $('#' + table_id +'_filter').val('');
 	    load_data(1);
-	});
+	};	
 
 	/* Handle search events */
 
-	$('#' + table_id + '_filter').on('input', function() {
-	    var val = $('#' + table_id + '_filter').val();
+	var search_event = function() {
+		var val = $('#' + table_id + '_filter').val();
 	    val = val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' '); // trim
 	    if (val.length < 3) {
 	        clearTimeout(autocomplete_timer);
@@ -225,14 +231,10 @@
 	        autocomplete_flag = true;
 	        $('#' + table_id + '_filter').prop('disabled', true);
 	        load_data(1);
-	    }, 300);    
-	});
+	    }, 300);
+	};	
 
-	/* Load data */
-
-	// load_data(1);
-
-	 $.fn.medvedTable = function( method ) {
+	$.fn.medvedTable = function( method ) {
 
 	 	if ( methods[method] ) {
       		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));

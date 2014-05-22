@@ -38,7 +38,7 @@ $('#auth_login').click(function() {
             } else {
                 $('#auth_box_wrap').addClass('uk-hidden');
                 $('#wait_box_wrap').removeClass('uk-hidden');
-                location.href="/?rnd=" + Math.random().toString().replace('.','');
+                location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.','');
             }
         },
         error: function () {
