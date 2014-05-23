@@ -18,222 +18,212 @@ module.exports = function(app) {
 		return i18nm.__("module_name");
 	};	
 	router.get('/', function(req, res) {
-		app.get('auth').check(req, function(auth) {
-			i18nm.setLocale(req.i18n.getLocale());
-			if (!auth || auth.status < 2) {
-				req.session.auth_redirect = '/cp/settings';
-				res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
-				return;
-			}		
-			var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'settings_control', { lang: i18nm, locales: JSON.stringify(app.get('config').locales) });
-			app.get('cp').render(req, res, { body: body, css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t" }, i18nm, 'settings', auth );
-		});		
+		i18nm.setLocale(req.i18n.getLocale());
+		if (!app.get('auth') || app.get('auth').status < 2) {
+			req.session.auth_redirect = '/cp/settings';
+			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			return;
+		}		
+		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'settings_control', { lang: i18nm, locales: JSON.stringify(app.get('config').locales) });
+		app.get('cp').render(req, res, { body: body, css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t" }, i18nm, 'settings', app.get('auth') );
 	});
 	router.post('/data/list', function(req, res) {
-		app.get('auth').check(req, function(auth) {
-			i18nm.setLocale(req.i18n.getLocale());
-			var rep = { ipp: items_per_page };
-			var skip = req.body.skip;
-			var query = req.body.query;
-			var sort_mode = req.body.sort_mode;
-			var sort_cell = req.body.sort_cell;
-			if (typeof skip != 'undefined') {		
-				if (!skip.match(/^[0-9]{1,10}$/)) {
-					rep.status = 0;
-					rep.error = i18nm.__("invalid_query");
-					res.send(JSON.stringify(rep));
-					return;
-				}
-			}	
-			if (typeof query != 'undefined') {		
-				if (!query.match(/^[\w\sА-Яа-я0-9_\-\.]{3,40}$/)) {
-					rep.status = 0;
-					rep.error = i18nm.__("invalid_query");
-					res.send(JSON.stringify(rep));
-					return;
-				}
-			}
-			// Check authorization
-			if (!auth || auth.status < 2) {
-				rep.status = 0;
-				rep.error = i18nm.__("unauth");
-				res.send(JSON.stringify(rep));
-				return;
-			}
-			var sort = {};
-			sort[sort_cell_default] = sort_cell_default_mode;
-			if (typeof sort_cell != 'undefined') {
-				if (typeof sort_cells[sort_cell] != 'undefined') {
-					sort = {};
-					sort[sort_cell] = 1;
-					if (typeof sort_mode != 'undefined' && sort_mode == -1) {
-						sort[sort_cell] = -1;
-					}
-				}
-			}
-			// Get settings from MongoDB
-			rep.items = [];
-			var find_query = {};
-			if (query) {
-				find_query = { $or : [ {oname: new RegExp(query, 'i')}, {ovalue: new RegExp(query, 'i')} ] };		
-			}
-			var data = app.get('mongodb').collection('settings').find(find_query).count(function (err, items_count) {
-				if (!err && items_count > 0) {
-					rep.total = items_count;
-					var data = app.get('mongodb').collection('settings').find(find_query, { skip: skip, limit : items_per_page }).sort(sort).toArray(function(err, items) {			
-						if (typeof items != 'undefined' && !err) {
-							// Generate array
-							for (var i=0; i < items.length; i++) {
-								var arr = [];
-								arr.push(items[i]._id);
-								arr.push(items[i].oname);
-								arr.push(items[i].ovalue);
-								arr.push(items[i].olang);
-								rep.items.push(arr);
-							}
-						}
-						// Return results
-						rep.status = 1;
-						res.send(JSON.stringify(rep));
-					}); // data
-				} else { // Error or count = 0
-					rep.status = 1;
-					rep.total = '0';
-					res.send(JSON.stringify(rep));
-				}
-			});	// count
-		}); // auth
-	});
-	router.post('/data/load', function(req, res) {
-		app.get('auth').check(req, function(auth) {
-			i18nm.setLocale(req.i18n.getLocale());
-			var rep = {};
-			var user_id = req.body.id;		
-			if (typeof user_id == 'undefined' || !user_id.match(/^[a-f0-9]{24}$/)) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = { ipp: items_per_page };
+		var skip = req.body.skip;
+		var query = req.body.query;
+		var sort_mode = req.body.sort_mode;
+		var sort_cell = req.body.sort_cell;
+		if (typeof skip != 'undefined') {		
+			if (!skip.match(/^[0-9]{1,10}$/)) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
 				return;
 			}
-			// Check authorization
-			if (!auth || auth.status < 2) {
+		}	
+		if (typeof query != 'undefined') {		
+			if (!query.match(/^[\w\sА-Яа-я0-9_\-\.]{3,40}$/)) {
 				rep.status = 0;
-				rep.error = i18nm.__("unauth");
+				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
 				return;
 			}
-			// Get settings from MongoDB
-			rep.data = {};
-			var data = app.get('mongodb').collection('settings').find( { _id: new ObjectId(user_id) }, { limit : 1 }).toArray(function(err, items) {			
-				if (typeof items != 'undefined' && !err) {
-					if (items.length > 0) {
-						rep.data = items[0];
-					}
-				}
-				// Return results
-				rep.status = 1;
-				res.send(JSON.stringify(rep));
-			});
-		}); // auth
-	});
-	router.post('/data/save', function(req, res) {
-		app.get('auth').check(req, function(auth) {
-			i18nm.setLocale(req.i18n.getLocale());
-			var rep = {
-				err_fields: [],
-				status: 1
-			};	
-			// Check authorization
-			if (!auth || auth.status < 2) {
-				rep.status = 0;
-				rep.error = i18nm.__("unauth");
-				res.send(JSON.stringify(rep));
-				return;
-			}
-			var oname = req.body.oname,
-			    ovalue = req.body.ovalue,
-			    olang = req.body.olang,
-			    id = req.body.id;
-			if (typeof id != 'undefined' && id.length == 24) {
-				if (!id.match(/^[a-f0-9]{24}$/)) {
-					rep.status = 0;				
-					rep.error = i18nm.__("invalid_query");
-					res.send(JSON.stringify(rep));
-					return;
+		}
+		// Check authorization
+		if (!app.get('auth') || app.get('auth').status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var sort = {};
+		sort[sort_cell_default] = sort_cell_default_mode;
+		if (typeof sort_cell != 'undefined') {
+			if (typeof sort_cells[sort_cell] != 'undefined') {
+				sort = {};
+				sort[sort_cell] = 1;
+				if (typeof sort_mode != 'undefined' && sort_mode == -1) {
+					sort[sort_cell] = -1;
 				}
 			}
-			if (!oname.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
-				rep.status = 0;
-				rep.err_fields.push('oname');
-			}
-			oname = oname.toLowerCase();
-			if (!ovalue.match(/^.{1,255}$/)) {
-				rep.status = 0;
-				rep.err_fields.push('ovalue');
-			}
-			var _olang = '';
-			for (var i=0; i<app.get('config').locales.length; i++) {
-				if (olang == app.get('config').locales[i]) {
-					_olang = app.get('config').locales[i];
-				}
-			}
-			olang = _olang;
-			if (rep.status == 0) {
-				res.send(JSON.stringify(rep));
-				return;
-			}
-			if (id) {
-				var data = app.get('mongodb').collection('settings').find( { _id: new ObjectId(id) }, { limit : 1 }).toArray(function(err, items) {			
+		}
+		// Get settings from MongoDB
+		rep.items = [];
+		var find_query = {};
+		if (query) {
+			find_query = { $or : [ {oname: new RegExp(query, 'i')}, {ovalue: new RegExp(query, 'i')} ] };		
+		}
+		var data = app.get('mongodb').collection('settings').find(find_query).count(function (err, items_count) {
+			if (!err && items_count > 0) {
+				rep.total = items_count;
+				var data = app.get('mongodb').collection('settings').find(find_query, { skip: skip, limit : items_per_page }).sort(sort).toArray(function(err, items) {			
 					if (typeof items != 'undefined' && !err) {
-						if (items.length > 0) {
-							var update = { oname: oname, ovalue: ovalue, olang: olang };
-							app.get('mongodb').collection('settings').update( { _id: new ObjectId(id) }, update, function() {
-								rep.status = 1;
-								res.send(JSON.stringify(rep));
-							} );
-							return;
+						// Generate array
+						for (var i=0; i < items.length; i++) {
+							var arr = [];
+							arr.push(items[i]._id);
+							arr.push(items[i].oname);
+							arr.push(items[i].ovalue);
+							arr.push(items[i].olang);
+							rep.items.push(arr);
 						}
-					} else {
-						rep.status = 0;
-						rep.error = i18nm.__("id_not_found");
-						res.send(JSON.stringify(rep));
-					}				
-				});
-			} else {
-				app.get('mongodb').collection('settings').insert({ oname: oname, ovalue: ovalue, olang: olang }, function() {
+					}
+					// Return results
 					rep.status = 1;
 					res.send(JSON.stringify(rep));
-				});
-			}
-		}); // auth
-	});
-	router.post('/data/delete', function(req, res) {
-		app.get('auth').check(req, function(auth) {
-			i18nm.setLocale(req.i18n.getLocale());
-			var rep = {			
-				status: 1
-			};
-			// Check authorization
-			if (!auth || auth.status < 2) {
-				rep.status = 0;
-				rep.error = i18nm.__("unauth");
+				}); // data
+			} else { // Error or count = 0
+				rep.status = 1;
+				rep.total = '0';
 				res.send(JSON.stringify(rep));
-				return;
-			}	
-			var ids = req.body.ids;
-			if (typeof ids != 'object' || ids.length < 1) {
+			}
+		});	// count
+	});
+	router.post('/data/load', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};
+		var user_id = req.body.id;		
+		if (typeof user_id == 'undefined' || !user_id.match(/^[a-f0-9]{24}$/)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_query");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		// Check authorization
+		if (!app.get('auth') || app.get('auth').status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		// Get settings from MongoDB
+		rep.data = {};
+		var data = app.get('mongodb').collection('settings').find( { _id: new ObjectId(user_id) }, { limit : 1 }).toArray(function(err, items) {			
+			if (typeof items != 'undefined' && !err) {
+				if (items.length > 0) {
+					rep.data = items[0];
+				}
+			}
+			// Return results
+			rep.status = 1;
+			res.send(JSON.stringify(rep));
+		});
+	});
+	router.post('/data/save', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {
+			err_fields: [],
+			status: 1
+		};	
+		// Check authorization
+		if (!app.get('auth') || app.get('auth').status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var oname = req.body.oname,
+		    ovalue = req.body.ovalue,
+		    olang = req.body.olang,
+		    id = req.body.id;
+		if (typeof id != 'undefined' && id.length == 24) {
+			if (!id.match(/^[a-f0-9]{24}$/)) {
 				rep.status = 0;				
 				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
 				return;
 			}
-			for (var i=0; i<ids.length; i++) {
-				if (ids[i].match(/^[a-f0-9]{24}$/)) {
-					app.get('mongodb').collection('settings').remove({ _id: new ObjectId(ids[i]) }, function(){} );
-				}			
+		}
+		if (!oname.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+			rep.status = 0;
+			rep.err_fields.push('oname');
+		}
+		oname = oname.toLowerCase();
+		if (!ovalue.match(/^.{1,255}$/)) {
+			rep.status = 0;
+			rep.err_fields.push('ovalue');
+		}
+		var _olang = '';
+		for (var i=0; i<app.get('config').locales.length; i++) {
+			if (olang == app.get('config').locales[i]) {
+				_olang = app.get('config').locales[i];
 			}
+		}
+		olang = _olang;
+		if (rep.status == 0) {
 			res.send(JSON.stringify(rep));
-		}); // auth
+			return;
+		}
+		if (id) {
+			var data = app.get('mongodb').collection('settings').find( { _id: new ObjectId(id) }, { limit : 1 }).toArray(function(err, items) {			
+				if (typeof items != 'undefined' && !err) {
+					if (items.length > 0) {
+						var update = { oname: oname, ovalue: ovalue, olang: olang };
+						app.get('mongodb').collection('settings').update( { _id: new ObjectId(id) }, update, function() {
+							rep.status = 1;
+							res.send(JSON.stringify(rep));
+						} );
+						return;
+					}
+				} else {
+					rep.status = 0;
+					rep.error = i18nm.__("id_not_found");
+					res.send(JSON.stringify(rep));
+				}				
+			});
+		} else {
+			app.get('mongodb').collection('settings').insert({ oname: oname, ovalue: ovalue, olang: olang }, function() {
+				rep.status = 1;
+				res.send(JSON.stringify(rep));
+			});
+		}
+	});
+	router.post('/data/delete', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {			
+			status: 1
+		};
+		// Check authorization
+		if (!app.get('auth') || app.get('auth').status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}	
+		var ids = req.body.ids;
+		if (typeof ids != 'object' || ids.length < 1) {
+			rep.status = 0;				
+			rep.error = i18nm.__("invalid_query");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		for (var i=0; i<ids.length; i++) {
+			if (ids[i].match(/^[a-f0-9]{24}$/)) {
+				app.get('mongodb').collection('settings').remove({ _id: new ObjectId(ids[i]) }, function(){} );
+			}			
+		}
+		res.send(JSON.stringify(rep));
 	});
 	return router;
 }

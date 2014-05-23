@@ -65,7 +65,7 @@ _connect_to_mongo_db();
 app.set('config', config);
 app.set('express', express);
 app.set('cp', cp);
-app.set('auth', auth);
+app.set('auth-core', auth);
 app.set('path', path);
 app.set('renderer', renderer);
 app.set('logger', logger);
@@ -147,6 +147,26 @@ app.use(function(req, res, next) {
             app.set('settings', settings);            
             next();
         }
+    });
+});
+
+// Load authorization data
+
+var _timestamp_auth_query = Date.now() - 30000;
+
+app.use(function(req, res, next) {
+    if (Date.now() - _timestamp_auth_query <= 30000) {
+        next();
+        return;
+    }    
+    app.get('auth-core').check(req, function(auth) {
+        _timestamp_auth_query = Date.now();
+        if (auth) {
+            app.set('auth', auth);
+        } else {
+            app.set('auth', false);
+        }
+        next();
     });
 });
 
