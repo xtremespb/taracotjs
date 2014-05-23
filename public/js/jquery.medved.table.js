@@ -38,6 +38,12 @@
 		},
 		update: function() {
 			load_data(current_page);
+		},
+		loading_indicator_show: function() {
+			taracot_table_loading_indicator(true);
+		},
+		loading_indicator_hide: function() {
+			taracot_table_loading_indicator(false);
 		}
 	};
 
@@ -45,6 +51,10 @@
 
 	var render_table = function(data) {       
 	    $('#' + table_id + ' > tbody').html('');
+	    if (typeof data == 'undefined' || !data.length) {
+	        $('#' + table_id + ' > tbody').append('<tr><td colspan="' + options.col_count + '">' + _lang_vars.no_res + '</td></tr>');
+	        return;
+	    }
 	    for (var i=0; i < data.length; i++) {
 	        var table_data = '<tr>';
 	        var _id = data[i][0]        
@@ -68,10 +78,7 @@
 	        $('.taracot-tableitem-delete').click(function() {            
 	            delete_item([$(this).attr('id').replace('taracot-btndel-', '')]);
 	        });
-	    }
-	    if (!data.length) {
-	        $('#' + table_id + ' > tbody').append('<tr><td colspan="' + options.col_count + '">' + _lang_vars.no_res + '</td></tr>');
-	    }
+	    }	    
 	};
 
 	/* Render the pagination */
@@ -165,9 +172,9 @@
 	            $('#' + table_id + '_filter').prop('disabled', false);
 	            taracot_table_loading_indicator(false);
 	            if (data.status == 1) {
-	                if (typeof data.users != undefined) {
+	                if (typeof data.items != undefined) {
 	                    items_per_page = data.ipp;
-	                    render_table(data.users);
+	                    render_table(data.items);
 	                    render_pagination(page, data.total);
 	                    current_page = page;
 	                }

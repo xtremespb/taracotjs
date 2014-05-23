@@ -17,10 +17,9 @@
 <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
   <thead>
     <tr>
-      <th style="width:100px" class="taracot_table_sortable" rel="taracot_table_sortable_username">!{root.lang.__("username")}<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i></span></th>
-      <th class="taracot_table_sortable" rel="taracot_table_sortable_realname">!{root.lang.__("realname")}</th>
-      <th class="taracot_table_sortable" rel="taracot_table_sortable_email">!{root.lang.__("email")}</th>
-      <th class="taracot_table_sortable" rel="taracot_table_sortable_status" style="width:82px;text-align:center">!{root.lang.__("status")}</th>
+      <th style="width:150px" class="taracot_table_sortable" rel="taracot_table_sortable_oname">!{root.lang.__("oname")}<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i></span></th>
+      <th class="taracot_table_sortable" rel="taracot_table_sortable_ovalue">!{root.lang.__("ovalue")}</th>
+      <th style="width:102px;text-align:center" class="taracot_table_sortable" rel="taracot_table_sortable_lang">!{root.lang.__("lang")}</th>      
       <th style="width:102px;text-align:center">!{root.lang.__("actions")}</th>
     </tr>
   </thead>
@@ -43,43 +42,28 @@
           !{root.lang.__("ajax_failed")}
         </div>
         <div id="taracot-modal-edit-wrap">
-          <h1><span id="taracot-modal-edit-h1-edit">!{root.lang.__("edit_user")}</span><span id="taracot-modal-edit-h1-add" class="uk-hidden">!{root.lang.__("add")}</span></h1>
+          <h1><span id="taracot-modal-edit-h1-edit">!{root.lang.__("edit_option")}</span><span id="taracot-modal-edit-h1-add" class="uk-hidden">!{root.lang.__("add")}</span></h1>
           <form class="uk-form uk-form-stacked taracot-edit-form">
             <fieldset>            
               <div class="uk-form-row">
-                <label class="uk-form-label">!{root.lang.__("username")}:</label>
-                <input class="uk-width-1-1" type="text" id="username">
+                <label class="uk-form-label">!{root.lang.__("oname")}:</label>
+                <input class="uk-width-1-1" type="text" id="oname">
               </div>
             </fieldset>
             <fieldset>
               <div class="uk-form-row">
-                <label class="uk-form-label">!{root.lang.__("realname")}:</label>
-                <input class="uk-width-1-1" type="text" id="realname">
+                <label class="uk-form-label">!{root.lang.__("ovalue")}:</label>
+                <input class="uk-width-1-1" type="text" id="ovalue">
               </div>
             </fieldset>
             <fieldset>  
               <div class="uk-form-row">
-                <label class="uk-form-label">!{root.lang.__("email")}:</label>
-                <input class="uk-width-1-1" type="text" id="email">
-              </div>            
-            </fieldset>
-            <fieldset>  
-              <div class="uk-form-row">
-                <label class="uk-form-label">!{root.lang.__("status")}:</label>
-                <select id="status" class="uk-form-width-medium" id="status">
-                  <option value="0">!{root.lang.__("status_0")}</option>
-                  <option value="1">!{root.lang.__("status_1")}</option>
-                  <option value="2">!{root.lang.__("status_2")}</option>
+                <label class="uk-form-label">!{root.lang.__("lang")}:</label>
+                <select id="olang" class="uk-form-width-medium">
+                  <option value="">!{root.lang.__("any_language")}</option>
                 </select>
               </div>            
             </fieldset>
-            <fieldset>
-              <div class="uk-form-row">
-                <label class="uk-form-label">!{root.lang.__("password_twice")}:</label>
-                <input class="uk-form-width-small" type="password" id="password">
-                <input class="uk-form-width-small" type="password" id="password-repeat">
-              </div>
-            </fieldset>          
           </form>
           <div class="taracot-buttons-area">          
             <button class="uk-button" type="button" id="taracot-edit-btn-save">!{root.lang.__("save")}</button>&nbsp;<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__("cancel")}</button>
@@ -93,12 +77,13 @@
     form_err_title: "!{root.lang.__("form_err_title")}",
     form_err_msg: "!{root.lang.__("form_err_msg")}",
     delete_err_msg: "!{root.lang.__("delete_err_msg")}",
-    status_0: "!{root.lang.__("status_0")}",
-    status_1: "!{root.lang.__("status_1")}",
-    status_2: "!{root.lang.__("status_2")}",
     del_confirm: "!{root.lang.__("delete_confirm")}",
     no_res: "!{root.lang.__("no_results_in_table")}"
   }
+  var locales = !{root.locales};
+  for (var i=0; i < locales.length; i++) {
+    $('#olang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
+  }
 </script>
 <script src="/js/jquery.medved.table.js"></script>
-<script src="/modules/user/js/main.js"></script>
+<script src="/modules/settings/js/main.js"></script>

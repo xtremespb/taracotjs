@@ -46,12 +46,10 @@ module.exports = function(app){
 	    username = username.toLowerCase();
 	    var md5 = crypto.createHash('md5');
 		var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-		var collection = app.get('mongodb').collection('users');
 		var data = app.get('mongodb').collection('users').find( { username: username, password: password_hex  }, { limit : 1 }).toArray(function(err, items) {			
 			if (typeof items != 'undefined' && !err) {
 				if (items.length > 0) {
 					req.session.user_id = items[0]._id.toHexString();
-					console.log(items[0]._id.toHexString());
 					res.send(JSON.stringify({ result: 1 }));
 					return;
 				}
