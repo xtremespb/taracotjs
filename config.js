@@ -16,8 +16,6 @@ var config = {
 		file: { level: 'error', filename: '../logs/taracotjs.log', json: false, maxsize: 1048576, maxFiles: 3 },
 		stack: true
 	},
-	admin_username : 'admin',
-	admin_password : 'a59a5399bb3b181d9cbc6230b9bb87ca',
 	mongo_url: 'mongodb://localhost/taracotjs',	
 	mongo_options: {
 	    server:{
@@ -49,6 +47,12 @@ var config = {
 						 		'prefix': '/user/',
 						 		'cp_id': 'users',
 						 		'cp_prefix': '/cp/users/'
+						 	},
+						 	{
+						 		'name': 'settings',
+						 		'prefix': '/settings/',
+						 		'cp_id': 'settings',
+						 		'cp_prefix': '/cp/settings/'
 						 	}
 			  ]
 

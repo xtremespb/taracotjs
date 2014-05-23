@@ -6,7 +6,6 @@
 var express = require('express');
 var config = require('./config');
 var path = require('path');
-var favicon = require('static-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var I18n = require('i18n-2');
@@ -76,7 +75,6 @@ app.engine('html', gaikan);
 
 // Use items
 
-app.use(favicon(favicon(__dirname + '/public/img/favicon.ico')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser(config.cookie_secret));
@@ -98,6 +96,8 @@ I18n.expressBind(app, {
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js'
  });
+
+// Pre-load functions
 
 app.use(function(req, res, next) {
     // Check database connection
@@ -125,6 +125,29 @@ app.use(function(req, res, next) {
         delete req.session.auth_redirect;
     }        
     next();
+});
+
+// Load settings
+
+var _timestamp_settings_query = Date.now() - 60000;
+
+app.use(function(req, res, next) {
+    if (Date.now() - _timestamp_settings_query <= 60000) {
+        next();
+        return;
+    }    
+    var find_query = { $or : [ {olang: req.i18n.getLocale()}, {olang: ''} ] };    
+    app.get('mongodb').collection('settings').find(find_query, {}).toArray(function(err, items) {
+        if (typeof items != 'undefined' && !err) {
+            var settings = {};
+            for (var i=0; i<items.length; i++) {
+                settings[items[i].oname] = items[i].ovalue;
+                _timestamp_settings_query = Date.now();
+            }
+            app.set('settings', settings);            
+            next();
+        }
+    });
 });
 
 // Load modules

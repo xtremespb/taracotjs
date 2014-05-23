@@ -1,0 +1,234 @@
+2014-05-22T09:41:31.166Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:31.256Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:31.256Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:31.936Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.016Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.016Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.026Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.036Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.126Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:32.136Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:53.387Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:53.456Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:53.478Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.409Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.500Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.504Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.517Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.520Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.661Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:41:54.674Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:51.024Z - info: / method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:51.024Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:53.644Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:53.704Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:53.724Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.044Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.144Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.144Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.154Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.154Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.274Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:44:55.284Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:05.474Z - info: /cp/users/data/load method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:07.154Z - info: /cp/users/data/save method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:07.244Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.084Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.174Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.174Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.184Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.184Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.284Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.294Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.894Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.964Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.974Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.994Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:10.994Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.094Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.104Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.604Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.684Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.694Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.704Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.704Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.804Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:11.814Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:12.694Z - info: /cp/users/data/load method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:18.794Z - info: /cp/users/data/save method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:18.854Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.814Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.874Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.884Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.884Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.894Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:20.994Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T09:45:21.014Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:04.809Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:06.366Z - info: /auth?rnd=08712016998324543 method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:31.358Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:31.621Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:31.660Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.548Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.814Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.818Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.858Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.861Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:32.937Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:33.000Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:34.535Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:35.030Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:35.490Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:35.644Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:35.812Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:35.972Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.133Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.300Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.469Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.637Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.812Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:36.980Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.156Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.324Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.484Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.652Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.827Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:37.988Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:38.190Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:38.486Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:38.645Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:38.805Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:38.981Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:39.324Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T10:33:40.388Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T11:33:57.522Z - info: /auth method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T11:33:57.569Z - info: /?rnd=09006363321095705 method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T11:33:57.703Z - error: Page not found method=GET, url=/?rnd=09006363321095705, ip=127.0.0.1, ips=[]
+2014-05-22T11:34:02.455Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T11:34:02.817Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T11:34:02.825Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:04.228Z - info: /auth method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:04.278Z - info: /?rnd=09555217209272087 method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:04.298Z - error: Page not found method=GET, url=/?rnd=09555217209272087, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:08.038Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:08.348Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:08.378Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:09.908Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:09.998Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:09.998Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:10.018Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:10.018Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:10.018Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:10.108Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T12:21:12.998Z - info: /cp/users/data/load method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.599Z - info: /cp/users/ method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.699Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.699Z - info: /modules/user/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.709Z - info: /modules/user/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.719Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.779Z - info: /modules/user/images/loading_36x36.gif method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T12:24:10.799Z - info: /cp/users/data/list method=POST, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:51.259Z - info: /auth method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:51.274Z - info: /?rnd=010222368943504989 method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:51.278Z - error: Page not found method=GET, url=/?rnd=010222368943504989, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:55.102Z - info: /cp method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:55.167Z - info: /modules/cp/css/main.css method=GET, ip=127.0.0.1, ips=[]
+2014-05-22T13:35:55.179Z - info: /modules/cp/js/main.js method=GET, ip=127.0.0.1, ips=[]
+2014-05-23T07:20:39.116Z - error: Database connection failed method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:105:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T07:20:42.809Z - error: Database connection failed method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:105:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T07:29:59.889Z - error: Database connection failed method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:105:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T07:32:12.694Z - error: Database connection failed method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:105:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T07:32:29.707Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-23T07:32:33.827Z - error: Page not found method=GET, url=/admin, ip=127.0.0.1, ips=[]
+2014-05-23T07:50:18.558Z - error: Page not found method=GET, url=/?rnd=07592631210573018, ip=127.0.0.1, ips=[]
+2014-05-23T07:50:29.408Z - error: Page not found method=GET, url=/?rnd=08609950551763177, ip=127.0.0.1, ips=[]
+2014-05-23T07:50:52.748Z - error: Page not found method=GET, url=/?rnd=06420621485449374, ip=127.0.0.1, ips=[]
+2014-05-23T07:50:56.938Z - error: Page not found method=GET, url=/admin, ip=127.0.0.1, ips=[]
+2014-05-23T08:26:47.100Z - error: Database connection failed method=GET, url=/cp/settings/, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:105:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T11:21:22.574Z - error: time is not defined method=GET, url=/cp/settings/, ip=127.0.0.1, ips=[], stack=ReferenceError: time is not defined
+    at Layer.app.use.err.status [as handle] (c:\XTreme\taracotjs\app.js:137:9)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer._settings_last_updated [as handle] (c:\XTreme\taracotjs\app.js:129:5)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-05-23T11:25:15.162Z - error: Page not found method=GET, url=/modules/user/css/main.css, ip=127.0.0.1, ips=[]
+2014-05-23T11:25:15.202Z - error: Page not found method=GET, url=/modules/settings/js/main.js, ip=127.0.0.1, ips=[]
+2014-05-23T11:25:15.210Z - error: Page not found method=GET, url=/modules/cp/js/main.js, ip=127.0.0.1, ips=[]
+2014-05-23T11:25:56.583Z - error: path must be a string method=GET, url=/favicon.ico, ip=127.0.0.1, ips=[], stack=TypeError: path must be a string
+    at Object.fs.open (fs.js:418:11)
+    at Object.fs.readFile (fs.js:206:6)
+    at Layer.favicon [as handle] (c:\XTreme\taracotjs\node_modules\static-favicon\index.js:61:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.expressInit [as handle] (c:\XTreme\taracotjs\node_modules\express\lib\middleware\init.js:23:5)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-23T11:26:38.699Z - error: path must be a string method=GET, url=/favicon.ico, ip=127.0.0.1, ips=[], stack=TypeError: path must be a string
+    at Object.fs.open (fs.js:418:11)
+    at Object.fs.readFile (fs.js:206:6)
+    at Layer.favicon [as handle] (c:\XTreme\taracotjs\node_modules\static-favicon\index.js:61:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.expressInit [as handle] (c:\XTreme\taracotjs\node_modules\express\lib\middleware\init.js:23:5)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-23T11:26:46.273Z - error: Page not found method=GET, url=/favicon.ico, ip=127.0.0.1, ips=[]

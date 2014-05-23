@@ -14,18 +14,6 @@ var process_rows = [ // Handlers for each column
         return val;
     },
     function(val, id) {
-        return val;
-    },
-    function(val, id) {
-        if (val == 0) {
-            val = _lang_vars.status_0;
-        }
-        if (val == 1) {
-            val = _lang_vars.status_1;
-        }
-        if (val == 2) {
-            val = _lang_vars.status_2;
-        }        
         return '<div style="text-align:center">' + val + '</div>';
     },
     function(val, id) {
@@ -34,10 +22,10 @@ var process_rows = [ // Handlers for each column
 ];
 
 $('#taracot_table').medvedTable({
-    col_count : 5,
+    col_count : 4,
     sort_mode : 1,
-    sort_cell : 'username',
-    taracot_table_url : '/cp/users/data/list',
+    sort_cell : 'oname',
+    taracot_table_url : '/cp/settings/data/list',
     process_rows: process_rows
 });
 
@@ -71,7 +59,7 @@ $('#btn-add-item').click(function() {
 var load_edit_data = function(id) {    
     $.ajax({
         type: 'POST',
-        url: '/cp/users/data/load',
+        url: '/cp/settings/data/load',
         data: {
             id: id
         },
@@ -80,21 +68,18 @@ var load_edit_data = function(id) {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             if (data.status == 1) {
                 $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-                if (typeof data.user != undefined ) {
-                    if (typeof data.user.username != undefined) {
-                        $('#username').val(data.user.username);
+                if (typeof data.data != undefined ) {
+                    if (typeof data.data.oname != undefined) {
+                        $('#oname').val(data.data.oname);
                     }
-                    if (typeof data.user.realname != undefined) {
-                        $('#realname').val(data.user.realname);
+                    if (typeof data.data.ovalue != undefined) {
+                        $('#ovalue').val(data.data.ovalue);
                     }
-                    if (typeof data.user.email != undefined) {
-                        $('#email').val(data.user.email);
-                    }
-                    if (typeof data.user.status != undefined) {
-                        $('#status').val(data.user.status);
+                    if (typeof data.data.olang != undefined) {
+                        $('#olang').val(data.data.olang);
                     }
                 }
-                $('#username').focus();
+                $('#oname').focus();
             } else {
                 $('#taracot-modal-edit-loading-error').removeClass('uk-hidden');
             }
@@ -126,34 +111,19 @@ var add_item = function(id) {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
     $('#status').val('1');
-    $('#username').focus();
+    $('#oname').focus();
 }
 
 $('#taracot-edit-btn-save').click(function() {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');    
     var errors = false;
-    if (!$('#username').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
-        $('#username').addClass('uk-form-danger');
+    if (!$('#oname').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+        $('#oname').addClass('uk-form-danger');
         errors = true;
     }
-    if (!$('#realname').val().match(/^(([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])\s([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])+){0,40}$/)) {
-        $('#realname').addClass('uk-form-danger');
+    if (!$('#ovalue').val().match(/^.{0,255}$/)) {
+        $('#ovalue').addClass('uk-form-danger');
         errors = true;
-    }
-    if (!$('#email').val().match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
-        $('#email').addClass('uk-form-danger');
-        errors = true;
-    }
-    if (current_id.length > 0) {
-        if ($('#password').val().length > 0 && (!$('#password').val().match(/^.{5,20}$/) || $('#password').val() != $('#password-repeat').val())) {
-            $('#password').addClass('uk-form-danger');
-            $('#password-repeat').addClass('uk-form-danger');
-        }
-    } else {
-        if (!$('#password').val().match(/^[.]{5,20}$/) || $('#password').val() != $('#password-repeat').val()) {
-            $('#password').addClass('uk-form-danger');
-            $('#password-repeat').addClass('uk-form-danger');
-        }
     }
     if (errors) {
         $.UIkit.notify( { message : _lang_vars.form_err_msg, status  : 'danger', timeout : 5000, pos : 'top-center' });
@@ -164,20 +134,17 @@ $('#taracot-edit-btn-save').click(function() {
     $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
     $.ajax({
         type: 'POST',
-        url: '/cp/users/data/save',
+        url: '/cp/settings/data/save',
         data: {
-            username: $('#username').val(),
-            realname: $('#realname').val(),
-            email: $('#email').val(),
-            status: $('#status').val(),
-            password: $('#password').val(),
+            oname: $('#oname').val(),
+            ovalue: $('#ovalue').val(),
+            olang: $('#olang').val(),
             id: current_id
         },
         dataType: "json",
         success: function (data) {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             if (data.status == 1) {
-                // load_data(current_page);
                 $('#taracot_table').medvedTable('update');
                 edit_modal.hide();                                
             } else {
@@ -203,7 +170,7 @@ var delete_item = function(ids) {
         $('#taracot_table').medvedTable('loading_indicator_show');
         $.ajax({
             type: 'POST',
-            url: '/cp/users/data/delete',
+            url: '/cp/settings/data/delete',
             data: {                
                 ids: ids
             },
