@@ -12,7 +12,7 @@ module.exports = function(app){
 	router.get('/', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var id = '';
-		if (typeof req.session != 'undefined' && typeof req.session.user_id != 'undefined') {
+		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth != false) {
 			id = req.session.user_id;
 		}
 		if (id.length > 0) {
@@ -23,7 +23,7 @@ module.exports = function(app){
 		res.send(render);
 	});
 	router.get('/logout', function(req, res) {
-		delete req.session.user_id;
+		delete req.session.auth;
 		res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));	
 	});
 	router.post('/process', function(req, res) {
@@ -49,7 +49,8 @@ module.exports = function(app){
 		var data = app.get('mongodb').collection('users').find( { username: username, password: password_hex  }, { limit : 1 }).toArray(function(err, items) {			
 			if (typeof items != 'undefined' && !err) {
 				if (items.length > 0) {
-					req.session.user_id = items[0]._id.toHexString();
+					req.session.auth = items[0];
+					delete req.session.auth.password;
 					res.send(JSON.stringify({ result: 1 }));
 					return;
 				}

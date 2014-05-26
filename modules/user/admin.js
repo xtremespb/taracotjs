@@ -25,7 +25,7 @@ module.exports = function (app) {
 	};
 	router.get('/', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/users';
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
@@ -36,7 +36,7 @@ module.exports = function (app) {
 		app.get('cp').render(req, res, {
 			body: body,
 			css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t"
-		}, i18nm, 'users', app.get('auth'));
+		}, i18nm, 'users', req.session.auth);
 	});
 	router.post('/data/list', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
@@ -65,7 +65,7 @@ module.exports = function (app) {
 			}
 		}
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -135,7 +135,7 @@ module.exports = function (app) {
 			return;
 		}
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -166,7 +166,7 @@ module.exports = function (app) {
 			status: 1
 		};
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -267,7 +267,7 @@ module.exports = function (app) {
 			status: 1
 		};
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));

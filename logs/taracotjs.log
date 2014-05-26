@@ -415,3 +415,83 @@
     at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
     at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
     at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-26T08:59:04.764Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-26T08:59:09.292Z - error: Page not found method=GET, url=/?rnd=0013369537657126784, ip=127.0.0.1, ips=[]
+2014-05-26T08:59:13.035Z - error: Page not found method=GET, url=/?rnd=033340063807554543, ip=127.0.0.1, ips=[]
+2014-05-26T08:59:17.482Z - error: Page not found method=GET, url=/?rnd=05593738569878042, ip=127.0.0.1, ips=[]
+2014-05-26T09:00:17.967Z - error: Page not found method=GET, url=/?rnd=05593738569878042, ip=127.0.0.1, ips=[]
+2014-05-26T10:01:43.281Z - error: Page not found method=GET, url=/?rnd=037025749566964805, ip=127.0.0.1, ips=[]
+2014-05-26T10:02:02.827Z - error: Page not found method=GET, url=/?rnd=04712418660055846, ip=127.0.0.1, ips=[]
+2014-05-26T10:02:09.485Z - error: Page not found method=GET, url=/?rnd=021263542701490223, ip=127.0.0.1, ips=[]
+2014-05-26T10:02:46.126Z - error: Page not found method=GET, url=/?rnd=01620872733183205, ip=127.0.0.1, ips=[]
+2014-05-26T10:02:49.827Z - error: Page not found method=GET, url=/?rnd=03993643287103623, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:01.177Z - error: Page not found method=GET, url=/?rnd=09299303402658552, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:27.005Z - error: Page not found method=GET, url=/admin, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:31.422Z - error: Page not found method=GET, url=/?rnd=048364556953310966, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:36.327Z - error: Page not found method=GET, url=/?rnd=03044594335369766, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:40.028Z - error: Page not found method=GET, url=/?rnd=04738085644785315, ip=127.0.0.1, ips=[]
+2014-05-26T10:04:44.887Z - error: Page not found method=GET, url=/?rnd=049722144519910216, ip=127.0.0.1, ips=[]
+2014-05-26T10:06:12.294Z - error: Page not found method=GET, url=/?rnd=049722144519910216, ip=127.0.0.1, ips=[]
+2014-05-26T10:06:20.974Z - error: Page not found method=GET, url=/?rnd=04182422587182373, ip=127.0.0.1, ips=[]
+2014-05-26T10:09:21.135Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-26T10:09:27.495Z - error: Page not found method=GET, url=/?rnd=06478443797677755, ip=127.0.0.1, ips=[]
+2014-05-26T10:42:10.705Z - error: Cannot read property 'realname' of undefined method=GET, url=/cp, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'realname' of undefined
+    at Object.cp.render (c:\XTreme\taracotjs\modules\cp\cp.js:20:158)
+    at Object.handle (c:\XTreme\taracotjs\modules\cp\module.js:16:17)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-05-26T10:42:39.860Z - error: Cannot read property 'realname' of undefined method=GET, url=/cp, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'realname' of undefined
+    at Object.cp.render (c:\XTreme\taracotjs\modules\cp\cp.js:20:158)
+    at Object.handle (c:\XTreme\taracotjs\modules\cp\module.js:16:17)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-05-26T10:45:08.865Z - error: Cannot read property 'realname' of undefined method=GET, url=/cp, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'realname' of undefined
+    at Object.cp.render (c:\XTreme\taracotjs\modules\cp\cp.js:20:158)
+    at Object.handle (c:\XTreme\taracotjs\modules\cp\module.js:16:17)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-05-26T10:48:29.694Z - error: Cannot read property 'realname' of undefined method=GET, url=/cp, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'realname' of undefined
+    at Object.cp.render (c:\XTreme\taracotjs\modules\cp\cp.js:20:158)
+    at Object.handle (c:\XTreme\taracotjs\modules\cp\module.js:16:17)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-05-26T10:51:29.603Z - error: Page not found method=GET, url=/?rnd=05527593228034675, ip=127.0.0.1, ips=[]
+2014-05-26T10:54:50.847Z - error: Page not found method=GET, url=/?rnd=00324668085668236, ip=127.0.0.1, ips=[]
+2014-05-26T10:54:54.971Z - error: Page not found method=GET, url=/?rnd=00986122649628669, ip=127.0.0.1, ips=[]
+2014-05-26T11:12:56.858Z - error: Page not found method=GET, url=/?rnd=05274118192028254, ip=127.0.0.1, ips=[]
+2014-05-26T11:13:35.491Z - error: Page not found method=GET, url=/?rnd=05274118192028254, ip=127.0.0.1, ips=[]
+2014-05-26T11:13:50.165Z - error: Page not found method=GET, url=/?rnd=05274118192028254, ip=127.0.0.1, ips=[]
+2014-05-26T11:14:04.251Z - error: Page not found method=GET, url=/?rnd=06904200364340898, ip=127.0.0.1, ips=[]
+2014-05-26T11:18:49.478Z - error: Page not found method=GET, url=/?rnd=05353766525862782, ip=127.0.0.1, ips=[]
+2014-05-26T11:40:31.940Z - error: Page not found method=GET, url=/?rnd=049088304831010077, ip=127.0.0.1, ips=[]
+2014-05-26T11:41:25.510Z - error: Page not found method=GET, url=/?rnd=049088304831010077, ip=127.0.0.1, ips=[]
+2014-05-26T11:41:30.580Z - error: Page not found method=GET, url=/?rnd=026835684316513897, ip=127.0.0.1, ips=[]
+2014-05-26T11:42:39.350Z - error: Page not found method=GET, url=/?rnd=026835684316513897, ip=127.0.0.1, ips=[]
+2014-05-26T11:42:44.040Z - error: Page not found method=GET, url=/?rnd=022596659297142652, ip=127.0.0.1, ips=[]
+2014-05-26T13:08:39.643Z - error: Page not found method=GET, url=/?rnd=027236402011476457, ip=127.0.0.1, ips=[]
+2014-05-26T13:09:36.466Z - error: Page not found method=GET, url=/?rnd=05818312671035528, ip=127.0.0.1, ips=[]
+2014-05-26T13:21:15.023Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]

@@ -19,13 +19,13 @@ module.exports = function(app) {
 	};	
 	router.get('/', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/settings';
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}		
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'settings_control', { lang: i18nm, locales: JSON.stringify(app.get('config').locales) });
-		app.get('cp').render(req, res, { body: body, css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t" }, i18nm, 'settings', app.get('auth') );
+		app.get('cp').render(req, res, { body: body, css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t" }, i18nm, 'settings', req.session.auth );
 	});
 	router.post('/data/list', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
@@ -51,7 +51,7 @@ module.exports = function(app) {
 			}
 		}
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -111,7 +111,7 @@ module.exports = function(app) {
 			return;
 		}
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -137,7 +137,7 @@ module.exports = function(app) {
 			status: 1
 		};	
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
@@ -205,7 +205,7 @@ module.exports = function(app) {
 			status: 1
 		};
 		// Check authorization
-		if (!app.get('auth') || app.get('auth').status < 2) {
+		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
 			rep.error = i18nm.__("unauth");
 			res.send(JSON.stringify(rep));
