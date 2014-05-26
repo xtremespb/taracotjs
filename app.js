@@ -121,7 +121,7 @@ app.use(function(req, res, next) {
     // Logging
     logger.info(req.url, { method: req.method, ip: req.ip, ips: req.ips } );
     // Clear auth_redirect if already authorized
-    if (req.session.user_id) {
+    if (req.session.auth) {
         delete req.session.auth_redirect;
     }        
     next();
@@ -152,19 +152,10 @@ app.use(function(req, res, next) {
 
 // Load authorization data
 
-var _timestamp_auth_query = Date.now() - 30000;
-
-app.use(function(req, res, next) {
-    if (Date.now() - _timestamp_auth_query <= 30000) {
-        next();
-        return;
-    }    
+app.use(function(req, res, next) {        
     app.get('auth-core').check(req, function(auth) {
-        _timestamp_auth_query = Date.now();
-        if (auth) {
-            app.set('auth', auth);
-        } else {
-            app.set('auth', false);
+        if (auth != session.auth) {
+            session.auth = auth;
         }
         next();
     });
