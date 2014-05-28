@@ -1,24 +1,38 @@
 var async = require('async');
 var prompt = require('prompt');
+var crypto = require('crypto');
 var config = require('../config');
 var mongoclient = require('mongodb').MongoClient;
+var fs = require('fs');
 var db;
 prompt.message = "> ".green;
 prompt.delimiter = "";
 prompt.start();
+
+function generateId(lngth) {
+	if (!lngth) {
+		lngth = 16;
+	}
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < lngth; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
 async.series([
 		function (callback) {
 			console.log("This script will guide you with TaracotJS basic installation steps.\n");
 			console.log("Database connection is required.");
 			console.log("Current MongoDB URL: " + config.mongo.url + "\n");
 			prompt.get(['Continue? y/n'], function (err, result) {
-				if (result && 'Continue? y/n' in result && result['Continue? y/n'] == 'y') {
+				if (!err && result && 'Continue? y/n' in result && result['Continue? y/n'] == 'y') {
 					callback();
 				} else {
 					console.log("\n\nAborted");
 					process.exit(code = 0);
 				}
-			});			
+			});
 		},
 		function (callback) {
 			mongoclient.connect(config.mongo.url, config.mongo_options, function (err, _db) {
@@ -33,7 +47,28 @@ async.series([
 			});
 		},
 		function (callback) {
-			console.log("Creating collection: users\n");
+			prompt.get(['Generate secrets and salt? y/n'], function (err, result) {
+				if (!err && result && 'Generate secrets and salt? y/n' in result && result['Generate secrets and salt? y/n'] == 'y') {
+					config.cookie_secret = generateId(32);
+					config.session_secret = generateId(32);
+					config.salt = generateId(64);
+					fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+						if (err) {
+							console.log("\nCould not save config.js file. Check your permissions");
+							console.log(err);
+							process.exit(1);
+						}
+						console.log("... success");
+						callback();
+					});
+				} else {
+					console.log("\nNote: it's important to set these values for security purposes!");
+					callback();
+				}
+			});
+		},
+		function (callback) {
+			console.log("\nCreating collection: users\n");
 			db.createCollection('users', function (err, collection) {
 				if (err) {
 					console.log("... failed");
@@ -43,6 +78,31 @@ async.series([
 				console.log("... success");
 				callback();
 			});
+		},
+		function (callback) {
+			db.collection('users').remove( { username : 'admin' }, function () {
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating default user account\n");
+			var md5 = crypto.createHash('md5');
+			var password_md5 = md5.update(config.salt + '.admin').digest('hex');			
+			db.collection('users').insert({
+					username: 'admin',
+					email: 'default@taracot.org',
+					realname: 'Website Administrator',
+					status: 2,
+					password: password_md5
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
 		},
 		function (callback) {
 			console.log("\nCreating index for collection: users\n");

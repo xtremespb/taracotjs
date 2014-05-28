@@ -2,6 +2,15 @@ body {
 	background: #444;
 }
 
+.uk-notify-message {
+    text-align: center;
+    color: #fff;
+}
+
+.uk-notify-message-danger {
+    background: red;
+}
+
 #auth_box {
   	-webkit-box-shadow: 0 6px 6px -6px black;
 	   -moz-box-shadow: 0 6px 6px -6px black;

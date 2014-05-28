@@ -161,12 +161,26 @@ app.use(function (req, res, next) {
 // Load authorization data
 
 app.use(function (req, res, next) {
-    app.get('auth-core').check(req, function (auth) {
-        if (auth != session.auth) {
-            session.auth = auth;
-        }
+    if (!req.session.auth_check_timestamp) {
+        req.session.auth_check_timestamp = Date.now();
         next();
-    });
+        return;
+    }
+    if (Date.now() - req.session.auth_check_timestamp >= 10000) {
+        req.session.auth_check_timestamp = Date.now();
+        app.get('auth-core').check(req, function (auth) {
+            if (!auth) {
+                delete req.session.auth;
+            } else {
+                if (auth != req.session.auth) {
+                    req.session.auth = auth;
+                }
+            }
+            next();
+        });
+    } else {
+        next();
+    }    
 });
 
 // Load modules

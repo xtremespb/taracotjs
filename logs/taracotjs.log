@@ -584,3 +584,27 @@
 2014-05-28T10:15:45.477Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
 2014-05-28T10:28:29.474Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
 2014-05-28T10:30:48.607Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-28T12:19:12.674Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-28T12:19:47.085Z - error: Page not found method=GET, url=/, ip=10.206.247.66, ips=[]
+2014-05-28T12:21:04.747Z - error: Page not found method=GET, url=/, ip=10.233.103.200, ips=[]
+2014-05-28T12:25:13.011Z - error: Page not found method=GET, url=/, ip=10.233.103.200, ips=[]
+2014-05-28T12:41:53.363Z - error: Page not found method=GET, url=/?rnd=04329060835298151, ip=10.206.247.66, ips=[]
+2014-05-28T12:51:03.868Z - error: Page not found method=GET, url=/?rnd=04720952126663178, ip=10.206.247.66, ips=[]
+2014-05-28T12:55:45.720Z - error: Page not found method=GET, url=/, ip=10.206.247.66, ips=[]
+2014-05-28T12:59:51.451Z - error: Page not found method=GET, url=/, ip=10.233.25.60, ips=[]
+2014-05-28T13:01:02.609Z - error: Page not found method=GET, url=/, ip=10.233.25.60, ips=[]
+2014-05-28T13:11:00.602Z - error: Page not found method=GET, url=/?rnd=00558224152791279, ip=10.206.247.66, ips=[]
+2014-05-28T13:15:29.938Z - error: Page not found method=GET, url=/, ip=10.233.25.60, ips=[]
+2014-05-28T15:13:57.051Z - error: Page not found method=GET, url=/?rnd=07740448378026485, ip=10.206.247.66, ips=[]
+2014-05-28T15:14:12.371Z - error: Page not found method=GET, url=/, ip=10.206.247.66, ips=[]
+2014-05-28T15:39:21.126Z - error: Database connection failed method=POST, url=/auth/process, ip=10.206.247.66, ips=[], stack=Error: Database connection failed
+    at Layer._timestamp_settings_query [as handle] (c:\XTreme\taracotjs\app.js:103:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
