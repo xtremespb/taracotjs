@@ -27,5 +27,8 @@
 	"delete_confirm": "Are you sure to delete the following item(s)?",
 	"delete_err_msg": "Couldn't delete the requested item(s) on server",
 	"search_field": "Search",
-	"no_results_in_table": "No items found"
+	"no_results_in_table": "No items found",
+	"email_exists": "Duplicate e-mail",
+	"username_exists": "Duplicate username",
+	"save_success": "Item has been successfully saved"
 }

@@ -78,3 +78,19 @@ body {
 }
 
 .cp-subnav > li:nth-child(n+2) { margin-left: 20px; }
+.uk-notify {
+    z-index: 5000;
+}
+
+.uk-notify-message {
+    text-align: center;
+    color: #fff;
+}
+
+.uk-notify-message-danger {
+    background: red;
+    
+}
+.uk-notify-message-success {
+    background: green;
+}

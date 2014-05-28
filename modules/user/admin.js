@@ -216,48 +216,101 @@ module.exports = function (app) {
 		}
 		if (id) {
 			var data = app.get('mongodb').collection('users').find({
-				_id: new ObjectId(id)
+				$or: [{
+					username: username
+				}, {
+					email: email
+				}],
+				$and: [{
+					_id: {
+						$ne: new ObjectId(id)
+					}
+				}]
 			}, {
 				limit: 1
 			}).toArray(function (err, items) {
-				if (typeof items != 'undefined' && !err) {
-					if (items.length > 0) {
-						var update = {
-							username: username,
-							email: email,
-							realname: realname,
-							status: status
-						};
-						if (id && password) {
-							var md5 = crypto.createHash('md5');
-							update.password = md5.update(app.get('config').salt + '.' + password).digest('hex');
-						}
-						app.get('mongodb').collection('users').update({
-							_id: new ObjectId(id)
-						}, update, function () {
-							rep.status = 1;
-							res.send(JSON.stringify(rep));
-						});
-						return;
-					}
-				} else {
+				if (typeof items != 'undefined' && !err && items.length > 0) {
 					rep.status = 0;
-					rep.error = i18nm.__("id_not_found");
+					if (items[0].username == username) {
+						rep.error = i18nm.__("username_exists");
+						rep.err_fields.push('username');
+					} else {
+						if (items[0].email == email) {
+							rep.error = i18nm.__("email_exists");
+							rep.err_fields.push('email');
+						}
+					}
 					res.send(JSON.stringify(rep));
+					return;
 				}
+				var data = app.get('mongodb').collection('users').find({
+					_id: new ObjectId(id)
+				}, {
+					limit: 1
+				}).toArray(function (err, items) {
+					if (typeof items != 'undefined' && !err) {
+						if (items.length > 0) {
+							var update = {
+								username: username,
+								email: email,
+								realname: realname,
+								status: status
+							};
+							if (id && password) {
+								var md5 = crypto.createHash('md5');
+								update.password = md5.update(app.get('config').salt + '.' + password).digest('hex');
+							}
+							app.get('mongodb').collection('users').update({
+								_id: new ObjectId(id)
+							}, update, function () {
+								rep.status = 1;
+								res.send(JSON.stringify(rep));
+							});
+							return;
+						}
+					} else {
+						rep.status = 0;
+						rep.error = i18nm.__("id_not_found");
+						res.send(JSON.stringify(rep));
+					}
+				});
 			});
 		} else {
-			var md5 = crypto.createHash('md5');
-			var password_md5 = md5.update(app.get('config').salt + '.' + password).digest('hex');
-			app.get('mongodb').collection('users').insert({
-				username: username,
-				email: email,
-				realname: realname,
-				status: status,
-				password: password_md5
-			}, function () {
-				rep.status = 1;
-				res.send(JSON.stringify(rep));
+			var data = app.get('mongodb').collection('users').find({
+				$or: [{
+					username: username
+				}, {
+					email: email
+				}]
+			}, {
+				limit: 1
+			}).toArray(function (err, items) {
+				if (typeof items != 'undefined' && !err && items.length > 0) {
+					rep.status = 0;
+					if (items[0].username == username) {
+						rep.error = i18nm.__("username_exists");
+						rep.err_fields.push('username');
+					} else {
+						if (items[0].email == email) {
+							rep.error = i18nm.__("email_exists");
+							rep.err_fields.push('email');
+						}
+					}
+					res.send(JSON.stringify(rep));
+					return;
+				}
+				var md5 = crypto.createHash('md5');
+				var password_md5 = md5.update(app.get('config').salt + '.' + password).digest('hex');
+				app.get('mongodb').collection('users').insert({
+					username: username,
+					email: email,
+					realname: realname,
+					status: status,
+					password: password_md5
+				}, function () {
+					rep.status = 1;
+					res.send(JSON.stringify(rep));
+				});
 			});
 		}
 	});

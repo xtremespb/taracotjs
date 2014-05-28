@@ -15,10 +15,3 @@
 th.taracot_table_sortable {
 	cursor: pointer;
 }
-.uk-notify {
-	z-index: 5000;
-}
-.uk-notify-message-danger {
-	background: red;
-	color: #fff;
-};
