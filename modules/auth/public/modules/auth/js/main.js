@@ -1,19 +1,26 @@
 // Login button is clicked
 $('#auth_login').click(function () {
     $('.taracot-auth-field').removeClass('uk-form-danger');
-    $('#auth_error_box').addClass('uk-hidden');
     if (!$('#auth_username').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
         $('#auth_username').addClass('uk-form-danger');
         $('#auth_username').focus();
-        $('#auth_error_box').removeClass('uk-hidden');
-        $('#auth_error_msg').html(_lang_vars.invalid_username_syntax);
+        $.UIkit.notify({
+            message: _lang_vars.invalid_username_syntax,
+            status: 'danger',
+            timeout: 5000,
+            pos: 'top-center'
+        });
         return;
     }
     if (!$('#auth_password').val().match(/^.{5,20}$/)) {
         $('#auth_password').addClass('uk-form-danger');
         $('#auth_password').focus();
-        $('#auth_error_box').removeClass('uk-hidden');
-        $('#auth_error_msg').html(_lang_vars.invalid_password_syntax);
+        $.UIkit.notify({
+            message: _lang_vars.invalid_password_syntax,
+            status: 'danger',
+            timeout: 5000,
+            pos: 'top-center'
+        });
         return;
     }
     $.ajax({
@@ -31,16 +38,27 @@ $('#auth_login').click(function () {
                     $('#' + data.field).focus();
                 }
                 if (data.error) {
-                    $('#auth_error_box').removeClass('uk-hidden');
-                    $('#auth_error_msg').html(data.error);
+                    $.UIkit.notify({
+                        message: data.error,
+                        status: 'danger',
+                        timeout: 5000,
+                        pos: 'top-center'
+                    });
                 }
             } else {
                 $('#auth_box_wrap').addClass('uk-hidden');
                 $('#wait_box_wrap').removeClass('uk-hidden');
-                location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');
+                location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');                
             }
         },
-        error: function () {}
+        error: function () {
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 5000,
+                pos: 'top-center'
+            });
+        }
     })
 });
 

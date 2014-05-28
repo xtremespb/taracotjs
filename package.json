@@ -17,7 +17,6 @@
     "static-favicon": "~1.0.2",
     "winston": "~0.7.3",    
     "connect": "~2.15.0",
-    "jsonfile": "~1.1.1",
     "async": "~0.9.0",
     "prompt": "~0.2.13"
   },
