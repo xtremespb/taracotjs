@@ -18,5 +18,7 @@
 	"delete_confirm": "Are you sure to delete the following item(s)?",
 	"no_results_in_table": "No items found",
 	"edit_option": "Edit option",
-	"any_language": "Any"
+	"any_language": "Any",
+	"save_success": "Item has been successfully saved",
+	"option_exists": "Option/language pair already exists"
 }

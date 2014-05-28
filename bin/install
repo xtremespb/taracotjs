@@ -1,0 +1,179 @@
+var async = require('async');
+var prompt = require('prompt');
+var config = require('../config');
+var mongoclient = require('mongodb').MongoClient;
+var db;
+prompt.message = "> ".green;
+prompt.delimiter = "";
+prompt.start();
+async.series([
+		function (callback) {
+			console.log("This script will guide you with TaracotJS basic installation steps.\n");
+			console.log("Database connection is required.");
+			console.log("Current MongoDB URL: " + config.mongo.url + "\n");
+			prompt.get(['Continue? y/n'], function (err, result) {
+				if (result && 'Continue? y/n' in result && result['Continue? y/n'] == 'y') {
+					callback();
+				} else {
+					console.log("\n\nAborted");
+					process.exit(code = 0);
+				}
+			});			
+		},
+		function (callback) {
+			mongoclient.connect(config.mongo.url, config.mongo_options, function (err, _db) {
+				if (err) {
+					console.log("\nCould not connect to the MongoDB. Please check config.js");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("\nConnected to MongoDB\n");
+				db = _db;
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("Creating collection: users\n");
+			db.createCollection('users', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: users\n");
+			db.ensureIndex('users', {
+				username: 1
+			}, {
+				unique: true,
+				background: true,
+				dropDups: true,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (1/3)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('users', {
+				email: 1
+			}, {
+				unique: true,
+				background: true,
+				dropDups: true,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/3)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('users', {
+				realname: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (3/3)");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating collection: settings\n");
+			db.createCollection('settings', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: settings\n");
+			db.ensureIndex('settings', {
+				oname: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (1/3)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('settings', {
+				ovalue: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/3)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('settings', {
+				olang: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (3/3)");
+				callback();
+			});
+		}
+	],
+	function (err) {
+		if (err) {
+			console.log("\nInstallation failed");
+			console.log(err);
+			process.exit(1);
+		}
+		console.log("\nFinished");
+		process.exit(code = 0);
+	}
+);

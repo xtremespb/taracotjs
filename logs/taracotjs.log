@@ -495,3 +495,92 @@
 2014-05-26T13:08:39.643Z - error: Page not found method=GET, url=/?rnd=027236402011476457, ip=127.0.0.1, ips=[]
 2014-05-26T13:09:36.466Z - error: Page not found method=GET, url=/?rnd=05818312671035528, ip=127.0.0.1, ips=[]
 2014-05-26T13:21:15.023Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-27T11:40:51.385Z - error: Page not found method=GET, url=/?rnd=07262489555715514, ip=127.0.0.1, ips=[]
+2014-05-27T11:40:58.348Z - error: Cannot read property 'length' of undefined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'length' of undefined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:18:9)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-27T11:42:16.098Z - error: Cannot read property 'length' of undefined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'length' of undefined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:18:15)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-27T11:42:16.760Z - error: Cannot read property 'length' of undefined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'length' of undefined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:18:15)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-27T11:42:17.065Z - error: Cannot read property 'length' of undefined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'length' of undefined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:18:15)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-27T11:42:17.265Z - error: Cannot read property 'length' of undefined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Cannot read property 'length' of undefined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:18:15)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-05-27T11:44:31.463Z - error: Page not found method=GET, url=/?rnd=01107730979565531, ip=127.0.0.1, ips=[]
+2014-05-27T11:44:32.197Z - error: Page not found method=GET, url=/?rnd=01107730979565531, ip=127.0.0.1, ips=[]
+2014-05-27T11:44:35.980Z - error: Page not found method=GET, url=/?rnd=04208192105870694, ip=127.0.0.1, ips=[]
+2014-05-27T11:46:53.746Z - error: $not is not defined method=POST, url=/cp/users/data/save, ip=127.0.0.1, ips=[], stack=ReferenceError: $not is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\user\admin.js:222:13)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+2014-05-27T13:16:25.134Z - error: _id is not defined method=POST, url=/cp/settings/data/save, ip=127.0.0.1, ips=[], stack=ReferenceError: _id is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\settings\admin.js:179:49)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+2014-05-27T15:32:17.666Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-27T15:32:20.348Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-27T15:32:27.563Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-28T09:59:46.577Z - error: Page not found method=GET, url=/?rnd=040974815675661713, ip=127.0.0.1, ips=[]
+2014-05-28T09:59:50.076Z - error: Page not found method=GET, url=/?rnd=01440617456100881, ip=127.0.0.1, ips=[]
+2014-05-28T10:15:45.477Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-28T10:28:29.474Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-05-28T10:30:48.607Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]

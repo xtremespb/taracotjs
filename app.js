@@ -2,7 +2,6 @@
 // Content management systems written with Node.js and Express.js
 
 // Load libraries
-
 var express = require('express');
 var config = require('./config');
 var path = require('path');
@@ -11,7 +10,7 @@ var bodyParser = require('body-parser');
 var I18n = require('i18n-2');
 var app = express();
 var redis = require("redis");
-var redis_client = redis.createClient( config.redis.port, config.redis.host, {} );
+var redis_client = redis.createClient(config.redis.port, config.redis.host, {});
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var gaikan = require('gaikan');
@@ -19,16 +18,15 @@ var cp = require('./modules/cp/cp')(app);
 var auth = require('./core/auth')(app);
 var renderer = require('./core/renderer');
 var mongoclient = require('mongodb').MongoClient;
-var mongodb;
 var winston = require('winston');
 
 // Logging
 
-var logger = new (winston.Logger)({
-  transports: [
-    new (winston.transports.Console)( config.log.console ),
-    new (winston.transports.File)( config.log.file )
-  ]
+var logger = new(winston.Logger)({
+    transports: [
+        new(winston.transports.Console)(config.log.console),
+        new(winston.transports.File)(config.log.file)
+    ]
 });
 logger.exitOnError = false;
 
@@ -36,26 +34,26 @@ logger.exitOnError = false;
 
 app.set('redis_connected', false);
 
-redis_client.on("connect", function(err) {
+redis_client.on("connect", function (err) {
     app.set('redis_connected', true);
 });
-redis_client.on("error", function(err) {
+redis_client.on("error", function (err) {
     app.set('redis_connected', false);
 });
 
 // Connect to the database and set the corresponding variable
 
-var _connect_to_mongo_db = function() {
-    mongoclient.connect(config.mongo_url, config.mongo_options, function(err, _db) {
-      if (!err) {
-        _db.on('close', function() {
-          app.set('mongodb', undefined);
-        });
-        app.set('mongodb', _db);
-      } else {
-        console.log(err);
-        app.set('mongodb', undefined);
-      }
+var _connect_to_mongo_db = function () {
+    mongoclient.connect(config.mongo.url, config.mongo.options, function (err, _db) {
+        if (!err) {
+            _db.on('close', function () {
+                app.set('mongodb', undefined);
+            });
+            app.set('mongodb', _db);
+        } else {
+            console.log(err);
+            app.set('mongodb', undefined);
+        }
     });
 }
 _connect_to_mongo_db();
@@ -81,11 +79,11 @@ app.use(cookieParser(config.cookie_secret));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  store: new RedisStore({
-    client: redis_client,
-    prefix: config.redis.prefix    
-  }),
-  secret: config.session_secret
+    store: new RedisStore({
+        client: redis_client,
+        prefix: config.redis.prefix
+    }),
+    secret: config.session_secret
 }));
 
 // Locales
@@ -95,11 +93,11 @@ I18n.expressBind(app, {
     cookieName: 'taracotjs-locale',
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js'
- });
+});
 
 // Pre-load functions
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     // Check database connection
     if (typeof app.get('mongodb') == 'undefined') {
         var err = new Error(req.i18n.__("database_connection_failed"));
@@ -119,11 +117,15 @@ app.use(function(req, res, next) {
     req.i18n.setLocaleFromCookie();
     req.i18n.setLocaleFromSubdomain();
     // Logging
-    logger.info(req.url, { method: req.method, ip: req.ip, ips: req.ips } );
+    logger.info(req.url, {
+        method: req.method,
+        ip: req.ip,
+        ips: req.ips
+    });
     // Clear auth_redirect if already authorized
     if (req.session.auth) {
         delete req.session.auth_redirect;
-    }        
+    }
     next();
 });
 
@@ -131,20 +133,26 @@ app.use(function(req, res, next) {
 
 var _timestamp_settings_query = Date.now() - 60000;
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     if (Date.now() - _timestamp_settings_query <= 60000) {
         next();
         return;
-    }    
-    var find_query = { $or : [ {olang: req.i18n.getLocale()}, {olang: ''} ] };    
-    app.get('mongodb').collection('settings').find(find_query, {}).toArray(function(err, items) {
+    }
+    var find_query = {
+        $or: [{
+            olang: req.i18n.getLocale()
+        }, {
+            olang: ''
+        }]
+    };
+    app.get('mongodb').collection('settings').find(find_query, {}).toArray(function (err, items) {
         if (typeof items != 'undefined' && !err) {
             var settings = {};
-            for (var i=0; i<items.length; i++) {
+            for (var i = 0; i < items.length; i++) {
                 settings[items[i].oname] = items[i].ovalue;
                 _timestamp_settings_query = Date.now();
             }
-            app.set('settings', settings);            
+            app.set('settings', settings);
             next();
         }
     });
@@ -152,8 +160,8 @@ app.use(function(req, res, next) {
 
 // Load authorization data
 
-app.use(function(req, res, next) {        
-    app.get('auth-core').check(req, function(auth) {
+app.use(function (req, res, next) {
+    app.get('auth-core').check(req, function (auth) {
         if (auth != session.auth) {
             session.auth = auth;
         }
@@ -163,7 +171,7 @@ app.use(function(req, res, next) {
 
 // Load modules
 
-config.modules.forEach(function(module) {
+config.modules.forEach(function (module) {
     app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
     app.use(module.prefix, require('./modules/' + module.name + '/module')(app));
     if (module.cp_prefix.length > 0) {
@@ -173,7 +181,7 @@ config.modules.forEach(function(module) {
 
 // Error 404 (not found)
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error(req.i18n.__("pagenotfound"));
     err.status = 404;
     next(err);
@@ -181,9 +189,15 @@ app.use(function(req, res, next) {
 
 // Error handler
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    var _data = { method: req.method, url: req.url, ip: req.ip, ips: req.ips, stack: err.stack };
+    var _data = {
+        method: req.method,
+        url: req.url,
+        ip: req.ip,
+        ips: req.ips,
+        stack: err.stack
+    };
     if (!config.log.stack || err.status == 404) {
         delete _data.stack;
     }
@@ -191,7 +205,7 @@ app.use(function(err, req, res, next) {
     res.render('error', {
         message: err.message,
         error: err
-    });    
+    });
 });
 
 module.exports = app;
