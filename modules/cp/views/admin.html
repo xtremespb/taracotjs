@@ -16,14 +16,16 @@
     <body>
         <nav class="cp-navbar uk-navbar uk-navbar-attached uk-margin-bottom">
             <div class="uk-container uk-container-center">
-                <a class="uk-navbar-brand" href="/">TaracotJS</a>
-                <ul class="uk-navbar-nav" id="taracot-modules">
-                    <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item" id="taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a></li>
+                <a href="#tm-offcanvas" class="uk-navbar-toggle uk-hidden-large" data-uk-offcanvas></a>
+                <a class="uk-navbar-brand uk-hidden-medium uk-hidden-small" href="/">TaracotJS</a>
+                <a class="uk-navbar-brand uk-hidden-large uk-navbar-center" href="/">TaracotJS</a>
+                <ul class="uk-navbar-nav uk-hidden-medium uk-hidden-small" id="taracot-modules">
+                    <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a></li>
                 </ul>
-                <div class="uk-navbar-flip">
+                <div class="uk-navbar-flip uk-hidden-medium uk-hidden-small">
                     <ul class="uk-navbar-nav">
                         <li class="uk-parent" data-uk-dropdown>
-                            <a href="#" id="cp_logout_submenu"><b>User</b>: !{root.username}&nbsp;<i class="uk-icon-caret-down"></i></a>
+                            <a href="#" id="cp_logout_submenu"><b>!{root.cp_lang.__("User")}</b>: !{root.username}&nbsp;<i class="uk-icon-caret-down"></i></a>
                             <div class="uk-dropdown uk-dropdown-navbar">
                                 <ul class="uk-nav uk-nav-navbar">
                                     <li><a href="/auth/logout">!{root.cp_lang.__("logout")}</a></li>
@@ -34,16 +36,31 @@
                 </div>
             </div>            
         </nav>
+        <div id="tm-offcanvas" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <h2 class="oc-logo">TaracotJS</h2>
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" id="taracot-modules-offcanvas" data-uk-nav="{multiple:true}">
+                    <li class="uk-parent"><a href="#"><i class="uk-icon-user"></i>&nbsp;!{root.username}</a>
+                        <ul class="uk-nav-sub">
+                            <li><a href="/auth/logout"><i class="uk-icon-sign-out"></i>&nbsp;!{root.cp_lang.__("logout")}</a></li>
+                        </ul>
+                    </li>
+                    <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a></li>
+                </ul>
+            </div>
+        </div>
         <div class="uk-container uk-container-center">
         !{root.data.body}
         </div>
         <script type="text/javascript">
             var _modules = !{root.modules};
             for (var i = 0; i < _modules.length; i++) {
-                $('#taracot-modules').append('<li id="taracot-module-id-' + _modules[i].id + '" class="taracot-module-menu-item"><a href="' + _modules[i].prefix + '">' + _modules[i].name + '</a></li>');
+                var _item = '<li class="taracot-module-menu-item taracot-module-id-' + _modules[i].id + '"><a href="' + _modules[i].prefix + '">' + _modules[i].name + '</a></li>';
+                $('#taracot-modules').append(_item);
+                $('#taracot-modules-offcanvas').append(_item);
             }            
             $('.taracot-module-menu-item').removeClass('uk-active');
-            $('#taracot-module-id-!{root.active_module}').addClass('uk-active');
+            $('.taracot-module-id-!{root.active_module}').addClass('uk-active');
         </script>
         <script src="/modules/cp/js/main.js"></script>
     </body>

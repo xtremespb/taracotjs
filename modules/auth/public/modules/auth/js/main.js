@@ -7,7 +7,7 @@ $('#auth_login').click(function () {
         $.UIkit.notify({
             message: _lang_vars.invalid_username_syntax,
             status: 'danger',
-            timeout: 5000,
+            timeout: 2000,
             pos: 'top-center'
         });
         return;
@@ -18,7 +18,7 @@ $('#auth_login').click(function () {
         $.UIkit.notify({
             message: _lang_vars.invalid_password_syntax,
             status: 'danger',
-            timeout: 5000,
+            timeout: 2000,
             pos: 'top-center'
         });
         return;
@@ -41,7 +41,7 @@ $('#auth_login').click(function () {
                     $.UIkit.notify({
                         message: data.error,
                         status: 'danger',
-                        timeout: 5000,
+                        timeout: 2000,
                         pos: 'top-center'
                     });
                 }
@@ -55,7 +55,7 @@ $('#auth_login').click(function () {
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
-                timeout: 5000,
+                timeout: 2000,
                 pos: 'top-center'
             });
         }

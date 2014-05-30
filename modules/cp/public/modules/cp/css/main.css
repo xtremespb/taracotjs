@@ -94,3 +94,8 @@ body {
 .uk-notify-message-success {
     background: green;
 }
+
+.oc-logo {
+    color: #fff;
+    padding: 16px 0px 0px 10px;
+}
