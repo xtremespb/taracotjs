@@ -3,5 +3,19 @@
 	"ajax_failed": "Server request failed",
 	"dashboard": "Dashboard",
 	"logout": "Log out from system",
-	"taracot_dashboard": "Taracot Dashboard"
+	"taracot_dashboard": "Dashboard",
+	"User": "User",
+	"up_and_running": "TaracotJS is up and running.",
+	"config": "Configuration",
+	"mongo_url": "MongoDB",
+	"redis": "Redis",
+	"default_layout": "Default layout",
+	"current_version": "TaracotJS version",
+	"system": "System",
+	"hostname": "Hostname",
+	"os": "Operating system",
+	"cpu_arch": "CPU Architecture",
+	"memory_free_total": "memory_free_total",
+	"not_available": "not_available",
+	"load average": "load average"
 }
