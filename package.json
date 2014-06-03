@@ -18,7 +18,8 @@
     "winston": "~0.7.3",    
     "connect": "~2.15.0",
     "async": "~0.9.0",
-    "prompt": "~0.2.13"
+    "prompt": "~0.2.13",
+    "captchapng": "~0.0.1"
   },
   "devDependencies": {},
   "scripts": {

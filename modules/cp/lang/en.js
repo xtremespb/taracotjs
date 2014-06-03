@@ -15,7 +15,7 @@
 	"hostname": "Hostname",
 	"os": "Operating system",
 	"cpu_arch": "CPU Architecture",
-	"memory_free_total": "memory_free_total",
-	"not_available": "not_available",
-	"load average": "load average"
+	"memory_free_total": "Memory (free/total)",
+	"not_available": "Not available",
+	"load average": "Load average"
 }

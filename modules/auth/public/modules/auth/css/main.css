@@ -11,6 +11,10 @@ body {
     background: red;
 }
 
+#auth_captcha_img {
+	cursor: pointer;
+}
+
 #auth_box {
   	-webkit-box-shadow: 0 6px 6px -6px black;
 	   -moz-box-shadow: 0 6px 6px -6px black;
