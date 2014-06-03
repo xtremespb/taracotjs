@@ -9,14 +9,37 @@ module.exports = function (app) {
 		directory: path.join(__dirname, 'lang'),
 		extension: '.js'
 	});
+	var captchapng = require('captchapng');
+	router.post('/captcha', function (req, res) {
+		var captchaImg = function() {
+			var c = parseInt(Math.random() * 9000 + 1000);
+			req.session.captcha = c;
+	        var p = new captchapng(80, 30, c); // width, height, numeric captcha
+	        p.color(250, 250, 250, 255);  // First color: background (red, green, blue, alpha)
+	        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)	        
+	        return new Buffer(p.getBase64(), 'base64');
+		};
+		res.send(JSON.stringify({
+			img: new Buffer(captchaImg()).toString('base64')
+		}));
+	});
 	router.get('/', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth != false) {
 			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
+		var captchaImg = function() {
+			var c = parseInt(Math.random() * 9000 + 1000);
+			req.session.captcha = c;
+	        var p = new captchapng(80, 30, c); // width, height, numeric captcha
+	        p.color(250, 250, 250, 255);  // First color: background (red, green, blue, alpha)
+	        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+	        return new Buffer(p.getBase64(), 'base64');
+		};
 		var render = renderer.render_file(path.join(__dirname, 'views'), 'login', {
 			lang: i18nm,
+			captcha: new Buffer(captchaImg()).toString('base64'),
 			redirect: req.session.auth_redirect
 		});
 		res.send(render);
@@ -30,6 +53,25 @@ module.exports = function (app) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var username = req.body.username;
 		var password = req.body.password;
+		var captcha = req.body.captcha;
+		if (!captcha.match(/^[0-9]{4}$/)) {
+			res.send(JSON.stringify({
+				result: 0,
+				field: "auth_captcha",
+				error: i18nm.__("invalid_captcha")
+			}));
+			return;
+		}
+		if (captcha != req.session.captcha) {
+			req.session.captcha = 0;
+			res.send(JSON.stringify({
+				result: 0,
+				field: "auth_captcha",
+				error: i18nm.__("invalid_captcha")
+			}));
+			return;
+		}
+		req.session.captcha = 0;
 		if (typeof username == 'undefined' || typeof password == 'undefined') {
 			res.send(JSON.stringify({
 				result: 0,

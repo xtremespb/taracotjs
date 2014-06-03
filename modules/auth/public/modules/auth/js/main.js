@@ -1,3 +1,42 @@
+var captcha_loading = false;
+
+var load_captcha = function() {
+    if (captcha_loading) {
+        return;
+    }
+    captcha_loading = true;
+    $.ajax({
+        type: 'POST',
+        url: '/auth/captcha',
+        data: {},
+        dataType: "json",
+        success: function (data) {
+            captcha_loading = false;
+            if (data.img) {                
+                $('#auth_captcha_img').attr('src', 'data:image/jpeg;base64,' + data.img);
+            } else {
+                $.UIkit.notify({
+                    message: _lang_vars.ajax_failed,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function () {
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+            captcha_loading = false;
+        }
+    });
+};
+
+$('#auth_captcha_img').click(load_captcha);
+
 // Login button is clicked
 $('#auth_login').click(function () {
     $('.taracot-auth-field').removeClass('uk-form-danger');
@@ -23,16 +62,29 @@ $('#auth_login').click(function () {
         });
         return;
     }
+    if (!$('#auth_captcha').val().match(/^[0-9]{4}$/)) {
+        $('#auth_captcha').addClass('uk-form-danger');
+        $('#auth_captcha').focus();
+        $.UIkit.notify({
+            message: _lang_vars.invalid_captcha,
+            status: 'danger',
+            timeout: 2000,
+            pos: 'top-center'
+        });
+        return;
+    }
     $.ajax({
         type: 'POST',
         url: '/auth/process',
         data: {
             username: $('#auth_username').val(),
-            password: $('#auth_password').val()
+            password: $('#auth_password').val(),
+            captcha: $('#auth_captcha').val()
         },
         dataType: "json",
         success: function (data) {
             if (data.result != 1) {
+                $('#auth_captcha').val('');
                 if (data.field) {
                     $('#' + data.field).addClass('uk-form-danger');
                     $('#' + data.field).focus();
@@ -45,10 +97,12 @@ $('#auth_login').click(function () {
                         pos: 'top-center'
                     });
                 }
+                load_captcha();
             } else {
+                $('#auth_captcha').val('');
                 $('#auth_box_wrap').addClass('uk-hidden');
                 $('#wait_box_wrap').removeClass('uk-hidden');
-                location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');                
+                location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');
             }
         },
         error: function () {
@@ -58,6 +112,7 @@ $('#auth_login').click(function () {
                 timeout: 2000,
                 pos: 'top-center'
             });
+            load_captcha();
         }
     })
 });
