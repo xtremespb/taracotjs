@@ -1,6 +1,10 @@
 var captcha_loading = false;
 
 var load_captcha = function() {
+    if (typeof captcha_type != 'undefined' && captcha_type == 'png') {
+        $('#auth_captcha_img').attr('src', '/auth/captcha?rnd=' + Math.random().toString().replace('.', ''));
+        return;
+    }
     if (captcha_loading) {
         return;
     }
@@ -129,3 +133,9 @@ $('.taracot-auth-field').bind('keypress', function (e) {
 // Focus first input field by default
 
 $('#auth_username').focus();
+
+// Load captcha image
+
+$(document).ready(function () {
+    load_captcha();
+});

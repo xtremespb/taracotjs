@@ -161,7 +161,7 @@ $('#taracot-edit-btn-save').click(function () {
         $.UIkit.notify({
             message: _lang_vars.form_err_msg,
             status: 'danger',
-            timeout: 5000,
+            timeout: 2000,
             pos: 'top-center'
         });
         return;
@@ -189,7 +189,7 @@ $('#taracot-edit-btn-save').click(function () {
                 $.UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
-                    timeout: 5000,
+                    timeout: 2000,
                     pos: 'top-center'
                 });
             } else {
@@ -211,7 +211,7 @@ $('#taracot-edit-btn-save').click(function () {
                 $.UIkit.notify({
                     message: _errmsg,
                     status: 'danger',
-                    timeout: 5000,
+                    timeout: 2000,
                     pos: 'top-center'
                 });
             }
@@ -222,7 +222,7 @@ $('#taracot-edit-btn-save').click(function () {
             $.UIkit.notify({
                 message: _lang_vars.form_err_msg,
                 status: 'danger',
-                timeout: 5000,
+                timeout: 2000,
                 pos: 'top-center'
             });
         }
@@ -252,7 +252,7 @@ var delete_item = function (ids) {
                     $.UIkit.notify({
                         message: _lang_vars.delete_err_msg,
                         status: 'danger',
-                        timeout: 5000,
+                        timeout: 2000,
                         pos: 'top-center'
                     });
                 }
@@ -262,7 +262,7 @@ var delete_item = function (ids) {
                 $.UIkit.notify({
                     message: _lang_vars.delete_err_msg,
                     status: 'danger',
-                    timeout: 5000,
+                    timeout: 2000,
                     pos: 'top-center'
                 });
             }

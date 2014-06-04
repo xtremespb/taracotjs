@@ -2,6 +2,7 @@
 // Content management systems written with Node.js and Express.js
 
 // Load libraries
+
 var express = require('express');
 var config = require('./config');
 var path = require('path');
@@ -19,6 +20,7 @@ var auth = require('./core/auth')(app);
 var renderer = require('./core/renderer');
 var mongoclient = require('mongodb').MongoClient;
 var winston = require('winston');
+var captcha = require('./core/' + config.captcha);
 
 // Logging
 
@@ -64,6 +66,7 @@ app.set('config', config);
 app.set('express', express);
 app.set('cp', cp);
 app.set('auth-core', auth);
+app.set('captcha', captcha);
 app.set('path', path);
 app.set('renderer', renderer);
 app.set('logger', logger);
@@ -117,11 +120,7 @@ app.use(function (req, res, next) {
     req.i18n.setLocaleFromCookie();
     req.i18n.setLocaleFromSubdomain();
     // Logging
-    logger.info(req.url, {
-        method: req.method,
-        ip: req.ip,
-        ips: req.ips
-    });
+    logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {} );
     // Clear auth_redirect if already authorized
     if (req.session.auth) {
         delete req.session.auth_redirect;
@@ -215,7 +214,7 @@ app.use(function (err, req, res, next) {
     if (!config.log.stack || err.status == 404) {
         delete _data.stack;
     }
-    logger.error(err.message, _data);
+    logger.error(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url + ' ' + err.message, {} );
     res.render('error', {
         message: err.message,
         error: err
