@@ -8,20 +8,32 @@ module.exports = function (app) {
 		locales: config.locales,
 		directory: path.join(__dirname, 'lang'),
 		extension: '.js'
+	});	
+	router.get('/captcha', function (req, res) {
+		var c = parseInt(Math.random() * 9000 + 1000);
+		req.session.captcha = c;
+		var cpth = app.get('captcha').generate(c);
+		if (cpth.png) {
+			res.set('Content-Type', 'image/png');		
+			cpth.png.stream(function streamOut (err, stdout, stderr) {
+				if (err) return next(err);
+				stdout.pipe(res);
+			});
+		} else {
+			next();	
+		}	
 	});
-	var captchapng = require('captchapng');
 	router.post('/captcha', function (req, res) {
-		var captchaImg = function() {
-			var c = parseInt(Math.random() * 9000 + 1000);
-			req.session.captcha = c;
-	        var p = new captchapng(80, 30, c); // width, height, numeric captcha
-	        p.color(250, 250, 250, 255);  // First color: background (red, green, blue, alpha)
-	        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)	        
-	        return new Buffer(p.getBase64(), 'base64');
-		};
-		res.send(JSON.stringify({
-			img: new Buffer(captchaImg()).toString('base64')
-		}));
+		var c = parseInt(Math.random() * 9000 + 1000);
+		req.session.captcha = c;
+		var cpth = app.get('captcha').generate(c);
+		if (cpth.b64) {
+			res.send(JSON.stringify({
+                img: cpth.b64
+            }));
+		} else {
+			next();
+		}
 	});
 	router.get('/', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
@@ -29,17 +41,14 @@ module.exports = function (app) {
 			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
-		var captchaImg = function() {
-			var c = parseInt(Math.random() * 9000 + 1000);
-			req.session.captcha = c;
-	        var p = new captchapng(80, 30, c); // width, height, numeric captcha
-	        p.color(250, 250, 250, 255);  // First color: background (red, green, blue, alpha)
-	        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
-	        return new Buffer(p.getBase64(), 'base64');
-		};
+		var c = parseInt(Math.random() * 9000 + 1000);
+		var _cap = 'b64';
+		if (app.get('config').captcha == 'captcha_gm') {
+			_cap = 'png';
+		}
 		var render = renderer.render_file(path.join(__dirname, 'views'), 'login', {
 			lang: i18nm,
-			captcha: new Buffer(captchaImg()).toString('base64'),
+			captcha: _cap,
 			redirect: req.session.auth_redirect
 		});
 		res.send(render);
