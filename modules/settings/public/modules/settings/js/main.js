@@ -21,14 +21,6 @@ var process_rows = [ // Handlers for each column
     }
 ];
 
-$('#taracot_table').medvedTable({
-    col_count: 4,
-    sort_mode: 1,
-    sort_cell: 'oname',
-    taracot_table_url: '/cp/settings/data/list',
-    process_rows: process_rows
-});
-
 $('#btn-select-all').click(function () {
     $('.taracot-table-chbx').prop('checked', true);
 });
@@ -240,4 +232,14 @@ $('.taracot-edit-form > fieldset > .uk-form-row > input, .taracot-edit-form > fi
     if (submitOnEnter(e)) {
         $('#taracot-edit-btn-save').click();
     }
+});
+
+$(document).ready(function () {
+    $('#taracot_table').medvedTable({
+        col_count: 4,
+        sort_mode: 1,
+        sort_cell: 'oname',
+        taracot_table_url: '/cp/settings/data/list',
+        process_rows: process_rows
+    });
 });
