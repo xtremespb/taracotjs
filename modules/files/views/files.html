@@ -1,0 +1,35 @@
+<h1>!{root.lang.__("module_name")}</h1>
+<div id="taracot_dlg_edit" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1 id="taracot-dlg-edit-h1"></h1>
+        <fieldset class="uk-form" data-uk-margin>
+          <input type="text" class="uk-width-1-1" id="taracot_dlg_edit_value">
+        </fieldset>
+        <button class="uk-button" type="button" id="taracot_dlg_edit_btn_save">!{root.lang.__("save")}</button>
+        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__("cancel")}</button>
+    </div>
+</div>
+<div class="uk-panel taracot-files-panel">
+    <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_up")}" id="btn_up"></button>
+    <button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__("new_folder")}" id="btn_new_folder"></button>
+    <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__("delete")}" id="btn_delete"></button>
+    <span class="uk-float-right" id="taracot-files-current-dir"><i class="uk-icon-folder"></i>&nbsp;/</span>
+</div>
+<div class="uk-panel" id="files_grid">
+</div>
+<div id="taracot_files_stats">
+  !{root.lang.__("total_files")}: <span id="taracot_total_files"></span>
+</div>
+<script type="text/javascript">
+  var _lang_vars = {
+    ajax_failed: "!{root.lang.__("ajax_failed")}",
+    new_folder: "!{root.lang.__("new_folder")}",
+    invalid_dir_syntax: "!{root.lang.__("invalid_dir_syntax")}",
+    newdir_success: "!{root.lang.__("newdir_success")}",
+    delete_success: "!{root.lang.__("delete_success")}",
+    delete_confirm: "!{root.lang.__("delete_confirm")}"
+  }
+</script>
+<script src="/modules/files/js/jquery.shifty.js"></script>
+<script src="/modules/files/js/main.js"></script>

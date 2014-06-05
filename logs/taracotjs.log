@@ -950,3 +950,599 @@
     at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
     at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
     at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+2014-06-04T09:02:52.673Z - error: Database connection failed method=GET, url=/auth/captcha/png, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer._timestamp_settings_query [as handle] (c:\XTreme\taracotjs\app.js:103:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-06-04T10:06:05.822Z - error: Database connection failed method=GET, url=/auth/captcha/png, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer._timestamp_settings_query [as handle] (c:\XTreme\taracotjs\app.js:103:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-06-04T10:15:04.531Z - error: Database connection failed method=GET, url=/auth/captcha/png, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer._timestamp_settings_query [as handle] (c:\XTreme\taracotjs\app.js:103:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-06-04T10:29:48.997Z - error: Database connection failed method=GET, url=/auth/captcha/png, ip=127.0.0.1, ips=[], stack=Error: Database connection failed
+    at Layer._timestamp_settings_query [as handle] (c:\XTreme\taracotjs\app.js:103:19)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Layer.handle (c:\XTreme\taracotjs\node_modules\i18n-2\i18n.js:85:3)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+2014-06-04T11:14:44.117Z - error: Object function (app){
+
+	var gm = require('gm');
+
+	var captcha = {
+		generate : function(cn) {
+			var res = {};
+			var pic = gm(100, 50, '#f5f5f5').setFormat('png');
+			pic.font('../fonts/serrific_grunge.ttf');
+			var offset = 10;
+			for (var n = 0; n < 10; n++) {
+				var color = '#'+Math.floor(Math.random() * 6777215 + 1000000).toString(16);
+				pic.stroke(color);
+				pic.drawLine(Math.random() * 80 + 10, Math.random() * 40 + 5, Math.random() * 80 + 10 , Math.random() * 40 + 5)
+			}		
+			cn = cn.split("");
+			for (var i = 0; i < 4; i++) {
+				var color = '#'+Math.floor(Math.random() * 3777215).toString(16);
+				pic.stroke(color);
+				var n = cn[i];
+				pic.fontSize(15 + parseInt(Math.random() * 10));
+				pic.drawText(offset, 25, n);
+				offset += 16 + parseInt(Math.random() * 10);
+				var factor = 1;
+				if (Math.random()<.5) {
+					factor = -1;
+				}			
+				pic.rotate('#f5f5f5', parseInt(Math.random() * 6 * factor));			
+			}	
+			pic.crop(100, 50, 0, 0);
+			res.b64 = undefined;
+			res.png = pic;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var gm = require('gm');
+
+	var captcha = {
+		generate : function(cn) {
+			var res = {};
+			var pic = gm(100, 50, '#f5f5f5').setFormat('png');
+			pic.font('../fonts/serrific_grunge.ttf');
+			var offset = 10;
+			for (var n = 0; n < 10; n++) {
+				var color = '#'+Math.floor(Math.random() * 6777215 + 1000000).toString(16);
+				pic.stroke(color);
+				pic.drawLine(Math.random() * 80 + 10, Math.random() * 40 + 5, Math.random() * 80 + 10 , Math.random() * 40 + 5)
+			}		
+			cn = cn.split("");
+			for (var i = 0; i < 4; i++) {
+				var color = '#'+Math.floor(Math.random() * 3777215).toString(16);
+				pic.stroke(color);
+				var n = cn[i];
+				pic.fontSize(15 + parseInt(Math.random() * 10));
+				pic.drawText(offset, 25, n);
+				offset += 16 + parseInt(Math.random() * 10);
+				var factor = 1;
+				if (Math.random()<.5) {
+					factor = -1;
+				}			
+				pic.rotate('#f5f5f5', parseInt(Math.random() * 6 * factor));			
+			}	
+			pic.crop(100, 50, 0, 0);
+			res.b64 = undefined;
+			res.png = pic;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:15:39.498Z - error: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:15:40.574Z - error: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:15:41.317Z - error: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captchapng = require('captchapng');
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:16:34.482Z - error: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:18:15.482Z - error: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:19:34.980Z - error: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate' method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=TypeError: Object function (app){
+
+	var captcha = {
+		generate : function(n) {
+			var res = {};		
+			var captchaImg = function() {				
+		        var p = new captchapng(80, 30, n); // width, height, numeric captcha
+		        p.color(250, 250, 250, 255);  // First color: background (red, green, hare, alpha)
+		        p.color(parseInt(Math.random() * 100), parseInt(Math.random() * 100), parseInt(Math.random() * 100), 255); // Second color: paint (red, green, blue, alpha)
+		        return new Buffer(p.getBase64(), 'base64');
+			};	
+			res.b64 = new Buffer(captchaImg()).toString('base64');
+			res.png = undefined;
+			return res;
+		}
+	};
+
+	return captcha;
+
+} has no method 'generate'
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:33:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:26:53.292Z - error: captchaImg is not defined method=GET, url=/auth, ip=127.0.0.1, ips=[], stack=ReferenceError: captchaImg is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:37:25)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:166:38)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:41:32.816Z - error: c is not defined method=POST, url=/auth/captcha, ip=127.0.0.1, ips=[], stack=ReferenceError: c is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:13:25)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-06-04T11:41:41.980Z - error: c is not defined method=POST, url=/auth/captcha, ip=127.0.0.1, ips=[], stack=ReferenceError: c is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:13:25)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-06-04T11:45:01.439Z - error: Object 3983 has no method 'split' method=GET, url=/auth/captcha?rnd=03009828014878636, ip=127.0.0.1, ips=[], stack=TypeError: Object 3983 has no method 'split'
+    at Object.captcha.generate (c:\XTreme\taracotjs\core\captcha_gm.js:14:11)
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:15:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:45:34.778Z - error: Object 8127 has no method 'split' method=GET, url=/auth/captcha?rnd=028875323796540975, ip=127.0.0.1, ips=[], stack=TypeError: Object 8127 has no method 'split'
+    at Object.captcha.generate (c:\XTreme\taracotjs\core\captcha_gm.js:15:11)
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:15:33)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+2014-06-04T11:46:27.361Z - error: Page not found method=GET, url=/?rnd=05373006737777942, ip=127.0.0.1, ips=[]
+2014-06-04T11:46:33.227Z - error: Page not found method=GET, url=/?rnd=03850661846809089, ip=127.0.0.1, ips=[]
+2014-06-04T11:47:17.780Z - error: next is not defined method=GET, url=/auth/captcha?rnd=08619230263207345, ip=127.0.0.1, ips=[], stack=ReferenceError: next is not defined
+    at Object.handle (c:\XTreme\taracotjs\modules\auth\module.js:23:4)
+    at next_layer (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:103:13)
+    at Route.dispatch (c:\XTreme\taracotjs\node_modules\express\lib\router\route.js:107:5)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:195:24)
+    at Function.proto.process_params (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:251:12)
+    at next (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:189:19)
+    at Function.proto.handle (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:234:5)
+    at Layer.router (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:23:12)
+    at trim_prefix (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:226:17)
+    at c (c:\XTreme\taracotjs\node_modules\express\lib\router\index.js:198:9)
+2014-06-04T11:49:34.086Z - error: Page not found method=GET, url=/?rnd=010199291631579399, ip=127.0.0.1, ips=[]
+2014-06-04T11:54:33.693Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-06-04T12:11:47.382Z - error: Page not found method=GET, url=/, ip=127.0.0.1, ips=[]
+2014-06-04T12:13:47.808Z - error: Page not found - GET / (127.0.0.1)
+2014-06-04T12:14:56.543Z - error: 404 Page not found - GET / (127.0.0.1)
+2014-06-04T12:15:39.026Z - error: 404 Page not found - GET / (127.0.0.1)
+2014-06-04T12:16:07.780Z - error: 404 Page not found - GET / (127.0.0.1)
+2014-06-04T12:18:42.154Z - error: 404 GET / - 127.0.0.1 - undefined
+2014-06-04T12:18:50.675Z - error: 404 GET / - 127.0.0.1 - undefined
+2014-06-04T12:19:18.329Z - error: 404 GET / - 127.0.0.1 - Page not found
+2014-06-04T12:19:58.839Z - error: 127.0.0.1 500 GET / Database connection failed
+2014-06-04T12:20:24.569Z - error: 127.0.0.1 404 GET "/" Page not found
+2014-06-04T12:20:35.263Z - error: 127.0.0.1 500 GET / Database connection failed
+2014-06-04T12:20:39.652Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:40.128Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:40.522Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:40.823Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:40.966Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:41.098Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:41.249Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:41.622Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:20:42.159Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:19.140Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:20.013Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:20.629Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:21.128Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:21.475Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:21.750Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:21.938Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.076Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.230Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.384Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.577Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.697Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:22.875Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:23.071Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:23.355Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:23.674Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:24.353Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:25.046Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:25.446Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:25.669Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:25.844Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:26.025Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:26.143Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:21:26.279Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-04T12:26:04.114Z - error: 127.0.0.1 404 GET /?rnd=033909479482099414 Page not found
+2014-06-04T12:33:31.123Z - error: 127.0.0.1 404 GET /?rnd=026181791932322085 Page not found
+2014-06-04T12:33:55.140Z - error: 127.0.0.1 404 GET /?rnd=05193249899893999 Page not found
+2014-06-04T12:34:01.930Z - error: 127.0.0.1 404 GET /?rnd=05193249899893999 Page not found
+2014-06-04T12:34:06.050Z - error: 127.0.0.1 500 POST /auth/captcha next is not defined
+2014-06-04T12:35:36.892Z - error: 127.0.0.1 500 POST /auth/captcha next is not defined
+2014-06-04T12:36:09.094Z - error: 127.0.0.1 500 POST /auth/captcha next is not defined
+2014-06-05T05:16:52.705Z - error: 10.233.25.60 404 GET / Page not found
+2014-06-05T07:41:28.081Z - error: 10.206.247.66 404 GET / Page not found
+2014-06-05T07:41:54.934Z - error: 10.206.247.66 500 POST /cp/settings/data/save Argument passed in must be a single String of 12 bytes or a string of 24 hex characters
+2014-06-05T07:42:01.871Z - error: 10.206.247.66 500 POST /cp/settings/data/save Argument passed in must be a single String of 12 bytes or a string of 24 hex characters
+2014-06-05T07:42:36.471Z - error: 10.206.247.66 500 POST /cp/settings/data/save Argument passed in must be a single String of 12 bytes or a string of 24 hex characters
+2014-06-05T08:02:17.470Z - error: 127.0.0.1 404 GET /?rnd=03529712148010731 Page not found
+2014-06-05T08:02:20.802Z - error: 127.0.0.1 404 GET /%D1%81%D0%B7 Page not found
+2014-06-05T08:02:23.806Z - error: 127.0.0.1 500 GET /cp Object function router(req, res, next) {
+    router.handle(req, res, next);
+  } has no method 'get_module_name'
+2014-06-05T08:02:54.065Z - error: 127.0.0.1 500 GET /cp i18nm is not defined
+2014-06-05T08:03:23.612Z - error: 127.0.0.1 404 GET / Page not found
+2014-06-05T10:56:59.030Z - error: 127.0.0.1 500 POST /cp/files/data/load Object #<Object> has no method 'readDirSync'
+2014-06-05T11:10:48.194Z - error: 127.0.0.1 500 POST /cp/files/data/load util is not defined
+2014-06-05T11:11:03.722Z - error: 127.0.0.1 500 POST /cp/files/data/load Cannot call method 'inspect' of undefined
+2014-06-05T11:12:13.663Z - error: 127.0.0.1 500 POST /cp/files/data/load Object #<Object> has no method 'push'
+2014-06-05T11:19:31.073Z - error: 127.0.0.1 500 POST /cp/files/data/load Object  has no method 'pish'
+2014-06-05T11:49:08.255Z - error: 127.0.0.1 500 POST /cp/files/data/load ENOENT, no such file or directory 'C:\XTreme\.hg'
+2014-06-05T12:06:42.776Z - error: 127.0.0.1 500 POST /cp/files/data/load Object 3.500 has no method 'compare'
+2014-06-05T12:06:44.309Z - error: 127.0.0.1 500 POST /cp/files/data/load Object 3.500 has no method 'compare'
+2014-06-05T12:07:48.948Z - error: 127.0.0.1 500 POST /cp/files/data/load Object 3.500 has no method 'compare'
+2014-06-05T12:08:32.420Z - error: 127.0.0.1 500 POST /cp/files/data/load Object 3.500 has no method 'compare'
+2014-06-05T12:09:03.856Z - error: 127.0.0.1 500 POST /cp/files/data/load Object 3.500 has no method 'compare'
+2014-06-05T12:18:54.508Z - error: 127.0.0.1 500 POST /cp/files/data/load Object #<Object> has no method 'toLowerCase'
+2014-06-05T12:20:03.534Z - error: 127.0.0.1 500 POST /cp/files/data/load Object #<Object> has no method 'toLowerCase'
+2014-06-05T13:31:14.301Z - error: 127.0.0.1 500 POST /cp/files/data/load Cannot call method 'match' of undefined
+2014-06-05T15:11:40.989Z - error: 127.0.0.1 404 POST /cp/files/data/newdir Page not found
+2014-06-05T15:11:55.973Z - error: 127.0.0.1 404 POST /cp/files/data/newdir Page not found
+2014-06-05T15:12:17.592Z - error: 127.0.0.1 404 POST /cp/files/data/newdir Page not found
+2014-06-05T15:15:32.552Z - error: 127.0.0.1 500 POST /cp/files/data/newdir Cannot call method 'send' of undefined
+2014-06-05T15:16:07.868Z - error: 127.0.0.1 500 POST /cp/files/data/newdir EEXIST, file already exists 'c:\XTreme\taracotjs\public\files\test'
+2014-06-05T15:17:24.427Z - error: 127.0.0.1 500 POST /cp/files/data/newdir EEXIST, file already exists 'c:\XTreme\taracotjs\public\files\test'
+2014-06-05T15:38:58.595Z - error: 127.0.0.1 404 POST /cp/files/data/del Page not found
+2014-06-05T15:40:22.749Z - error: 127.0.0.1 404 POST /cp/files/data/del Page not found
+2014-06-05T15:41:22.029Z - error: 127.0.0.1 404 POST /cp/files/data/del Page not found
+2014-06-05T15:41:43.242Z - error: 127.0.0.1 404 POST /cp/files/data/del Page not found
+2014-06-05T15:48:07.082Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\dir2'
+2014-06-05T15:48:20.450Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\test3\ook'

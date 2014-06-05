@@ -5,6 +5,7 @@ var config = {
 		"en",
 		"ru"
 	],
+	"storage_dir": "../public/files",
 	"cookie_secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
 	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
 	"redis": {
@@ -67,6 +68,12 @@ var config = {
 			"prefix": "/settings/",
 			"cp_id": "settings",
 			"cp_prefix": "/cp/settings/"
+		},
+		{
+			"name": "files",
+			"prefix": "/files/",
+			"cp_id": "files",
+			"cp_prefix": "/cp/files/"
 		}
 	]
 };

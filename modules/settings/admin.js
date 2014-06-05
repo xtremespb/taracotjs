@@ -34,7 +34,7 @@ module.exports = function (app) {
 		});
 		app.get('cp').render(req, res, {
 			body: body,
-			css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t"
+			css: '<link rel="stylesheet" href="/modules/settings/css/main.css">' + "\n\t\t"
 		}, i18nm, 'settings', req.session.auth);
 	});
 	router.post('/data/list', function (req, res) {
@@ -210,7 +210,7 @@ module.exports = function (app) {
 			}, {
 				limit: 1
 			}).toArray(function (err, items) {
-				if (typeof items != 'undefined' && !err && items.length > 0) {
+				if ((typeof items != 'undefined' && items.length > 0) || err) {
 					rep.status = 0;
 					rep.error = i18nm.__("option_exists");
 					rep.err_fields.push('oname');
@@ -245,13 +245,27 @@ module.exports = function (app) {
 				});
 			});
 		} else {
-			app.get('mongodb').collection('settings').insert({
+			var data = app.get('mongodb').collection('settings').find({
 				oname: oname,
-				ovalue: ovalue,
 				olang: olang
-			}, function () {
-				rep.status = 1;
-				res.send(JSON.stringify(rep));
+			}, {
+				limit: 1
+			}).toArray(function (err, items) {
+				if ((typeof items != 'undefined' && items.length > 0) || err) {
+					rep.status = 0;
+					rep.error = i18nm.__("option_exists");
+					rep.err_fields.push('oname');
+					res.send(JSON.stringify(rep));
+					return;
+				}
+				app.get('mongodb').collection('settings').insert({
+					oname: oname,
+					ovalue: ovalue,
+					olang: olang
+				}, function () {
+					rep.status = 1;
+					res.send(JSON.stringify(rep));
+				});
 			});
 		}
 	});
