@@ -7,7 +7,7 @@ module.exports = function (app) {
 	var fs = require("fs");
 	var router = app.get('express').Router();
 	var mime = require('mime');
-	var rimraf = require('rimraf');
+	var wrench = require('wrench');
 	router.get_module_name = function (req) {
 		i18nm.setLocale(req.i18n.getLocale());
 		return i18nm.__("module_name");
@@ -182,7 +182,7 @@ module.exports = function (app) {
 		}
 		var ure = false;
 		for (var i=0; i<fna.length; i++) {
-			var ur = rimraf.sync(dir + '/' + fna[i]);
+			var ur = wrench.rmdirSyncRecursive(dir + '/' + fna[i], true)
 			if (ur) ure = true;
 		}
 		if (ure) {

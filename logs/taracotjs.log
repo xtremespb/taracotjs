@@ -1546,3 +1546,4 @@
 2014-06-05T15:41:43.242Z - error: 127.0.0.1 404 POST /cp/files/data/del Page not found
 2014-06-05T15:48:07.082Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\dir2'
 2014-06-05T15:48:20.450Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\test3\ook'
+2014-06-06T15:39:15.450Z - error: 127.0.0.1 500 GET /cp/files/ Database connection failed
