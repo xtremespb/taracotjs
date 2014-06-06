@@ -12,5 +12,6 @@
 	"newdir_success": "New directory created sucessfully",
 	"delete": "Delete",
 	"delete_success": "Delete success",
-	"delete_confirm": "Are you sure you wish to delete the following file(s)/folder(s)?"
+	"delete_confirm": "Are you sure you wish to delete the following file(s)/folder(s)?",
+	"no_files": "Current directory contains no files or folders."
 }

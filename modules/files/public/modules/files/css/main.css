@@ -36,10 +36,9 @@
 .taracot-files-item-selected {
   background-color:#ffc54e;
 }
-#taracot_files_stats {
-    margin-top: 20px;
+#taracot_files_bottom {
     margin-bottom: 40px;
 }
 #taracot-files-current-dir {
-    font-weight: bold;
+    font-weight: bold;    
 }

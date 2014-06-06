@@ -26,7 +26,8 @@ var load_files_data = function(dir) {
                 } else {
                     $('#btn_up').attr('disabled', true);
                 }
-                file_count = data.files.length;              
+                // uikit tooltip bug workaround
+                $('#btn_dummy').mouseover();
                 for (var i = 0; i < data.files.length; i++) {
                     var tp = 'folder';
                     if (data.files[i].type == 'f') {
@@ -56,7 +57,7 @@ var load_files_data = function(dir) {
                         if (ns.length) {
                             $('#btn_delete').attr('disabled', false);    
                         } else {
-                            $('#btn_delete').attr('disabled', true);
+                            $('#btn_delete').attr('disabled', true);                             
                         }
                     },
                     unselect: function (el) {                        
@@ -64,6 +65,7 @@ var load_files_data = function(dir) {
                 });
                 $('.taracot-files-item').bind('dblclick', dblclick_handler);
                 $('#taracot_total_files').html(data.files.length);
+                if (!data.files.length) $('#files_grid').html(_lang_vars.no_files);
             } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
@@ -97,7 +99,7 @@ var dblclick_handler = function() {
     up_dir.push(current_dir);
     current_dir += '/' + file_ids[id];
     current_dir = current_dir.replace(/^\//, '');    
-    $('#taracot-files-current-dir').html('<i class="uk-icon-folder"></i>&nbsp;/' + current_dir);
+    $('#taracot-files-current-dir').html('/' + current_dir);
     load_files_data(current_dir);
 };
 
@@ -109,7 +111,7 @@ var btnup_handler = function() {
         current_dir = '';
     }
     if (typeof current_dir == 'undefined') current_dir = '';
-    $('#taracot-files-current-dir').html('<i class="uk-icon-folder"></i>&nbsp;/' + current_dir);
+    $('#taracot-files-current-dir').html('/' + current_dir);
     load_files_data(current_dir);
 };
 
@@ -133,6 +135,8 @@ var btndelete_handler = function() {
         },
         dataType: "json",
         success: function (data) {
+            // uikit tooltip bug workaround
+            $('#btn_dummy').mouseover();
             load_files_data(current_dir);
             if (data && data.status == 1) {                
                 $.UIkit.notify({

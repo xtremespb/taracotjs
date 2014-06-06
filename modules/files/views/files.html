@@ -10,16 +10,20 @@
         <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__("cancel")}</button>
     </div>
 </div>
-<div class="uk-panel taracot-files-panel">
+<div class="uk-panel uk-panel-box taracot-files-panel">
+    <button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
     <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_up")}" id="btn_up"></button>
     <button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__("new_folder")}" id="btn_new_folder"></button>
-    <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__("delete")}" id="btn_delete"></button>
-    <span class="uk-float-right" id="taracot-files-current-dir"><i class="uk-icon-folder"></i>&nbsp;/</span>
+    <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__("delete")}" id="btn_delete"></button>    
 </div>
-<div class="uk-panel" id="files_grid">
+<span class="uk-panel uk-margin-bottom">
+    <span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__("total_files")}"></i></span>&nbsp;<span id="taracot_total_files"></span>
+    &nbsp;<span class="uk-badge uk-badge-notification"><i class="uk-icon-clipboard"></i></span>&nbsp;<span id="taracot-files-clipboard">0</span>
+    &nbsp;<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder"></i></span>&nbsp;<span id="taracot-files-current-dir">/</span>    
+</span>
+<div id="files_grid">
 </div>
-<div id="taracot_files_stats">
-  !{root.lang.__("total_files")}: <span id="taracot_total_files"></span>
+<div id="taracot_files_bottom" class="uk-margin-top">
 </div>
 <script type="text/javascript">
   var _lang_vars = {
@@ -28,7 +32,8 @@
     invalid_dir_syntax: "!{root.lang.__("invalid_dir_syntax")}",
     newdir_success: "!{root.lang.__("newdir_success")}",
     delete_success: "!{root.lang.__("delete_success")}",
-    delete_confirm: "!{root.lang.__("delete_confirm")}"
+    delete_confirm: "!{root.lang.__("delete_confirm")}",
+    no_files: "!{root.lang.__("no_files")}"
   }
 </script>
 <script src="/modules/files/js/jquery.shifty.js"></script>
