@@ -42,3 +42,7 @@
 #taracot-files-current-dir {
     font-weight: bold;    
 }
+#files_grid {
+    margin: 0;
+    padding: 0;
+}

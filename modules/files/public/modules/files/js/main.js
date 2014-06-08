@@ -43,7 +43,7 @@ var load_files_data = function(dir) {
                     }
                     file_ids[i] = data.files[i].name;
                     file_types[i] = data.files[i].type;
-                    $('#files_grid').append('<div class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></div>');
+                    $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
                 }
                 $('.taracot-files-item').shifty({
                     className: 'taracot-files-item-selected',
@@ -63,6 +63,10 @@ var load_files_data = function(dir) {
                     unselect: function (el) {                        
                     }
                 });
+                var dragObjects = $('.taracot-files-item');
+                for(var i=0; i < dragObjects.length; i++) {
+                    new DragObject(dragObjects[i]);
+                } 
                 $('.taracot-files-item').bind('dblclick', dblclick_handler);
                 $('#taracot_total_files').html(data.files.length);
                 if (!data.files.length) $('#files_grid').html(_lang_vars.no_files);
@@ -244,5 +248,5 @@ $('#btn_up').click(btnup_handler);
 $('#btn_delete').click(btndelete_handler);
 
 $(document).ready(function () {    
-    load_files_data();    
+    load_files_data();
 });
