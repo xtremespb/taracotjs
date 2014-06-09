@@ -44,7 +44,7 @@ var config = {
 			}
 		}
 	},
-	"captcha": 'captcha_gm',
+	"captcha": 'captcha_native',
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"modules": [
 		{

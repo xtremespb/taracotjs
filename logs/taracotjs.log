@@ -1547,3 +1547,22 @@
 2014-06-05T15:48:07.082Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\dir2'
 2014-06-05T15:48:20.450Z - error: 127.0.0.1 500 POST /cp/files/data/del EPERM, operation not permitted 'c:\XTreme\taracotjs\public\files\test3\ook'
 2014-06-06T15:39:15.450Z - error: 127.0.0.1 500 GET /cp/files/ Database connection failed
+2014-06-08T10:28:02.557Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.min.js Page not found
+2014-06-08T10:28:09.311Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.min.js Page not found
+2014-06-08T10:29:24.096Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.min.js Page not found
+2014-06-08T10:29:24.231Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.min.js Page not found
+2014-06-08T11:00:26.119Z - error: 127.0.0.1 404 GET /?rnd=02616099086590111 Page not found
+2014-06-08T11:17:43.343Z - error: 127.0.0.1 404 GET /js/jquery-ui.min.js Page not found
+2014-06-08T11:17:43.635Z - error: 127.0.0.1 404 GET /js/jquery-ui.min.js Page not found
+2014-06-08T11:18:21.111Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.selectable.js Page not found
+2014-06-08T11:18:21.386Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.selectable.js Page not found
+2014-06-08T11:21:43.027Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.selectable.min.js Page not found
+2014-06-08T11:21:43.305Z - error: 127.0.0.1 404 GET /modules/files/js/jquery-ui.selectable.min.js Page not found
+2014-06-09T07:40:11.693Z - error: 127.0.0.1 404 GET /?rnd=04528488299589346 Page not found
+2014-06-09T07:40:41.083Z - error: 127.0.0.1 404 GET /?rnd=04528488299589346 Page not found
+2014-06-09T07:40:51.843Z - error: 127.0.0.1 500 GET /cp Database connection failed
+2014-06-09T07:40:57.248Z - error: 127.0.0.1 404 GET /?rnd=005997843807563186 Page not found
+2014-06-09T12:06:34.401Z - error: 127.0.0.1 500 POST /cp/files/data/del Database connection failed
+2014-06-09T14:19:19.477Z - error: 127.0.0.1 404 POST /cp/files/data/paste Page not found
+2014-06-09T14:31:49.800Z - error: 127.0.0.1 500 POST /cp/files/data/paste req_dir is not defined
+2014-06-09T14:32:14.140Z - error: 127.0.0.1 500 POST /cp/files/data/paste current_dir is not defined
