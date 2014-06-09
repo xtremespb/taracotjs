@@ -13,8 +13,15 @@
 <div class="uk-panel uk-panel-box taracot-files-panel">
     <button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
     <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_up")}" id="btn_up"></button>
+    &nbsp;&nbsp;
     <button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__("new_folder")}" id="btn_new_folder"></button>
-    <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__("delete")}" id="btn_delete"></button>    
+    &nbsp;&nbsp;    
+    <div class="uk-button-group">
+        <button class="uk-button uk-icon-copy taracot-files-button" data-uk-tooltip title="!{root.lang.__("copy")}" id="btn_copy"></button>    
+        <button class="uk-button uk-icon-cut taracot-files-button" data-uk-tooltip title="!{root.lang.__("cut")}" id="btn_cut"></button>    
+        <button class="uk-button uk-icon-paste taracot-files-button" data-uk-tooltip title="!{root.lang.__("paste")}" id="btn_paste"></button>    
+        <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__("delete")}" id="btn_delete"></button>    
+    </div>
 </div>
 <span class="uk-panel uk-margin-bottom">
     <span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__("total_files")}"></i></span>&nbsp;<span id="taracot_total_files"></span>
@@ -33,10 +40,17 @@
     newdir_success: "!{root.lang.__("newdir_success")}",
     delete_success: "!{root.lang.__("delete_success")}",
     delete_confirm: "!{root.lang.__("delete_confirm")}",
-    no_files: "!{root.lang.__("no_files")}"
+    no_files: "!{root.lang.__("no_files")}",
+    clipboard_copy_success: "!{root.lang.__('clipboard_copy_success')}",
+    clipboard_cut_success: "!{root.lang.__('clipboard_cut_success')}",
+    cannot_paste_to_source_dir: "!{root.lang.__('cannot_paste_to_source_dir')}",
+    cannot_paste_to_itself: "!{root.lang.__('cannot_paste_to_itself')}",
+    paste_success: "!{root.lang.__('paste_success')}",
+    paste_error: "!{root.lang.__('paste_error')}"
   }
+  var _dragdrop_action_taken = false;
 </script>
-<script src="/modules/files/js/jquery.shifty.js"></script>
 <script src="/modules/files/js/dragdrop.helper.js"></script>
+<script src="/modules/files/js/jquery.shifty.js"></script>
 <script src="/modules/files/js/dragdrop.js"></script>
 <script src="/modules/files/js/main.js"></script>

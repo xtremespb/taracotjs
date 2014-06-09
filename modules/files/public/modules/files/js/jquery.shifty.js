@@ -28,6 +28,10 @@
             });
             block.click(function (e) {
                 if (!e.ctrlKey && !e.shiftKey) {
+                    if (typeof _dragdrop_action_taken != 'undefined' && _dragdrop_action_taken) {
+                        _dragdrop_action_taken = false;
+                        return;
+                    }
                     elems.removeClass(className);
                     $(this).addClass(className);
                     o.unselect(elems);

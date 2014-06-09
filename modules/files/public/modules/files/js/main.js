@@ -2,12 +2,21 @@ var file_ids = {};
 var file_types = {};
 var current_dir = '';
 var up_dir = [];
+var clpbrd = { mode: null, dir: null, files: [] };
 var taracot_dlg_edit = new $.UIkit.modal.Modal("#taracot_dlg_edit");
 
 var load_files_data = function(dir) {
+    $('#files_grid').empty();
     $('#files_grid').html('<img src="/modules/files/images/loading_36x36.gif">');
     $('.taracot-files-panel').addClass('uk-hidden');
     $('#btn_delete').attr('disabled', true);
+    $('#btn_copy').attr('disabled', true);
+    $('#btn_cut').attr('disabled', true);
+    if (clpbrd.mode != null) {
+        $('#btn_paste').attr('disabled', false);
+    } else {
+        $('#btn_paste').attr('disabled', true);
+    }
     file_ids = {};
     file_types = {};
     $.ajax({
@@ -43,7 +52,13 @@ var load_files_data = function(dir) {
                     }
                     file_ids[i] = data.files[i].name;
                     file_types[i] = data.files[i].type;
-                    $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
+                    $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
+                    if (data.files[i].type == 'd') {
+                        var drop_target_btn_delete = new DropTarget(document.getElementById('taracot_file_' + i));
+                        drop_target_btn_delete.onLeave = function() {
+                            alert("OOK");
+                        };
+                    }
                 }
                 $('.taracot-files-item').shifty({
                     className: 'taracot-files-item-selected',
@@ -55,9 +70,13 @@ var load_files_data = function(dir) {
                             $('#taracot_el_' + id).removeClass('taracot-fade-elipsis');
                         }
                         if (ns.length) {
-                            $('#btn_delete').attr('disabled', false);    
+                            $('#btn_delete').attr('disabled', false);
+                            $('#btn_copy').attr('disabled', false);
+                            $('#btn_cut').attr('disabled', false);
                         } else {
-                            $('#btn_delete').attr('disabled', true);                             
+                            $('#btn_delete').attr('disabled', true);
+                            $('#btn_copy').attr('disabled', true);
+                            $('#btn_cut').attr('disabled', true);
                         }
                     },
                     unselect: function (el) {                        
@@ -119,7 +138,8 @@ var btnup_handler = function() {
     load_files_data(current_dir);
 };
 
-var btndelete_handler = function() {
+var btndelete_handler = function(dnd) {
+    if (typeof dnd == 'undefined') dnd = false;
     var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
     var fna = [];
     for (var i=0; i<ns.length; i++) {
@@ -129,6 +149,7 @@ var btndelete_handler = function() {
     if (!confirm(_lang_vars.delete_confirm + "\n\n" + fna)) {
         return;
     }
+    $('#files_grid').empty();
     $('#files_grid').html('<img src="/modules/files/images/loading_36x36.gif">');
     $.ajax({
         type: 'POST',
@@ -148,8 +169,9 @@ var btndelete_handler = function() {
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                }); 
+                });
             } else {
+                load_files_data(current_dir);
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
                     _err = data.error;
@@ -243,10 +265,125 @@ var create_new_dir = function() {
     });    
 };
 
+var cutcopy = function(mode) {
+    clpbrd = { mode: null, dir: null, files: [] };
+    var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
+    for (var i=0; i<ns.length; i++) {
+        var id = ns[i].replace('taracot_file_', '');
+        clpbrd.files.push(file_ids[id]);
+    }
+    clpbrd.dir = current_dir;
+    clpbrd.mode = mode;
+    $('#taracot-files-clipboard').html(clpbrd.files.length);
+    $('#btn_paste').attr('disabled', false);
+};
+
+var btncopy_handler = function() {
+    cutcopy('copy');    
+    $.UIkit.notify({
+        message: _lang_vars.clipboard_copy_success,
+        status: 'success',
+        timeout: 2000,
+        pos: 'top-center'
+    });
+};
+
+var btncut_handler = function() {
+    cutcopy('cut');    
+    $.UIkit.notify({
+        message: _lang_vars.clipboard_cut_success,
+        status: 'success',
+        timeout: 2000,
+        pos: 'top-center'
+    });
+};
+
+var btnpaste_handler = function() {
+    if (clpbrd.mode == null) {
+        return;
+    }
+    if (clpbrd.dir == current_dir) {
+        $.UIkit.notify({
+            message: _lang_vars.cannot_paste_to_source_dir,
+            status: 'danger',
+            timeout: 2000,
+            pos: 'top-center'
+        });  
+        return; 
+    }
+    var rex1 = new RegExp('^' + current_dir + '\/');
+    var rex2 = new RegExp('^' + current_dir + '$');
+    for (var i=0; i<clpbrd.files.length; i++) {
+        if (clpbrd.files[i].match(rex1) || clpbrd.files[i].match(rex2)) {
+            $.UIkit.notify({
+                message: _lang_vars.cannot_paste_to_itself,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });  
+            // return;    
+        }
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/cp/files/data/paste',
+        data: {
+            clipboard: clpbrd,
+            dest: current_dir
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data && data.status == 1) {                
+                load_files_data(current_dir);
+                $.UIkit.notify({
+                    message: _lang_vars.paste_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                }); 
+            } else {
+                var _err = _lang_vars.paste_error;
+                if (data.error) {
+                    _err = data.error;
+                }
+                $.UIkit.notify({
+                    message: _err,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });    
+            }    
+        },
+        error: function () {            
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+    });
+};
+
 $('#btn_new_folder').click(btnnewfolder_handler);
 $('#btn_up').click(btnup_handler);
 $('#btn_delete').click(btndelete_handler);
+$('#btn_copy').click(btncopy_handler);
+$('#btn_cut').click(btncut_handler);
+$('#btn_paste').click(btnpaste_handler);
 
 $(document).ready(function () {    
     load_files_data();
+    var drop_target_btn_delete = new DropTarget(document.getElementById('btn_delete'));
+    drop_target_btn_delete.onLeave = function() {
+        btndelete_handler(true);
+        var dragObjects = $('.taracot-files-item');        
+        console.log(dragObjects);
+    };
+    $('#files_grid').click(function(e) {
+        if (e.target.id === "files_grid") {
+            $('.taracot-files-item').removeClass('taracot-files-item-selected');
+            $('.taracot-fade').addClass('taracot-fade-elipsis');
+        }
+    });
 });

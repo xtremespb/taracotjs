@@ -13,5 +13,15 @@
 	"delete": "Delete",
 	"delete_success": "Delete success",
 	"delete_confirm": "Are you sure you wish to delete the following file(s)/folder(s)?",
-	"no_files": "Current directory contains no files or folders."
+	"no_files": "Current directory contains no files or folders.",
+	"invalid_request": "invalid_request",
+	"copy": "Copy",
+	"cut": "Cut",
+	"paste": "Paste",
+	"clipboard_copy_success": "Copied to clipboard",
+	"clipboard_cut_success": "Cut to clipboard",
+	"cannot_paste_to_source_dir": "Cannot paste to source directory",
+	"cannot_paste_to_itself": "Cannot paste to itself",
+	"paste_success": "paste_success",
+	"paste_error": "paste_error"
 }

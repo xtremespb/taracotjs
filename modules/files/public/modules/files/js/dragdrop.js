@@ -36,9 +36,6 @@ var dragMaster = (function () {
 		dragObject.onDragMove(e.pageX, e.pageY);
 		var newTarget = getCurrentTarget(e);
 		if (currentDropTarget != newTarget) {
-			if (currentDropTarget) {
-				currentDropTarget.onLeave();
-			}
 			if (newTarget) {
 				newTarget.onEnter();
 			}
@@ -48,19 +45,18 @@ var dragMaster = (function () {
 	}
 
 	function mouseUp() {
-		if (!dragObject) { // (1)
+		if (!dragObject) {
 			mouseDownAt = null;
 		} else {
-			// (2)
-			if (currentDropTarget) {
-				currentDropTarget.accept(dragObject);
+			if (currentDropTarget) {												
 				dragObject.onDragSuccess(currentDropTarget);
+				currentDropTarget.accept(dragObject);
+				_dragdrop_action_taken = false;
 			} else {
 				dragObject.onDragFail();
 			}
 			dragObject = null;
-		}
-		// (3)
+		}		
 		removeDocumentEventHandlers();		
 	}
 
@@ -81,12 +77,10 @@ var dragMaster = (function () {
 				y = e.pageY;
 		}
 		dragObject.hide();
-		var elem = document.elementFromPoint(x, y)
+		var elem = document.elementFromPoint(x, y);
 		dragObject.show();
-		while (elem) {
-			if (elem.dropTarget && elem.dropTarget.canAccept(dragObject)) {
-				return elem.dropTarget;
-			}
+		while (elem) {			
+			if (elem.dropTarget && elem.dropTarget.canAccept(dragObject)) return elem.dropTarget;
 			elem = elem.parentNode;
 		}
 		return null;
@@ -94,11 +88,10 @@ var dragMaster = (function () {
 
 	function addDocumentEventHandlers(e) {
 		document.onmousemove = mouseMove;
-		document.onmouseup = mouseUp;
-		document.onclick = function() {} ; 
+		document.onmouseup = mouseUp;		
 		document.ondragstart = document.body.onselectstart = function () {
-			return false
-		};		
+			return false;
+		};
 		e.stopPropagation();
 	}
 
@@ -108,30 +101,29 @@ var dragMaster = (function () {
 	return {
 		makeDraggable: function (element) {
 			element.onmousedown = mouseDown;
+			document.onclick = function() {} ; 
 		}
 	}
 }());
 
 /* DropTarget class */
 
-function DropTarget(element) {	
-	element.dropTarget = this;	
+function DropTarget(element) {		
 	this.canAccept = function(dragObject) {
 		return true;
 	};	
 	this.accept = function(dragObject) {
 		this.onLeave();
-		dragObject.hide();
+		dragObject.onDragFail();
 	};
 	this.onLeave = function() {
-		element.className =  '';
 	};
-	this.onEnter = function() {
-		// element.className = 'taracot-droptarget';
+	this.onEnter = function() {		
 	};
 	this.toString = function() {
 		return element.id;
 	};
+	element.dropTarget = this;
 }
 
 /* DragObject class */
@@ -144,9 +136,15 @@ function DragObject(element) {
 	var rememberPositions = {};
 	var mouseOffset;
 
-	this.onDragStart = function (offset) {
+	this.onDragStart = function (offset) {		
 		var nodes = getByClass('taracot-files-item'), i=-1, node;
-		while (node=nodes[++i]) {
+		if (!getByClass('taracot-files-item-selected').length) element.click();
+		if (!element.getAttribute('class').match('taracot-files-item-selected')) {
+			element.setAttribute('class', element.getAttribute('class') + ' taracot-files-item-selected');
+			var id = element.id.replace('taracot_file_', '');
+			document.getElementById('taracot_el_'+id).setAttribute('class', document.getElementById('taracot_el_'+id).getAttribute('class').replace(/taracot.fade.elipsis/, ''));
+		}
+		while (node = nodes[++i]) {
 			rememberPositions[node.id] = {
 				top: node.style.top,
 				left: node.style.left,
@@ -167,22 +165,24 @@ function DragObject(element) {
 		element.style.display = '';
 	};
 
-	this.onDragMove = function (x, y) {	
-		if (!element.getAttribute('class').match('taracot-files-item-selected')) element.setAttribute('class', element.getAttribute('class') + ' taracot-files-item-selected');		
+	this.onDragMove = function (x, y) {			
 		var nodes_sel = getByClass('taracot-files-item-selected'), i=-1, node_sel;
-		var c = 0;
 		while (node_sel=nodes_sel[++i]) {			
 			if (node_sel.id != element.id) {
-				node_sel.style.position = 'absolute';
-				node_sel.style.top = y - mouseOffset.y + ((c+1) * 2) + 'px';
-				node_sel.style.left = x - mouseOffset.x + ((c+1) * 2) + 'px';
-				node_sel.style.zIndex = i+1;
-				c++;
+				node_sel.style.display = 'none';				
 			}
 		}
-		element.style.top = y - mouseOffset.y + ((c+1) * 2)+ 'px';
-		element.style.left = x - mouseOffset.x + ((c+1) * 2) + 'px';		
-		element.style.zIndex = 5000;
+		if (i > 1) {
+			var bdg = getByClass('uk-badge', element);
+			if (bdg && bdg.length) {
+				bdg = bdg[0];
+				bdg.innerHTML = i;
+				bdg.style.display = 'block';
+			}
+		}
+		element.style.top = y - mouseOffset.y + 'px';
+		element.style.left = x - mouseOffset.x + 'px';		
+		element.style.zIndex = 500;
 	};
 
 	this.onDragSuccess = function (dropTarget) {
@@ -196,11 +196,20 @@ function DragObject(element) {
 			node.style.position = rememberPositions[node.id].position;
 			node.style.zIndex = rememberPositions[node.id].zindex;
 			node.setAttribute('class', rememberPositions[node.id].class);
+			node.style.display = 'inline-block';
+			var bdg = getByClass('uk-badge', element);
+			if (bdg && bdg.length) {
+				bdg = bdg[0];
+				bdg.innerHTML = i;
+				bdg.style.display = 'none';
+			}
 		};
+		if (typeof _dragdrop_action_taken != 'undefined') {
+			_dragdrop_action_taken = true;
+		}
 	};
 
 	this.toString = function () {
 		return element.id;
 	};
 }
-

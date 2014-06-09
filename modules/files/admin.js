@@ -63,7 +63,7 @@ module.exports = function (app) {
 		var da = [];
 		files.forEach(function (file) {
 			var item = { name: file };
-			var stat = fs.statSync(dir + '/' + file);			
+			var stat = fs.statSync(dir + '/' + file);
 			if (stat.isFile() && !file.match(/^\./)) {
 				item.type = 'f';
 				item.size = stat['size'];
@@ -182,7 +182,13 @@ module.exports = function (app) {
 		}
 		var ure = false;
 		for (var i=0; i<fna.length; i++) {
-			var ur = wrench.rmdirSyncRecursive(dir + '/' + fna[i], true)
+			var stat = fs.statSync(dir + '/' + fna[i]);
+			var ur = undefined;
+			if (stat.isFile()) {
+				ur = fs.unlinkSync(dir + '/' + fna[i]);
+			} else {
+				ur = wrench.rmdirSyncRecursive(dir + '/' + fna[i], true);
+			}			
 			if (ur) ure = true;
 		}
 		if (ure) {
@@ -191,6 +197,92 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;	
 		}
+		rep.status = 1;
+		res.send(JSON.stringify(rep));
+	});
+	router.post('/data/paste', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};		
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var clpbrd = req.body.clipboard;
+		console.log(clpbrd);
+		if (!clpbrd || !clpbrd.files || !clpbrd.files.length || !clpbrd.mode || (clpbrd.mode != 'copy' && clpbrd.mode != 'cut')) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_request");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		for (var i=0; i<clpbrd.files.length; i++) {
+			if (!clpbrd.files[i].match(/^[A-Za-z0-9_\-\.]{1,80}$/)) {
+				rep.status = 0;
+				rep.error = i18nm.__("invalid_request");
+				res.send(JSON.stringify(rep));
+				return;		
+			}
+		}
+		var source_dir = clpbrd.dir;
+		if (source_dir && !source_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}		
+		if (source_dir) {
+			source_dir = '/' + source_dir;
+		} else {
+			source_dir = '';
+		}
+		var dest_dir = req.body.dest;
+		if (dest_dir && !dest_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}		
+		if (dest_dir) {
+			dest_dir = '/' + dest_dir;
+		} else {
+			dest_dir = '';
+		}		
+		if (source_dir == dest_dir) {
+			rep.status = 0;
+			rep.error = i18nm.__("cannot_paste_to_source_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		console.log(source_dir);
+		console.log(dest_dir);
+		var rex1 = new RegExp('^' + dest_dir + '\/');
+	    var rex2 = new RegExp('^' + dest_dir + '$');
+	    for (var i=0; i<clpbrd.files.length; i++) {
+	        if (clpbrd.files[i].match(rex1) || clpbrd.files[i].match(rex2)) {
+	            rep.status = 0;
+				rep.error = i18nm.__("cannot_paste_to_itself");
+				res.send(JSON.stringify(rep));  
+	            return;    
+	        }
+	    }
+		source_dir = app.get('config').storage_dir + source_dir;
+		if (!fs.existsSync(source_dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		dest_dir = app.get('config').storage_dir + dest_dir;
+		if (!fs.existsSync(dest_dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		var ure = false;		
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
 	});
