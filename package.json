@@ -21,7 +21,7 @@
     "prompt": "~0.2.13",
     "captchapng": "~0.0.1",
     "mime": "~1.2.11",
-    "wrench": "~1.5.8"
+    "fs-extra": "~0.9.1"
   },
   "devDependencies": {},
   "scripts": {
