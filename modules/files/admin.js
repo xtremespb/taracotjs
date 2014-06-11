@@ -4,10 +4,9 @@ module.exports = function (app) {
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
 	});
-	var fs = require("fs");
+	var fs = require("fs-extra");
 	var router = app.get('express').Router();
 	var mime = require('mime');
-	var wrench = require('wrench');
 	router.get_module_name = function (req) {
 		i18nm.setLocale(req.i18n.getLocale());
 		return i18nm.__("module_name");
@@ -187,7 +186,7 @@ module.exports = function (app) {
 			if (stat.isFile()) {
 				ur = fs.unlinkSync(dir + '/' + fna[i]);
 			} else {
-				ur = wrench.rmdirSyncRecursive(dir + '/' + fna[i], true);
+				ur = fs.removeSync(dir + '/' + fna[i]);
 			}			
 			if (ur) ure = true;
 		}
@@ -211,7 +210,6 @@ module.exports = function (app) {
 			return;
 		}
 		var clpbrd = req.body.clipboard;
-		console.log(clpbrd);
 		if (!clpbrd || !clpbrd.files || !clpbrd.files.length || !clpbrd.mode || (clpbrd.mode != 'copy' && clpbrd.mode != 'cut')) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_request");
@@ -233,11 +231,6 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;
 		}		
-		if (source_dir) {
-			source_dir = '/' + source_dir;
-		} else {
-			source_dir = '';
-		}
 		var dest_dir = req.body.dest;
 		if (dest_dir && !dest_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
 			rep.status = 0;
@@ -245,35 +238,40 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;
 		}		
-		if (dest_dir) {
-			dest_dir = '/' + dest_dir;
-		} else {
-			dest_dir = '';
-		}		
 		if (source_dir == dest_dir) {
 			rep.status = 0;
 			rep.error = i18nm.__("cannot_paste_to_source_dir");
 			res.send(JSON.stringify(rep));
 			return;
 		}
-		console.log(source_dir);
-		console.log(dest_dir);
-		var rex1 = new RegExp('^' + dest_dir + '\/');
-	    var rex2 = new RegExp('^' + dest_dir + '$');
 	    for (var i=0; i<clpbrd.files.length; i++) {
-	        if (clpbrd.files[i].match(rex1) || clpbrd.files[i].match(rex2)) {
+	    	var _fn = clpbrd.dir + '/' + clpbrd.files[i]; 
+	        if (_fn.match(/^\//)) _fn = _fn.replace(/^\//, '');
+	        var rex1 = new RegExp('^' + _fn + '\/');
+	        var rex2 = new RegExp('^' + _fn + '$');
+	        if (dest_dir.match(rex1) || dest_dir.match(rex2)) {
 	            rep.status = 0;
 				rep.error = i18nm.__("cannot_paste_to_itself");
 				res.send(JSON.stringify(rep));  
 	            return;    
 	        }
 	    }
+	    if (!source_dir) {
+			source_dir = '';
+		} else {
+			source_dir = '/' + source_dir;
+		}
 		source_dir = app.get('config').storage_dir + source_dir;
 		if (!fs.existsSync(source_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
 			return;	
+		}
+		if (!dest_dir) {
+			dest_dir = '';
+		} else {
+			dest_dir = '/' + dest_dir;
 		}
 		dest_dir = app.get('config').storage_dir + dest_dir;
 		if (!fs.existsSync(dest_dir)) {
@@ -282,9 +280,39 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;	
 		}
-		var ure = false;		
+		var ure = false;
+		source_dir = source_dir.replace(/\/\//g, '/');
+		dest_dir = dest_dir.replace(/\/\//g, '/');
+		for (var i=0; i<clpbrd.files.length; i++) {			
+			var src = source_dir + '/' + clpbrd.files[i];
+			if (!fs.existsSync(src)) {
+				rep.status = 0;
+				rep.error = i18nm.__("dir_or_file_not_exists");
+				res.send(JSON.stringify(rep));
+				return;	
+			}
+			var dst = dest_dir + '/' + clpbrd.files[i];			
+			if (src == dst || src == dest_dir) {
+				rep.status = 0;
+				rep.error = i18nm.__("cannot_paste_to_itself");
+				res.send(JSON.stringify(rep));  
+	            return;
+			}			
+			var stat = fs.statSync(src);
+			var ur = undefined;
+			if (stat.isFile() || stat.isDirectory()) {
+				var _ur = fs.copySync(src, dst);
+				ur = _ur;
+				if (clpbrd.mode == 'cut' && !_ur) {
+					fs.removeSync(src);
+				}
+			}			
+			if (ur) ure = true;
+		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
+		return;
+		
 	});
 	return router;
 }

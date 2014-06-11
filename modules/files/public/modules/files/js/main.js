@@ -54,9 +54,11 @@ var load_files_data = function(dir) {
                     file_types[i] = data.files[i].type;
                     $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
                     if (data.files[i].type == 'd') {
-                        var drop_target_btn_delete = new DropTarget(document.getElementById('taracot_file_' + i));
-                        drop_target_btn_delete.onLeave = function() {
-                            alert("OOK");
+                        var drop_target_folder = new DropTarget(document.getElementById('taracot_file_' + i));
+                        drop_target_folder.onLeave = function() {
+                            cutcopy('cut');
+                            var dest = current_dir + '/' + file_ids[this.toString().replace('taracot_file_', '')];
+                            btnpaste_handler(dest);
                         };
                     }
                 }
@@ -298,11 +300,15 @@ var btncut_handler = function() {
     });
 };
 
-var btnpaste_handler = function() {
+var btnpaste_handler = function(_dir) {
     if (clpbrd.mode == null) {
         return;
     }
-    if (clpbrd.dir == current_dir) {
+    var _current_dir = current_dir;
+    if (typeof _dir != undefined && typeof _dir === 'string') {
+        _current_dir = _dir;
+    }
+    if (clpbrd.dir == _current_dir) {
         $.UIkit.notify({
             message: _lang_vars.cannot_paste_to_source_dir,
             status: 'danger',
@@ -310,18 +316,20 @@ var btnpaste_handler = function() {
             pos: 'top-center'
         });  
         return; 
-    }
-    var rex1 = new RegExp('^' + current_dir + '\/');
-    var rex2 = new RegExp('^' + current_dir + '$');
-    for (var i=0; i<clpbrd.files.length; i++) {
-        if (clpbrd.files[i].match(rex1) || clpbrd.files[i].match(rex2)) {
+    }       
+    for (var i=0; i<clpbrd.files.length; i++) {        
+        var _fn = clpbrd.dir + '/' + clpbrd.files[i]; 
+        if (_fn.match(/^\//)) _fn = _fn.replace(/^\//, '');
+        var rex1 = new RegExp('^' + _fn + '\/');
+        var rex2 = new RegExp('^' + _fn + '$');
+        if (_current_dir.match(rex1) || _current_dir.match(rex2)) {
             $.UIkit.notify({
                 message: _lang_vars.cannot_paste_to_itself,
                 status: 'danger',
                 timeout: 2000,
                 pos: 'top-center'
             });  
-            // return;    
+            return;    
         }
     }
     $.ajax({
@@ -329,7 +337,7 @@ var btnpaste_handler = function() {
         url: '/cp/files/data/paste',
         data: {
             clipboard: clpbrd,
-            dest: current_dir
+            dest: _current_dir
         },
         dataType: "json",
         success: function (data) {
@@ -341,6 +349,9 @@ var btnpaste_handler = function() {
                     timeout: 2000,
                     pos: 'top-center'
                 }); 
+                clpbrd = { mode: null, dir: null, files: [] };
+                $('#btn_paste').attr('disabled', true);
+                $('#taracot-files-clipboard').html('0');
             } else {
                 var _err = _lang_vars.paste_error;
                 if (data.error) {
@@ -376,9 +387,7 @@ $(document).ready(function () {
     load_files_data();
     var drop_target_btn_delete = new DropTarget(document.getElementById('btn_delete'));
     drop_target_btn_delete.onLeave = function() {
-        btndelete_handler(true);
-        var dragObjects = $('.taracot-files-item');        
-        console.log(dragObjects);
+        btndelete_handler(true);        
     };
     $('#files_grid').click(function(e) {
         if (e.target.id === "files_grid") {
