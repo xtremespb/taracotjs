@@ -26,5 +26,6 @@
 	"paste_error": "paste_error",
 	"dir_not_exists ../public/filestest/tessssst": "dir_not_exists ../public/filestest/tessssst",
 	"invalid_dir": "invalid_dir",
-	"dir_or_file_not_exists": "dir_or_file_not_exists"
+	"dir_or_file_not_exists": "dir_or_file_not_exists",
+	"unauth": "unauth"
 }
