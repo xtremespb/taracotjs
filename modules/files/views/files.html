@@ -12,7 +12,10 @@
 </div>
 <div class="uk-panel uk-panel-box taracot-files-panel">
     <button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
-    <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_up")}" id="btn_up"></button>
+    <div class="uk-button-group">
+        <button class="uk-button uk-icon-level-down taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_down")}" id="btn_down"></button>
+        <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__("level_up")}" id="btn_up"></button>
+    </div>
     &nbsp;&nbsp;
     <button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__("new_folder")}" id="btn_new_folder"></button>
     &nbsp;&nbsp;    
@@ -25,9 +28,12 @@
 </div>
 <span class="uk-panel uk-margin-bottom">
     <span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__("total_files")}"></i></span>&nbsp;<span id="taracot_total_files"></span>
-    &nbsp;<span class="uk-badge uk-badge-notification"><i class="uk-icon-clipboard"></i></span>&nbsp;<span id="taracot-files-clipboard">0</span>
-    &nbsp;<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder"></i></span>&nbsp;<span id="taracot-files-current-dir">/</span>    
+    &nbsp;<span class="uk-badge uk-badge-notification"><i class="uk-icon-clipboard" data-uk-tooltip title="!{root.lang.__("clipboard_files")}"></i></span>&nbsp;<span id="taracot-files-clipboard">0</span>
+    &nbsp;<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder" data-uk-tooltip title="!{root.lang.__("current_folder")}"></i></span>&nbsp;<span id="taracot-files-current-dir">/</span>    
 </span>
+<div id="files_grid_progress">
+    <img src="/modules/files/images/loading_36x36.gif" style="width:15px;height:15px">&nbsp;!{root.lang.__("loading_files_data")}
+</div>
 <ul id="files_grid">
 </ul>
 <div id="taracot_files_bottom" class="uk-margin-top">
