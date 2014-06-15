@@ -27,5 +27,9 @@
 	"dir_not_exists ../public/filestest/tessssst": "dir_not_exists ../public/filestest/tessssst",
 	"invalid_dir": "invalid_dir",
 	"dir_or_file_not_exists": "dir_or_file_not_exists",
-	"unauth": "unauth"
+	"unauth": "unauth",
+	"level_down": "level_down",
+	"clipboard_files": "clipboard_files",
+	"current_folder": "current_folder",
+	"loading_files_data": "loading_files_data"
 }

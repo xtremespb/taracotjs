@@ -14,7 +14,7 @@ module.exports = function (app) {
 	router.get('/', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
-			req.session.auth_redirect = '/cp/settings';
+			req.session.auth_redirect = '/cp/files';
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
