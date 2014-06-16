@@ -21,7 +21,8 @@
     "prompt": "~0.2.13",
     "captchapng": "~0.0.1",
     "mime": "~1.2.11",
-    "fs-extra": "~0.9.1"
+    "fs-extra": "~0.9.1",
+    "multer": "~0.1.0"
   },
   "devDependencies": {},
   "scripts": {

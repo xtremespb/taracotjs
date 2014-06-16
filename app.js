@@ -7,7 +7,6 @@ var express = require('express');
 var config = require('./config');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 var I18n = require('i18n-2');
 var app = express();
 var redis = require("redis");
@@ -21,6 +20,8 @@ var renderer = require('./core/renderer');
 var mongoclient = require('mongodb').MongoClient;
 var winston = require('winston');
 var captcha = require('./core/' + config.captcha);
+var multer = require('multer');
+var bodyParser = require('body-parser');
 
 // Logging
 
@@ -76,9 +77,19 @@ app.engine('html', gaikan);
 
 // Use items
 
+app.use(multer({
+    dest: config.dir.tmp + '/',
+    rename: function (fieldname, filename) {
+        return Date.now() + '_' + filename.replace(/\W+/g, '-').toLowerCase();
+    },
+    onError: function (error, next) {
+      console.log(error)
+      next(error)
+    }
+}));
+app.use(cookieParser(config.cookie_secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(cookieParser(config.cookie_secret));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
