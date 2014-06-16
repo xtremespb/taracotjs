@@ -3,7 +3,7 @@ module.exports = function (app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
-	});
+	});	
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
 	var mime = require('mime');
@@ -38,7 +38,7 @@ module.exports = function (app) {
 			return;
 		}
 		var req_dir = req.body.dir;
-		if (req_dir && !req_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+		if (req_dir && !check_directory(req_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
@@ -49,8 +49,7 @@ module.exports = function (app) {
 		} else {
 			req_dir = '';
 		}
-		//var dir = app.get('path').dirname(require.main.filename).replace(/\\/g, '/').replace('/bin', '') + app.get('config').storage_dir + req_dir;
-		var dir = app.get('config').storage_dir + req_dir;
+		var dir = app.get('config').dir.storage + req_dir;
 		if (!fs.existsSync(dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
@@ -93,14 +92,14 @@ module.exports = function (app) {
 			return;
 		}
 		var req_dir = req.body.dir;
-		if (req_dir && !req_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+		if (req_dir && !check_directory(req_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
 		}
 		var new_dir = req.body.newdir;
-		if (!new_dir.match(/^[A-Za-z0-9_\-]{0,40}$/)) {
+		if (!check_directory(new_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir_syntax");
 			res.send(JSON.stringify(rep));
@@ -111,8 +110,8 @@ module.exports = function (app) {
 		} else {
 			req_dir = '';
 		}
-		//var dir = app.get('path').dirname(require.main.filename).replace(/\\/g, '/').replace('/bin', '') + app.get('config').storage_dir + req_dir;
-		var dir = app.get('config').storage_dir + req_dir;
+		//var dir = app.get('path').dirname(require.main.filename).replace(/\\/g, '/').replace('/bin', '') + app.get('config').dir.storage + req_dir;
+		var dir = app.get('config').dir.storage + req_dir;
 		if (!fs.existsSync(dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
@@ -148,12 +147,12 @@ module.exports = function (app) {
 		var fna = req.body.items;
 		if (!fna || !fna.length) {
 			rep.status = 0;
-			rep.error = i18nm.__("invalid_request");
+			rep.error = i18nm.__("invalid_request") + "1";
 			res.send(JSON.stringify(rep));
 			return;	
 		}
 		for (var i=0; i<fna.length; i++) {
-			if (!fna[i].match(/^[A-Za-z0-9_\-\.]{1,80}$/)) {
+			if (!check_filename(fna[i])) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_request");
 				res.send(JSON.stringify(rep));
@@ -161,7 +160,7 @@ module.exports = function (app) {
 			}
 		}
 		var req_dir = req.body.dir;
-		if (req_dir && !req_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+		if (req_dir && !check_directory(req_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
@@ -172,7 +171,7 @@ module.exports = function (app) {
 		} else {
 			req_dir = '';
 		}		
-		var dir = app.get('config').storage_dir + req_dir;
+		var dir = app.get('config').dir.storage + req_dir;
 		if (!fs.existsSync(dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
@@ -199,6 +198,71 @@ module.exports = function (app) {
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
 	});
+	router.post('/data/rename', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};		
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var old_filename = req.body.old_filename;
+		var new_filename = req.body.new_filename;
+		var req_dir = req.body.dir;
+		if (req_dir && !check_directory(req_dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}		
+		if (req_dir) {
+			req_dir = '/' + req_dir;
+		} else {
+			req_dir = '';
+		}
+		var dir = app.get('config').dir.storage + req_dir;
+		if (!fs.existsSync(dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		if (!check_filename(old_filename) || !check_filename(new_filename)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_filename_syntax");
+			res.send(JSON.stringify(rep));
+			return;		
+		}
+		if (old_filename == new_filename) {
+			rep.status = 0;
+			rep.error = i18nm.__("cannot_rename_same");
+			res.send(JSON.stringify(rep));
+			return;		
+		}
+		if (!fs.existsSync(dir + '/' + old_filename)) {
+			rep.status = 0;
+			rep.error = i18nm.__("file_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		if (fs.existsSync(dir + '/' + new_filename)) {
+			rep.status = 0;
+			rep.error = i18nm.__("cannot_rename_same");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		var cr = fs.renameSync(dir + '/' + old_filename, dir + '/' + new_filename);
+		if (cr) {
+			rep.status = 0;
+			rep.error = i18nm.__("rename_error");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		rep.status = 1;
+		res.send(JSON.stringify(rep));
+	});
 	router.post('/data/paste', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {};		
@@ -217,7 +281,7 @@ module.exports = function (app) {
 			return;	
 		}
 		for (var i=0; i<clpbrd.files.length; i++) {
-			if (!clpbrd.files[i].match(/^[A-Za-z0-9_\-\.]{1,80}$/)) {
+			if (!check_filename(clpbrd.files[i])) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_request");
 				res.send(JSON.stringify(rep));
@@ -225,14 +289,14 @@ module.exports = function (app) {
 			}
 		}
 		var source_dir = clpbrd.dir;
-		if (source_dir && !source_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+		if (source_dir && !check_directory(source_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
 		}		
 		var dest_dir = req.body.dest;
-		if (dest_dir && !dest_dir.match(/^[A-Za-z0-9_\-\/]{0,40}$/)) {
+		if (dest_dir && !check_directory(dest_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
@@ -261,7 +325,7 @@ module.exports = function (app) {
 		} else {
 			source_dir = '/' + source_dir;
 		}
-		source_dir = app.get('config').storage_dir + source_dir;
+		source_dir = app.get('config').dir.storage + source_dir;
 		if (!fs.existsSync(source_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
@@ -273,7 +337,7 @@ module.exports = function (app) {
 		} else {
 			dest_dir = '/' + dest_dir;
 		}
-		dest_dir = app.get('config').storage_dir + dest_dir;
+		dest_dir = app.get('config').dir.storage + dest_dir;
 		if (!fs.existsSync(dest_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
@@ -311,8 +375,85 @@ module.exports = function (app) {
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
-		return;
-		
+		return;		
 	});
+	router.post('/data/upload', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};		
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		if (!req.files || !req.files.file) {
+			rep.status = 0;
+			rep.error = i18nm.__("no_file_sent");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var file = req.files.file;
+		if (file.size > app.get('config').max_upload_file_mb * 1048576) {
+			rep.status = 0;
+			rep.error = i18nm.__("file_too_big");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		if (!check_filename(file.originalname)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_filename_syntax");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		var dir = req.body.dir;
+		if (dir && !check_directory(dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		if (!dir) {
+			dir = '';
+		} else {
+			dir = '/' + dir;
+		}
+		dir = app.get('config').dir.storage + dir;
+		if (!fs.existsSync(dir)) {
+			rep.status = 0;
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		var cr = fs.renameSync(app.get('config').dir.tmp + '/' + file.name, dir + '/' + file.originalname);
+		if (cr) {
+			rep.status = 0;
+			rep.error = i18nm.__("upload_failed");
+			res.send(JSON.stringify(rep));
+			return;		
+		}
+		rep.status = 1;
+		res.send(JSON.stringify(rep));
+		return;	
+	});
+	// Helper functions (regexp)
+	var check_filename = function(_fn) {
+		if (!_fn) return false; // don't allow null
+		var fn = _fn.replace(/^\s+|\s+$/g,'');
+		if (!fn || fn.length > 80) return false; // null or too long
+		if (fn.match(/^\./)) return false; // starting with a dot
+		if (fn.match(/^[\^<>\:\"\/\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
+		return true;
+	};
+	var check_directory = function(_fn) {				
+		if (!_fn) return true; // allow null
+		var fn = _fn.replace(/^\s+|\s+$/g,'');
+		if (fn.length > 40) return false; // too long
+		if (fn.match(/^\./)) return false; // starting with a dot
+		if (fn.match(/^\//)) return false; // starting with a slash
+    	if (fn.match(/^\\/)) return false; // starting with a slash
+		if (fn.match(/^[\^<>\:\"\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
+		return true;
+	};
 	return router;
 }

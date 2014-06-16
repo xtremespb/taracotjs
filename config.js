@@ -5,7 +5,10 @@ var config = {
 		"en",
 		"ru"
 	],
-	"storage_dir": "../public/files",
+	"dir": {
+		"storage": "../public/files",
+		"tmp": "../tmp"
+	},
 	"cookie_secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
 	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
 	"redis": {
@@ -45,6 +48,8 @@ var config = {
 		}
 	},
 	"captcha": 'captcha_native',
+	"max_upload_file_mb": 100,
+	"max_upload_image_mb": 5,
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"modules": [
 		{

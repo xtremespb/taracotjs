@@ -46,3 +46,14 @@
     margin: 0;
     padding: 0;
 }
+#taracot_upload_box {
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: visible;
+    overflow: auto;
+    padding-top: 0px;
+    padding-bottom: 15px;
+}
+#uploader_dnd_hint {
+    padding-top: 15px;
+}
