@@ -450,7 +450,6 @@ module.exports = function (app) {
 		var fn = _fn.replace(/^\s+|\s+$/g,'');
 		if (fn.length > 40) return false; // too long
 		if (fn.match(/^\./)) return false; // starting with a dot
-		if (fn.match(/^\//)) return false; // starting with a slash
     	if (fn.match(/^\\/)) return false; // starting with a slash
 		if (fn.match(/^[\^<>\:\"\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
 		return true;
