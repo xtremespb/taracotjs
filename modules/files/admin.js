@@ -7,6 +7,11 @@ module.exports = function (app) {
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
 	var mime = require('mime');
+	var gm = false;
+	if (app.get('config').graphicsmagick) {
+		gm = require('gm');
+	}
+	var crypto = require('crypto');
 	router.get_module_name = function (req) {
 		i18nm.setLocale(req.i18n.getLocale());
 		return i18nm.__("module_name");
@@ -62,10 +67,18 @@ module.exports = function (app) {
 		files.forEach(function (file) {
 			var item = { name: file };
 			var stat = fs.statSync(dir + '/' + file);
-			if (stat.isFile() && !file.match(/^\./)) {
+			if (stat.isFile() && !file.match(/^\./) && !file.match(/^___thumb_/)) {
+				var file_mime = mime.lookup(dir + '/' + file);
+				if (file_mime == 'image/png' || file_mime == 'image/jpeg') {
+					var md5 = crypto.createHash('md5');
+					var fn = md5.update(file).digest('hex');
+					if (fs.existsSync(dir + '/___thumb_' + fn + '.jpg')) {
+						item.thumb = fn;
+					}
+				}
 				item.type = 'f';
 				item.size = stat['size'];
-				item.mime = mime.lookup(dir + '/' + file).replace('/', '_');
+				item.mime = file_mime;
 				fa.push(item);
 			}
 			if (stat.isDirectory() && !file.match(/^\./)) {
@@ -187,6 +200,11 @@ module.exports = function (app) {
 			} else {
 				ur = fs.removeSync(dir + '/' + fna[i]);
 			}			
+			var md5 = crypto.createHash('md5');
+			var fn = md5.update(fna[i]).digest('hex');
+			if (fs.existsSync(dir + '/___thumb_' + fn + '.jpg')) {
+				fs.unlinkSync(dir + '/___thumb_' + fn + '.jpg');
+			}
 			if (ur) ure = true;
 		}
 		if (ure) {
@@ -254,6 +272,11 @@ module.exports = function (app) {
 			return;	
 		}
 		var cr = fs.renameSync(dir + '/' + old_filename, dir + '/' + new_filename);
+		var fn = crypto.createHash('md5').update(old_filename).digest('hex');
+		if (fs.existsSync(dir + '/___thumb_' + fn + '.jpg')) {
+			var nf = crypto.createHash('md5').update(new_filename).digest('hex');
+			fs.renameSync(dir + '/___thumb_' + fn + '.jpg', dir + '/___thumb_' + nf + '.jpg');
+		}
 		if (cr) {
 			rep.status = 0;
 			rep.error = i18nm.__("rename_error");
@@ -365,12 +388,30 @@ module.exports = function (app) {
 			var stat = fs.statSync(src);
 			var ur = undefined;
 			if (stat.isFile() || stat.isDirectory()) {
-				var _ur = fs.copySync(src, dst);
-				ur = _ur;
-				if (clpbrd.mode == 'cut' && !_ur) {
-					fs.removeSync(src);
+				if (stat.isFile()) {
+					var _ur;
+					if (clpbrd.mode == 'cut') {
+						_ur = fs.renameSync(src, dst);
+					} else {
+						_ur = fs.copySync(src, dst);
+					}
+					ur = _ur;
+				} else {
+					var _ur = fs.copySync(src, dst);
+					ur = _ur;
+					if (clpbrd.mode == 'cut' && !_ur) {
+						fs.removeSync(src);
+					}
 				}
-			}			
+			}
+			var fn = crypto.createHash('md5').update(clpbrd.files[i]).digest('hex');
+			if (fs.existsSync(source_dir + '/___thumb_' + fn + '.jpg')) {
+				if (clpbrd.mode == 'cut') {
+					fs.renameSync(source_dir + '/___thumb_' + fn + '.jpg', dest_dir  + '/___thumb_' + fn + '.jpg');
+				} else {
+					fs.copySync(source_dir + '/___thumb_' + fn + '.jpg', dest_dir  + '/___thumb_' + fn + '.jpg');
+				}
+			}
 			if (ur) ure = true;
 		}
 		rep.status = 1;
@@ -424,13 +465,35 @@ module.exports = function (app) {
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
 			return;	
-		}
+		}		
 		var cr = fs.renameSync(app.get('config').dir.tmp + '/' + file.name, dir + '/' + file.originalname);
 		if (cr) {
 			rep.status = 0;
 			rep.error = i18nm.__("upload_failed");
 			res.send(JSON.stringify(rep));
 			return;		
+		}
+		// Create thumbnail if GM is available
+		if (gm && (file.mimetype == 'image/png' || file.mimetype == 'image/jpeg')) {
+			var md5 = crypto.createHash('md5');
+			var fn = md5.update(file.originalname).digest('hex');
+			var img = gm(dir + '/' + file.originalname);
+			img.autoOrient();
+			img.size(function (err, size) {
+				if (!err) {
+				  	if (size.width >= size.height) {
+				  		img.resize(null, 70);
+				  		img.crop(70,70, 0, 0);
+				  	} else {
+				  		img.resize(70, null);
+				  		img.crop(70,70, 0, 0);
+				  	}			  	
+					img.setFormat('jpeg');
+					img.write(dir + '/___thumb_' + fn + '.jpg', function(err) {
+						// OK, we don't care
+					});
+				}
+			});				
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));

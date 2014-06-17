@@ -43,5 +43,7 @@
 	"rename_file": "Rename",
 	"invalid_filename_syntax": "Invalid filename syntax",
 	"rename_success": "Rename successful",
-	"cannot_rename_same": "File or folder with this name exists"
+	"cannot_rename_same": "File or folder with this name exists",
+	"refresh": "Refresh",
+	"download": "download"
 }

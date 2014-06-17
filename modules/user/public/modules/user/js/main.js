@@ -1,4 +1,4 @@
-var edit_modal = new $.UIkit.modal.Modal("#taracot-modal-edit");
+var edit_modal = new $.UIkit.modal("#taracot-modal-edit");
 var current_id = '';
 
 /* Configuration */
