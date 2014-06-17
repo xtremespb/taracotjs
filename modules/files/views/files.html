@@ -22,6 +22,8 @@
 </div>
 <div class="uk-panel uk-panel-box taracot-files-panel">
     <button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
+    <button class="uk-button uk-icon-refresh taracot-files-button" data-uk-tooltip title="!{root.lang.__('refresh')}" id="btn_refresh"></button>
+    &nbsp;&nbsp;    
     <div class="uk-button-group">
         <button class="uk-button uk-icon-level-down taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_down')}" id="btn_down"></button>
         <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_up')}" id="btn_up"></button>
@@ -36,7 +38,10 @@
         <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__('delete')}" id="btn_delete"></button>
     </div>
     &nbsp;&nbsp;    
-    <button class="uk-button uk-icon-upload uk-button-success taracot-files-button" data-uk-tooltip title="!{root.lang.__('upload')}" id="btn_upload"></button>
+    <div class="uk-button-group">
+        <button class="uk-button uk-icon-upload uk-button-success taracot-files-button" data-uk-tooltip title="!{root.lang.__('upload')}" id="btn_upload"></button>
+        <button class="uk-button uk-icon-download taracot-files-button" data-uk-tooltip title="!{root.lang.__('download')}" id="btn_download"></button>
+    </div>
 </div>
 <span class="uk-panel uk-margin-bottom">
     <span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__('total_files')}"></i></span>&nbsp;<span id="taracot_total_files"></span>

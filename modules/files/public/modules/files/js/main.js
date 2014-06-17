@@ -3,8 +3,8 @@ var file_types = {};
 var current_dir = '';
 var up_dir = [];
 var clpbrd = { mode: null, dir: null, files: [] };
-var taracot_dlg_edit = new $.UIkit.modal.Modal("#taracot_dlg_edit");
-var taracot_dlg_upload = new $.UIkit.modal.Modal("#taracot_dlg_upload", { bgclose:false, keyboard: false });
+var taracot_dlg_edit = new $.UIkit.modal("#taracot_dlg_edit");
+var taracot_dlg_upload = new $.UIkit.modal("#taracot_dlg_upload", { bgclose:false, keyboard: false });
 var buttons_state = [];
 var uploader;
 var refresh_required = false;
@@ -153,21 +153,24 @@ var load_files_data = function(dir) {
                 // uikit tooltip bug workaround
                 $('#btn_dummy').mouseover();
                 for (var i = 0; i < data.files.length; i++) {
-                    var tp = 'folder';
+                    var tp = '/modules/files/images/folder.png';
                     if (data.files[i].type == 'f') {
-                        tp = 'file';
-                        if (data.files[i].mime.match(/^image_/)) tp = 'image';
-                        if (data.files[i].mime.match(/excel/) || data.files[i].mime.match(/csv/) || data.files[i].mime.match(/spreadsheet/)) tp = 'excel';
-                        if (data.files[i].mime.match(/msword/) || data.files[i].mime.match(/rtf/)) tp = 'word';
-                        if (data.files[i].mime.match(/text_plain/)) tp = 'txt';
-                        if (data.files[i].mime.match(/video/)) tp = 'video';
-                        if (data.files[i].mime.match(/pdf/)) tp = 'pdf';
-                        if (data.files[i].mime.match(/photoshop/)) tp = 'psd';
-                        if (data.files[i].mime.match(/zip/) || data.files[i].mime.match(/rar/)) tp = 'archive';
+                        tp = '/modules/files/images/file.png';
+                        if (data.files[i].mime.match(/^image\//)) tp = '/modules/files/images/image.png';
+                        if (data.files[i].mime.match(/excel/) || data.files[i].mime.match(/csv/) || data.files[i].mime.match(/spreadsheet/)) tp = '/modules/files/images/excel.png';
+                        if (data.files[i].mime.match(/msword/) || data.files[i].mime.match(/rtf/)) tp = '/modules/files/images/word.png';
+                        if (data.files[i].mime.match(/text\/plain/)) tp = '/modules/files/images/txt.png';
+                        if (data.files[i].mime.match(/video/)) tp = '/modules/files/images/video.png';
+                        if (data.files[i].mime.match(/pdf/)) tp = '/modules/files/images/pdf.png';
+                        if (data.files[i].mime.match(/photoshop/)) tp = '/modules/files/images/psd.png';
+                        if (data.files[i].mime.match(/zip/) || data.files[i].mime.match(/rar/)) tp = '/modules/files/images/archive.png';
+                    }
+                    if (data.files[i].thumb) {
+                        tp = '/files/' + current_dir + '/___thumb_' + data.files[i].thumb + '.jpg';
                     }
                     file_ids[i] = data.files[i].name;
                     file_types[i] = data.files[i].type;
-                    $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="/modules/files/images/' + tp + '.png" style="width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
+                    $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="' + tp + '" style="max-height:70px;max-width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
                     if (data.files[i].type == 'd') {
                         var drop_target_folder = new DropTarget(document.getElementById('taracot_file_' + i));
                         drop_target_folder.onLeave = function() {
@@ -217,6 +220,8 @@ var load_files_data = function(dir) {
                 pos: 'top-center'
             });
             $('#taracot_total_files').html('0');
+            load_buttons_state();
+            shifty_handler();
         }
     });
 };
@@ -635,6 +640,10 @@ var btnupload_handler = function() {
     $('#taracot_upload_box').html('<div style="text-align:center" id="uploader_dnd_hint">' + _lang_vars.drag_and_drop_files_here + '</div>');
 };
 
+var btnrefresh_hanlder = function() {
+    load_files_data(current_dir);
+};
+
 var dlguploadbtnclear_handler = function() {
     $('#taracot_dlg_upload_btn_clear').attr('disabled', true);
     $('#taracot_dlg_upload_btn_upload').attr('disabled', true);
@@ -671,6 +680,7 @@ var load_buttons_state = function() {
 };
 
 var init_buttons_state = function() {
+   $('#btn_refresh').attr('disabled', false);
    $('#btn_down').attr('disabled', true);
    $('#btn_up').attr('disabled', true);
    $('#btn_new_folder').attr('disabled', false);
@@ -680,8 +690,10 @@ var init_buttons_state = function() {
    $('#btn_rename').attr('disabled', true);
    $('#btn_delete').attr('disabled', true);
    $('#btn_upload').attr('disabled', false);
+   $('#btn_download').attr('disabled', true);
 };
 
+$('#btn_refresh').click(btnrefresh_hanlder);
 $('#btn_new_folder').click(btnnewfolder_handler);
 $('#btn_up').click(btnup_handler);
 $('#btn_down').click(btndown_handler);
