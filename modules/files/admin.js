@@ -7,6 +7,7 @@ module.exports = function (app) {
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
 	var mime = require('mime');
+	var archiver = require('archiver');
 	var gm = false;
 	if (app.get('config').graphicsmagick) {
 		gm = require('gm');
@@ -111,8 +112,8 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;
 		}
-		var new_dir = req.body.newdir;
-		if (!check_directory(new_dir)) {
+		var new_dir = req.body.newdir.replace(/^\s+|\s+$/g,'');
+		if (!new_dir || !check_directory(new_dir, true)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir_syntax");
 			res.send(JSON.stringify(rep));
@@ -499,6 +500,90 @@ module.exports = function (app) {
 		res.send(JSON.stringify(rep));
 		return;	
 	});
+	router.post('/data/download', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};		
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var files = req.body.files;
+		if (!files || !files.length) {
+			rep.error = i18nm.__("no_file_sent");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var dir = req.body.dir;
+		if (dir && !check_directory(dir)) {
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		if (!dir) {
+			dir = '';
+		} else {
+			dir = '/' + dir;
+		}
+		dir = app.get('config').dir.storage + dir;
+		if (!fs.existsSync(dir)) {
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		for (var i=0; i<files.length; i++) {
+			if (!check_filename(files[i])) {
+				rep.error = i18nm.__("invalid_filename_syntax");
+				res.send(JSON.stringify(rep));
+				return;	
+			}
+			if (!fs.existsSync(dir + '/' + files[i]) || files[i].match(/^\./) || files[i].match(/^___thumb_/)) {
+				rep.error = i18nm.__("file_not_exists");
+				res.send(JSON.stringify(rep));
+				return;	
+			}		
+		}
+		if (files.length == 1) {
+			var stat = fs.statSync(dir + '/' + files[0]);
+			if (stat.isFile()) {
+				res.cookie('fileDownload', 'true');
+				res.download(app.get('path').resolve(dir + '/' + files[0]));
+				return;
+			}
+		}
+		var tmp = app.get('path').resolve(app.get('config').dir.tmp).replace(/\\/, '/') + '/download_' + Date.now() + '.zip';
+		var output = fs.createWriteStream(tmp);
+		var archive = archiver('zip');
+		output.on('close', function () {
+			if (!fs.existsSync(tmp)) {
+				rep.error = i18nm.__("download_error");
+				res.send(JSON.stringify(rep));
+				return;	
+			}
+			res.cookie('fileDownload', 'true');
+			res.download(tmp)
+			return;
+		});
+		archive.on('error', function(err){
+		    rep.error = i18nm.__("download_error");
+			res.send(JSON.stringify(rep));
+			return;	
+		});
+		archive.pipe(output);
+		for (var i=0; i<files.length; i++) {
+			var stat = fs.statSync(dir + '/' + files[i]);
+			if (stat.isDirectory()) {
+				archive.bulk([
+				    { expand: true, cwd: dir + '/' + files[i], src: ['**'], dest: files[i]}
+				]);
+			}
+			if (stat.isFile()) {
+				archive.file(dir + '/' + files[i], { name: files[i] });
+			}
+		}		
+		archive.finalize();		
+	});
 	// Helper functions (regexp)
 	var check_filename = function(_fn) {
 		if (!_fn) return false; // don't allow null
@@ -508,7 +593,7 @@ module.exports = function (app) {
 		if (fn.match(/^[\^<>\:\"\/\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
 		return true;
 	};
-	var check_directory = function(_fn) {				
+	var check_directory = function(_fn) {
 		if (!_fn) return true; // allow null
 		var fn = _fn.replace(/^\s+|\s+$/g,'');
 		if (fn.length > 40) return false; // too long

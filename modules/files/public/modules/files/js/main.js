@@ -1,5 +1,6 @@
 var file_ids = {};
 var file_types = {};
+var file_mime = {};
 var current_dir = '';
 var up_dir = [];
 var clpbrd = { mode: null, dir: null, files: [] };
@@ -20,11 +21,17 @@ var shifty_select_handler = function() {
         } else {
             $('#btn_down').attr('disabled', true);
         }
+        if (ns.length == 1 && file_mime[id] == 'application/zip') {
+            $('#btn_unzip').attr('disabled', false);
+        } else {
+            $('#btn_unzip').attr('disabled', true);
+        }
     }
     if (ns.length) {
         $('#btn_delete').attr('disabled', false);
         $('#btn_copy').attr('disabled', false);
         $('#btn_cut').attr('disabled', false);
+        $('#btn_download').attr('disabled', false);
         if (ns.length == 1) {
             $('#btn_rename').attr('disabled', false);
         } else {
@@ -35,15 +42,17 @@ var shifty_select_handler = function() {
         $('#btn_copy').attr('disabled', true);
         $('#btn_cut').attr('disabled', true);
         $('#btn_rename').attr('disabled', true);
+        $('#btn_download').attr('disabled', true);
     }    
 };
 
 var shifty_unselect_handler = function() {
     var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
     $('#btn_down').attr('disabled', true);
+    $('#btn_unzip').attr('disabled', true);
     if (ns.length == 1) {
         var id = ns[0].replace('taracot_file_', '');
-        if (file_types[id] == 'd') $('#btn_down').attr('disabled', false);
+        if (file_types[id] == 'd') $('#btn_down').attr('disabled', false);        
     }
 };
 
@@ -170,6 +179,7 @@ var load_files_data = function(dir) {
                     }
                     file_ids[i] = data.files[i].name;
                     file_types[i] = data.files[i].type;
+                    file_mime[i] = data.files[i].mime;
                     $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="' + tp + '" style="max-height:70px;max-width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
                     if (data.files[i].type == 'd') {
                         var drop_target_folder = new DropTarget(document.getElementById('taracot_file_' + i));
@@ -268,7 +278,8 @@ var btndelete_handler = function(dnd) {
         var id = ns[i].replace('taracot_file_', '')
         fna.push(file_ids[id]);
     }
-    if (!confirm(_lang_vars.delete_confirm + "\n\n" + fna)) {
+
+    if (!confirm(_lang_vars.delete_confirm + "\n\n" + fna.join(', '))) {
         return;
     }
     $('#files_grid_progress').show();
@@ -342,8 +353,9 @@ var btnnewfolder_handler = function() {
 };
 
 var create_new_dir = function() { 
+    var new_dir = $('#taracot_dlg_edit_value').val().replace(/^\s+|\s+$/g,'');
     $('#taracot_dlg_edit_value').removeClass('uk-form-danger');
-    if (!check_directory($('#taracot_dlg_edit_value').val())) {
+    if (!new_dir || !check_directory(new_dir)) {
         $('#taracot_dlg_edit_value').addClass('uk-form-danger');
         $.UIkit.notify({
             message: _lang_vars.invalid_dir_syntax,
@@ -363,7 +375,7 @@ var create_new_dir = function() {
         url: '/cp/files/data/newdir',
         data: {
             dir: current_dir,
-            newdir: $('#taracot_dlg_edit_value').val()
+            newdir: new_dir
         },
         dataType: "json",
         success: function (data) {
@@ -628,6 +640,52 @@ var btnpaste_handler = function(_dir) {
     });
 };
 
+var btndownload_handler = function() {
+    var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
+    if (!ns.length) return;
+    var files = [];    
+    for (var i=0; i<ns.length; i++) {
+        var id = ns[i].replace('taracot_file_', '');
+        files.push(file_ids[id]);
+    }
+    // uikit tooltip bug workaround
+    $('#btn_dummy').mouseover();
+    $('#files_grid_progress').show();
+    $('#files_grid').hide();
+    save_buttons_state();
+    $('.taracot-files-button').attr('disabled', true);
+    $.fileDownload('/cp/files/data/download', {
+        httpMethod: "POST",
+        data: {
+            dir: current_dir,
+            files: files
+        },
+        successCallback: function (url) {
+            load_buttons_state();
+            shifty_handler();
+            $('#files_grid_progress').hide();            
+            $('#files_grid').show();    
+        },
+        failCallback: function (html, url) {
+            load_buttons_state();
+            shifty_handler();
+            $('#files_grid_progress').hide();            
+            $('#files_grid').show();
+            var data = JSON.parse(html);
+            var _err = _lang_vars.download_error;
+            if (data.error) {
+                _err = data.error;
+            }
+            $.UIkit.notify({
+                message: _err,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+    });
+};
+
 var btnupload_handler = function() {    
     refresh_required = false;
     taracot_dlg_upload.show();
@@ -643,6 +701,7 @@ var btnupload_handler = function() {
 var btnrefresh_hanlder = function() {
     load_files_data(current_dir);
 };
+
 
 var dlguploadbtnclear_handler = function() {
     $('#taracot_dlg_upload_btn_clear').attr('disabled', true);
@@ -691,6 +750,7 @@ var init_buttons_state = function() {
    $('#btn_delete').attr('disabled', true);
    $('#btn_upload').attr('disabled', false);
    $('#btn_download').attr('disabled', true);
+   $('#btn_unzip').attr('disabled', true);
 };
 
 $('#btn_refresh').click(btnrefresh_hanlder);
@@ -703,6 +763,7 @@ $('#btn_cut').click(btncut_handler);
 $('#btn_paste').click(btnpaste_handler);
 $('#btn_rename').click(btnrename_handler);
 $('#btn_upload').click(btnupload_handler);
+$('#btn_download').click(btndownload_handler);
 $('#taracot_dlg_upload_btn_clear').click(dlguploadbtnclear_handler);
 $('#taracot_dlg_upload_btn_upload').click(dlguploadbtnupload_handler);
 

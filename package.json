@@ -22,7 +22,8 @@
     "captchapng": "~0.0.1",
     "mime": "~1.2.11",
     "fs-extra": "~0.9.1",
-    "multer": "~0.1.0"
+    "multer": "~0.1.0",
+    "archiver": "~0.10.0"
   },
   "devDependencies": {},
   "scripts": {

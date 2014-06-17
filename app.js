@@ -226,6 +226,7 @@ app.use(function (err, req, res, next) {
         delete _data.stack;
     }
     logger.error(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url + ' ' + err.message, {} );
+    console.log("\n" + err.stack + "\n");
     res.render('error', {
         message: err.message,
         error: err
