@@ -41,6 +41,7 @@
     <div class="uk-button-group">
         <button class="uk-button uk-icon-upload uk-button-success taracot-files-button" data-uk-tooltip title="!{root.lang.__('upload')}" id="btn_upload"></button>
         <button class="uk-button uk-icon-download taracot-files-button" data-uk-tooltip title="!{root.lang.__('download')}" id="btn_download"></button>
+        <button class="uk-button uk-icon-file-zip-o taracot-files-button" data-uk-tooltip title="!{root.lang.__('unzip')}" id="btn_unzip"></button>
     </div>
 </div>
 <span class="uk-panel uk-margin-bottom">
@@ -74,12 +75,14 @@
     rename: "!{root.lang.__('rename_file')}",
     invalid_filename_syntax: "!{root.lang.__('invalid_filename_syntax')}",
     rename_success: "!{root.lang.__('rename_success')}",
-    cannot_rename_same: "!{root.lang.__('cannot_rename_same')}"
+    cannot_rename_same: "!{root.lang.__('cannot_rename_same')}",
+    download_error: "!{root.lang.__('download_error')}"
   }
   var _dragdrop_action_taken = false;
 </script>
 <script src="/modules/files/js/dragdrop.helper.js"></script>
 <script src="/modules/files/js/jquery.shifty.js"></script>
 <script src="/modules/files/js/dragdrop.js"></script>
+<script src="/js/jquery.fileDownload.min.js"></script>
 <script src="/js/plupload/plupload.full.min.js"></script>
 <script src="/modules/files/js/main.js"></script>

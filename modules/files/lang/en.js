@@ -45,5 +45,7 @@
 	"rename_success": "Rename successful",
 	"cannot_rename_same": "File or folder with this name exists",
 	"refresh": "Refresh",
-	"download": "download"
+	"download": "Download",
+	"download_error": "Download failed",
+	"unzip": "UnZIP file"
 }

@@ -192,7 +192,7 @@ var delete_item = function (ids) {
     for (var i = 0; i < ids.length; i++) {
         users.push($('#taracot-table-chbx-' + ids[i]).attr('rel').replace('taracot-item_', ''));
     }
-    if (confirm(_lang_vars.del_confirm + "\n\n" + users + "\n\n")) {
+    if (confirm(_lang_vars.del_confirm + "\n\n" + users.join(', '))) {
         $('#taracot_table').medvedTable('loading_indicator_show');
         $.ajax({
             type: 'POST',
