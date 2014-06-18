@@ -48,6 +48,6 @@
 	"download": "Download",
 	"download_error": "Download failed",
 	"unzip": "UnZIP file",
-	"unzip_error": "unzip_error",
-	"unzip_success": "unzip_success"
+	"unzip_error": "Error while decompressing file(s)",
+	"unzip_success": "Successfuly unzipped"
 }
