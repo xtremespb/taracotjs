@@ -1,2 +1,4 @@
 node_modules/*
 logs/taracotjs.log
+tmp/*.zip
+modules/bastra/*

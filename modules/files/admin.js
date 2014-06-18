@@ -8,6 +8,7 @@ module.exports = function (app) {
 	var router = app.get('express').Router();
 	var mime = require('mime');
 	var archiver = require('archiver');
+	var unzip = require('unzip');
 	var gm = false;
 	if (app.get('config').graphicsmagick) {
 		gm = require('gm');
@@ -583,6 +584,57 @@ module.exports = function (app) {
 			}
 		}		
 		archive.finalize();		
+	});
+	router.post('/data/unzip', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};		
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var file = req.body.file;
+		if (!check_filename(file)) {
+			rep.error = i18nm.__("no_file_sent");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var dir = req.body.dir;
+		if (dir && !check_directory(dir)) {
+			rep.error = i18nm.__("invalid_dir");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		if (!dir) {
+			dir = '';
+		} else {
+			dir = '/' + dir;
+		}
+		dir = app.get('config').dir.storage + dir;
+		if (!fs.existsSync(dir)) {
+			rep.error = i18nm.__("dir_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		if (!fs.existsSync(dir + '/' + file)) {
+			rep.error = i18nm.__("file_not_exists");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		var file_mime = mime.lookup(dir + '/' + file);
+		if (file_mime != 'application/zip') {
+			rep.error = i18nm.__("not_a_zip_archive");
+			res.send(JSON.stringify(rep));
+			return;		
+		}
+		var rs = fs.createReadStream(dir + '/' + file);
+		var p = rs.pipe(unzip.Extract({ path: dir }));
+		p.on('close', function() {
+			rep.status = 1;
+			res.send(JSON.stringify(rep));
+			return;	
+		});		
 	});
 	// Helper functions (regexp)
 	var check_filename = function(_fn) {

@@ -640,6 +640,65 @@ var btnpaste_handler = function(_dir) {
     });
 };
 
+var btnunzip_handler = function(_dir) {
+    var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
+    if (!ns || !ns.length || ns.length > 1) return;
+    var id = ns[0].replace('taracot_file_', '');
+    if (file_mime[id] != 'application/zip') return;
+    // uikit tooltip bug workaround
+    $('#btn_dummy').mouseover();
+    $('#files_grid_progress').show();
+    $('#files_grid').hide();
+    save_buttons_state();
+    $('.taracot-files-button').attr('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: '/cp/files/data/unzip',
+        data: {
+            dir: current_dir,
+            file: file_ids[id]
+        },
+        dataType: "json",
+        success: function (data) {
+            load_buttons_state();
+            shifty_handler();
+            $('#files_grid_progress').hide();            
+            $('#files_grid').show();
+            if (data && data.status == 1) {  
+                load_files_data(current_dir);
+                $.UIkit.notify({
+                    message: _lang_vars.unzip_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                }); 
+            } else {
+                var _err = _lang_vars.unzip_error;
+                if (data.error) {
+                    _err = data.error;
+                }
+                $.UIkit.notify({
+                    message: _err,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });    
+            }    
+        },
+        error: function () {     
+            load_buttons_state();
+            $('#files_grid_progress').hide();
+            $('#files_grid').show();       
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+    });
+};
+
 var btndownload_handler = function() {
     var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
     if (!ns.length) return;
@@ -764,6 +823,7 @@ $('#btn_paste').click(btnpaste_handler);
 $('#btn_rename').click(btnrename_handler);
 $('#btn_upload').click(btnupload_handler);
 $('#btn_download').click(btndownload_handler);
+$('#btn_unzip').click(btnunzip_handler);
 $('#taracot_dlg_upload_btn_clear').click(dlguploadbtnclear_handler);
 $('#taracot_dlg_upload_btn_upload').click(dlguploadbtnupload_handler);
 
