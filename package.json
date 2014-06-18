@@ -23,7 +23,8 @@
     "mime": "~1.2.11",
     "fs-extra": "~0.9.1",
     "multer": "~0.1.0",
-    "archiver": "~0.10.0"
+    "archiver": "~0.10.0",
+    "unzip": "~0.1.9"
   },
   "devDependencies": {},
   "scripts": {

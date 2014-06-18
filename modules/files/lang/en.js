@@ -47,5 +47,7 @@
 	"refresh": "Refresh",
 	"download": "Download",
 	"download_error": "Download failed",
-	"unzip": "UnZIP file"
+	"unzip": "UnZIP file",
+	"unzip_error": "unzip_error",
+	"unzip_success": "unzip_success"
 }
