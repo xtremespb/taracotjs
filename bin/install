@@ -225,6 +225,18 @@ async.series([
 				console.log("... OK (3/3)");
 				callback();
 			});
+		},
+		function (callback) {
+			console.log("\nCreating collection: pages\n");
+			db.createCollection('pages', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
 		}
 	],
 	function (err) {

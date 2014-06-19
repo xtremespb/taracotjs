@@ -80,6 +80,18 @@ var config = {
 			"prefix": "/files/",
 			"cp_id": "files",
 			"cp_prefix": "/cp/files/"
+		},
+		{
+			"name": "pages",
+			"prefix": "/pages/",
+			"cp_id": "pages",
+			"cp_prefix": "/cp/pages/"
+		},
+		{
+			"name": "bastra",
+			"prefix": "/bastra/",
+			"cp_id": "bastra",
+			"cp_prefix": "/cp/bastra/"
 		}
 	]
 };
