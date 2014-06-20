@@ -24,7 +24,8 @@
     "fs-extra": "~0.9.1",
     "multer": "~0.1.0",
     "archiver": "~0.10.0",
-    "unzip": "~0.1.9"
+    "unzip": "~0.1.9",
+    "gm": "~1.16.0"
   },
   "devDependencies": {},
   "scripts": {
