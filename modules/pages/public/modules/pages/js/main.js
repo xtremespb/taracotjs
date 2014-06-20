@@ -68,10 +68,19 @@ $('.taracot-folders-edit-control').bind('keypress', function (e) {
     }
 });
 
+var folders_find_path = function(fldrs_hash, id, _path) {
+    var path = _path || [ ];
+    if (fldrs_hash[id].parent && fldrs_hash[id].parent != '#') {
+        path.push(fldrs_hash[id].text);
+        folders_find_path(fldrs_hash, fldrs_hash[id].parent, path);
+    }    
+    return path;
+};
+
 $('#btn_folders_edit_save').click(function() {        
     var sel = jstree_folders.jstree(true).get_selected();
-    if (!sel || !sel.length) sel = '#';
-    var cn = jstree_folders.jstree(true).create_node(sel, $('#fname').val());
+    if (!sel || !sel.length) return;    
+    var cn = jstree_folders.jstree(true).create_node(sel, { text: $('#fname').val(), type: 'folder' });
     jstree_folders.jstree(true).get_node(cn).data = [];
     for (var i=0; i < locales.length; i++) {
         var item = {};
@@ -82,7 +91,18 @@ $('#btn_folders_edit_save').click(function() {
     jstree_folders.jstree(true).deselect_node(sel);
     jstree_folders.jstree(true).select_node(cn);
     folders_edit_dlg.hide();
-    //console.log(jstree_folders.jstree(true).get_json(jstree_folders, { no_state: true }));
+    var fldrs = jstree_folders.jstree(true).get_json(jstree_folders, { flat: true, no_state: true, no_id: false, no_data: false });
+    var fldrs_hash = {};
+    for (var i=0; i<fldrs.length; i++) {
+        delete fldrs[i]['li_attr'];
+        delete fldrs[i]['a_attr'];
+        delete fldrs[i]['icon'];
+        delete fldrs[i]['state'];
+        delete fldrs[i]['type'];
+        fldrs_hash[fldrs[i].id] = fldrs[i];
+    }
+    console.log(folders_find_path(fldrs_hash, cn));
+    console.log(JSON.stringify(fldrs));
 });
 
 var load_edit_data = function (id) {
@@ -191,18 +211,19 @@ $(document).ready(function () {
     $('#pcontent').ckeditor();
     jstree_folders = $('#jstree_folders').jstree({ 
         'core' : {
-            'check_callback' : true,
-            'data' : []
+            'check_callback' : true            
         },
-        'plugins' : [ "dnd", "unique" ],
+        'plugins' : [ "dnd", "unique", "types" ],
         'types' : {
             '#': {
-                "max_depth" : 99, 
-                "valid_children" : ["folder"]    
-            },
-            'folder': {
-                "valid_children" : ["folder"]    
+                "max_children"  : 1,
+                "valid_children": [ 'root' ]
             }
         }
     });
+    jstree_folders.on('changed.jstree', function (e, data) {
+        if (!data.selected.length || data.selected.length > 1) return;
+        //alert(jstree_folders.jstree(true).get_path(data.instance.get_node(data.selected[0]).id).join('/').replace(/\/\//, '/'));
+    });
+    jstree_folders.jstree(true).create_node('#', { text: '/', type: 'root' });
 });
