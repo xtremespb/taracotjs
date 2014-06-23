@@ -28,15 +28,30 @@ module.exports = function (app) {
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
-		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'pages_control', {
-			lang: i18nm,
-			locales: JSON.stringify(app.get('config').locales)
-		});
-		app.get('cp').render(req, res, {
-			body: body,
-			css: '<link rel="stylesheet" href="/modules/pages/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
-		}, i18nm, 'pages', req.session.auth);
+
+		var data = app.get('mongodb').collection('pages_folders').find({
+			oname: 'folders_json'
+		}, {
+			limit: 1
+		}).toArray(function (err, items) {			
+			var folders;
+			if (!items || !items.length || !items[0].ovalue) {
+				folders = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
+			} else {
+				folders = items[0].ovalue;
+			}
+			var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'pages_control', {
+				lang: i18nm,
+				folders: folders,
+				locales: JSON.stringify(app.get('config').locales)
+			});
+			app.get('cp').render(req, res, {
+				body: body,
+				css: '<link rel="stylesheet" href="/modules/pages/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
+			}, i18nm, 'pages', req.session.auth);
+		});		
 	});
+
 	router.post('/data/list', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
@@ -297,5 +312,98 @@ module.exports = function (app) {
 		}
 		res.send(JSON.stringify(rep));
 	});
+	router.post('/data/folders/load', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {
+			status: 1
+		};
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var data = app.get('mongodb').collection('pages_folders').find({
+			oname: 'folders_json'
+		}, {
+			limit: 1
+		}).toArray(function (err, items) {
+			if (err) {
+				rep.status = 0;
+				rep.error = i18nm.__("cannot_load_db_data");
+				res.send(JSON.stringify(rep));
+				return;	
+			}
+			if (!items || !items.length || !items[0].ovalue) {
+				rep.folders = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
+			    res.send(JSON.stringify(rep));	
+			    return;
+			}
+			rep.folders = items[0].ovalue;
+			res.send(JSON.stringify(rep));
+		});
+	});
+	router.post('/data/folders/save', function (req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {
+			status: 1
+		};
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		var json = req.body.json;
+		try {
+			JSON.parse(json);
+		} catch (e) {
+			rep.status = 0;
+			rep.error = i18nm.__("cannot_parse_json");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+
+		var data = app.get('mongodb').collection('pages_folders').find({
+			oname: 'folders_json'
+		}, {
+			limit: 1
+		}).toArray(function (err, items) {
+			if (!err && typeof items != 'undefined' && items.length > 0) {
+				// Update
+				app.get('mongodb').collection('pages_folders').update({
+					oname: 'folders_json'},
+				{
+					oname: 'folders_json',
+					ovalue: json	
+				}, 
+					function (err) {
+						if (err) {
+							rep.status = 0;
+							rep.error = i18nm.__("cannot_save_db_data");
+							res.send(JSON.stringify(rep));
+							return;	
+						}
+						res.send(JSON.stringify(rep));
+				});
+			} else {
+				// Insert
+				app.get('mongodb').collection('pages_folders').insert({
+					oname: 'folders_json',
+					ovalue: json
+				}, function (err) {
+					if (err) {
+						rep.status = 0;
+						rep.error = i18nm.__("cannot_save_db_data");
+						res.send(JSON.stringify(rep));
+						return;	
+					}
+					res.send(JSON.stringify(rep));
+				});
+			}
+		});
+	});	
 	return router;
 }
