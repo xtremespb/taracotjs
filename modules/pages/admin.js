@@ -1,11 +1,12 @@
 module.exports = function (app) {
 	// Sort order hash
 	var sort_cells = {
-		oname: 1,
-		ovalue: 1,
-		lang: 1
+		pfolder: 1,
+		pfilename: 1,
+		ptitle: 1,
+		plang: 1
 	};
-	var sort_cell_default = 'oname';
+	var sort_cell_default = 'pfolder';
 	var sort_cell_default_mode = 1;
 	// Set items per page for this module
 	var items_per_page = 5;
@@ -43,7 +44,8 @@ module.exports = function (app) {
 			var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'pages_control', {
 				lang: i18nm,
 				folders: folders,
-				locales: JSON.stringify(app.get('config').locales)
+				locales: JSON.stringify(app.get('config').locales),
+				layouts: JSON.stringify(app.get('config').layouts)
 			});
 			app.get('cp').render(req, res, {
 				body: body,
@@ -51,6 +53,12 @@ module.exports = function (app) {
 			}, i18nm, 'pages', req.session.auth);
 		});		
 	});
+
+	/*
+
+	Pages
+
+	*/
 
 	router.post('/data/list', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
@@ -101,9 +109,11 @@ module.exports = function (app) {
 		if (query) {
 			find_query = {
 				$or: [{
-					oname: new RegExp(query, 'i')
+					pfilename: new RegExp(query, 'i')
 				}, {
-					ovalue: new RegExp(query, 'i')
+					ptitle: new RegExp(query, 'i')
+				}, {
+					pfolder: new RegExp(query, 'i')
 				}]
 			};
 		}
@@ -119,9 +129,9 @@ module.exports = function (app) {
 						for (var i = 0; i < items.length; i++) {
 							var arr = [];
 							arr.push(items[i]._id);
-							arr.push(items[i].oname);
-							arr.push(items[i].ovalue);
-							arr.push(items[i].olang);
+							arr.push(items[i].pfolder + items[i].pfilename);
+							arr.push(items[i].ptitle);
+							arr.push(items[i].plang);
 							rep.items.push(arr);
 						}
 					}
@@ -136,11 +146,12 @@ module.exports = function (app) {
 			}
 		}); // count
 	});
+
 	router.post('/data/load', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {};
-		var user_id = req.body.id;
-		if (typeof user_id == 'undefined' || !user_id.match(/^[a-f0-9]{24}$/)) {
+		var id = req.body.pid;
+		if (!id.match(/^[a-f0-9]{24}$/)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_query");
 			res.send(JSON.stringify(rep));
@@ -156,7 +167,7 @@ module.exports = function (app) {
 		// Get pages from MongoDB
 		rep.data = {};
 		var data = app.get('mongodb').collection('pages').find({
-			_id: new ObjectId(user_id)
+			_id: new ObjectId(id)
 		}, {
 			limit: 1
 		}).toArray(function (err, items) {
@@ -170,6 +181,7 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 		});
 	});
+
 	router.post('/data/save', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
@@ -183,42 +195,64 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 			return;
 		}
-		var oname = req.body.oname,
-			ovalue = req.body.ovalue,
-			olang = req.body.olang,
-			id = req.body.id;
-		if (typeof id != 'undefined' && id.length == 24) {
+		var ptitle = req.body.ptitle,
+			pfilename = req.body.pfilename,
+			pfolder = req.body.pfolder,
+			pfolder_id = req.body.pfolder_id,
+			plang = req.body.plang,
+			plangcopy = req.body.plangcopy,
+			playout = req.body.playout,
+			pkeywords = req.body.pkeywords,
+			pdesc = req.body.pdesc,
+			pcontent = req.body.pcontent,
+			id = req.body.pid;
+		if (typeof id != 'undefined' && id) {
 			if (!id.match(/^[a-f0-9]{24}$/)) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
 				return;
 			}
-		}
-		if (!oname.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
-			rep.status = 0;
-			rep.err_fields.push('oname');
-		}
-		oname = oname.toLowerCase();
-		if (!ovalue.match(/^.{1,255}$/)) {
-			rep.status = 0;
-			rep.err_fields.push('ovalue');
-		}
-		var _olang = '';
+		}		
+		var _plang = app.get('config').locales[0];
 		for (var i = 0; i < app.get('config').locales.length; i++) {
-			if (olang == app.get('config').locales[i]) {
-				_olang = app.get('config').locales[i];
+			if (plang == app.get('config').locales[i]) {
+				_plang = app.get('config').locales[i];
 			}
 		}
-		olang = _olang;
-		if (rep.status == 0) {
+		plang = _plang;
+		var _playout = app.get('config').layouts.default;
+		for (var i = 0; i < app.get('config').layouts.avail.length; i++) {
+			if (playout == app.get('config').layouts.avail[i]) {
+				_playout = app.get('config').layouts.avail[i];
+			}
+		}
+		playout = _playout;
+		// Check form fields
+		if (!ptitle || !ptitle.length || ptitle.length > 100) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_ptitle");
 			res.send(JSON.stringify(rep));
 			return;
 		}
+		if (!pfolder_id.match(/^[A-Za-z0-9_\-\.]{1,20}$/)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_folder");
+			res.send(JSON.stringify(rep));
+			return;	
+		}
+		if (!pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
+			rep.status = 0;
+			rep.error = i18nm.__("invalid_pfilename");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		// Save
 		if (id) {
 			var data = app.get('mongodb').collection('pages').find({
-				oname: oname,
-				olang: olang,
+				pfilename: pfilename,
+				pfolder: pfolder,
+				plang: plang,
 				_id: {
 					$ne: new ObjectId(id)
 				}
@@ -227,8 +261,8 @@ module.exports = function (app) {
 			}).toArray(function (err, items) {
 				if ((typeof items != 'undefined' && items.length > 0) || err) {
 					rep.status = 0;
-					rep.error = i18nm.__("option_exists");
-					rep.err_fields.push('oname');
+					rep.error = i18nm.__("page_exists");
+					rep.err_fields.push('pfilename');
 					res.send(JSON.stringify(rep));
 					return;
 				}
@@ -240,9 +274,15 @@ module.exports = function (app) {
 					if (typeof items != 'undefined' && !err) {
 						if (items.length > 0) {
 							var update = {
-								oname: oname,
-								ovalue: ovalue,
-								olang: olang
+								ptitle: ptitle,
+								pfilename: pfilename,
+								pfolder: pfolder,
+								pfolder_id: pfolder_id,
+								plang: plang,
+								playout: playout,
+								pkeywords: pkeywords,
+								pdesc: pdesc,
+								pcontent: pcontent
 							};
 							app.get('mongodb').collection('pages').update({
 								_id: new ObjectId(id)
@@ -261,22 +301,29 @@ module.exports = function (app) {
 			});
 		} else {
 			var data = app.get('mongodb').collection('pages').find({
-				oname: oname,
-				olang: olang
+				pfilename: pfilename,
+				pfolder: pfolder,
+				plang: plang,
 			}, {
 				limit: 1
 			}).toArray(function (err, items) {
 				if ((typeof items != 'undefined' && items.length > 0) || err) {
 					rep.status = 0;
-					rep.error = i18nm.__("option_exists");
-					rep.err_fields.push('oname');
+					rep.error = i18nm.__("page_exists");
+					rep.err_fields.push('pfilename');
 					res.send(JSON.stringify(rep));
 					return;
 				}
 				app.get('mongodb').collection('pages').insert({
-					oname: oname,
-					ovalue: ovalue,
-					olang: olang
+					ptitle: ptitle,
+					pfilename: pfilename,
+					pfolder: pfolder,
+					pfolder_id: pfolder_id,
+					plang: plang,
+					playout: playout,
+					pkeywords: pkeywords,
+					pdesc: pdesc,
+					pcontent: pcontent
 				}, function () {
 					rep.status = 1;
 					res.send(JSON.stringify(rep));
@@ -284,6 +331,7 @@ module.exports = function (app) {
 			});
 		}
 	});
+
 	router.post('/data/delete', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
@@ -312,6 +360,13 @@ module.exports = function (app) {
 		}
 		res.send(JSON.stringify(rep));
 	});
+
+	/*
+
+	Folders
+
+	*/
+
 	router.post('/data/folders/load', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
@@ -344,6 +399,7 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 		});
 	});
+
 	router.post('/data/folders/save', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {

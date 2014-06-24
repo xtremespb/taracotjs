@@ -4,7 +4,7 @@ var fs = require('fs');
 
 var renderer = {
 	render : function(res, layout, data) {
-		var _layout = layout || config.default_layout;
+		var _layout = layout || config.layouts.default;
 		res.render(_layout, data);
 	},
 	render_file : function(dir, filename, data) {

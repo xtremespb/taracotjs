@@ -172,6 +172,22 @@ async.series([
 			});
 		},
 		function (callback) {
+			console.log("\nAdding default setting (site_title)...\n");
+			db.collection('settings').insert({
+					oname: 'site_title',
+					ovalue: 'Taracot JS',
+					olang: 'en'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
 			console.log("\nCreating index for collection: settings\n");
 			db.ensureIndex('settings', {
 				oname: 1
@@ -235,6 +251,165 @@ async.series([
 					process.exit(1);
 				}
 				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nAdding default page...\n");
+			db.collection('pages').insert({
+					ptitle: 'Default page',
+					pfolder: '/',
+					pfilename: '',
+					plang: 'en',
+					playout: config.layouts.default,
+					pfolder_id: 'j1_1',
+					pkeywords: 'sample, keywords, here',
+					pdesc: 'This is the sample page',
+					pcontent: 'As you see this, the installation seems to be completed ;-)'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: pages\n");
+			db.ensureIndex('pages', {
+				ptitle: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (1/4)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('pages', {
+				pfolder: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/4)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('pages', {
+				pfilename: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (3/4)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('pages', {
+				plang: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (4/4)");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating collection: pages_folders\n");
+			db.createCollection('pages_folders', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nAdding default folder tree for pages module...\n");
+			db.collection('pages_folders').insert({
+					oname: 'folders_json',
+					ovalue: '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: pages_folders\n");
+			db.ensureIndex('pages_folders', {
+				oname: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (1/2)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('pages_folders', {
+				ovalue: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/2)");
 				callback();
 			});
 		}
