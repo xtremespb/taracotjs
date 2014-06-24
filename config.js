@@ -1,6 +1,9 @@
 var config = {
-	"taracotjs": "0.1",
-	"default_layout": "layout",
+	"taracotjs": "0.042606",
+	"layouts": {
+		"default": "index",
+		"avail": ["index"]
+	},
 	"locales": [
 		"en",
 		"ru"
@@ -83,15 +86,9 @@ var config = {
 		},
 		{
 			"name": "pages",
-			"prefix": "/pages/",
+			"prefix": "",
 			"cp_id": "pages",
 			"cp_prefix": "/cp/pages/"
-		},
-		{
-			"name": "bastra",
-			"prefix": "/bastra/",
-			"cp_id": "bastra",
-			"cp_prefix": "/cp/bastra/"
 		}
 	]
 };

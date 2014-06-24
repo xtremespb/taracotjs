@@ -172,7 +172,7 @@ module.exports = function (app) {
 			ovalue = req.body.ovalue,
 			olang = req.body.olang,
 			id = req.body.id;
-		if (typeof id != 'undefined' && id.length == 24) {
+		if (typeof id != 'undefined' && id) {
 			if (!id.match(/^[a-f0-9]{24}$/)) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_query");
