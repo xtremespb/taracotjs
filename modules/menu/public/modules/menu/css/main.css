@@ -1,0 +1,16 @@
+#menu_nest {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+[data-nestable-action="toggle"]:after {
+    padding-left: 6px;
+}
+#menu_nest_wrap {
+    padding-bottom: 5px;
+}

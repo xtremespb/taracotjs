@@ -68,13 +68,13 @@ var config = {
 		},
 		{
 			"name": "user",
-			"prefix": "/user/",
+			"prefix": "",
 			"cp_id": "users",
 			"cp_prefix": "/cp/users/"
 		},
 		{
 			"name": "settings",
-			"prefix": "/settings/",
+			"prefix": "",
 			"cp_id": "settings",
 			"cp_prefix": "/cp/settings/"
 		},
@@ -89,6 +89,12 @@ var config = {
 			"prefix": "",
 			"cp_id": "pages",
 			"cp_prefix": "/cp/pages/"
+		},
+		{
+			"name": "menu",
+			"prefix": "",
+			"cp_id": "menu",
+			"cp_prefix": "/cp/menu/"
 		}
 	]
 };

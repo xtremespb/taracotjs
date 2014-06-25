@@ -1,0 +1,55 @@
+<h1>!{root.lang.__("module_name")}</h1>
+<div id="taracot_dlg_menu_edit" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1>!{root.lang.__("menu_item")}</h1>
+        <fieldset class="uk-form" data-uk-margin>
+          <label class="uk-form-label" for="taracot_dlg_menu_edit_text">!{root.lang.__("link_text")}</label>
+          <input type="text" class="uk-width-1-1" id="taracot_dlg_menu_edit_text">
+        </fieldset>
+        <fieldset class="uk-form uk-margin-bottom" data-uk-margin>
+          <label class="uk-form-label" for="taracot_dlg_menu_edit_url">!{root.lang.__("link_url")}</label>
+          <input type="text" class="uk-width-1-1" id="taracot_dlg_menu_edit_url">
+        </fieldset>
+        <fieldset class="uk-form uk-margin-bottom" data-uk-margin>
+          <label class="uk-form-label" for="taracot_dlg_menu_edit_page">!{root.lang.__("link_select_page")}</label>
+          <select class="uk-width-1-1" id="taracot_dlg_menu_edit_page">
+            <option value=""></option>
+          </select>
+        </fieldset>        
+        <button class="uk-button" type="button" id="taracot_dlg_menu_edit_btn_save">!{root.lang.__('save')}</button>
+        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
+<div class="uk-margin-bottom">!{root.lang.__("menu_control_hint")}</div>
+<div class="uk-form">
+  <fieldset data-uk-margin>
+    !{root.lang.__("language")}:
+    <select id="menu_lang">      
+    </select>
+    <button class="uk-button" id="btn_load_menu">!{root.lang.__("load_menu")}</button>
+  </fieldset>
+</div>
+<div class="uk-margin-top">
+  <div class="uk-margin-bottom">
+    <button id="btn_item_add" class="uk-button uk-button-success"><i class="uk-icon-plus"></i></button>
+  </div>
+  <div class="uk-panel uk-panel-box" id="menu_nest_wrap">
+    <ul class="uk-nestable" id="menu_nest" data-uk-nestable="{maxDepth:2}"></ul>
+  </div>
+</div>
+<script type="text/javascript">
+  var _lang_vars = {
+    ajax_failed: "!{root.lang.__("ajax_failed")}"
+  }
+  var locales = !{root.locales};
+  var pages = !{root.pages};
+  for (var i=0; i < locales.length; i++) {
+    $('#menu_lang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
+  }
+  for (var i=0; i < pages.length; i++) {
+    $('#taracot_dlg_menu_edit_page').append('<option value="' + pages[i].purl + '">' + pages[i].ptitle + '</option>');
+  }  
+</script>
+<script src="/js/addons/nestable.min.js"></script>
+<script src="/modules/menu/js/main.js"></script>
