@@ -119,7 +119,26 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (1/3)");
+				console.log("... OK (1/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: users\n");
+			db.ensureIndex('users', {
+				username: -1
+			}, {
+				unique: true,
+				background: true,
+				dropDups: true,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/6)");
 				callback();
 			});
 		},
@@ -137,7 +156,25 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (2/3)");
+				console.log("... OK (3/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('users', {
+				email: -1
+			}, {
+				unique: true,
+				background: true,
+				dropDups: true,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (4/6)");
 				callback();
 			});
 		},
@@ -155,7 +192,25 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (3/3)");
+				console.log("... OK (5/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('users', {
+				realname: 1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (6/6)");
 				callback();
 			});
 		},
@@ -202,7 +257,26 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (1/3)");
+				console.log("... OK (1/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating index for collection: settings\n");
+			db.ensureIndex('settings', {
+				oname: -1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (2/6)");
 				callback();
 			});
 		},
@@ -220,7 +294,25 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (2/3)");
+				console.log("... OK (3/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('settings', {
+				ovalue: -1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (4/6)");
 				callback();
 			});
 		},
@@ -238,7 +330,25 @@ async.series([
 					console.log(err);
 					process.exit(1);
 				}
-				console.log("... OK (3/3)");
+				console.log("... OK (5/6)");
+				callback();
+			});
+		},
+		function (callback) {
+			db.ensureIndex('settings', {
+				olang: -1
+			}, {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			}, function (err, indexName) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... OK (6/6)");
 				callback();
 			});
 		},
@@ -378,9 +488,7 @@ async.series([
 		},
 		function (callback) {
 			console.log("\nCreating index for collection: pages_folders\n");
-			db.ensureIndex('pages_folders', {
-				oname: 1
-			}, {
+			db.ensureIndex('pages_folders', { oname: 1 }, {
 				unique: false,
 				background: true,
 				dropDups: false,
