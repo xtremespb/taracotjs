@@ -10,8 +10,17 @@
         <script src="/js/uikit/uikit.min.js"></script>
     </head>
     <body>
-        <h1>!{root.title}</h1>
-        !{root.blocks['menu_uikit']}
-        !{root.content}        
+        <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
+            !{root.blocks['menu_uikit']}
+            <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-1-1">
+                    <h1 class="uk-margin-top uk-margin-bottom">!{root.title}</h1>
+                    !{root.content}
+                </div>
+                <div class="uk-width-1-1 uk-margin-top uk-margin-bottom">
+                    <small>TaracotJS &copy; 2014 Michael A. Matveev</small>
+                </div>
+            </div>            
+        </div>
     </body>
 </html>
