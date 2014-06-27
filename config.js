@@ -1,5 +1,5 @@
 var config = {
-	"taracotjs": "0.042606",
+	"taracotjs": "0.0406.27",
 	"layouts": {
 		"default": "index",
 		"avail": ["index"]
@@ -55,6 +55,11 @@ var config = {
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
+	"blocks": [
+		{
+			"name": "menu"
+		}
+	],
 	"modules": [
 		{
 			"name": "auth",

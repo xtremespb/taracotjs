@@ -16,12 +16,13 @@ var RedisStore = require('connect-redis')(session);
 var gaikan = require('gaikan');
 var cp = require('./modules/cp/cp')(app);
 var auth = require('./core/auth')(app);
-var renderer = require('./core/renderer');
+var renderer = require('./core/renderer')(app);
 var mongoclient = require('mongodb').MongoClient;
 var winston = require('winston');
 var captcha = require('./core/' + config.captcha);
 var multer = require('multer');
 var bodyParser = require('body-parser');
+var async = require('async');
 
 // Logging
 
@@ -46,20 +47,24 @@ redis_client.on("error", function (err) {
 
 // Connect to the database and set the corresponding variable
 
-var _connect_to_mongo_db = function () {
-    mongoclient.connect(config.mongo.url, config.mongo.options, function (err, _db) {
-        if (!err) {
-            _db.on('close', function () {
+var _connect_to_mongo_db = function (callback) {
+    if (typeof app.get('mongodb') == 'undefined') {
+        mongoclient.connect(config.mongo.url, config.mongo.options, function (err, _db) {
+            if (!err) {
+                _db.on('close', function () {
+                    app.set('mongodb', undefined);
+                });
+                app.set('mongodb', _db);
+            } else {
+                console.log(err);
                 app.set('mongodb', undefined);
-            });
-            app.set('mongodb', _db);
-        } else {
-            console.log(err);
-            app.set('mongodb', undefined);
-        }
-    });
+            }
+            if (callback) callback();
+        });
+    } else {
+        if (callback) callback();
+    }    
 }
-_connect_to_mongo_db();
 
 // Set variables
 
@@ -87,6 +92,7 @@ app.use(multer({
       next(error)
     }
 }));
+
 app.use(cookieParser(config.cookie_secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
@@ -112,31 +118,34 @@ I18n.expressBind(app, {
 // Pre-load functions
 
 app.use(function (req, res, next) {
-    // Check database connection
-    if (typeof app.get('mongodb') == 'undefined') {
-        var err = new Error(req.i18n.__("database_connection_failed"));
-        err.status = 500;
-        next(err);
-        _connect_to_mongo_db();
-        return;
-    }
-    if (!app.get('redis_connected')) {
-        var err = new Error(req.i18n.__("redis_connection_failed"));
-        err.status = 500;
-        next(err);
-        return;
-    }
-    // Set locales from query and from cookie
-    req.i18n.setLocaleFromQuery();
-    req.i18n.setLocaleFromCookie();
-    req.i18n.setLocaleFromSubdomain();
-    // Logging
-    logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {} );
-    // Clear auth_redirect if already authorized
-    if (req.session.auth) {
-        delete req.session.auth_redirect;
-    }
-    next();
+    _connect_to_mongo_db(function() {
+        // Check database connection
+        if (typeof app.get('mongodb') == 'undefined') {
+            var err = new Error(req.i18n.__("database_connection_failed"));
+            err.status = 500;
+            next(err);        
+            return;
+        }            
+        if (!app.get('redis_connected')) {
+            var err = new Error(req.i18n.__("redis_connection_failed"));
+            err.status = 500;
+            next(err);
+            return;
+        }
+        // Load blocks        
+        load_blocks(req, res);
+        // Set locales from query and from cookie
+        req.i18n.setLocaleFromQuery();
+        req.i18n.setLocaleFromCookie();
+        req.i18n.setLocaleFromSubdomain();
+        // Logging
+        logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {} );
+        // Clear auth_redirect if already authorized
+        if (req.session.auth) {
+            delete req.session.auth_redirect;
+        }
+        next();
+    });    
 });
 
 // Load settings
@@ -192,6 +201,26 @@ app.use(function (req, res, next) {
         next();
     }    
 });
+
+// Load blocks
+
+var load_blocks = function(req, res) {
+    if (!app.get('blocks')) {
+        var blocks = {
+            data: {}
+        };
+        app.set('blocks', blocks);
+    }
+    config.blocks.forEach(function (block) {
+        async.series([
+            function(callback) {
+                require('./modules/' + block.name + '/block')(app).data(req, res, function() {
+                    callback();
+                });
+            }
+        ]);
+    });
+};
 
 // Load modules
 

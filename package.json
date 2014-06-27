@@ -1,7 +1,7 @@
 {
   "name": "taracotjs",
-  "version": "0.1.1",
-  "description": "TaracotJS CMS: the simple content management system written in JavaScript",
+  "version": "0.0406.27",
+  "description": "TaracotJS CMS: the simple content management system based on Node.JS",
   "main": "app.js",
   "dependencies": {
     "body-parser": "~1.0.2",
@@ -38,6 +38,12 @@
     "redis",
     "cms"
   ],
-  "author": "Michael A. Matveev",
+  "repositories": [
+    {
+      "type": "mercurial",
+      "url": "https://code.google.com/p/taracotjs/"  
+    }
+  ],
+  "author": "Michael A. Matveev <xtreme@rh1.ru>",
   "license": "GPL v.3"
 }
