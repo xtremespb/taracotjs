@@ -6,7 +6,7 @@
         str.push(id);
       });
      return str;
-    }; 
+    };
     $.fn.shifty = function (o) {
         var o = $.extend({
             className: 'selected',
@@ -19,7 +19,7 @@
         return $(this).each(function () {
             var block = $(this);
             this.onselectstart = function () {
-                return false
+                return false;
             };
             block.unbind('click').css({
                 '-moz-user-select': '',

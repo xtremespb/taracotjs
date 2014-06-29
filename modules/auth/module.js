@@ -37,7 +37,7 @@ module.exports = function (app) {
 	});
 	router.get('/', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth != false) {
+		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
 			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
@@ -130,4 +130,4 @@ module.exports = function (app) {
 		});
 	});
 	return router;
-}
+};

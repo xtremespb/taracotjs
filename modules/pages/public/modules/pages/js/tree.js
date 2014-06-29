@@ -1,10 +1,10 @@
 /*******************************************************************
- 
- Tree editor related functions 
+
+ Tree editor related functions
 
 ********************************************************************/
 
-$('#btn-folders').click(function () {    
+$('#btn-folders').click(function () {
     show_folders();
     $('#jstree_folders').addClass('uk-hidden');
     $('#jstree_error').addClass('uk-hidden');
@@ -16,16 +16,16 @@ $('#btn-folders').click(function () {
         url: '/cp/pages/data/folders/load',
         dataType: "json",
         success: function (data) {
-            if (data.status == 1) {  
+            if (data.status == 1) {
                 $('#jstree_folders').removeClass('uk-hidden');
                 $('#jstree_error').addClass('uk-hidden');
                 $('#jstree_loading').addClass('uk-hidden');
                 $('.taracot-tree-save-controls').attr('disabled', false);
                 $('#btn-tree-new').attr('disabled', false);
                 if (data.folders) {
-                    init_jstree(jQuery.parseJSON(data.folders));                    
+                    init_jstree(jQuery.parseJSON(data.folders));
                 }
-            } else {  
+            } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
                     _err = data.error;
@@ -42,7 +42,7 @@ $('#btn-folders').click(function () {
                 $('#jstree_error').removeClass('uk-hidden');
             }
         },
-        error: function () {            
+        error: function () {
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
@@ -82,14 +82,14 @@ $('#btn-tree-edit').click(function() {
     for (var i=0; i < locales.length; i++) {
         $('#flang_'+locales[i]).val(jstree_folders.jstree(true).get_node(sel).data.lang[locales[i]]);
     }
-    $('#fname').val(jstree_folders.jstree(true).get_node(sel).text)
+    $('#fname').val(jstree_folders.jstree(true).get_node(sel).text);
     folders_edit = true;
     folders_edit_dlg.show();
     $('#fname').select();
     $('#fname').focus();
 });
 
-$('#btn-tree-save').click(function() {    
+$('#btn-tree-save').click(function() {
     $('#jstree_folders').addClass('uk-hidden');
     $('#jstree_error').addClass('uk-hidden');
     $('#jstree_loading').removeClass('uk-hidden');
@@ -97,10 +97,10 @@ $('#btn-tree-save').click(function() {
     $('.taracot-treectl-button').attr('disabled', true);
     var fldrs = jstree_folders.jstree(true).get_json(jstree_folders, { flat: true, no_state: true, no_id: false, no_data: false });
     for (var i=0; i<fldrs.length; i++) {
-        delete fldrs[i]['li_attr'];
-        delete fldrs[i]['a_attr'];
-        delete fldrs[i]['icon'];
-        delete fldrs[i]['state'];
+        delete fldrs[i].li_attr;
+        delete fldrs[i].a_attr;
+        delete fldrs[i].icon;
+        delete fldrs[i].state;
     }
     console.log(JSON.stringify(fldrs));
     $.ajax({
@@ -118,8 +118,8 @@ $('#btn-tree-save').click(function() {
             $('.taracot-treectl-button').attr('disabled', false);
             jstree_folders.jstree(true).deselect_all();
             jstree_find_root();
-            if (data.status == 1) {  
-                folders_data = fldrs;              
+            if (data.status == 1) {
+                folders_data = fldrs;
                 $.UIkit.notify({
                     message: _lang_vars.folders_save_success,
                     status: 'success',
@@ -127,7 +127,7 @@ $('#btn-tree-save').click(function() {
                     pos: 'top-center'
                 });
                 show_pages();
-            } else {  
+            } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
                     _err = data.error;
@@ -137,10 +137,10 @@ $('#btn-tree-save').click(function() {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });                
+                });
             }
         },
-        error: function () {            
+        error: function () {
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
@@ -164,7 +164,7 @@ $('#btn-tree-cancel').click(function() {
 
 $('#btn-tree-clear').click(function() {
     if (confirm(_lang_vars.confirm_folders_edit_clean)) {
-        init_jstree([], true);                
+        init_jstree([], true);
     }
 });
 
@@ -184,9 +184,9 @@ $('.taracot-folders-edit-control').bind('keypress', function (e) {
     }
 });
 
-$('#btn_folders_edit_save').click(function() {        
+$('#btn_folders_edit_save').click(function() {
     $('#fname').removeClass('uk-form-danger');
-    var sel = jstree_folders.jstree(true).get_selected();       
+    var sel = jstree_folders.jstree(true).get_selected();
     if (!sel || !sel.length || sel.length > 1) return;
     if (!check_directory($('#fname').val())) {
         $('#fname').addClass('uk-form-danger');
@@ -195,7 +195,7 @@ $('#btn_folders_edit_save').click(function() {
             status: 'danger',
             timeout: 2000,
             pos: 'top-center'
-        }); 
+        });
         return;
     }
     if (folders_edit) {
@@ -220,15 +220,15 @@ $('#btn_folders_edit_save').click(function() {
         jstree_folders.jstree(true).get_node(cn).data.lang = {};
         for (var i=0; i < locales.length; i++) {
             jstree_folders.jstree(true).get_node(cn).data.lang[locales[i]] = $('#flang_'+locales[i]).val();
-        }        
+        }
         jstree_folders.jstree(true).open_node(sel);
-    }    
+    }
     folders_edit_dlg.hide();
 });
 
 var init_jstree = function(data, root) {
     if (jstree_folders) jstree_folders.jstree(true).destroy();
-    jstree_folders = $('#jstree_folders').jstree({ 
+    jstree_folders = $('#jstree_folders').jstree({
         'core' : {
             'check_callback' : true,
             'data' : data
@@ -236,23 +236,23 @@ var init_jstree = function(data, root) {
         'plugins' : [ "dnd", "unique", "types" ],
         'types' : {
             "#": {
-                "max_children" : 1, 
+                "max_children" : 1,
                 "valid_children" : ["root"]
             },
             'root': {
-                "valid_children": [ 'folder' ] 
+                "valid_children": [ 'folder' ]
             },
             'folder' : {
-                "valid_children": [ 'folder' ]                 
+                "valid_children": [ 'folder' ]
             }
         }
-    });    
+    });
     jstree_folders.on('loaded.jstree', function (e, data) {
         // if (root) {
         //     jstree_insert_root();
         // }
         jstree_folders.jstree(true).open_all('#');
-        jstree_find_root();       
+        jstree_find_root();
     });
     jstree_folders.on('changed.jstree', function (e, data) {
         jstree_changed_handler(e, data);
@@ -264,13 +264,13 @@ var jstree_find_root = function() {
     var fldrs = jstree_folders.jstree(true).get_json(jstree_folders, { flat: true, no_state: true, no_id: false, no_data: false });
     for (var i=0; i< fldrs.length; i++) {
         if (fldrs[i].parent == '#') jstree_folders.jstree(true).select_node(fldrs[i].id);
-    } 
+    }
 };
 
 var jstree_get_root_id = function() {
     for (var i=0; i< folders_data.length; i++) {
         if (folders_data[i].parent == '#') return folders_data[i].id;
-    } 
+    }
     return '';
 };
 
@@ -280,14 +280,14 @@ var jstree_insert_root = function() {
 };
 
 /*******************************************************************
- 
- Tree selector related functions 
+
+ Tree selector related functions
 
 ********************************************************************/
 
 var init_jstree_select = function(data, root) {
     if (jstree_folders_select) jstree_folders_select.jstree(true).destroy();
-    jstree_folders_select = $('#jstree_folders_select').jstree({ 
+    jstree_folders_select = $('#jstree_folders_select').jstree({
         'core' : {
             'check_callback' : true,
             'data' : folders_data
@@ -295,17 +295,17 @@ var init_jstree_select = function(data, root) {
         'plugins' : [ "dnd", "unique", "types" ],
         'types' : {
             "#": {
-                "max_children" : 1, 
+                "max_children" : 1,
                 "valid_children" : ["root"]
             },
             'root': {
-                "valid_children": [ 'folder' ] 
+                "valid_children": [ 'folder' ]
             },
             'folder' : {
-                "valid_children": [ 'folder' ]                 
+                "valid_children": [ 'folder' ]
             }
         }
-    });    
+    });
     jstree_folders_select.on('loaded.jstree', function (e, data) {
         jstree_folders_select.jstree(true).open_all('#');
     });
@@ -331,17 +331,17 @@ var jstree_changed_handler = function(e, data) {
     if (data.selected.length > 1) {
         $('#btn-tree-new').attr('disabled', true);
         $('#btn-tree-edit').attr('disabled', true);
-    }        
-}
+    }
+};
 
 $('#btn-select-folder').click(function() {
     init_jstree_select();
-    folders_select_dlg.show();    
+    folders_select_dlg.show();
     $('#btn_folders_select').attr('disabled', true);
 });
 
 $('#btn_folders_select').click(function() {
-    var sel = jstree_folders_select.jstree(true).get_selected();       
+    var sel = jstree_folders_select.jstree(true).get_selected();
     if (!sel || !sel.length || sel.length > 1) return;
     var path = jstree_folders_select.jstree(true).get_path(sel).join('/').replace(/\//, '');
     if (!path) path = '/';
@@ -351,12 +351,12 @@ $('#btn_folders_select').click(function() {
 });
 
 /*******************************************************************
- 
+
  Helper functions
 
 ********************************************************************/
 
-var check_directory = function(fn) {               
+var check_directory = function(fn) {
     if (!fn || !fn.length || fn.length > 40) return false; // too long or null
     if (fn.match(/^\./)) return false; // starting with a dot
     if (fn.match(/^\\/)) return false; // starting with a slash

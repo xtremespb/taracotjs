@@ -8,7 +8,7 @@ var process_rows = [ // Handlers for each column
         return '<label><input type="checkbox" class="taracot-table-chbx" id="taracot-table-chbx-' + id + '" rel="taracot-item_' + val + '"></div>&nbsp;' + val + '</label>';
     },
     function (val, id) {
-        if (val == null) {
+        if (val === null) {
             val = '&mdash;';
         }
         return val;
@@ -17,7 +17,7 @@ var process_rows = [ // Handlers for each column
         return val;
     },
     function (val, id) {
-        if (val == 0) {
+        if (val === 0) {
             val = _lang_vars.status_0;
         }
         if (val == 1) {
@@ -46,7 +46,7 @@ $('#btn-delete-selected').click(function () {
     var ids = [];
     $('.taracot-table-chbx').each(function (i, val) {
         if ($(val).prop('checked')) {
-            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''))
+            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''));
         }
     });
     if (ids.length > 0) {
@@ -72,17 +72,17 @@ var load_edit_data = function (id) {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             if (data.status == 1) {
                 $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-                if (typeof data.user != undefined) {
-                    if (typeof data.user.username != undefined) {
+                if (typeof data.user !== undefined) {
+                    if (typeof data.user.username !== undefined) {
                         $('#username').val(data.user.username);
                     }
-                    if (typeof data.user.realname != undefined) {
+                    if (typeof data.user.realname !== undefined) {
                         $('#realname').val(data.user.realname);
                     }
-                    if (typeof data.user.email != undefined) {
+                    if (typeof data.user.email !== undefined) {
                         $('#email').val(data.user.email);
                     }
-                    if (typeof data.user.status != undefined) {
+                    if (typeof data.user.status !== undefined) {
                         $('#status').val(data.user.status);
                     }
                 }
@@ -107,7 +107,7 @@ var edit_item = function (id) {
     $('#taracot-modal-edit-loading').removeClass('uk-hidden');
     $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
     load_edit_data(id);
-}
+};
 
 var add_item = function (id) {
     current_id = '';
@@ -119,7 +119,7 @@ var add_item = function (id) {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
     $('#status').val('1');
     $('#username').focus();
-}
+};
 
 $('#taracot-edit-btn-save').click(function () {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');

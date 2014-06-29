@@ -64,7 +64,7 @@ var _connect_to_mongo_db = function (callback) {
     } else {
         if (callback) callback();
     }    
-}
+};
 
 // Set variables
 
@@ -88,8 +88,8 @@ app.use(multer({
         return Date.now() + '_' + filename.replace(/\W+/g, '-').toLowerCase();
     },
     onError: function (error, next) {
-      console.log(error)
-      next(error)
+      console.log(error);
+      next(error);
     }
 }));
 
@@ -119,15 +119,16 @@ I18n.expressBind(app, {
 
 app.use(function (req, res, next) {
     _connect_to_mongo_db(function() {
+    	var err;
         // Check database connection
         if (typeof app.get('mongodb') == 'undefined') {
-            var err = new Error(req.i18n.__("database_connection_failed"));
+            err = new Error(req.i18n.__("database_connection_failed"));
             err.status = 500;
             next(err);        
             return;
         }            
         if (!app.get('redis_connected')) {
-            var err = new Error(req.i18n.__("redis_connection_failed"));
+            err = new Error(req.i18n.__("redis_connection_failed"));
             err.status = 500;
             next(err);
             return;

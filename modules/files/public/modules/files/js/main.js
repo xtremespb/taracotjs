@@ -43,7 +43,7 @@ var shifty_select_handler = function() {
         $('#btn_cut').attr('disabled', true);
         $('#btn_rename').attr('disabled', true);
         $('#btn_download').attr('disabled', true);
-    }    
+    }
 };
 
 var shifty_unselect_handler = function() {
@@ -52,7 +52,7 @@ var shifty_unselect_handler = function() {
     $('#btn_unzip').attr('disabled', true);
     if (ns.length == 1) {
         var id = ns[0].replace('taracot_file_', '');
-        if (file_types[id] == 'd') $('#btn_down').attr('disabled', false);        
+        if (file_types[id] == 'd') $('#btn_down').attr('disabled', false);
     }
 };
 
@@ -74,7 +74,7 @@ var uploader_init = function() {
         }
     });
     uploader.init();
-    uploader.bind('FilesAdded', function(up, files) {        
+    uploader.bind('FilesAdded', function(up, files) {
         if (uploader.files.length) {
             $('#uploader_dnd_hint').hide();
             $('#taracot_dlg_upload_btn_clear').attr('disabled', false);
@@ -82,7 +82,7 @@ var uploader_init = function() {
         }
         plupload.each(files, function(file) {
             $('#taracot_upload_box').append('<div class="uk-alert" id="' + file.id + '"><b>' + file.name + '</b> (' + plupload.formatSize(file.size) + ')<div class="uk-progress uk-progress-mini uk-progress-success"><div class="uk-progress-bar" style="width: 0%"></div></div></div>');
-        });        
+        });
     });
     uploader.bind('Error', function(up, err) {
         $.UIkit.notify({
@@ -90,10 +90,10 @@ var uploader_init = function() {
             status: 'danger',
             timeout: 2000,
             pos: 'top-center'
-        });            
+        });
         $('#' + err.file.id).addClass('uk-alert-danger');
-    }); 
-    uploader.bind('UploadProgress', function(up, file) {        
+    });
+    uploader.bind('UploadProgress', function(up, file) {
         $('#' + file.id + ' > .uk-progress > .uk-progress-bar').css('width', file.percent + '%');
     });
     uploader.bind('FileUploaded', function(upldr, file, object) {
@@ -104,14 +104,14 @@ var uploader_init = function() {
             data = eval('(' + object.response + ')');
         }
         if (data) {
-            if (data.status == 0) {
+            if (data.status === 0) {
                 if (data.error) {
                     $.UIkit.notify({
                         message: data.error,
                         status: 'danger',
                         timeout: 2000,
                         pos: 'top-center'
-                    });    
+                    });
                 }
             }
             if (data.status == 1) {
@@ -120,11 +120,11 @@ var uploader_init = function() {
             }
         }
     });
-    uploader.bind('UploadComplete', function() {        
+    uploader.bind('UploadComplete', function() {
         $('#taracot_dlg_upload_btn_add').attr('disabled', false);
         $('#taracot_dlg_upload_btn_clear').attr('disabled', false);
         $('#taracot_dlg_upload_btn_cancel').attr('disabled', false);
-    });   
+    });
 };
 
 var load_files_data = function(dir) {
@@ -132,13 +132,13 @@ var load_files_data = function(dir) {
     $('.taracot-files-button').attr('disabled', true);
     $('#files_grid_progress').show();
     $('#files_grid').empty();
-    if (clpbrd.mode != null) {
+    if (clpbrd.mode !== null) {
         $('#btn_paste').attr('disabled', false);
     } else {
         $('#btn_paste').attr('disabled', true);
     }
     file_ids = {};
-    file_types = {};    
+    file_types = {};
     $('#files_grid').click();
     $.ajax({
         type: 'POST',
@@ -192,17 +192,17 @@ var load_files_data = function(dir) {
                 }
                 $('.taracot-files-item').shifty({
                     className: 'taracot-files-item-selected',
-                    select: function (el) { 
-                        shifty_select_handler();    
+                    select: function (el) {
+                        shifty_select_handler();
                     },
-                    unselect: function (el) {            
+                    unselect: function (el) {
                         shifty_unselect_handler();
                     }
                 });
                 var dragObjects = $('.taracot-files-item');
                 for(var i=0; i < dragObjects.length; i++) {
                     new DragObject(dragObjects[i]);
-                } 
+                }
                 $('.taracot-files-item').bind('dblclick', dblclick_handler);
                 $('#taracot_total_files').html(data.files.length);
                 if (!data.files.length) $('#files_grid').html(_lang_vars.no_files);
@@ -241,7 +241,7 @@ var dblclick_handler = function() {
     if (file_types[id] != 'd') return;
     up_dir.push(current_dir);
     current_dir += '/' + file_ids[id];
-    current_dir = current_dir.replace(/^\//, '');    
+    current_dir = current_dir.replace(/^\//, '');
     $('#taracot-files-current-dir').html('/' + current_dir);
     load_files_data(current_dir);
 };
@@ -265,9 +265,9 @@ var btndown_handler = function() {
     if (file_types[id] != 'd') return;
     up_dir.push(current_dir);
     current_dir += '/' + file_ids[id];
-    current_dir = current_dir.replace(/^\//, '');    
+    current_dir = current_dir.replace(/^\//, '');
     $('#taracot-files-current-dir').html('/' + current_dir);
-    load_files_data(current_dir); 
+    load_files_data(current_dir);
 };
 
 var btndelete_handler = function(dnd) {
@@ -275,7 +275,7 @@ var btndelete_handler = function(dnd) {
     var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
     var fna = [];
     for (var i=0; i<ns.length; i++) {
-        var id = ns[i].replace('taracot_file_', '')
+        var id = ns[i].replace('taracot_file_', '');
         fna.push(file_ids[id]);
     }
 
@@ -299,17 +299,17 @@ var btndelete_handler = function(dnd) {
         success: function (data) {
             $('#files_grid_progress').hide();
             $('#files_grid').show();
-            load_buttons_state();            
+            load_buttons_state();
             // uikit tooltip bug workaround
-            $('#btn_dummy').mouseover();            
-            if (data && data.status == 1) {                
-                load_files_data(current_dir);                
+            $('#btn_dummy').mouseover();
+            if (data && data.status == 1) {
+                load_files_data(current_dir);
                 $.UIkit.notify({
                     message: _lang_vars.delete_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                });                
+                });
             } else {
                 load_files_data(current_dir);
                 var _err = _lang_vars.ajax_failed;
@@ -321,8 +321,8 @@ var btndelete_handler = function(dnd) {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });    
-            }    
+                });
+            }
         },
         error: function () {
             $('#files_grid_progress').hide();
@@ -344,15 +344,15 @@ $('#taracot_dlg_edit_value').bind('keypress', function (e) {
 });
 
 var btnnewfolder_handler = function() {
-    $('#taracot-dlg-edit-h1').html(_lang_vars.new_folder)
+    $('#taracot-dlg-edit-h1').html(_lang_vars.new_folder);
     taracot_dlg_edit.show();
     $('#taracot_dlg_edit_value').val('');
     $('#taracot_dlg_edit_btn_save').unbind();
     $('#taracot_dlg_edit_btn_save').click(create_new_dir);
-    $('#taracot_dlg_edit_value').focus();    
+    $('#taracot_dlg_edit_value').focus();
 };
 
-var create_new_dir = function() { 
+var create_new_dir = function() {
     var new_dir = $('#taracot_dlg_edit_value').val().replace(/^\s+|\s+$/g,'');
     $('#taracot_dlg_edit_value').removeClass('uk-form-danger');
     if (!new_dir || !check_directory(new_dir)) {
@@ -383,14 +383,14 @@ var create_new_dir = function() {
             $('#files_grid').show();
             load_buttons_state();
             shifty_handler();
-            if (data && data.status == 1) {                
+            if (data && data.status == 1) {
                 load_files_data(current_dir);
                 $.UIkit.notify({
                     message: _lang_vars.newdir_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                }); 
+                });
             } else {
                 taracot_dlg_edit.show();
                 $('#taracot_dlg_edit_value').focus();
@@ -403,8 +403,8 @@ var create_new_dir = function() {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });    
-            }    
+                });
+            }
         },
         error: function () {
             $('#files_grid_progress').hide();
@@ -420,7 +420,7 @@ var create_new_dir = function() {
                 pos: 'top-center'
             });
         }
-    });    
+    });
 };
 
 var btnrename_handler = function() {
@@ -432,11 +432,11 @@ var btnrename_handler = function() {
     $('#taracot_dlg_edit_value').val(file_ids[id]);
     $('#taracot_dlg_edit_btn_save').unbind();
     $('#taracot_dlg_edit_btn_save').click(rename_file);
-    $('#taracot_dlg_edit_value').select();    
-    $('#taracot_dlg_edit_value').focus();    
+    $('#taracot_dlg_edit_value').select();
+    $('#taracot_dlg_edit_value').focus();
 };
 
-var rename_file = function() { 
+var rename_file = function() {
     $('#taracot_dlg_edit_value').removeClass('uk-form-danger');
     if (!check_filename($('#taracot_dlg_edit_value').val())) {
         $('#taracot_dlg_edit_value').addClass('uk-form-danger');
@@ -477,14 +477,14 @@ var rename_file = function() {
             $('#files_grid').show();
             load_buttons_state();
             shifty_handler();
-            if (data && data.status == 1) {                
+            if (data && data.status == 1) {
                 load_files_data(current_dir);
                 $.UIkit.notify({
                     message: _lang_vars.rename_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                }); 
+                });
             } else {
                 taracot_dlg_edit.show();
                 $('#taracot_dlg_edit_value').focus();
@@ -497,8 +497,8 @@ var rename_file = function() {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });    
-            }    
+                });
+            }
         },
         error: function () {
             $('#files_grid_progress').hide();
@@ -514,7 +514,7 @@ var rename_file = function() {
                 pos: 'top-center'
             });
         }
-    });    
+    });
 };
 
 var cutcopy = function(mode) {
@@ -531,7 +531,7 @@ var cutcopy = function(mode) {
 };
 
 var btncopy_handler = function() {
-    cutcopy('copy');    
+    cutcopy('copy');
     $.UIkit.notify({
         message: _lang_vars.clipboard_copy_success,
         status: 'success',
@@ -541,7 +541,7 @@ var btncopy_handler = function() {
 };
 
 var btncut_handler = function() {
-    cutcopy('cut');    
+    cutcopy('cut');
     $.UIkit.notify({
         message: _lang_vars.clipboard_cut_success,
         status: 'success',
@@ -551,11 +551,11 @@ var btncut_handler = function() {
 };
 
 var btnpaste_handler = function(_dir) {
-    if (clpbrd.mode == null) {
+    if (clpbrd.mode === null) {
         return;
     }
     var _current_dir = current_dir;
-    if (typeof _dir != undefined && typeof _dir === 'string') {
+    if (typeof _dir !== undefined && typeof _dir === 'string') {
         _current_dir = _dir;
     }
     if (clpbrd.dir == _current_dir) {
@@ -564,11 +564,11 @@ var btnpaste_handler = function(_dir) {
             status: 'danger',
             timeout: 2000,
             pos: 'top-center'
-        });  
-        return; 
-    }       
-    for (var i=0; i<clpbrd.files.length; i++) {        
-        var _fn = clpbrd.dir + '/' + clpbrd.files[i]; 
+        });
+        return;
+    }
+    for (var i=0; i<clpbrd.files.length; i++) {
+        var _fn = clpbrd.dir + '/' + clpbrd.files[i];
         if (_fn.match(/^\//)) _fn = _fn.replace(/^\//, '');
         var rex1 = new RegExp('^' + _fn + '\/');
         var rex2 = new RegExp('^' + _fn + '$');
@@ -578,8 +578,8 @@ var btnpaste_handler = function(_dir) {
                 status: 'danger',
                 timeout: 2000,
                 pos: 'top-center'
-            });  
-            return;    
+            });
+            return;
         }
     }
     // uikit tooltip bug workaround
@@ -599,17 +599,17 @@ var btnpaste_handler = function(_dir) {
         success: function (data) {
             load_buttons_state();
             shifty_handler();
-            $('#files_grid_progress').hide();            
+            $('#files_grid_progress').hide();
             $('#files_grid').show();
-            if (data && data.status == 1) {  
-                $('#btn_paste').attr('disabled', true);              
+            if (data && data.status == 1) {
+                $('#btn_paste').attr('disabled', true);
                 load_files_data(current_dir);
                 $.UIkit.notify({
                     message: _lang_vars.paste_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                }); 
+                });
                 clpbrd = { mode: null, dir: null, files: [] };
                 $('#btn_paste').attr('disabled', true);
                 $('#taracot-files-clipboard').html('0');
@@ -623,13 +623,13 @@ var btnpaste_handler = function(_dir) {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });    
-            }    
+                });
+            }
         },
-        error: function () {     
+        error: function () {
             load_buttons_state();
             $('#files_grid_progress').hide();
-            $('#files_grid').show();       
+            $('#files_grid').show();
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
@@ -662,16 +662,16 @@ var btnunzip_handler = function(_dir) {
         success: function (data) {
             load_buttons_state();
             shifty_handler();
-            $('#files_grid_progress').hide();            
+            $('#files_grid_progress').hide();
             $('#files_grid').show();
-            if (data && data.status == 1) {  
+            if (data && data.status == 1) {
                 load_files_data(current_dir);
                 $.UIkit.notify({
                     message: _lang_vars.unzip_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
-                }); 
+                });
             } else {
                 var _err = _lang_vars.unzip_error;
                 if (data.error) {
@@ -682,13 +682,13 @@ var btnunzip_handler = function(_dir) {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });    
-            }    
+                });
+            }
         },
-        error: function () {     
+        error: function () {
             load_buttons_state();
             $('#files_grid_progress').hide();
-            $('#files_grid').show();       
+            $('#files_grid').show();
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
@@ -702,7 +702,7 @@ var btnunzip_handler = function(_dir) {
 var btndownload_handler = function() {
     var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
     if (!ns.length) return;
-    var files = [];    
+    var files = [];
     for (var i=0; i<ns.length; i++) {
         var id = ns[i].replace('taracot_file_', '');
         files.push(file_ids[id]);
@@ -722,13 +722,13 @@ var btndownload_handler = function() {
         successCallback: function (url) {
             load_buttons_state();
             shifty_handler();
-            $('#files_grid_progress').hide();            
-            $('#files_grid').show();    
+            $('#files_grid_progress').hide();
+            $('#files_grid').show();
         },
         failCallback: function (html, url) {
             load_buttons_state();
             shifty_handler();
-            $('#files_grid_progress').hide();            
+            $('#files_grid_progress').hide();
             $('#files_grid').show();
             var data = JSON.parse(html);
             var _err = _lang_vars.download_error;
@@ -745,14 +745,14 @@ var btndownload_handler = function() {
     });
 };
 
-var btnupload_handler = function() {    
+var btnupload_handler = function() {
     refresh_required = false;
     taracot_dlg_upload.show();
     // uikit tooltip bug workaround
     $('#btn_dummy').mouseover();
     $('#taracot_dlg_upload_btn_clear').attr('disabled', true);
     $('#taracot_dlg_upload_btn_upload').attr('disabled', true);
-    if (!uploader) uploader_init();    
+    if (!uploader) uploader_init();
     uploader.splice(0);
     $('#taracot_upload_box').html('<div style="text-align:center" id="uploader_dnd_hint">' + _lang_vars.drag_and_drop_files_here + '</div>');
 };
@@ -827,13 +827,13 @@ $('#btn_unzip').click(btnunzip_handler);
 $('#taracot_dlg_upload_btn_clear').click(dlguploadbtnclear_handler);
 $('#taracot_dlg_upload_btn_upload').click(dlguploadbtnupload_handler);
 
-$(document).ready(function () {    
+$(document).ready(function () {
     $('#files_grid_progress').hide();
     init_buttons_state();
     load_files_data();
     var drop_target_btn_delete = new DropTarget(document.getElementById('btn_delete'));
     drop_target_btn_delete.onLeave = function() {
-        btndelete_handler(true);        
+        btndelete_handler(true);
     };
     $('#files_grid').click(function(e) {
         if (e.target.id === "files_grid") {
@@ -860,7 +860,7 @@ var check_filename = function(_fn) {
     if (fn.match(/^[\^<>\:\"\/\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
     return true;
 };
-var check_directory = function(_fn) {               
+var check_directory = function(_fn) {
     if (!_fn) return true; // allow null
     var fn = _fn.replace(/^\s+|\s+$/g,'');
     if (fn.length > 40) return false; // too long

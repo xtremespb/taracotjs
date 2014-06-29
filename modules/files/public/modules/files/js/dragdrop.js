@@ -48,7 +48,7 @@ var dragMaster = (function () {
 		if (!dragObject) {
 			mouseDownAt = null;
 		} else {
-			if (currentDropTarget) {												
+			if (currentDropTarget) {
 				dragObject.onDragSuccess(currentDropTarget);
 				currentDropTarget.accept(dragObject);
 				_dragdrop_action_taken = false;
@@ -56,8 +56,8 @@ var dragMaster = (function () {
 				dragObject.onDragFail();
 			}
 			dragObject = null;
-		}		
-		removeDocumentEventHandlers();		
+		}
+		removeDocumentEventHandlers();
 	}
 
 	function getMouseOffset(target, x, y) {
@@ -69,17 +69,18 @@ var dragMaster = (function () {
 	}
 
 	function getCurrentTarget(e) {
+		var x, y;
 		if (navigator.userAgent.match('MSIE') || navigator.userAgent.match('Gecko')) {
-			var x = e.clientX,
-				y = e.clientY;
+			x = e.clientX;
+			y = e.clientY;
 		} else {
-			var x = e.pageX,
-				y = e.pageY;
+			x = e.pageX;
+			y = e.pageY;
 		}
 		dragObject.hide();
 		var elem = document.elementFromPoint(x, y);
 		dragObject.show();
-		while (elem) {			
+		while (elem) {
 			if (elem.dropTarget && elem.dropTarget.canAccept(dragObject)) return elem.dropTarget;
 			elem = elem.parentNode;
 		}
@@ -88,7 +89,7 @@ var dragMaster = (function () {
 
 	function addDocumentEventHandlers(e) {
 		document.onmousemove = mouseMove;
-		document.onmouseup = mouseUp;		
+		document.onmouseup = mouseUp;
 		document.ondragstart = document.body.onselectstart = function () {
 			return false;
 		};
@@ -101,24 +102,24 @@ var dragMaster = (function () {
 	return {
 		makeDraggable: function (element) {
 			element.onmousedown = mouseDown;
-			document.onclick = function() {} ; 
+			document.onclick = function() {} ;
 		}
-	}
+	};
 }());
 
 /* DropTarget class */
 
-function DropTarget(element) {		
+function DropTarget(element) {
 	this.canAccept = function(dragObject) {
 		return true;
-	};	
+	};
 	this.accept = function(dragObject) {
 		this.onLeave();
 		dragObject.onDragFail();
 	};
 	this.onLeave = function() {
 	};
-	this.onEnter = function() {		
+	this.onEnter = function() {
 	};
 	this.toString = function() {
 		return element.id;
@@ -136,7 +137,7 @@ function DragObject(element) {
 	var rememberPositions = {};
 	var mouseOffset;
 
-	this.onDragStart = function (offset) {		
+	this.onDragStart = function (offset) {
 		var nodes = getByClass('taracot-files-item'), i=-1, node;
 		if (!getByClass('taracot-files-item-selected').length) element.click();
 		if (!element.getAttribute('class').match('taracot-files-item-selected')) {
@@ -152,7 +153,7 @@ function DragObject(element) {
 				class: node.getAttribute('class'),
 				zindex: node.style.zIndex
 			};
-		}		
+		}
 		element.style.position = 'absolute';
 		mouseOffset = offset;
 	};
@@ -165,11 +166,11 @@ function DragObject(element) {
 		element.style.display = '';
 	};
 
-	this.onDragMove = function (x, y) {			
+	this.onDragMove = function (x, y) {
 		var nodes_sel = getByClass('taracot-files-item-selected'), i=-1, node_sel;
-		while (node_sel=nodes_sel[++i]) {			
+		while (node_sel=nodes_sel[++i]) {
 			if (node_sel.id != element.id) {
-				node_sel.style.display = 'none';				
+				node_sel.style.display = 'none';
 			}
 		}
 		if (i > 1) {
@@ -181,7 +182,7 @@ function DragObject(element) {
 			}
 		}
 		element.style.top = y - mouseOffset.y + 'px';
-		element.style.left = x - mouseOffset.x + 'px';		
+		element.style.left = x - mouseOffset.x + 'px';
 		element.style.zIndex = 500;
 	};
 
@@ -203,7 +204,7 @@ function DragObject(element) {
 				bdg.innerHTML = i;
 				bdg.style.display = 'none';
 			}
-		};
+		}
 		if (typeof _dragdrop_action_taken != 'undefined') {
 			_dragdrop_action_taken = true;
 		}

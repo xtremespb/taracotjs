@@ -3,7 +3,7 @@ module.exports = function (app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
-	});	
+	});
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
 	var mime = require('mime');
@@ -36,7 +36,7 @@ module.exports = function (app) {
 	});
 	router.post('/data/load', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -61,7 +61,7 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var files = fs.readdirSync(dir);
 		var fa = [];
@@ -79,7 +79,7 @@ module.exports = function (app) {
 					}
 				}
 				item.type = 'f';
-				item.size = stat['size'];
+				item.size = stat.size;
 				item.mime = file_mime;
 				fa.push(item);
 			}
@@ -98,7 +98,7 @@ module.exports = function (app) {
 	});
 	router.post('/data/newdir', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -131,7 +131,7 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (fs.existsSync(dir + '/' + new_dir)) {
 			rep.status = 0;
@@ -144,14 +144,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("newdir_error");
 			res.send(JSON.stringify(rep));
-			return;		
+			return;
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/del', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -164,14 +164,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_request") + "1";
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		for (var i=0; i<fna.length; i++) {
 			if (!check_filename(fna[i])) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_request");
 				res.send(JSON.stringify(rep));
-				return;		
+				return;
 			}
 		}
 		var req_dir = req.body.dir;
@@ -180,30 +180,30 @@ module.exports = function (app) {
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
-		}		
+		}
 		if (req_dir) {
 			req_dir = '/' + req_dir;
 		} else {
 			req_dir = '';
-		}		
+		}
 		var dir = app.get('config').dir.storage + req_dir;
 		if (!fs.existsSync(dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var ure = false;
-		for (var i=0; i<fna.length; i++) {
-			var stat = fs.statSync(dir + '/' + fna[i]);
-			var ur = undefined;
+		for (var j=0; j<fna.length; j++) {
+			var stat = fs.statSync(dir + '/' + fna[j]);
+			var ur;
 			if (stat.isFile()) {
-				ur = fs.unlinkSync(dir + '/' + fna[i]);
+				ur = fs.unlinkSync(dir + '/' + fna[j]);
 			} else {
-				ur = fs.removeSync(dir + '/' + fna[i]);
-			}			
+				ur = fs.removeSync(dir + '/' + fna[j]);
+			}
 			var md5 = crypto.createHash('md5');
-			var fn = md5.update(fna[i]).digest('hex');
+			var fn = md5.update(fna[j]).digest('hex');
 			if (fs.existsSync(dir + '/___thumb_' + fn + '.jpg')) {
 				fs.unlinkSync(dir + '/___thumb_' + fn + '.jpg');
 			}
@@ -213,14 +213,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("some_files_not_deleted");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/rename', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -236,7 +236,7 @@ module.exports = function (app) {
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
-		}		
+		}
 		if (req_dir) {
 			req_dir = '/' + req_dir;
 		} else {
@@ -247,31 +247,31 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (!check_filename(old_filename) || !check_filename(new_filename)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_filename_syntax");
 			res.send(JSON.stringify(rep));
-			return;		
+			return;
 		}
 		if (old_filename == new_filename) {
 			rep.status = 0;
 			rep.error = i18nm.__("cannot_rename_same");
 			res.send(JSON.stringify(rep));
-			return;		
+			return;
 		}
 		if (!fs.existsSync(dir + '/' + old_filename)) {
 			rep.status = 0;
 			rep.error = i18nm.__("file_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (fs.existsSync(dir + '/' + new_filename)) {
 			rep.status = 0;
 			rep.error = i18nm.__("cannot_rename_same");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var cr = fs.renameSync(dir + '/' + old_filename, dir + '/' + new_filename);
 		var fn = crypto.createHash('md5').update(old_filename).digest('hex');
@@ -283,14 +283,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("rename_error");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/paste', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -303,14 +303,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_request");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		for (var i=0; i<clpbrd.files.length; i++) {
 			if (!check_filename(clpbrd.files[i])) {
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_request");
 				res.send(JSON.stringify(rep));
-				return;		
+				return;
 			}
 		}
 		var source_dir = clpbrd.dir;
@@ -319,30 +319,30 @@ module.exports = function (app) {
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
-		}		
+		}
 		var dest_dir = req.body.dest;
 		if (dest_dir && !check_directory(dest_dir)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_dir");
 			res.send(JSON.stringify(rep));
 			return;
-		}		
+		}
 		if (source_dir == dest_dir) {
 			rep.status = 0;
 			rep.error = i18nm.__("cannot_paste_to_source_dir");
 			res.send(JSON.stringify(rep));
 			return;
 		}
-	    for (var i=0; i<clpbrd.files.length; i++) {
-	    	var _fn = clpbrd.dir + '/' + clpbrd.files[i]; 
+	    for (var j=0; j<clpbrd.files.length; j++) {
+	    	var _fn = clpbrd.dir + '/' + clpbrd.files[j];
 	        if (_fn.match(/^\//)) _fn = _fn.replace(/^\//, '');
 	        var rex1 = new RegExp('^' + _fn + '\/');
 	        var rex2 = new RegExp('^' + _fn + '$');
 	        if (dest_dir.match(rex1) || dest_dir.match(rex2)) {
 	            rep.status = 0;
 				rep.error = i18nm.__("cannot_paste_to_itself");
-				res.send(JSON.stringify(rep));  
-	            return;    
+				res.send(JSON.stringify(rep));
+	            return;
 	        }
 	    }
 	    if (!source_dir) {
@@ -355,7 +355,7 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (!dest_dir) {
 			dest_dir = '';
@@ -367,28 +367,28 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var ure = false;
 		source_dir = source_dir.replace(/\/\//g, '/');
 		dest_dir = dest_dir.replace(/\/\//g, '/');
-		for (var i=0; i<clpbrd.files.length; i++) {			
+		for (var i=0; i<clpbrd.files.length; i++) {
 			var src = source_dir + '/' + clpbrd.files[i];
 			if (!fs.existsSync(src)) {
 				rep.status = 0;
 				rep.error = i18nm.__("dir_or_file_not_exists");
 				res.send(JSON.stringify(rep));
-				return;	
+				return;
 			}
-			var dst = dest_dir + '/' + clpbrd.files[i];			
+			var dst = dest_dir + '/' + clpbrd.files[i];
 			if (src == dst || src == dest_dir) {
 				rep.status = 0;
 				rep.error = i18nm.__("cannot_paste_to_itself");
-				res.send(JSON.stringify(rep));  
+				res.send(JSON.stringify(rep));
 	            return;
-			}			
+			}
 			var stat = fs.statSync(src);
-			var ur = undefined;
+			var ur;
 			if (stat.isFile() || stat.isDirectory()) {
 				if (stat.isFile()) {
 					var _ur;
@@ -418,11 +418,11 @@ module.exports = function (app) {
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
-		return;		
+		return;
 	});
 	router.post('/data/upload', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.status = 0;
@@ -441,13 +441,13 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("file_too_big");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (!check_filename(file.originalname)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_filename_syntax");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var dir = req.body.dir;
 		if (dir && !check_directory(dir)) {
@@ -466,14 +466,14 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
-		}		
+			return;
+		}
 		var cr = fs.renameSync(app.get('config').dir.tmp + '/' + file.name, dir + '/' + file.originalname);
 		if (cr) {
 			rep.status = 0;
 			rep.error = i18nm.__("upload_failed");
 			res.send(JSON.stringify(rep));
-			return;		
+			return;
 		}
 		// Create thumbnail if GM is available
 		if (gm && (file.mimetype == 'image/png' || file.mimetype == 'image/jpeg')) {
@@ -489,21 +489,21 @@ module.exports = function (app) {
 				  	} else {
 				  		img.resize(70, null);
 				  		img.crop(70,70, 0, 0);
-				  	}			  	
+				  	}
 					img.setFormat('jpeg');
 					img.write(dir + '/___thumb_' + fn + '.jpg', function(err) {
 						// OK, we don't care
 					});
 				}
-			});				
+			});
 		}
 		rep.status = 1;
 		res.send(JSON.stringify(rep));
-		return;	
+		return;
 	});
 	router.post('/data/download', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.error = i18nm.__("unauth");
@@ -531,19 +531,19 @@ module.exports = function (app) {
 		if (!fs.existsSync(dir)) {
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		for (var i=0; i<files.length; i++) {
 			if (!check_filename(files[i])) {
 				rep.error = i18nm.__("invalid_filename_syntax");
 				res.send(JSON.stringify(rep));
-				return;	
+				return;
 			}
 			if (!fs.existsSync(dir + '/' + files[i]) || files[i].match(/^\./) || files[i].match(/^___thumb_/)) {
 				rep.error = i18nm.__("file_not_exists");
 				res.send(JSON.stringify(rep));
-				return;	
-			}		
+				return;
+			}
 		}
 		if (files.length == 1) {
 			var stat = fs.statSync(dir + '/' + files[0]);
@@ -560,16 +560,16 @@ module.exports = function (app) {
 			if (!fs.existsSync(tmp)) {
 				rep.error = i18nm.__("download_error");
 				res.send(JSON.stringify(rep));
-				return;	
+				return;
 			}
 			res.cookie('fileDownload', 'true');
-			res.download(tmp)
+			res.download(tmp);
 			return;
 		});
 		archive.on('error', function(err){
 		    rep.error = i18nm.__("download_error");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		});
 		archive.pipe(output);
 		for (var i=0; i<files.length; i++) {
@@ -582,12 +582,12 @@ module.exports = function (app) {
 			if (stat.isFile()) {
 				archive.file(dir + '/' + files[i], { name: files[i] });
 			}
-		}		
-		archive.finalize();		
+		}
+		archive.finalize();
 	});
 	router.post('/data/unzip', function (req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var rep = {};		
+		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
 			rep.error = i18nm.__("unauth");
@@ -615,26 +615,26 @@ module.exports = function (app) {
 		if (!fs.existsSync(dir)) {
 			rep.error = i18nm.__("dir_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (!fs.existsSync(dir + '/' + file)) {
 			rep.error = i18nm.__("file_not_exists");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		var file_mime = mime.lookup(dir + '/' + file);
 		if (file_mime != 'application/zip') {
 			rep.error = i18nm.__("not_a_zip_archive");
 			res.send(JSON.stringify(rep));
-			return;		
+			return;
 		}
 		var rs = fs.createReadStream(dir + '/' + file);
 		var p = rs.pipe(unzip.Extract({ path: dir }));
 		p.on('close', function() {
 			rep.status = 1;
 			res.send(JSON.stringify(rep));
-			return;	
-		});		
+			return;
+		});
 	});
 	// Helper functions (regexp)
 	var check_filename = function(_fn) {
@@ -655,4 +655,4 @@ module.exports = function (app) {
 		return true;
 	};
 	return router;
-}
+};

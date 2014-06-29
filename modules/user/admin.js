@@ -10,7 +10,7 @@ module.exports = function (app) {
 	var sort_cell_default_mode = 1;
 	// Set items per page for this module
 	var items_per_page = 5;
-	// 
+	//
 	var router = app.get('express').Router();
 	var crypto = require('crypto');
 	var ObjectId = require('mongodb').ObjectID;
@@ -49,7 +49,6 @@ module.exports = function (app) {
 		var sort_cell = req.body.sort_cell;
 		if (typeof skip != 'undefined') {
 			if (!skip.match(/^[0-9]{1,10}$/)) {
-				k
 				rep.status = 0;
 				rep.error = i18nm.__("invalid_query");
 				res.send(JSON.stringify(rep));
@@ -210,7 +209,7 @@ module.exports = function (app) {
 				rep.err_fields.push('password-repeat');
 			}
 		}
-		if (rep.status == 0) {
+		if (rep.status === 0) {
 			res.send(JSON.stringify(rep));
 			return;
 		}
@@ -343,4 +342,4 @@ module.exports = function (app) {
 		res.send(JSON.stringify(rep));
 	});
 	return router;
-}
+};

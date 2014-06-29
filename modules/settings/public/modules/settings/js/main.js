@@ -8,7 +8,7 @@ var process_rows = [ // Handlers for each column
         return '<label><input type="checkbox" class="taracot-table-chbx" id="taracot-table-chbx-' + id + '" rel="taracot-item_' + val + '"></div>&nbsp;' + val + '</label>';
     },
     function (val, id) {
-        if (val == null) {
+        if (val === null) {
             val = '&mdash;';
         }
         return val;
@@ -34,7 +34,7 @@ $('#btn-delete-selected').click(function () {
     var ids = [];
     $('.taracot-table-chbx').each(function (i, val) {
         if ($(val).prop('checked')) {
-            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''))
+            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''));
         }
     });
     if (ids.length > 0) {
@@ -60,14 +60,14 @@ var load_edit_data = function (id) {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             if (data.status == 1) {
                 $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-                if (typeof data.data != undefined) {
-                    if (typeof data.data.oname != undefined) {
+                if (typeof data.data !== undefined) {
+                    if (typeof data.data.oname !== undefined) {
                         $('#oname').val(data.data.oname);
                     }
-                    if (typeof data.data.ovalue != undefined) {
+                    if (typeof data.data.ovalue !== undefined) {
                         $('#ovalue').val(data.data.ovalue);
                     }
-                    if (typeof data.data.olang != undefined) {
+                    if (typeof data.data.olang !== undefined) {
                         $('#olang').val(data.data.olang);
                     }
                 }
@@ -92,7 +92,7 @@ var edit_item = function (id) {
     $('#taracot-modal-edit-loading').removeClass('uk-hidden');
     $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
     load_edit_data(id);
-}
+};
 
 var add_item = function (id) {
     current_id = '';
@@ -104,7 +104,7 @@ var add_item = function (id) {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
     $('#status').val('1');
     $('#oname').focus();
-}
+};
 
 $('#taracot-edit-btn-save').click(function () {
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
