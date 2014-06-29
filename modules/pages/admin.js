@@ -10,7 +10,7 @@ module.exports = function (app) {
 	var sort_cell_default_mode = 1;
 	// Set items per page for this module
 	var items_per_page = 5;
-	// 
+	//
 	var router = app.get('express').Router();
 	var ObjectId = require('mongodb').ObjectID;
 	var i18nm = new(require('i18n-2'))({
@@ -34,7 +34,7 @@ module.exports = function (app) {
 			oname: 'folders_json'
 		}, {
 			limit: 1
-		}).toArray(function (err, items) {			
+		}).toArray(function (err, items) {
 			var folders;
 			if (!items || !items.length || !items[0].ovalue) {
 				folders = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
@@ -51,7 +51,7 @@ module.exports = function (app) {
 				body: body,
 				css: '<link rel="stylesheet" href="/modules/pages/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
 			}, i18nm, 'pages', req.session.auth);
-		});		
+		});
 	});
 
 	/*
@@ -213,7 +213,7 @@ module.exports = function (app) {
 				res.send(JSON.stringify(rep));
 				return;
 			}
-		}		
+		}
 		var _plang = app.get('config').locales[0];
 		for (var i = 0; i < app.get('config').locales.length; i++) {
 			if (plang == app.get('config').locales[i]) {
@@ -239,7 +239,7 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_folder");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 		if (!pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
 			rep.status = 0;
@@ -388,11 +388,11 @@ module.exports = function (app) {
 				rep.status = 0;
 				rep.error = i18nm.__("cannot_load_db_data");
 				res.send(JSON.stringify(rep));
-				return;	
+				return;
 			}
 			if (!items || !items.length || !items[0].ovalue) {
 				rep.folders = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
-			    res.send(JSON.stringify(rep));	
+			    res.send(JSON.stringify(rep));
 			    return;
 			}
 			rep.folders = items[0].ovalue;
@@ -419,7 +419,7 @@ module.exports = function (app) {
 			rep.status = 0;
 			rep.error = i18nm.__("cannot_parse_json");
 			res.send(JSON.stringify(rep));
-			return;	
+			return;
 		}
 
 		var data = app.get('mongodb').collection('pages_folders').find({
@@ -433,14 +433,14 @@ module.exports = function (app) {
 					oname: 'folders_json'},
 				{
 					oname: 'folders_json',
-					ovalue: json	
-				}, 
+					ovalue: json
+				},
 					function (err) {
 						if (err) {
 							rep.status = 0;
 							rep.error = i18nm.__("cannot_save_db_data");
 							res.send(JSON.stringify(rep));
-							return;	
+							return;
 						}
 						res.send(JSON.stringify(rep));
 				});
@@ -454,12 +454,12 @@ module.exports = function (app) {
 						rep.status = 0;
 						rep.error = i18nm.__("cannot_save_db_data");
 						res.send(JSON.stringify(rep));
-						return;	
+						return;
 					}
 					res.send(JSON.stringify(rep));
 				});
 			}
 		});
-	});	
+	});
 	return router;
-}
+};

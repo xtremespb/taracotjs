@@ -118,7 +118,7 @@ $('#auth_login').click(function () {
             });
             load_captcha();
         }
-    })
+    });
 });
 
 // Bind <Enter> key to form input fields

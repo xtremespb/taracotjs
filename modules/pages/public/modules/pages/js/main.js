@@ -7,7 +7,7 @@ var jstree_folders_select;
 var folders_data;
 
 /*******************************************************************
- 
+
  Medved Table configuration
 
 ********************************************************************/
@@ -17,7 +17,7 @@ var process_rows = [ // Handlers for each column
         return '<label id="taracot-table-lbl-' + id + '"><input type="checkbox" class="taracot-table-chbx" id="taracot-table-chbx-' + id + '" rel="taracot-item_' + val + '"></div>&nbsp;' + val + '</label>';
     },
     function (val, id) {
-        if (val == null) {
+        if (val === null) {
             val = '&mdash;';
         }
         return val;
@@ -31,7 +31,7 @@ var process_rows = [ // Handlers for each column
 ];
 
 /*******************************************************************
- 
+
  Table hanlders
 
 ********************************************************************/
@@ -48,7 +48,7 @@ $('#btn-delete-selected').click(function () {
     var ids = [];
     $('.taracot-table-chbx').each(function (i, val) {
         if ($(val).prop('checked')) {
-            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''))
+            ids.push($(val).attr('id').replace('taracot-table-chbx-', ''));
         }
     });
     if (ids.length > 0) {
@@ -57,31 +57,31 @@ $('#btn-delete-selected').click(function () {
 });
 
 /*******************************************************************
- 
+
  Functions to show specific module area
 
 ********************************************************************/
 
 var show_folders = function (id) {
     $('#taracot_pages_list').addClass('uk-hidden');
-    $('#taracot_pages_folders').removeClass('uk-hidden');    
+    $('#taracot_pages_folders').removeClass('uk-hidden');
     $('#taracot_pages_edit').addClass('uk-hidden');
-}
+};
 
 var show_pages = function (id) {
     $('#taracot_pages_list').removeClass('uk-hidden');
-    $('#taracot_pages_folders').addClass('uk-hidden');    
+    $('#taracot_pages_folders').addClass('uk-hidden');
     $('#taracot_pages_edit').addClass('uk-hidden');
-}
+};
 
 /*******************************************************************
- 
+
  Pages table button handlers
 
 ********************************************************************/
 
 $('#btn-add-item').click(function () {
-    current_id = '';        
+    current_id = '';
     $('#taracot_pages_edit_action').html(_lang_vars.action_add);
     $('#taracot_pages_list').addClass('uk-hidden');
     $('#taracot_pages_edit').removeClass('uk-hidden');
@@ -94,12 +94,12 @@ $('#btn-add-item').click(function () {
     $('#pfolder').val('/');
     $('#plangcopy_row').removeClass('uk-hidden');
     $('#plangcopy').attr('checked', false);
-    $('#ptitle').focus();    
+    $('#ptitle').focus();
 });
 
 var edit_item = function (id) {
-    current_id = id;    
-    $('#taracot_pages_edit_action').html(_lang_vars.action_edit);    
+    current_id = id;
+    $('#taracot_pages_edit_action').html(_lang_vars.action_edit);
     $('#plangcopy_row').addClass('uk-hidden');
     $('#playout').val(layouts.default);
     taracot_ajax_progress_indicator('body', true);
@@ -108,11 +108,11 @@ var edit_item = function (id) {
         url: '/cp/pages/data/load',
         dataType: "json",
         data: {
-            pid: current_id            
+            pid: current_id
         },
         success: function (data) {
             taracot_ajax_progress_indicator('body', false);
-            if (data.status == 1) {  
+            if (data.status == 1) {
                 $('#taracot_pages_list').addClass('uk-hidden');
                 $('#taracot_pages_edit').removeClass('uk-hidden');
                 if (data.data) data = data.data;
@@ -125,7 +125,7 @@ var edit_item = function (id) {
                 if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
                 if (data.pdesc) $('#pdesc').val(data.pdesc);
                 if (data.pcontent) $('#pcontent').val(data.pcontent);
-            } else {  
+            } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
                     _err = data.error;
@@ -135,20 +135,20 @@ var edit_item = function (id) {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });                
+                });
             }
         },
-        error: function () {        
-            taracot_ajax_progress_indicator('body', false);    
+        error: function () {
+            taracot_ajax_progress_indicator('body', false);
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
                 pos: 'top-center'
-            });            
+            });
         }
     });
-}
+};
 
 var delete_item = function (ids) {
     var users = [];
@@ -166,7 +166,7 @@ var delete_item = function (ids) {
             dataType: "json",
             success: function (data) {
                 $('#taracot_table').medvedTable('loading_indicator_hide');
-                if (data.status == 1) {                    
+                if (data.status == 1) {
                     $('#taracot_table').medvedTable('update');
                 } else {
                     $.UIkit.notify({
@@ -229,10 +229,10 @@ $('#btn_edit_save').click(function() {
             status: 'danger',
             timeout: 2000,
             pos: 'top-center'
-        });   
+        });
         if (error_focus) $(error_focus).focus();
-        return; 
-    }    
+        return;
+    }
     taracot_ajax_progress_indicator('body', true);
     // Save data
     $.ajax({
@@ -254,7 +254,7 @@ $('#btn_edit_save').click(function() {
         },
         success: function (data) {
             taracot_ajax_progress_indicator('body', false);
-            if (data.status == 1) {  
+            if (data.status == 1) {
                 $.UIkit.notify({
                     message: _lang_vars.page_save_success,
                     status: 'success',
@@ -263,7 +263,7 @@ $('#btn_edit_save').click(function() {
                 });
                 show_pages();
                 $('#taracot_table').medvedTable('update');
-            } else {  
+            } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
                     _err = data.error;
@@ -273,17 +273,17 @@ $('#btn_edit_save').click(function() {
                     status: 'danger',
                     timeout: 2000,
                     pos: 'top-center'
-                });                
+                });
             }
         },
-        error: function () {        
-            taracot_ajax_progress_indicator('body', false);    
+        error: function () {
+            taracot_ajax_progress_indicator('body', false);
             $.UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
                 pos: 'top-center'
-            });            
+            });
         }
     });
 });
@@ -299,7 +299,7 @@ $('#btn_edit_cancel').click(function() {
 });
 
 /*******************************************************************
- 
+
  document.ready
 
 ********************************************************************/
@@ -312,13 +312,13 @@ $(document).ready(function () {
         taracot_table_url: '/cp/pages/data/list',
         process_rows: process_rows
     });
-    $('#pcontent').ckeditor();      
+    $('#pcontent').ckeditor();
     $('#pfolder').attr('readonly', true);
-    folders_data = folders_preload;    
+    folders_data = folders_preload;
 });
 
 /*******************************************************************
- 
+
  Helper functions
 
 ********************************************************************/

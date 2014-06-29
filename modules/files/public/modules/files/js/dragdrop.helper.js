@@ -1,6 +1,6 @@
 function fixEvent(e) {
     e = e || window.event;
-    if (e.pageX == null && e.clientX != null) {
+    if (e.pageX === null && e.clientX !== null) {
         var html = document.documentElement;
         var body = document.body;
         e.pageX = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0);
@@ -54,9 +54,9 @@ function getOffsetSum(elem) {
 }
 
 function getByClass (className, parent) {
-  parent || (parent=document);
-  var descendants=parent.getElementsByTagName('*'), i=-1, e, result=[];
-  while (e=descendants[++i]) {
+  parent || (parent = document);
+  var descendants = parent.getElementsByTagName('*'), i=-1, e, result=[];
+  while (e = descendants[++i]) {
     ((' '+(e['class']||e.className)+' ').indexOf(' '+className+' ') > -1) && result.push(e);
   }
   return result;

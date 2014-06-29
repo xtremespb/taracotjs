@@ -7,15 +7,15 @@ module.exports = function (app) {
 					return;
 				}
 				if (typeof items != 'undefined' && items && items.length) {
-					if (items[0].menu_raw) app.get('blocks').data['menu_raw'] = items[0].menu_raw;
-					if (items[0].menu_uikit) app.get('blocks').data['menu_uikit'] = items[0].menu_uikit;
+					if (items[0].menu_raw) app.get('blocks').data.menu_raw = items[0].menu_raw;
+					if (items[0].menu_uikit) app.get('blocks').data.menu_uikit = items[0].menu_uikit;
 				} else {
-					app.get('blocks').data['menu_raw'] = '';
-					app.get('blocks').data['menu_uikit'] = '';
+					app.get('blocks').data.menu_raw = '';
+					app.get('blocks').data.menu_uikit = '';
 				}
 				callback();
 			});
 		}
-	};	
+	};
 	return block;
-}
+};
