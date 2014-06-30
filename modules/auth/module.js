@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function(app) {
 	var router = app.get('express').Router();
 	var renderer = app.get('renderer');
 	var config = app.get('config');
@@ -8,34 +8,34 @@ module.exports = function (app) {
 		locales: config.locales,
 		directory: path.join(__dirname, 'lang'),
 		extension: '.js'
-	});	
-	router.get('/captcha', function (req, res) {
+	});
+	router.get('/captcha', function(req, res) {
 		var c = parseInt(Math.random() * 9000 + 1000);
 		req.session.captcha = c;
 		var cpth = app.get('captcha').generate(c);
 		if (cpth.png) {
-			res.set('Content-Type', 'image/png');		
-			cpth.png.stream(function streamOut (err, stdout, stderr) {
+			res.set('Content-Type', 'image/png');
+			cpth.png.stream(function streamOut(err, stdout, stderr) {
 				if (err) return next(err);
 				stdout.pipe(res);
 			});
 		} else {
-			next();	
-		}	
+			next();
+		}
 	});
-	router.post('/captcha', function (req, res) {
+	router.post('/captcha', function(req, res) {
 		var c = parseInt(Math.random() * 9000 + 1000);
 		req.session.captcha = c;
 		var cpth = app.get('captcha').generate(c);
 		if (cpth.b64) {
 			res.send(JSON.stringify({
-                img: cpth.b64
-            }));
+				img: cpth.b64
+			}));
 		} else {
 			next();
 		}
 	});
-	router.get('/', function (req, res) {
+	router.get('/', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
 			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
@@ -53,11 +53,11 @@ module.exports = function (app) {
 		});
 		res.send(render);
 	});
-	router.get('/logout', function (req, res) {
+	router.get('/logout', function(req, res) {
 		delete req.session.auth;
 		res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
 	});
-	router.post('/process', function (req, res) {
+	router.post('/process', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
 		i18nm.setLocale(req.i18n.getLocale());
 		var username = req.body.username;
@@ -112,7 +112,7 @@ module.exports = function (app) {
 			password: password_hex
 		}, {
 			limit: 1
-		}).toArray(function (err, items) {
+		}).toArray(function(err, items) {
 			if (typeof items != 'undefined' && !err) {
 				if (items.length > 0) {
 					req.session.auth = items[0];

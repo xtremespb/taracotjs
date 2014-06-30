@@ -1,15 +1,15 @@
 var gm = require('gm');
 
 var captcha = {
-	generate : function(cn) {
+	generate: function(cn) {
 		var res = {};
 		var pic = gm(100, 50, '#f5f5f5').setFormat('png');
 		pic.font('../fonts/serrific_grunge.ttf');
 		var offset = 10;
 		for (var n = 0; n < 10; n++) {
-			var color = '#'+Math.floor(Math.random() * 6777215 + 1000000).toString(16);
+			var color = '#' + Math.floor(Math.random() * 6777215 + 1000000).toString(16);
 			pic.stroke(color);
-			pic.drawLine(Math.random() * 80 + 10, Math.random() * 40 + 5, Math.random() * 80 + 10 , Math.random() * 40 + 5);
+			pic.drawLine(Math.random() * 80 + 10, Math.random() * 40 + 5, Math.random() * 80 + 10, Math.random() * 40 + 5);
 		}
 		cn = cn.toString().split("");
 		for (var i = 0; i < 4; i++) {
@@ -20,7 +20,7 @@ var captcha = {
 			pic.drawText(offset, 25, nm);
 			offset += 16 + parseInt(Math.random() * 10);
 			var factor = 1;
-			if (Math.random() <0.5) {
+			if (Math.random() < 0.5) {
 				factor = -1;
 			}
 			pic.rotate('#f5f5f5', parseInt(Math.random() * 6 * factor));

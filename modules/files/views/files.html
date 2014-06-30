@@ -1,90 +1,87 @@
 <h1>!{root.lang.__('module_name')}</h1>
 <div id="taracot_dlg_edit" class="uk-modal">
-    <div class="uk-modal-dialog">
-        <a class="uk-modal-close uk-close"></a>
-        <h1 id="taracot-dlg-edit-h1"></h1>
-        <fieldset class="uk-form" data-uk-margin>
-          <input type="text" class="uk-width-1-1" id="taracot_dlg_edit_value">
-        </fieldset>
-        <button class="uk-button" type="button" id="taracot_dlg_edit_btn_save">!{root.lang.__('save')}</button>
-        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
-    </div>
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h1 id="taracot-dlg-edit-h1"></h1>
+		<fieldset class="uk-form" data-uk-margin>
+			<input type="text" class="uk-width-1-1" id="taracot_dlg_edit_value">
+		</fieldset>
+		<button class="uk-button" type="button" id="taracot_dlg_edit_btn_save">!{root.lang.__('save')}</button>
+		<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+	</div>
 </div>
 <div id="taracot_dlg_upload" class="uk-modal">
-    <div class="uk-modal-dialog">
-        <h1>!{root.lang.__('upload')}</h1>
-        <div class="uk-panel uk-panel-box uk-margin-bottom" id="taracot_upload_box"></div>
-        <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_add">!{root.lang.__('addfiles')}</button>
-        <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_clear">!{root.lang.__('clearupload')}</button>
-        <button class="uk-button uk-button-success taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_upload">!{root.lang.__('uploadbtn')}</button>        
-        <button class="uk-button uk-button-danger taracot-upload-btn uk-modal-close uk-float-right" id="taracot_dlg_upload_btn_cancel" type="button">!{root.lang.__('close')}</button>
-    </div>
+	<div class="uk-modal-dialog">
+		<h1>!{root.lang.__('upload')}</h1>
+		<div class="uk-panel uk-panel-box uk-margin-bottom" id="taracot_upload_box"></div>
+		<button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_add">!{root.lang.__('addfiles')}</button>
+		<button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_clear">!{root.lang.__('clearupload')}</button>
+		<button class="uk-button uk-button-success taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_upload">!{root.lang.__('uploadbtn')}</button>
+		<button class="uk-button uk-button-danger taracot-upload-btn uk-modal-close uk-float-right" id="taracot_dlg_upload_btn_cancel" type="button">!{root.lang.__('close')}</button>
+	</div>
 </div>
 <div class="uk-panel uk-panel-box taracot-files-panel">
-    <button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
-    <button class="uk-button uk-icon-refresh taracot-files-button" data-uk-tooltip title="!{root.lang.__('refresh')}" id="btn_refresh"></button>
-    &nbsp;&nbsp;    
-    <div class="uk-button-group">
-        <button class="uk-button uk-icon-level-down taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_down')}" id="btn_down"></button>
-        <button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_up')}" id="btn_up"></button>
-        <button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__('new_folder')}" id="btn_new_folder"></button>
-    </div>
-    &nbsp;&nbsp;    
-    <div class="uk-button-group">
-        <button class="uk-button uk-icon-copy taracot-files-button" data-uk-tooltip title="!{root.lang.__('copy')}" id="btn_copy"></button>    
-        <button class="uk-button uk-icon-cut taracot-files-button" data-uk-tooltip title="!{root.lang.__('cut')}" id="btn_cut"></button>    
-        <button class="uk-button uk-icon-paste taracot-files-button" data-uk-tooltip title="!{root.lang.__('paste')}" id="btn_paste"></button>    
-        <button class="uk-button uk-icon-edit taracot-files-button" data-uk-tooltip title="!{root.lang.__('rename')}" id="btn_rename"></button>    
-        <button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__('delete')}" id="btn_delete"></button>
-    </div>
-    &nbsp;&nbsp;    
-    <div class="uk-button-group">
-        <button class="uk-button uk-icon-upload uk-button-success taracot-files-button" data-uk-tooltip title="!{root.lang.__('upload')}" id="btn_upload"></button>
-        <button class="uk-button uk-icon-download taracot-files-button" data-uk-tooltip title="!{root.lang.__('download')}" id="btn_download"></button>
-        <button class="uk-button uk-icon-file-zip-o taracot-files-button" data-uk-tooltip title="!{root.lang.__('unzip')}" id="btn_unzip"></button>
-    </div>
+	<button class="uk-hidden" data-uk-tooltip title=" " id="btn_dummy"></button>
+	<button class="uk-button uk-icon-refresh taracot-files-button" data-uk-tooltip title="!{root.lang.__('refresh')}" id="btn_refresh"></button>&nbsp;&nbsp;
+	<div class="uk-button-group">
+		<button class="uk-button uk-icon-level-down taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_down')}" id="btn_down"></button>
+		<button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_up')}" id="btn_up"></button>
+		<button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__('new_folder')}" id="btn_new_folder"></button>
+	</div>&nbsp;&nbsp;
+	<div class="uk-button-group">
+		<button class="uk-button uk-icon-copy taracot-files-button" data-uk-tooltip title="!{root.lang.__('copy')}" id="btn_copy"></button>
+		<button class="uk-button uk-icon-cut taracot-files-button" data-uk-tooltip title="!{root.lang.__('cut')}" id="btn_cut"></button>
+		<button class="uk-button uk-icon-paste taracot-files-button" data-uk-tooltip title="!{root.lang.__('paste')}" id="btn_paste"></button>
+		<button class="uk-button uk-icon-edit taracot-files-button" data-uk-tooltip title="!{root.lang.__('rename')}" id="btn_rename"></button>
+		<button class="uk-button uk-icon-trash-o uk-button-danger taracot-files-button" data-uk-tooltip title="!{root.lang.__('delete')}" id="btn_delete"></button>
+	</div>&nbsp;&nbsp;
+	<div class="uk-button-group">
+		<button class="uk-button uk-icon-upload uk-button-success taracot-files-button" data-uk-tooltip title="!{root.lang.__('upload')}" id="btn_upload"></button>
+		<button class="uk-button uk-icon-download taracot-files-button" data-uk-tooltip title="!{root.lang.__('download')}" id="btn_download"></button>
+		<button class="uk-button uk-icon-file-zip-o taracot-files-button" data-uk-tooltip title="!{root.lang.__('unzip')}" id="btn_unzip"></button>
+	</div>
 </div>
 <span class="uk-panel uk-margin-bottom">
-    <span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__('total_files')}"></i></span>&nbsp;<span id="taracot_total_files"></span>
-    &nbsp;<span class="uk-badge uk-badge-notification"><i class="uk-icon-clipboard" data-uk-tooltip title="!{root.lang.__('clipboard_files')}"></i></span>&nbsp;<span id="taracot-files-clipboard">0</span>
-    &nbsp;<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder" data-uk-tooltip title="!{root.lang.__('current_folder')}"></i></span>&nbsp;<span id="taracot-files-current-dir">/</span>    
+	<span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__('total_files')}"></i>
+	</span>&nbsp;
+	<span id="taracot_total_files"></span>&nbsp;
+	<span class="uk-badge uk-badge-notification"><i class="uk-icon-clipboard" data-uk-tooltip title="!{root.lang.__('clipboard_files')}"></i>
+	</span>&nbsp;
+	<span id="taracot-files-clipboard">0</span>&nbsp;
+	<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder" data-uk-tooltip title="!{root.lang.__('current_folder')}"></i>
+	</span>&nbsp;
+	<span id="taracot-files-current-dir">/</span>
 </span>
 <div id="files_grid_progress">
-    <img src="/modules/files/images/loading_36x36.gif" style="width:15px;height:15px">&nbsp;!{root.lang.__('loading_files_data')}
-</div>
-<ul id="files_grid">
-</ul>
-<div id="taracot_files_bottom" class="uk-margin-top">
-</div>
+	<img src="/modules/files/images/loading_36x36.gif" style="width:15px;height:15px">&nbsp;!{root.lang.__('loading_files_data')}</div>
+<ul id="files_grid"></ul>
+<div id="taracot_files_bottom" class="uk-margin-top"></div>
 <script type="text/javascript">
-  var _lang_vars = {
-    ajax_failed: "!{root.lang.__('ajax_failed')}",
-    new_folder: "!{root.lang.__('new_folder')}",
-    invalid_dir_syntax: "!{root.lang.__('invalid_dir_syntax')}",
-    newdir_success: "!{root.lang.__('newdir_success')}",
-    delete_success: "!{root.lang.__('delete_success')}",
-    delete_confirm: "!{root.lang.__('delete_confirm')}",
-    no_files: "!{root.lang.__('no_files')}",
-    clipboard_copy_success: "!{root.lang.__('clipboard_copy_success')}",
-    clipboard_cut_success: "!{root.lang.__('clipboard_cut_success')}",
-    cannot_paste_to_source_dir: "!{root.lang.__('cannot_paste_to_source_dir')}",
-    cannot_paste_to_itself: "!{root.lang.__('cannot_paste_to_itself')}",
-    paste_success: "!{root.lang.__('paste_success')}",
-    paste_error: "!{root.lang.__('paste_error')}",
-    drag_and_drop_files_here: "!{root.lang.__('drag_and_drop_files_here')}",
-    rename: "!{root.lang.__('rename_file')}",
-    invalid_filename_syntax: "!{root.lang.__('invalid_filename_syntax')}",
-    rename_success: "!{root.lang.__('rename_success')}",
-    cannot_rename_same: "!{root.lang.__('cannot_rename_same')}",
-    download_error: "!{root.lang.__('download_error')}",
-    unzip_error: "!{root.lang.__('unzip_error')}",
-    unzip_success: "!{root.lang.__('unzip_success')}"
-  }
-  var _dragdrop_action_taken = false;
+var _lang_vars = {
+	ajax_failed: "!{root.lang.__('ajax_failed')}",
+	new_folder: "!{root.lang.__('new_folder')}",
+	invalid_dir_syntax: "!{root.lang.__('invalid_dir_syntax')}",
+	newdir_success: "!{root.lang.__('newdir_success')}",
+	delete_success: "!{root.lang.__('delete_success')}",
+	delete_confirm: "!{root.lang.__('delete_confirm')}",
+	no_files: "!{root.lang.__('no_files')}",
+	clipboard_copy_success: "!{root.lang.__('clipboard_copy_success')}",
+	clipboard_cut_success: "!{root.lang.__('clipboard_cut_success')}",
+	cannot_paste_to_source_dir: "!{root.lang.__('cannot_paste_to_source_dir')}",
+	cannot_paste_to_itself: "!{root.lang.__('cannot_paste_to_itself')}",
+	paste_success: "!{root.lang.__('paste_success')}",
+	paste_error: "!{root.lang.__('paste_error')}",
+	drag_and_drop_files_here: "!{root.lang.__('drag_and_drop_files_here')}",
+	rename: "!{root.lang.__('rename_file')}",
+	invalid_filename_syntax: "!{root.lang.__('invalid_filename_syntax')}",
+	rename_success: "!{root.lang.__('rename_success')}",
+	cannot_rename_same: "!{root.lang.__('cannot_rename_same')}",
+	download_error: "!{root.lang.__('download_error')}",
+	unzip_error: "!{root.lang.__('unzip_error')}",
+	unzip_success: "!{root.lang.__('unzip_success')}"
+};
+var _dragdrop_action_taken = false;
 </script>
-<script src="/modules/files/js/dragdrop.helper.js"></script>
-<script src="/modules/files/js/jquery.shifty.js"></script>
-<script src="/modules/files/js/dragdrop.js"></script>
 <script src="/js/jquery.fileDownload.min.js"></script>
 <script src="/js/plupload/plupload.full.min.js"></script>
-<script src="/modules/files/js/main.js"></script>
+<script src="/modules/files/js/files.min.js"></script>

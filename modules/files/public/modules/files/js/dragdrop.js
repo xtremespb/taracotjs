@@ -1,6 +1,6 @@
 /* dragMaster class */
 
-var dragMaster = (function () {
+var dragMaster = (function() {
 	var dragObject;
 	var mouseDownAt;
 	var currentDropTarget;
@@ -90,7 +90,7 @@ var dragMaster = (function () {
 	function addDocumentEventHandlers(e) {
 		document.onmousemove = mouseMove;
 		document.onmouseup = mouseUp;
-		document.ondragstart = document.body.onselectstart = function () {
+		document.ondragstart = document.body.onselectstart = function() {
 			return false;
 		};
 		e.stopPropagation();
@@ -100,9 +100,9 @@ var dragMaster = (function () {
 		document.onmousemove = document.onmouseup = document.ondragstart = document.body.onselectstart = null;
 	}
 	return {
-		makeDraggable: function (element) {
+		makeDraggable: function(element) {
 			element.onmousedown = mouseDown;
-			document.onclick = function() {} ;
+			document.onclick = function() {};
 		}
 	};
 }());
@@ -117,10 +117,8 @@ function DropTarget(element) {
 		this.onLeave();
 		dragObject.onDragFail();
 	};
-	this.onLeave = function() {
-	};
-	this.onEnter = function() {
-	};
+	this.onLeave = function() {};
+	this.onEnter = function() {};
 	this.toString = function() {
 		return element.id;
 	};
@@ -137,13 +135,15 @@ function DragObject(element) {
 	var rememberPositions = {};
 	var mouseOffset;
 
-	this.onDragStart = function (offset) {
-		var nodes = getByClass('taracot-files-item'), i=-1, node;
+	this.onDragStart = function(offset) {
+		var nodes = getByClass('taracot-files-item'),
+			i = -1,
+			node;
 		if (!getByClass('taracot-files-item-selected').length) element.click();
 		if (!element.getAttribute('class').match('taracot-files-item-selected')) {
 			element.setAttribute('class', element.getAttribute('class') + ' taracot-files-item-selected');
 			var id = element.id.replace('taracot_file_', '');
-			document.getElementById('taracot_el_'+id).setAttribute('class', document.getElementById('taracot_el_'+id).getAttribute('class').replace(/taracot.fade.elipsis/, ''));
+			document.getElementById('taracot_el_' + id).setAttribute('class', document.getElementById('taracot_el_' + id).getAttribute('class').replace(/taracot.fade.elipsis/, ''));
 		}
 		while (node = nodes[++i]) {
 			rememberPositions[node.id] = {
@@ -158,17 +158,19 @@ function DragObject(element) {
 		mouseOffset = offset;
 	};
 
-	this.hide = function () {
+	this.hide = function() {
 		element.style.display = 'none';
 	};
 
-	this.show = function () {
+	this.show = function() {
 		element.style.display = '';
 	};
 
-	this.onDragMove = function (x, y) {
-		var nodes_sel = getByClass('taracot-files-item-selected'), i=-1, node_sel;
-		while (node_sel=nodes_sel[++i]) {
+	this.onDragMove = function(x, y) {
+		var nodes_sel = getByClass('taracot-files-item-selected'),
+			i = -1,
+			node_sel;
+		while (node_sel = nodes_sel[++i]) {
 			if (node_sel.id != element.id) {
 				node_sel.style.display = 'none';
 			}
@@ -186,12 +188,13 @@ function DragObject(element) {
 		element.style.zIndex = 500;
 	};
 
-	this.onDragSuccess = function (dropTarget) {
-	};
+	this.onDragSuccess = function(dropTarget) {};
 
-	this.onDragFail = function () {
-		var nodes = getByClass('taracot-files-item'), i=-1, node;
-		while (node=nodes[++i]) {
+	this.onDragFail = function() {
+		var nodes = getByClass('taracot-files-item'),
+			i = -1,
+			node;
+		while (node = nodes[++i]) {
 			node.style.top = rememberPositions[node.id].top;
 			node.style.left = rememberPositions[node.id].left;
 			node.style.position = rememberPositions[node.id].position;
@@ -210,7 +213,7 @@ function DragObject(element) {
 		}
 	};
 
-	this.toString = function () {
+	this.toString = function() {
 		return element.id;
 	};
 }

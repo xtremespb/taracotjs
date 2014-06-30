@@ -1,13 +1,13 @@
-module.exports = function (app) {
+module.exports = function(app) {
 	var cp = {
-		render: function (req, res, data, i18nm, current, auth) {
+		render: function(req, res, data, i18nm, current, auth) {
 			var i18ncp = new(require('i18n-2'))({
 				locales: app.get('config').locales,
 				directory: app.get('path').join(__dirname, '..', 'cp', 'lang'),
 				extension: '.js'
 			});
 			var modules = [];
-			app.get('config').modules.forEach(function (module) {
+			app.get('config').modules.forEach(function(module) {
 				if (module.cp_prefix.length > 0) {
 					var _am = require('../' + module.name + '/admin')(app);
 					var _m = {};

@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function(app) {
 	var router = app.get('express').Router();
 	var os = require('os');
 	var i18nm = new(require('i18n-2'))({
@@ -6,7 +6,7 @@ module.exports = function (app) {
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
 	});
-	router.get('/', function (req, res) {
+	router.get('/', function(req, res) {
 		if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp';
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
@@ -24,7 +24,7 @@ module.exports = function (app) {
 			os_type: os.type(),
 			os_platform: os.platform(),
 			cpu_arch: os.arch(),
-			os_release :os.release(),
+			os_release: os.release(),
 			totalmem: os.totalmem(),
 			freemem: os.freemem(),
 			loadavg: loadavg
