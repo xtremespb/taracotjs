@@ -10,13 +10,13 @@ module.exports = function(app){
 			if (!data) {
 				data = {};
 			}
-			data['blocks'] = app.get('blocks').data;
+			data.blocks = app.get('blocks').data;
 			res.render(_layout, data);
 		},
 		render_file : function(dir, filename, data) {
 			var render = gaikan.compileFromFile(dir + '/' + filename + '.html');
-			var html_data = render(gaikan, data, undefined);		
-			return html_data;		
+			var html_data = render(gaikan, data, undefined);
+			return html_data;
 		}
 	};
 

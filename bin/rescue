@@ -1,20 +1,26 @@
+#!/usr/bin/env node
+
+var program = require('commander');
 var async = require('async');
-var prompt = require('prompt');
 var crypto = require('crypto');
 var config = require('../config');
 var mongoclient = require('mongodb').MongoClient;
 var db;
-prompt.message = "> ".green;
-prompt.delimiter = "";
-prompt.start();
+
+program
+  .version(config.taracotjs)
+  .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
+  .parse(process.argv);
+
+var mongo_url = program.mongo || config.mongo.url;
 
 async.series([
 		function (callback) {
 			console.log("This script will create a rescue account for your system.\n");
 			console.log("Database connection is required.");
-			console.log("Current MongoDB URL: " + config.mongo.url + "\n");
-			prompt.get(['Continue? y/n'], function (err, result) {
-				if (!err && result && 'Continue? y/n' in result && result['Continue? y/n'] == 'y') {
+			console.log("Current MongoDB URL: " + mongo_url + "\n");
+			program.confirm('Continue? ', function(ok){
+				if (ok) {
 					callback();
 				} else {
 					console.log("\n\nAborted");
@@ -23,7 +29,7 @@ async.series([
 			});
 		},
 		function (callback) {
-			mongoclient.connect(config.mongo.url, config.mongo_options, function (err, _db) {
+			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
 				if (err) {
 					console.log("\nCould not connect to the MongoDB. Please check config.js");
 					console.log(err);
@@ -42,7 +48,7 @@ async.series([
 		function (callback) {
 			console.log("\nCreating rescue account\n");
 			var md5 = crypto.createHash('md5');
-			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');			
+			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');
 			db.collection('users').insert({
 					username: 'rescue',
 					email: 'rescue@taracot.org',

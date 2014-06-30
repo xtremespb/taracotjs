@@ -183,11 +183,7 @@ var load_files_data = function(dir) {
                     $('#files_grid').append('<li class="uk-thumbnail taracot-files-item" id="taracot_file_' + i + '"><div class="uk-badge uk-badge-notification uk-badge-success" style="position:absolute;display:none">0</div><img src="' + tp + '" style="max-height:70px;max-width:70px"><div class="uk-thumbnail-caption taracot-thumbnail-caption"><div class="taracot-fade taracot-fade-elipsis" id="taracot_el_' + i + '">' + data.files[i].name + '</div></div></li>');
                     if (data.files[i].type == 'd') {
                         var drop_target_folder = new DropTarget(document.getElementById('taracot_file_' + i));
-                        drop_target_folder.onLeave = function() {
-                            cutcopy('cut');
-                            var dest = current_dir + '/' + file_ids[this.toString().replace('taracot_file_', '')];
-                            btnpaste_handler(dest);
-                        };
+                        drop_target_folder.onLeave = drop_target_folder_onleave;
                     }
                 }
                 $('.taracot-files-item').shifty({
@@ -200,8 +196,8 @@ var load_files_data = function(dir) {
                     }
                 });
                 var dragObjects = $('.taracot-files-item');
-                for(var i=0; i < dragObjects.length; i++) {
-                    new DragObject(dragObjects[i]);
+                for(var j=0; j < dragObjects.length; j++) {
+                    new DragObject(dragObjects[j]);
                 }
                 $('.taracot-files-item').bind('dblclick', dblclick_handler);
                 $('#taracot_total_files').html(data.files.length);
@@ -234,6 +230,12 @@ var load_files_data = function(dir) {
             shifty_handler();
         }
     });
+};
+
+var drop_target_folder_onleave = function() {
+    cutcopy('cut');
+    var dest = current_dir + '/' + file_ids[this.toString().replace('taracot_file_', '')];
+    btnpaste_handler(dest);
 };
 
 var dblclick_handler = function() {

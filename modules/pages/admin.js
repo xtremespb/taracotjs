@@ -222,9 +222,9 @@ module.exports = function (app) {
 		}
 		plang = _plang;
 		var _playout = app.get('config').layouts.default;
-		for (var i = 0; i < app.get('config').layouts.avail.length; i++) {
-			if (playout == app.get('config').layouts.avail[i]) {
-				_playout = app.get('config').layouts.avail[i];
+		for (var j = 0; j < app.get('config').layouts.avail.length; j++) {
+			if (playout == app.get('config').layouts.avail[j]) {
+				_playout = app.get('config').layouts.avail[j];
 			}
 		}
 		playout = _playout;
@@ -300,7 +300,7 @@ module.exports = function (app) {
 				});
 			});
 		} else {
-			var data = app.get('mongodb').collection('pages').find({
+			var data1 = app.get('mongodb').collection('pages').find({
 				pfilename: pfilename,
 				pfolder: pfolder,
 				plang: plang,
@@ -355,11 +355,13 @@ module.exports = function (app) {
 			if (ids[i].match(/^[a-f0-9]{24}$/)) {
 				app.get('mongodb').collection('pages').remove({
 					_id: new ObjectId(ids[i])
-				}, function () {});
+				}, dummy);
 			}
 		}
 		res.send(JSON.stringify(rep));
 	});
+
+	var dummy = function() {};
 
 	/*
 
