@@ -26,7 +26,12 @@
     "unzip": "~0.1.9",
     "gm": "~1.16.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-jsbeautifier": "~0.2.7"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./bin/www"
@@ -39,8 +44,8 @@
     "cms"
   ],
   "repository": {
-      "type": "mercurial",
-      "url": "https://code.google.com/p/taracotjs/"
+    "type": "mercurial",
+    "url": "https://code.google.com/p/taracotjs/"
   },
   "author": "Michael A. Matveev <xtreme@rh1.ru>",
   "license": "GPL v.3"

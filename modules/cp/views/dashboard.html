@@ -1,44 +1,50 @@
-<h1>!{root.lang.__("taracot_dashboard")}</h1>
-!{root.lang.__("up_and_running")}
+<h1>!{root.lang.__("taracot_dashboard")}</h1>!{root.lang.__("up_and_running")}
 <h2>!{root.lang.__("config")}</h2>
 <table class="uk-table uk-table-hover">
-    <tbody>
-    	<tr>
-            <td style="width:30%">!{root.lang.__("current_version")}</td>
-        	<td style="width:70%"><span class="uk-badge uk-badge-notification uk-badge-success">!{root.config.taracotjs}</span></td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("redis")}</td>
-        	<td>!{root.config.redis.host}:!{root.config.redis.port}</td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("default_layout")}</td>
-        	<td>!{root.config.default_layout}</td>
-        </tr>        
-    </tbody>
+	<tbody>
+		<tr>
+			<td style="width:30%">!{root.lang.__("current_version")}</td>
+			<td style="width:70%">
+				<span class="uk-badge uk-badge-notification uk-badge-success">!{root.config.taracotjs}</span>
+			</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("redis")}</td>
+			<td>!{root.config.redis.host}:!{root.config.redis.port}</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("default_layout")}</td>
+			<td>!{root.config.default_layout}</td>
+		</tr>
+	</tbody>
 </table>
 <h2>!{root.lang.__("system")}</h2>
 <table class="uk-table uk-table-hover">
-    <tbody>
-    	<tr>
-            <td style="width:30%">!{root.lang.__("hostname")}</td>
-        	<td style="width:70%">!{root.os.hostname}</span></td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("os")}</td>
-        	<td>!{root.os.os_type} / !{root.os.os_platform} / !{root.os.os_release}</span></td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("cpu_arch")}</td>
-        	<td>!{root.os.cpu_arch}</span></td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("memory_free_total")}</td>
-        	<td>!{root.os.freemem} / !{root.os.totalmem}</span></td>
-        </tr>
-        <tr>
-            <td>!{root.lang.__("load average")}</td>
-        	<td>!{root.os.loadavg}</span></td>
-        </tr>
-    </tbody>
+	<tbody>
+		<tr>
+			<td style="width:30%">!{root.lang.__("hostname")}</td>
+			<td style="width:70%">!{root.os.hostname}</span>
+			</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("os")}</td>
+			<td>!{root.os.os_type} / !{root.os.os_platform} / !{root.os.os_release}</span>
+			</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("cpu_arch")}</td>
+			<td>!{root.os.cpu_arch}</span>
+			</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("memory_free_total")}</td>
+			<td>!{root.os.freemem} / !{root.os.totalmem}</span>
+			</td>
+		</tr>
+		<tr>
+			<td>!{root.lang.__("load average")}</td>
+			<td>!{root.os.loadavg}</span>
+			</td>
+		</tr>
+	</tbody>
 </table>

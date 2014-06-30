@@ -1,8 +1,12 @@
-module.exports = function (app) {
+module.exports = function(app) {
 	var block = {
-		data : function(req, res, callback) {
+		data: function(req, res, callback) {
 			var lng = req.i18n.getLocale();
-			app.get('mongodb').collection('menu').find({ lang: lng }, { limit: 1 }).toArray(function (err, items) {
+			app.get('mongodb').collection('menu').find({
+				lang: lng
+			}, {
+				limit: 1
+			}).toArray(function(err, items) {
 				if (err) {
 					return;
 				}

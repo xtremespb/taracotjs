@@ -58,53 +58,43 @@ var config = {
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
-	"blocks": [
-		{
-			"name": "menu"
-		}
-	],
-	"modules": [
-		{
-			"name": "auth",
-			"prefix": "/auth/",
-			"cp_prefix": ""
-		},
-		{
-			"name": "cp",
-			"prefix": "/cp/",
-			"cp_prefix": ""
-		},
-		{
-			"name": "user",
-			"prefix": "",
-			"cp_id": "users",
-			"cp_prefix": "/cp/users/"
-		},
-		{
-			"name": "settings",
-			"prefix": "",
-			"cp_id": "settings",
-			"cp_prefix": "/cp/settings/"
-		},
-		{
-			"name": "files",
-			"prefix": "/files/",
-			"cp_id": "files",
-			"cp_prefix": "/cp/files/"
-		},
-		{
-			"name": "pages",
-			"prefix": "",
-			"cp_id": "pages",
-			"cp_prefix": "/cp/pages/"
-		},
-		{
-			"name": "menu",
-			"prefix": "",
-			"cp_id": "menu",
-			"cp_prefix": "/cp/menu/"
-		}
-	]
+	"blocks": [{
+		"name": "menu"
+	}],
+	"modules": [{
+		"name": "auth",
+		"prefix": "/auth/",
+		"cp_prefix": ""
+	}, {
+		"name": "cp",
+		"prefix": "/cp/",
+		"cp_prefix": ""
+	}, {
+		"name": "user",
+		"prefix": "",
+		"cp_id": "users",
+		"cp_prefix": "/cp/users/"
+	}, {
+		"name": "settings",
+		"prefix": "",
+		"cp_id": "settings",
+		"cp_prefix": "/cp/settings/"
+	}, {
+		"name": "files",
+		"prefix": "/files/",
+		"cp_id": "files",
+		"cp_prefix": "/cp/files/"
+	}, {
+		"name": "pages",
+		"prefix": "",
+		"cp_id": "pages",
+		"cp_prefix": "/cp/pages/"
+	}, {
+		"name": "menu",
+		"prefix": "",
+		"cp_id": "menu",
+		"cp_prefix": "/cp/menu/"
+	}]
 };
 
 module.exports = config;

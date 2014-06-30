@@ -2,8 +2,8 @@
 /* Taracot jQuery Dynamic Table */
 /* ****************************************************************** */
 
-(function( $ ) {
- 
+;(function( $ ) {
+
     /* Configuration */
 
 	var options = jQuery.extend({
@@ -13,7 +13,7 @@
 		taracot_table_url: '', // URL to load the data from
 		process_rows: [] // Processing functions for each row
 	}, options);
-	
+
 	/* System variables, do not modify */
 
 	var current_page = 1;
@@ -49,7 +49,7 @@
 
 	/* Render the table rows */
 
-	var render_table = function(data) {       
+	var render_table = function(data) {
 	    $('#' + table_id + ' > tbody').html('');
 	    if (typeof data == 'undefined' || !data.length) {
 	        $('#' + table_id + ' > tbody').append('<tr><td colspan="' + options.col_count + '">' + _lang_vars.no_res + '</td></tr>');
@@ -57,13 +57,13 @@
 	    }
 	    for (var i=0; i < data.length; i++) {
 	        var table_data = '<tr>';
-	        var _id = data[i][0]        
-	        for (var j = 1; j <= options.col_count; j++) {            
+	        var _id = data[i][0]
+	        for (var j = 1; j <= options.col_count; j++) {
 	            if (j < data[i].length) {
 	                table_data += '<td style="vertical-align:middle">' + options.process_rows[j-1](data[i][j], _id) + '</td>';
 	            } else {
 	                table_data += '<td style="vertical-align:middle">' + options.process_rows[j-1]('', _id) + '</td>';
-	            }            
+	            }
 	        }
 	        table_data += '</tr>';
 	        $('#' + table_id + ' > tbody').append(table_data);
@@ -75,10 +75,10 @@
 	             edit_item(id);
 	        });
 	        $('.taracot-tableitem-delete').unbind();
-	        $('.taracot-tableitem-delete').click(function() {            
+	        $('.taracot-tableitem-delete').click(function() {
 	            delete_item([$(this).attr('id').replace('taracot-btndel-', '')]);
 	        });
-	    }	    
+	    }
 	};
 
 	/* Render the pagination */
@@ -100,7 +100,7 @@
 	        if (page > 3) {
 	            pgnt += '<li id="taracot-pgnt-1"><a href="#">1</i></a></li>';
 	        }
-	        var _st = page - 2;        
+	        var _st = page - 2;
 	        if (_st < 1) {
 	            _st = 1;
 	        }
@@ -117,22 +117,22 @@
 	        if (_en < num_pages-1) {
 	            pgnt += '<li><span>...</span></li>';
 	        }
-	        if (page <= num_pages-3) {            
+	        if (page <= num_pages-3) {
 	            pgnt += '<li id="taracot-pgnt-' + num_pages + '"><a href="#">' + num_pages + '</a></li>';
 	        }
-	        if (page < num_pages) {            
+	        if (page < num_pages) {
 	            pgnt += '<li id="taracot-pgnt-' + (page + 1) + '"><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>';
 	        }
 	    } else {
 	        for (var i = 1; i <= num_pages; i++) {
 	            pgnt += '<li id="taracot-pgnt-' + i + '"><a href="#">' + i + '</a></li>';
-	        }    
+	        }
 	    }
-	    pgnt += '</ul>';    
+	    pgnt += '</ul>';
 	    $('#' + table_id + '_pagination').html(pgnt);
 	    $('#taracot-pgnt-' + page).html('<span>' + page + '</span>');
 	    $('#taracot-pgnt-' + page).addClass('uk-active');
-	    $('#taracot-pgnt > li').click(pagination_handler);    
+	    $('#taracot-pgnt > li').click(pagination_handler);
 	};
 
 	/* Turn on or off the loading indicator */
@@ -193,7 +193,7 @@
 	    if ($(this).hasClass('uk-active')) {
 	        return;
 	    }
-	    var page = $(this).attr('id').replace('taracot-pgnt-', '');    
+	    var page = $(this).attr('id').replace('taracot-pgnt-', '');
 	    load_data(page);
 	}
 
@@ -215,7 +215,7 @@
 	    $('.' + table_id +'_sortable[rel="' + table_id +'_sortable_' + options.sort_cell  + '"]').append('<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-' + _sm + '"></i></span>');
 	    $('#' + table_id +'_filter').val('');
 	    load_data(1);
-	};	
+	};
 
 	/* Handle search events */
 
@@ -239,7 +239,7 @@
 	        $('#' + table_id + '_filter').prop('disabled', true);
 	        load_data(1);
 	    }, 300);
-	};	
+	};
 
 	$.fn.medvedTable = function( method ) {
 
@@ -251,6 +251,6 @@
       		$.error( 'Method ' +  method + ' doesn\'t exists' );
     	}
 
-	 }  
+	 }
 
 }) (jQuery);

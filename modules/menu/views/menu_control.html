@@ -1,70 +1,81 @@
-<h1>!{root.lang.__("module_name")}</h1>
+<h1>!{root.lang.__('module_name')}</h1>
 <div id="taracot_dlg_menu_edit" class="uk-modal">
-    <div class="uk-modal-dialog">
-        <a class="uk-modal-close uk-close"></a>
-        <h1>!{root.lang.__("menu_item")}</h1>
-        <fieldset class="uk-form" data-uk-margin>
-          <label class="uk-form-label " for="taracot_dlg_menu_edit_text">!{root.lang.__("link_text")}</label>
-          <input type="text" class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_text">
-        </fieldset>
-        <fieldset class="uk-form uk-margin-bottom" data-uk-margin>
-          <label class="uk-form-label" for="taracot_dlg_menu_edit_url">!{root.lang.__("link_url")}</label>
-          <input type="text" class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_url">
-        </fieldset>
-        <fieldset class="uk-form uk-margin-bottom" data-uk-margin>
-          <label class="uk-form-label" for="taracot_dlg_menu_edit_page">!{root.lang.__("link_select_page")}</label>
-          <select class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_page">
-            <option value=""></option>
-          </select>
-        </fieldset>        
-        <button class="uk-button" type="button" id="taracot_dlg_menu_edit_btn_save">!{root.lang.__('save')}</button>
-        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
-    </div>
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h1>!{root.lang.__('menu_item')}</h1>
+		<fieldset class="uk-form" data-uk-margin>
+			<label class="uk-form-label " for="taracot_dlg_menu_edit_text">!{root.lang.__('link_text')}</label>
+			<input type="text" class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_text">
+		</fieldset>
+		<fieldset class="uk-form uk-margin-bottom" data-uk-margin>
+			<label class="uk-form-label" for="taracot_dlg_menu_edit_url">!{root.lang.__('link_url')}</label>
+			<input type="text" class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_url">
+		</fieldset>
+		<fieldset class="uk-form uk-margin-bottom" data-uk-margin>
+			<label class="uk-form-label" for="taracot_dlg_menu_edit_page">!{root.lang.__('link_select_page')}</label>
+			<select class="uk-width-1-1 taracot_dlg_menu_edit_field" id="taracot_dlg_menu_edit_page">
+				<option value=""></option>
+			</select>
+		</fieldset>
+		<button class="uk-button" type="button" id="taracot_dlg_menu_edit_btn_save">!{root.lang.__('save')}</button>
+		<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+	</div>
 </div>
-<div class="uk-margin-bottom">!{root.lang.__("menu_control_hint")}</div>
+<div class="uk-margin-bottom">!{root.lang.__('menu_control_hint')}</div>
 <div class="uk-form uk-panel uk-panel-box">
-  <fieldset data-uk-margin>
-    !{root.lang.__("language")}:
-    <select id="menu_lang">      
-    </select>
-    <button class="uk-button" id="btn_load_menu">!{root.lang.__("load_menu")}</button>&nbsp;&nbsp;<img src="/modules/menu/images/loading_16x16.gif" width="16" height="16" style="width:16px;height:16px;" id="load_menu_loading" class="uk-hidden">
-  </fieldset>
+	<fieldset data-uk-margin>!{root.lang.__('language')}:
+		<select id="menu_lang"></select>
+		<button class="uk-button" id="btn_load_menu">!{root.lang.__('load_menu')}</button>&nbsp;&nbsp;
+		<img src="/modules/menu/images/loading_16x16.gif" width="16" height="16" style="width:16px;height:16px;" id="load_menu_loading" class="uk-hidden">
+	</fieldset>
 </div>
 <div class="uk-margin-top uk-hidden" id="menu_editor">
-  <h2>!{root.lang.__("menu_edit_lang")} (<span id="menu_edit_lang"></span>)</h2>
-  <div class="uk-margin-bottom">
-    <button id="btn_item_add" class="uk-button uk-button-success" data-uk-tooltip title="!{root.lang.__('add_menu_item')}"><i class="uk-icon-plus"></i></button>&nbsp;<button id="btn_item_delall" class="uk-button uk-button-danger" data-uk-tooltip title="!{root.lang.__('delete_all_menu_items')}"><i class="uk-icon-trash-o"></i></button>
-    <div class="uk-button-group">
-      <button id="btn_menu_save" class="uk-button"><i class="uk-icon-save"></i><span class="uk-hidden-small">&nbsp;!{root.lang.__('save_menu_changes')}</span></button>&nbsp;<button id="btn_menu_save_cancel" class="uk-button uk-button-danger">!{root.lang.__('cancel')}</button>
-    </div>
-  </div>
-  <div class="uk-margin-bottom"><span class="uk-badge uk-badge-warning">!{root.lang.__('hint')}</span>&nbsp;!{root.lang.__("menu_edit_hint")}</div>
-  <div class="uk-panel uk-panel-box" id="menu_nest_wrap">
-    <ul class="uk-nestable" id="menu_nest" data-uk-nestable="{maxDepth:2}"></ul>
-  </div>
+	<h2>!{root.lang.__('menu_edit_lang')} (
+		<span id="menu_edit_lang"></span>)</h2>
+	<div class="uk-margin-bottom">
+		<button id="btn_item_add" class="uk-button uk-button-success" data-uk-tooltip title="!{root.lang.__('add_menu_item')}"><i class="uk-icon-plus"></i>
+		</button>&nbsp;
+		<button id="btn_item_delall" class="uk-button uk-button-danger" data-uk-tooltip title="!{root.lang.__('delete_all_menu_items')}"><i class="uk-icon-trash-o"></i>
+		</button>
+		<div class="uk-button-group">
+			<button id="btn_menu_save" class="uk-button"><i class="uk-icon-save"></i>
+				<span class="uk-hidden-small">&nbsp;!{root.lang.__('save_menu_changes')}</span>
+			</button>&nbsp;
+			<button id="btn_menu_save_cancel" class="uk-button uk-button-danger">!{root.lang.__('cancel')}</button>
+		</div>
+	</div>
+	<div class="uk-margin-bottom">
+		<span class="uk-badge uk-badge-warning">!{root.lang.__('hint')}</span>&nbsp;!{root.lang.__('menu_edit_hint')}</div>
+	<div class="uk-panel uk-panel-box" id="menu_nest_wrap">
+		<ul class="uk-nestable" id="menu_nest" data-uk-nestable="{maxDepth:2}"></ul>
+	</div>
 </div>
 <div class="taracot-progress uk-hidden uk-vertical-align uk-text-center">
-  <div class="uk-vertical-align-middle">
-    <img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
-  </div>
+	<div class="uk-vertical-align-middle">
+		<img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
+	</div>
 </div>
 <script type="text/javascript">
-  var _lang_vars = {
-    ajax_failed: "!{root.lang.__("ajax_failed")}",
-    confirm_menu_delete: "!{root.lang.__("confirm_menu_delete")}",
-    confirm_menu_deleteall: "!{root.lang.__("confirm_menu_deleteall")}",
-    confirm_menu_cancel: "!{root.lang.__("confirm_menu_cancel")}",
-    form_contains_errors: "!{root.lang.__("form_contains_errors")}",
-    save_success: "!{root.lang.__("save_success")}"
-  }
-  var locales = !{root.locales};
-  var pages = !{root.pages};
-  for (var i=0; i < locales.length; i++) {
-    $('#menu_lang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
-  }
-  for (var i=0; i < pages.length; i++) {
-    $('#taracot_dlg_menu_edit_page').append('<option value="' + pages[i].purl + '">' + pages[i].ptitle + '</option>');
-  }  
+var _lang_vars = {
+	ajax_failed: "!{root.lang.__('ajax_failed')}",
+	confirm_menu_delete: "!{root.lang.__('confirm_menu_delete')}",
+	confirm_menu_deleteall: "!{root.lang.__('confirm_menu_deleteall')}",
+	confirm_menu_cancel: "!{root.lang.__('confirm_menu_cancel')}",
+	form_contains_errors: "!{root.lang.__('form_contains_errors')}",
+	save_success: "!{root.lang.__('save_success')}"
+};
+var locales = !{
+	root.locales
+};
+var pages = !{
+	root.pages
+};
+for (var i = 0; i < locales.length; i++) {
+	$('#menu_lang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
+}
+for (var i = 0; i < pages.length; i++) {
+	$('#taracot_dlg_menu_edit_page').append('<option value="' + pages[i].purl + '">' + pages[i].ptitle + '</option>');
+}
 </script>
 <script src="/js/uikit/addons/nestable.min.js"></script>
-<script src="/modules/menu/js/main.js"></script>
+<script src="/modules/menu/js/menu.min.js"></script>

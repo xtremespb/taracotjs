@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function(app) {
 	// Sort order hash
 	var sort_cells = {
 		oname: 1,
@@ -17,11 +17,11 @@ module.exports = function (app) {
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
 	});
-	router.get_module_name = function (req) {
+	router.get_module_name = function(req) {
 		i18nm.setLocale(req.i18n.getLocale());
 		return i18nm.__("module_name");
 	};
-	router.get('/', function (req, res) {
+	router.get('/', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/settings';
@@ -37,7 +37,7 @@ module.exports = function (app) {
 			css: '<link rel="stylesheet" href="/modules/settings/css/main.css">' + "\n\t\t"
 		}, i18nm, 'settings', req.session.auth);
 	});
-	router.post('/data/list', function (req, res) {
+	router.post('/data/list', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
 			ipp: items_per_page
@@ -92,13 +92,13 @@ module.exports = function (app) {
 				}]
 			};
 		}
-		var data = app.get('mongodb').collection('settings').find(find_query).count(function (err, items_count) {
+		var data = app.get('mongodb').collection('settings').find(find_query).count(function(err, items_count) {
 			if (!err && items_count > 0) {
 				rep.total = items_count;
 				var data = app.get('mongodb').collection('settings').find(find_query, {
 					skip: skip,
 					limit: items_per_page
-				}).sort(sort).toArray(function (err, items) {
+				}).sort(sort).toArray(function(err, items) {
 					if (typeof items != 'undefined' && !err) {
 						// Generate array
 						for (var i = 0; i < items.length; i++) {
@@ -121,7 +121,7 @@ module.exports = function (app) {
 			}
 		}); // count
 	});
-	router.post('/data/load', function (req, res) {
+	router.post('/data/load', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {};
 		var user_id = req.body.id;
@@ -144,7 +144,7 @@ module.exports = function (app) {
 			_id: new ObjectId(user_id)
 		}, {
 			limit: 1
-		}).toArray(function (err, items) {
+		}).toArray(function(err, items) {
 			if (typeof items != 'undefined' && !err) {
 				if (items.length > 0) {
 					rep.data = items[0];
@@ -155,7 +155,7 @@ module.exports = function (app) {
 			res.send(JSON.stringify(rep));
 		});
 	});
-	router.post('/data/save', function (req, res) {
+	router.post('/data/save', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
 			err_fields: [],
@@ -209,7 +209,7 @@ module.exports = function (app) {
 				}
 			}, {
 				limit: 1
-			}).toArray(function (err, items) {
+			}).toArray(function(err, items) {
 				if ((typeof items != 'undefined' && items.length > 0) || err) {
 					rep.status = 0;
 					rep.error = i18nm.__("option_exists");
@@ -221,7 +221,7 @@ module.exports = function (app) {
 					_id: new ObjectId(id)
 				}, {
 					limit: 1
-				}).toArray(function (err, items) {
+				}).toArray(function(err, items) {
 					if (typeof items != 'undefined' && !err) {
 						if (items.length > 0) {
 							var update = {
@@ -231,7 +231,7 @@ module.exports = function (app) {
 							};
 							app.get('mongodb').collection('settings').update({
 								_id: new ObjectId(id)
-							}, update, function () {
+							}, update, function() {
 								rep.status = 1;
 								res.send(JSON.stringify(rep));
 							});
@@ -250,7 +250,7 @@ module.exports = function (app) {
 				olang: olang
 			}, {
 				limit: 1
-			}).toArray(function (err, items) {
+			}).toArray(function(err, items) {
 				if ((typeof items != 'undefined' && items.length > 0) || err) {
 					rep.status = 0;
 					rep.error = i18nm.__("option_exists");
@@ -262,14 +262,14 @@ module.exports = function (app) {
 					oname: oname,
 					ovalue: ovalue,
 					olang: olang
-				}, function () {
+				}, function() {
 					rep.status = 1;
 					res.send(JSON.stringify(rep));
 				});
 			});
 		}
 	});
-	router.post('/data/delete', function (req, res) {
+	router.post('/data/delete', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {
 			status: 1
