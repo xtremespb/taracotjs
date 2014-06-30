@@ -372,15 +372,15 @@ module.exports = function (app) {
 		var ure = false;
 		source_dir = source_dir.replace(/\/\//g, '/');
 		dest_dir = dest_dir.replace(/\/\//g, '/');
-		for (var i=0; i<clpbrd.files.length; i++) {
-			var src = source_dir + '/' + clpbrd.files[i];
+		for (var k=0; k<clpbrd.files.length; k++) {
+			var src = source_dir + '/' + clpbrd.files[k];
 			if (!fs.existsSync(src)) {
 				rep.status = 0;
 				rep.error = i18nm.__("dir_or_file_not_exists");
 				res.send(JSON.stringify(rep));
 				return;
 			}
-			var dst = dest_dir + '/' + clpbrd.files[i];
+			var dst = dest_dir + '/' + clpbrd.files[k];
 			if (src == dst || src == dest_dir) {
 				rep.status = 0;
 				rep.error = i18nm.__("cannot_paste_to_itself");
@@ -399,14 +399,14 @@ module.exports = function (app) {
 					}
 					ur = _ur;
 				} else {
-					var _ur = fs.copySync(src, dst);
-					ur = _ur;
-					if (clpbrd.mode == 'cut' && !_ur) {
+					var _ur1 = fs.copySync(src, dst);
+					ur = _ur1;
+					if (clpbrd.mode == 'cut' && !_ur1) {
 						fs.removeSync(src);
 					}
 				}
 			}
-			var fn = crypto.createHash('md5').update(clpbrd.files[i]).digest('hex');
+			var fn = crypto.createHash('md5').update(clpbrd.files[k]).digest('hex');
 			if (fs.existsSync(source_dir + '/___thumb_' + fn + '.jpg')) {
 				if (clpbrd.mode == 'cut') {
 					fs.renameSync(source_dir + '/___thumb_' + fn + '.jpg', dest_dir  + '/___thumb_' + fn + '.jpg');
@@ -572,15 +572,15 @@ module.exports = function (app) {
 			return;
 		});
 		archive.pipe(output);
-		for (var i=0; i<files.length; i++) {
-			var stat = fs.statSync(dir + '/' + files[i]);
-			if (stat.isDirectory()) {
+		for (var v=0; v<files.length; v++) {
+			var stat1 = fs.statSync(dir + '/' + files[v]);
+			if (stat1.isDirectory()) {
 				archive.bulk([
-				    { expand: true, cwd: dir + '/' + files[i], src: ['**'], dest: files[i]}
+				    { expand: true, cwd: dir + '/' + files[v], src: ['**'], dest: files[v]}
 				]);
 			}
-			if (stat.isFile()) {
-				archive.file(dir + '/' + files[i], { name: files[i] });
+			if (stat1.isFile()) {
+				archive.file(dir + '/' + files[v], { name: files[v] });
 			}
 		}
 		archive.finalize();

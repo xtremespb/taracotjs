@@ -7,7 +7,6 @@
     "body-parser": "~1.0.2",
     "connect-redis": "~2.0.0",
     "cookie-parser": "~1.0.1",
-    "debug": "~0.7.4",
     "express": "~4.0.0",
     "express-session": "~1.0.4",
     "gaikan": "~2.0.0",
@@ -15,10 +14,10 @@
     "mongodb": "~1.4.5",
     "redis": "~0.10.2",
     "static-favicon": "~1.0.2",
-    "winston": "~0.7.3",    
+    "winston": "~0.7.3",
     "connect": "~2.15.0",
     "async": "~0.9.0",
-    "prompt": "~0.2.13",
+    "commander": "1.3.2",
     "captchapng": "~0.0.1",
     "mime": "~1.2.11",
     "fs-extra": "~0.9.1",
@@ -29,7 +28,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
   },
   "keywords": [
     "node.js",
@@ -38,12 +38,10 @@
     "redis",
     "cms"
   ],
-  "repositories": [
-    {
+  "repository": {
       "type": "mercurial",
-      "url": "https://code.google.com/p/taracotjs/"  
-    }
-  ],
+      "url": "https://code.google.com/p/taracotjs/"
+  },
   "author": "Michael A. Matveev <xtreme@rh1.ru>",
   "license": "GPL v.3"
 }

@@ -245,7 +245,7 @@ module.exports = function (app) {
 				});
 			});
 		} else {
-			var data = app.get('mongodb').collection('settings').find({
+			var data1 = app.get('mongodb').collection('settings').find({
 				oname: oname,
 				olang: olang
 			}, {
@@ -292,10 +292,13 @@ module.exports = function (app) {
 			if (ids[i].match(/^[a-f0-9]{24}$/)) {
 				app.get('mongodb').collection('settings').remove({
 					_id: new ObjectId(ids[i])
-				}, function () {});
+				}, dummy);
 			}
 		}
 		res.send(JSON.stringify(rep));
 	});
+
+	var dummy = function() {};
+
 	return router;
 };

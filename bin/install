@@ -1,32 +1,33 @@
+#!/usr/bin/env node
+
+var program = require('commander');
 var async = require('async');
-var prompt = require('prompt');
 var crypto = require('crypto');
 var config = require('../config');
 var mongoclient = require('mongodb').MongoClient;
 var fs = require('fs');
 var db;
-prompt.message = "> ".green;
-prompt.delimiter = "";
-prompt.start();
 
-function generateId(lngth) {
-	if (!lngth) {
-		lngth = 16;
-	}
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < lngth; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-}
+program
+  .version(config.taracotjs)
+  .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
+  .option('-r, --redishost [host]', 'Specify Redis host')
+  .option('-j, --redisport [port]', 'Specify Redis port')
+  .option('-p, --port [port]', 'Specify TaracotJS server port')
+  .parse(process.argv);
+
+var mongo_url = program.mongo || config.mongo.url;
+var redis_host = program.redishost || config.redis.host;
+var redis_port = program.redisport || config.redis.port;
+var port = program.port || config.port;
 
 async.series([
 		function (callback) {
 			console.log("This script will guide you with TaracotJS basic installation steps.\n");
 			console.log("Database connection is required.");
-			console.log("Current MongoDB URL: " + config.mongo.url + "\n");
-			prompt.get(['Continue? y/n'], function (err, result) {
-				if (!err && result && 'Continue? y/n' in result && result['Continue? y/n'] == 'y') {
+			console.log("Current MongoDB URL: " + mongo_url + "\n");
+			program.confirm('Continue? ', function(ok){
+				if (ok) {
 					callback();
 				} else {
 					console.log("\n\nAborted");
@@ -35,7 +36,7 @@ async.series([
 			});
 		},
 		function (callback) {
-			mongoclient.connect(config.mongo.url, config.mongo_options, function (err, _db) {
+			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
 				if (err) {
 					console.log("\nCould not connect to the MongoDB. Please check config.js");
 					console.log(err);
@@ -47,8 +48,28 @@ async.series([
 			});
 		},
 		function (callback) {
-			prompt.get(['Generate secrets and salt? y/n'], function (err, result) {
-				if (!err && result && 'Generate secrets and salt? y/n' in result && result['Generate secrets and salt? y/n'] == 'y') {
+			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port) {
+				config.mongo.url = mongo_url;
+				config.redis.host = redis_host;
+				config.redis.port = redis_port;
+				config.port = port;
+				console.log("Saving changes to config.js file...");
+				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+					if (err) {
+						console.log("\nCould not save config.js file. Check your permissions");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success\n");
+					callback();
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
+			program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
+				if (ok) {
 					config.cookie_secret = generateId(32);
 					config.session_secret = generateId(32);
 					config.salt = generateId(64);
@@ -87,7 +108,7 @@ async.series([
 		function (callback) {
 			console.log("\nCreating default user account\n");
 			var md5 = crypto.createHash('md5');
-			var password_md5 = md5.update(config.salt + '.admin').digest('hex');			
+			var password_md5 = md5.update(config.salt + '.admin').digest('hex');
 			db.collection('users').insert({
 					username: 'admin',
 					email: 'default@taracot.org',
@@ -109,7 +130,7 @@ async.series([
 			ensure_indexes('users', ['username', 'email', 'realname', 'status']);
 			console.log("... success");
 			callback();
-		},		
+		},
 		function (callback) {
 			console.log("\nCreating collection: settings\n");
 			db.createCollection('settings', function (err, collection) {
@@ -247,12 +268,25 @@ async.series([
 
 */
 
+var dummy = function() {};
+
+function generateId(lngth) {
+	if (!lngth) {
+		lngth = 16;
+	}
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < lngth; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
 function ensure_indexes(col, ia, _opt, ow) {
 	var opt = {
 				unique: false,
 				background: true,
 				dropDups: false,
-				w: 1 
+				w: 1
 			  };
 	if (_opt) opt = _opt;
 	for (var i=0; i<ia.length; ia++) {
@@ -260,9 +294,9 @@ function ensure_indexes(col, ia, _opt, ow) {
 		i[ia[i]] = 1;
 		var i2 = {};
 		i[ia[i]] = -1;
-		db.ensureIndex(col, i1, opt, function(err) {});
+		db.ensureIndex(col, i1, opt, dummy);
 		if (!ow) {
-			db.ensureIndex(col, i2, opt, function(err) {});
+			db.ensureIndex(col, i2, opt, dummy);
 		}
 	}
 }

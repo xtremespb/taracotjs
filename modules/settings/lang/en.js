@@ -20,5 +20,6 @@
 	"edit_option": "Edit option",
 	"any_language": "Any",
 	"save_success": "Item has been successfully saved",
-	"option_exists": "Option/language pair already exists"
+	"option_exists": "Option/language pair already exists",
+	"unauth": "unauth"
 }

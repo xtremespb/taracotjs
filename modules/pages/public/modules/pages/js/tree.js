@@ -218,8 +218,8 @@ $('#btn_folders_edit_save').click(function() {
         }
         jstree_folders.jstree(true).get_node(cn).data = {};
         jstree_folders.jstree(true).get_node(cn).data.lang = {};
-        for (var i=0; i < locales.length; i++) {
-            jstree_folders.jstree(true).get_node(cn).data.lang[locales[i]] = $('#flang_'+locales[i]).val();
+        for (var j=0; j < locales.length; j++) {
+            jstree_folders.jstree(true).get_node(cn).data.lang[locales[j]] = $('#flang_'+locales[j]).val();
         }
         jstree_folders.jstree(true).open_node(sel);
     }
