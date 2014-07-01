@@ -312,7 +312,12 @@ $(document).ready(function() {
 		taracot_table_url: '/cp/pages/data/list',
 		process_rows: process_rows
 	});
-	$('#pcontent').ckeditor();
+	$('#pcontent').ckeditor({
+	    filebrowserBrowseUrl : '/cp/browse',
+	    filebrowserImageBrowseUrl : '/cp/browse?io=1',
+	    filebrowserWindowWidth  : 800,
+	    filebrowserWindowHeight : 500
+	});
 	$('#pfolder').attr('readonly', true);
 	folders_data = folders_preload;
 });

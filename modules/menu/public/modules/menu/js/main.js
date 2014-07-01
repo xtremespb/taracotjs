@@ -204,7 +204,7 @@ $(document).ready(function() {
 	$('#menu_lang').val(locales[0]);
 	$('#btn_load_menu').attr('disabled', false);
 	$('#taracot_dlg_menu_edit_page').change(function() {
-		$('#taracot_dlg_menu_edit_text').val($(this).text().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' '));
+		$('#taracot_dlg_menu_edit_text').val($('#' + this.id + ' option:selected').text().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' '));
 		$('#taracot_dlg_menu_edit_url').val($(this).val());
 	});
 });

@@ -29,7 +29,11 @@ module.exports = function(app) {
 					var item = {};
 					if (items[i].ptitle) item.ptitle = items[i].ptitle;
 					if (items[i].pfolder) item.purl = items[i].pfolder;
+					if (items[i].pfolder != '/') item.purl += '/';
 					if (items[i].pfilename) item.purl += items[i].pfilename;
+					if (items[i].pfolder != '/') {
+						item.purl = item.purl.replace(/\/$/, '');
+					}
 					pages.push(item);
 				}
 			}

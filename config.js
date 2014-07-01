@@ -85,6 +85,12 @@ var config = {
 		"cp_id": "files",
 		"cp_prefix": "/cp/files/"
 	}, {
+		"name": "browse",
+		"prefix": "",
+		"cp_id": "files",
+		"cp_prefix": "/cp/browse/",
+		"hidden": true
+	}, {
 		"name": "pages",
 		"prefix": "",
 		"cp_id": "pages",

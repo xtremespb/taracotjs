@@ -129,6 +129,10 @@ module.exports = function(app) {
 						for (var i = 0; i < items.length; i++) {
 							var arr = [];
 							arr.push(items[i]._id);
+							if (items[i].pfolder != '/') {
+								items[i].pfilename = '/' + items[i].pfilename;
+								items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
+							}
 							arr.push(items[i].pfolder + items[i].pfilename);
 							arr.push(items[i].ptitle);
 							arr.push(items[i].plang);
@@ -248,55 +252,103 @@ module.exports = function(app) {
 			return;
 		}
 		// Save
+
+		app.get('mongodb').collection('menu').find({
+			lang: plang
+		}, {
+			limit: 1
+		}).toArray(function(err, items) {
+
 		if (id) {
-			var data = app.get('mongodb').collection('pages').find({
-				pfilename: pfilename,
-				pfolder: pfolder,
-				plang: plang,
-				_id: {
-					$ne: new ObjectId(id)
-				}
+			app.get('mongodb').collection('menu').find({
+				lang: plang
 			}, {
 				limit: 1
 			}).toArray(function(err, items) {
-				if ((typeof items != 'undefined' && items.length > 0) || err) {
-					rep.status = 0;
-					rep.error = i18nm.__("page_exists");
-					rep.err_fields.push('pfilename');
-					res.send(JSON.stringify(rep));
-					return;
+				var menu_source, menu_uikit, menu_raw, menu_id;
+				if (!err && items && items.length && items[0].menu_source && items[0].menu_raw && items[0].menu_uikit) {
+					menu_source = items[0].menu_source;
+					menu_raw = items[0].menu_raw;
+					menu_uikit = items[0].menu_uikit;
 				}
 				var data = app.get('mongodb').collection('pages').find({
-					_id: new ObjectId(id)
+					pfilename: pfilename,
+					pfolder: pfolder,
+					plang: plang,
+					_id: {
+						$ne: new ObjectId(id)
+					}
 				}, {
 					limit: 1
 				}).toArray(function(err, items) {
-					if (typeof items != 'undefined' && !err) {
-						if (items.length > 0) {
-							var update = {
-								ptitle: ptitle,
-								pfilename: pfilename,
-								pfolder: pfolder,
-								pfolder_id: pfolder_id,
-								plang: plang,
-								playout: playout,
-								pkeywords: pkeywords,
-								pdesc: pdesc,
-								pcontent: pcontent
-							};
-							app.get('mongodb').collection('pages').update({
-								_id: new ObjectId(id)
-							}, update, function() {
-								rep.status = 1;
-								res.send(JSON.stringify(rep));
-							});
-							return;
-						}
-					} else {
+					if ((typeof items != 'undefined' && items.length > 0) || err) {
 						rep.status = 0;
-						rep.error = i18nm.__("id_not_found");
+						rep.error = i18nm.__("page_exists");
+						rep.err_fields.push('pfilename');
 						res.send(JSON.stringify(rep));
+						return;
 					}
+					var data = app.get('mongodb').collection('pages').find({
+						_id: new ObjectId(id)
+					}, {
+						limit: 1
+					}).toArray(function(err, items) {
+						if (typeof items != 'undefined' && !err) {
+							if (items.length > 0) {
+								var update = {
+									ptitle: ptitle,
+									pfilename: pfilename,
+									pfolder: pfolder,
+									pfolder_id: pfolder_id,
+									plang: plang,
+									playout: playout,
+									pkeywords: pkeywords,
+									pdesc: pdesc,
+									pcontent: pcontent
+								};
+								app.get('mongodb').collection('pages').update({
+									_id: new ObjectId(id)
+								}, update, function() {
+									rep.status = 1;
+									res.send(JSON.stringify(rep));
+								});
+								if (menu_source) {
+									var url_old = items[0].pfolder;
+									if (url_old != '/') url_old += '/';
+									url_old += items[0].pfilename;
+									if (items[0].pfolder != '/') {
+										url_old = url_old.replace(/\/$/, '');
+									}
+									var url_new = pfolder;
+									if (url_new != '/') url_new += '/';
+									url_new += pfilename;
+									if (pfolder != '/') {
+										url_new = url_new.replace(/\/$/, '');
+									}
+									var rx1 = new RegExp('href=\"' + url_old + '\"');
+									var rx2 = new RegExp('>' + url_old + '<');
+									menu_source = menu_source.replace(rx1, 'href="' + url_new + '"').replace(rx2, '>' + url_new + '<');
+									menu_raw = menu_raw.replace(rx1, 'href="' + url_new + '"');
+									menu_uikit = menu_uikit.replace(rx1, 'href="' + url_new + '"');
+									console.log(menu_source);
+									var data = {
+										lang: plang,
+										menu_source: menu_source,
+										menu_raw: menu_raw,
+										menu_uikit: menu_uikit
+									};
+									app.get('mongodb').collection('menu').update({
+										lang: plang
+									}, data, function() {});
+								}
+								return;
+							}
+						} else {
+							rep.status = 0;
+							rep.error = i18nm.__("id_not_found");
+							res.send(JSON.stringify(rep));
+						}
+					});
 				});
 			});
 		} else {
@@ -330,6 +382,8 @@ module.exports = function(app) {
 				});
 			});
 		}
+
+		});
 	});
 
 	router.post('/data/delete', function(req, res) {
