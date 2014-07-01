@@ -33,8 +33,7 @@
     "grunt-jsbeautifier": "~0.2.7"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "node.js",

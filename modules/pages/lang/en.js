@@ -23,7 +23,7 @@
 	"action_edit": "Edit page",
 	"action_add": "Create new page",
 	"ptitle": "Page title",
-	"taracot_pages_edit_hint": "All fileds marked with an red asterisk are required.",
+	"taracot_pages_edit_hint": "All fileds marked with a red asterisk are required.",
 	"filename": "File name",
 	"folder": "Folder",
 	"main_info": "Main info",

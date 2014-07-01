@@ -88,6 +88,12 @@ module.exports = function(grunt) {
                 ],
                 dest: 'modules/pages/public/modules/pages/js/pages.min.js'
             },
+            module_browse: {
+                src: [
+                    'modules/browse/public/modules/browse/js/main.js'
+                ],
+                dest: 'modules/browse/public/modules/browse/js/browse.min.js'
+            },
             module_settings: {
                 src: [
                     'modules/settings/public/modules/settings/js/main.js'
@@ -126,6 +132,11 @@ module.exports = function(grunt) {
             module_pages: {
                 files: {
                     'modules/pages/public/modules/pages/js/pages.min.js': '<%= concat.module_pages.dest %>'
+                }
+            },
+            module_browse: {
+                files: {
+                    'modules/browse/public/modules/browse/js/browse.min.js': '<%= concat.module_browse.dest %>'
                 }
             },
             module_settings: {

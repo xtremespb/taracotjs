@@ -14,7 +14,7 @@ module.exports = function(app) {
 					_m.prefix = module.cp_prefix;
 					_m.name = _am.get_module_name(req);
 					_m.id = module.cp_id;
-					modules.push(_m);
+					if (!module.hidden) modules.push(_m);
 				}
 			});
 			var render = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'admin', {
