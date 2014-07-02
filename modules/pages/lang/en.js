@@ -69,5 +69,10 @@
 	"page_save_success": "Page saved successfully",
 	"folder_and_filename": "Folder/filename",
 	"layout": "Layout",
-	"unauth": "unauth"
+	"unauth": "unauth",
+	"regular_page": "Regular page",
+	"root_page": "Root page",
+	"root_page_hint": "Root page is a default page for selected folder. There could be just one root page per folder.",
+	"mode_folders": "mode_folders",
+	"mode_pages": "mode_pages"
 }

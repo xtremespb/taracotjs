@@ -5,6 +5,8 @@ var folders_edit = false;
 var jstree_folders;
 var jstree_folders_select;
 var folders_data;
+var root_pages = [];
+var current_folder = '';
 
 /*******************************************************************
 
@@ -62,13 +64,15 @@ $('#btn-delete-selected').click(function() {
 
 ********************************************************************/
 
-var show_folders = function(id) {
+var show_folders = function(_nps) {
+	if (!_nps) History.pushState({ mode: 'folders' }, null, "?mode=folders");
 	$('#taracot_pages_list').addClass('uk-hidden');
 	$('#taracot_pages_folders').removeClass('uk-hidden');
 	$('#taracot_pages_edit').addClass('uk-hidden');
 };
 
-var show_pages = function(id) {
+var show_pages = function(_nps) {
+	if (!_nps) History.pushState({ mode: 'pages' }, null, "?mode=pages");
 	$('#taracot_pages_list').removeClass('uk-hidden');
 	$('#taracot_pages_folders').addClass('uk-hidden');
 	$('#taracot_pages_edit').addClass('uk-hidden');
@@ -81,7 +85,10 @@ var show_pages = function(id) {
 ********************************************************************/
 
 $('#btn-add-item').click(function() {
+	History.pushState({ mode: 'add_page' }, null, "?mode=add_page");
 	current_id = '';
+	root_pages = [];
+	current_folder = '';
 	$('#taracot_pages_edit_action').html(_lang_vars.action_add);
 	$('#taracot_pages_list').addClass('uk-hidden');
 	$('#taracot_pages_edit').removeClass('uk-hidden');
@@ -94,11 +101,32 @@ $('#btn-add-item').click(function() {
 	$('#pfolder').val('/');
 	$('#plangcopy_row').removeClass('uk-hidden');
 	$('#plangcopy').attr('checked', false);
-	$('#ptitle').focus();
+	$('#taracot-pagetype-regular > a').click();
+	taracot_ajax_progress_indicator('body', true);
+	$.ajax({
+		type: 'POST',
+		url: '/cp/pages/data/rootpages',
+		dataType: "json",
+		success: function(data) {
+			taracot_ajax_progress_indicator('body', false);
+			if (data && data.status && data.status == 1) {
+				if (data.root_pages) {
+					root_pages = data.root_pages;
+					$('#pfolder').change();
+				}
+			}
+			$('#ptitle').focus();
+		},
+		error: function() {
+			$('#ptitle').focus();
+		}
+	});
 });
 
 var edit_item = function(id) {
+	History.pushState({ mode: 'edit_page', current_id: id }, null, "?mode=edit_page");
 	current_id = id;
+	current_folder = '';
 	$('#taracot_pages_edit_action').html(_lang_vars.action_edit);
 	$('#plangcopy_row').addClass('uk-hidden');
 	$('#playout').val(layouts.default);
@@ -113,18 +141,31 @@ var edit_item = function(id) {
 		success: function(data) {
 			taracot_ajax_progress_indicator('body', false);
 			if (data.status == 1) {
+				$('.taracot-page-edit-form-control').each(function() {
+					$(this).val('');
+				});
 				$('#taracot_pages_list').addClass('uk-hidden');
 				$('#taracot_pages_edit').removeClass('uk-hidden');
+				if (data.root_pages) root_pages = data.root_pages;
 				if (data.data) data = data.data;
 				if (data.ptitle) $('#ptitle').val(data.ptitle);
-				if (data.pfilename) $('#pfilename').val(data.pfilename);
-				if (data.pfolder) $('#pfolder').val(data.pfolder);
+				if (data.pfilename && data.pfilename.length) {
+					$('#pfilename').val(data.pfilename);
+					$('#taracot-pagetype-regular > a').click();
+				} else {
+					$('#taracot-pagetype-root > a').click();
+				}
+				if (data.pfolder) {
+					$('#pfolder').val(data.pfolder);
+					current_folder = data.pfolder;
+				}
 				if (data.pfolder_id) $('#pfolder_id').val(data.pfolder_id);
 				if (data.plang) $('#plang').val(data.plang);
 				if (data.playout) $('#playout').val(data.playout);
 				if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
 				if (data.pdesc) $('#pdesc').val(data.pdesc);
 				if (data.pcontent) $('#pcontent').val(data.pcontent);
+				$('#pfolder').change();
 			} else {
 				var _err = _lang_vars.ajax_failed;
 				if (data.error) {
@@ -218,10 +259,14 @@ $('#btn_edit_save').click(function() {
 		form_errors = true;
 		if (!error_focus) error_focus = '#ptitle';
 	}
-	if (!pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
-		$('#pfilename').addClass('uk-form-danger');
-		form_errors = true;
-		if (!error_focus) error_focus = '#pfilename';
+	if ($('#taracot-pagetype-root').hasClass('uk-active')) {
+		pfilename = '';
+	} else {
+		if (!pfilename.match(/^[A-Za-z0-9_\-\.]{1,80}$/)) {
+			$('#pfilename').addClass('uk-form-danger');
+			form_errors = true;
+			if (!error_focus) error_focus = '#pfilename';
+		}
 	}
 	if (form_errors) {
 		$.UIkit.notify({
@@ -298,6 +343,27 @@ $('#btn_edit_cancel').click(function() {
 	if (confirm(_lang_vars.confirm_page_edit_cancel)) show_pages();
 });
 
+$('#pfolder').change(function() {
+	$('#taracot-pagetype-root').removeClass('uk-hidden');
+	for (var i=0; i<root_pages.length; i++) {
+		if ($('#pfolder').val() == root_pages[i] && $('#pfilename').val() !== '') {
+			$('#taracot-pagetype-regular > a').click();
+			$('#taracot-pagetype-root').addClass('uk-hidden');
+		}
+		if ($('#pfolder').val() == current_folder) {
+			if (!$('#pfilename').val().length) {
+				$('#taracot-pagetype-root > a').click();
+			}
+		}
+		if (current_folder === '') {
+			if ($('#pfolder').val() == root_pages[i]) {
+				$('#taracot-pagetype-regular > a').click();
+				$('#taracot-pagetype-root').addClass('uk-hidden');
+			}
+		}
+	}
+});
+
 /*******************************************************************
 
  document.ready
@@ -320,6 +386,37 @@ $(document).ready(function() {
 	});
 	$('#pfolder').attr('readonly', true);
 	folders_data = folders_preload;
+	history_handler();
+});
+
+/*******************************************************************
+
+ History API handler
+
+********************************************************************/
+
+var history_handler = function() {
+	var state = History.getState(); // Note: We are using History.getState() instead of event.state
+    if (state.data.mode)
+    	switch (state.data.mode) {
+    		case 'pages':
+    			show_pages(true);
+    			break;
+    		case 'folders':
+    			$('#btn-folders').click();
+    			break;
+    		case 'add_page':
+    			$('#btn-add-item').click();
+    			break;
+    		case 'edit_page':
+    			edit_item(state.data.current_id);
+    			break;
+    	}
+};
+
+
+History.Adapter.bind(window, 'statechange',function(){ // Note: We are using statechange instead of popstate
+	history_handler();
 });
 
 /*******************************************************************

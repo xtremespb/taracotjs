@@ -9,7 +9,7 @@ module.exports = function(app) {
 	var sort_cell_default = 'username';
 	var sort_cell_default_mode = 1;
 	// Set items per page for this module
-	var items_per_page = 5;
+	var items_per_page = 30;
 	//
 	var router = app.get('express').Router();
 	var crypto = require('crypto');

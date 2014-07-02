@@ -18,7 +18,7 @@
 		</button>
 	</div>
 	<div class="uk-form uk-float-right">
-		<div class="uk-form-icon"> <i class="uk-icon-search"></i>
+		<div class="uk-form-icon"><i class="uk-icon-search"></i>
 			<input type="text" class="uk-form-width-medium" placeholder="!{root.lang.__('search_field')}" id="taracot_table_filter">
 		</div>
 	</div>
@@ -59,11 +59,30 @@
 			</div>
 		</div>
 		<div class="uk-form-row">
-			<label class="uk-form-label" for="pfilename">!{root.lang.__('filename')}</label>
 			<div class="uk-form-controls">
-				<input type="text" id="pfilename" class="uk-form-width-small taracot-page-edit-form-control">
-				<p class="uk-form-help-block">!{root.lang.__('pfilename_hint')}</p>
+				<ul class="uk-subnav uk-subnav-pill" data-uk-switcher="{connect:'#taracot-pagetype'}">
+		    		<li id="taracot-pagetype-regular"><a href="">!{root.lang.__('regular_page')}</a></li>
+		    		<li id="taracot-pagetype-root"><a href="">!{root.lang.__('root_page')}</a></li>
+				</ul>
 			</div>
+		</div>
+		<div class="uk-form-row">
+			<ul id="taracot-pagetype" class="uk-switcher">
+	    		<li>
+	    			<label class="uk-form-label" for="pfilename">!{root.lang.__('filename')}&nbsp;
+						<span class="taracot-field-req">*</span>
+					</label>
+					<div class="uk-form-controls">
+						<input type="text" id="pfilename" class="uk-form-width-small taracot-page-edit-form-control">
+						<p class="uk-form-help-block">!{root.lang.__('pfilename_hint')}</p>
+					</div>
+	    		</li>
+	    		<li>
+	    			<div class="uk-form-controls">
+	    				<p class="uk-form-help-block"><span class="uk-badge uk-badge-warning">!{root.lang.__('hint')}</span>&nbsp;!{root.lang.__('root_page_hint')}</p>
+	    			</div>
+	    		</li>
+			</ul>
 		</div>
 		<div class="uk-form-row">
 			<label class="uk-form-label" for="pfolder">!{root.lang.__('folder')}&nbsp;
@@ -203,17 +222,13 @@ var _lang_vars = {
 	confirm_folders_edit_clean: "!{root.lang.__('confirm_folders_edit_clean')}",
 	folders_save_success: "!{root.lang.__('folders_save_success')}",
 	form_contain_errors: "!{root.lang.__('form_contain_errors')}",
-	page_save_success: "!{root.lang.__('page_save_success')}"
+	page_save_success: "!{root.lang.__('page_save_success')}",
+	mode_folders: "!{root.lang.__('mode_folders')}",
+	mode_pages: "!{root.lang.__('mode_pages')}"
 };
-var locales = !{
-	root.locales
-};
-var layouts = !{
-	root.layouts
-};
-var folders_preload = !{
-	root.folders
-};
+var locales = !{root.locales};
+var layouts = !{root.layouts};
+var folders_preload = !{root.folders};
 for (var i = 0; i < locales.length; i++) {
 	$('#olang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
 	$('#plang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
@@ -227,3 +242,5 @@ for (var i = 0; i < layouts.avail.length; i++) {
 <script src="/js/ckeditor/adapters/jquery.js"></script>
 <script src="/js/jstree/jstree.min.js"></script>
 <script src="/modules/pages/js/pages.min.js"></script>
+<!-- <script src="/modules/pages/js/tree.js"></script>
+<script src="/modules/pages/js/main.js"></script> -->
