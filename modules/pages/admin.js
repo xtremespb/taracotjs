@@ -9,7 +9,7 @@ module.exports = function(app) {
 	var sort_cell_default = 'pfolder';
 	var sort_cell_default_mode = 1;
 	// Set items per page for this module
-	var items_per_page = 5;
+	var items_per_page = 30;
 	//
 	var router = app.get('express').Router();
 	var ObjectId = require('mongodb').ObjectID;
@@ -151,11 +151,36 @@ module.exports = function(app) {
 		}); // count
 	});
 
+	router.post('/data/rootpages', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var rep = {};
+		// Check authorization
+		if (!req.session.auth || req.session.auth.status < 2) {
+			rep.status = 0;
+			rep.error = i18nm.__("unauth");
+			res.send(JSON.stringify(rep));
+			return;
+		}
+		// Get pages from MongoDB
+		app.get('mongodb').collection('pages').find({
+			pfilename: ''
+		}, {
+			limit: 100
+		} ).toArray(function(err, items) {
+			rep.root_pages = [];
+			if (!err && typeof items != 'undefined') {
+				for (var i=0; i<items.length; i++) rep.root_pages.push(items[i].pfolder);
+			}
+			rep.status = 1;
+			res.send(JSON.stringify(rep));
+		});
+	});
+
 	router.post('/data/load', function(req, res) {
 		i18nm.setLocale(req.i18n.getLocale());
 		var rep = {};
 		var id = req.body.pid;
-		if (!id.match(/^[a-f0-9]{24}$/)) {
+		if (id && !id.match(/^[a-f0-9]{24}$/)) {
 			rep.status = 0;
 			rep.error = i18nm.__("invalid_query");
 			res.send(JSON.stringify(rep));
@@ -170,19 +195,30 @@ module.exports = function(app) {
 		}
 		// Get pages from MongoDB
 		rep.data = {};
-		var data = app.get('mongodb').collection('pages').find({
-			_id: new ObjectId(id)
+
+		app.get('mongodb').collection('pages').find({
+			pfilename: ''
 		}, {
-			limit: 1
-		}).toArray(function(err, items) {
-			if (typeof items != 'undefined' && !err) {
-				if (items.length > 0) {
-					rep.data = items[0];
-				}
+			limit: 100
+		} ).toArray(function(err, items) {
+			rep.root_pages = [];
+			if (!err && typeof items != 'undefined') {
+				for (var i=0; i<items.length; i++) rep.root_pages.push(items[i].pfolder);
 			}
-			// Return results
-			rep.status = 1;
-			res.send(JSON.stringify(rep));
+			app.get('mongodb').collection('pages').find({
+				_id: new ObjectId(id)
+			}, {
+				limit: 1
+			}).toArray(function(err, items) {
+				if (typeof items != 'undefined' && !err) {
+					if (items.length > 0) {
+						rep.data = items[0];
+					}
+				}
+				// Return results
+				rep.status = 1;
+				res.send(JSON.stringify(rep));
+			});
 		});
 	});
 
@@ -330,7 +366,6 @@ module.exports = function(app) {
 									menu_source = menu_source.replace(rx1, 'href="' + url_new + '"').replace(rx2, '>' + url_new + '<');
 									menu_raw = menu_raw.replace(rx1, 'href="' + url_new + '"');
 									menu_uikit = menu_uikit.replace(rx1, 'href="' + url_new + '"');
-									console.log(menu_source);
 									var data = {
 										lang: plang,
 										menu_source: menu_source,
@@ -477,31 +512,8 @@ module.exports = function(app) {
 			res.send(JSON.stringify(rep));
 			return;
 		}
-
-		var data = app.get('mongodb').collection('pages_folders').find({
-			oname: 'folders_json'
-		}, {
-			limit: 1
-		}).toArray(function(err, items) {
-			if (!err && typeof items != 'undefined' && items.length > 0) {
-				// Update
-				app.get('mongodb').collection('pages_folders').update({
-						oname: 'folders_json'
-					}, {
-						oname: 'folders_json',
-						ovalue: json
-					},
-					function(err) {
-						if (err) {
-							rep.status = 0;
-							rep.error = i18nm.__("cannot_save_db_data");
-							res.send(JSON.stringify(rep));
-							return;
-						}
-						res.send(JSON.stringify(rep));
-					});
-			} else {
-				// Insert
+		app.get('mongodb').collection('pages_folders').remove(function(err) {
+			if (!err) {
 				app.get('mongodb').collection('pages_folders').insert({
 					oname: 'folders_json',
 					ovalue: json

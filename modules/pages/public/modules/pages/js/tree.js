@@ -364,6 +364,7 @@ $('#btn_folders_select').click(function() {
 	$('#pfolder').val(path);
 	$('#pfolder_id').val(sel);
 	folders_select_dlg.hide();
+	$('#pfolder').change();
 });
 
 /*******************************************************************
