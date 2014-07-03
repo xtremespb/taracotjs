@@ -7,6 +7,7 @@ var jstree_folders_select;
 var folders_data;
 var root_pages = [];
 var current_folder = '';
+var ckeditor;
 
 /*******************************************************************
 
@@ -64,15 +65,15 @@ $('#btn-delete-selected').click(function() {
 
 ********************************************************************/
 
-var show_folders = function(_nps) {
-	if (!_nps) History.pushState({ mode: 'folders' }, null, "?mode=folders");
+var show_folders = function() {
 	$('#taracot_pages_list').addClass('uk-hidden');
 	$('#taracot_pages_folders').removeClass('uk-hidden');
 	$('#taracot_pages_edit').addClass('uk-hidden');
+	btn_folders_click_handler();
 };
 
-var show_pages = function(_nps) {
-	if (!_nps) History.pushState({ mode: 'pages' }, null, "?mode=pages");
+var show_pages = function() {
+	push_state({ mode: 'pages' }, "?mode=pages");
 	$('#taracot_pages_list').removeClass('uk-hidden');
 	$('#taracot_pages_folders').addClass('uk-hidden');
 	$('#taracot_pages_edit').addClass('uk-hidden');
@@ -84,8 +85,7 @@ var show_pages = function(_nps) {
 
 ********************************************************************/
 
-$('#btn-add-item').click(function() {
-	History.pushState({ mode: 'add_page' }, null, "?mode=add_page");
+var btn_add_item_handler = function() {
 	current_id = '';
 	root_pages = [];
 	current_folder = '';
@@ -103,6 +103,7 @@ $('#btn-add-item').click(function() {
 	$('#plangcopy').attr('checked', false);
 	$('#taracot-pagetype-regular > a').click();
 	taracot_ajax_progress_indicator('body', true);
+	if (!ckeditor) init_ckeditor();
 	$.ajax({
 		type: 'POST',
 		url: '/cp/pages/data/rootpages',
@@ -121,15 +122,23 @@ $('#btn-add-item').click(function() {
 			$('#ptitle').focus();
 		}
 	});
+};
+
+$('#btn-add-item').click(function() {
+	push_state({ mode: 'add_page' }, "?mode=add_page");
+	btn_add_item_handler();
 });
 
 var edit_item = function(id) {
-	History.pushState({ mode: 'edit_page', current_id: id }, null, "?mode=edit_page");
+	push_state({ mode: 'edit_page', current_id: id }, "?mode=edit_page");
 	current_id = id;
 	current_folder = '';
 	$('#taracot_pages_edit_action').html(_lang_vars.action_edit);
 	$('#plangcopy_row').addClass('uk-hidden');
 	$('#playout').val(layouts.default);
+	$('.taracot-page-edit-form-control').each(function() {
+		$(this).val('');
+	});
 	taracot_ajax_progress_indicator('body', true);
 	$.ajax({
 		type: 'POST',
@@ -141,11 +150,10 @@ var edit_item = function(id) {
 		success: function(data) {
 			taracot_ajax_progress_indicator('body', false);
 			if (data.status == 1) {
-				$('.taracot-page-edit-form-control').each(function() {
-					$(this).val('');
-				});
+				if (!ckeditor) init_ckeditor();
 				$('#taracot_pages_list').addClass('uk-hidden');
 				$('#taracot_pages_edit').removeClass('uk-hidden');
+				$('#taracot_pages_edit').show();
 				if (data.root_pages) root_pages = data.root_pages;
 				if (data.data) data = data.data;
 				if (data.ptitle) $('#ptitle').val(data.ptitle);
@@ -164,7 +172,11 @@ var edit_item = function(id) {
 				if (data.playout) $('#playout').val(data.playout);
 				if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
 				if (data.pdesc) $('#pdesc').val(data.pdesc);
-				if (data.pcontent) $('#pcontent').val(data.pcontent);
+				if (data.pcontent) {
+					$('#pcontent').val(data.pcontent);
+				} else {
+					$('#pcontent').val('');
+				}
 				$('#pfolder').change();
 			} else {
 				var _err = _lang_vars.ajax_failed;
@@ -378,15 +390,11 @@ $(document).ready(function() {
 		taracot_table_url: '/cp/pages/data/list',
 		process_rows: process_rows
 	});
-	$('#pcontent').ckeditor({
-	    filebrowserBrowseUrl : '/cp/browse',
-	    filebrowserImageBrowseUrl : '/cp/browse?io=1',
-	    filebrowserWindowWidth  : 800,
-	    filebrowserWindowHeight : 500
-	});
 	$('#pfolder').attr('readonly', true);
 	folders_data = folders_preload;
+	bind_history();
 	history_handler();
+	init_ckeditor();
 });
 
 /*******************************************************************
@@ -395,35 +403,58 @@ $(document).ready(function() {
 
 ********************************************************************/
 
+var bind_history = function() {
+	History.Adapter.bind(window, 'statechange', function() {
+		history_handler();
+	});
+};
+
+var _history_handler_disable = false;
+
 var history_handler = function() {
-	var state = History.getState(); // Note: We are using History.getState() instead of event.state
-    if (state.data.mode)
+	if (_history_handler_disable) return;
+	var state = History.getState();
+    if (state.data.mode) {
     	switch (state.data.mode) {
     		case 'pages':
-    			show_pages(true);
+    			show_pages();
     			break;
     		case 'folders':
-    			$('#btn-folders').click();
+    			show_folders();
     			break;
     		case 'add_page':
-    			$('#btn-add-item').click();
+    			btn_add_item_handler();
     			break;
     		case 'edit_page':
     			edit_item(state.data.current_id);
     			break;
     	}
+    } else {
+		push_state({ mode: 'pages' }, "?mode=pages");
+    }
 };
 
-
-History.Adapter.bind(window, 'statechange',function(){ // Note: We are using statechange instead of popstate
-	history_handler();
-});
+var push_state = function(p1, p2) {
+	_history_handler_disable = true;
+	History.pushState(p1, _lang_vars.control_panel, p2);
+	_history_handler_disable = false;
+};
 
 /*******************************************************************
 
  Helper functions
 
 ********************************************************************/
+
+var init_ckeditor = function() {
+	ckeditor = $('#pcontent').ckeditor({
+	    filebrowserBrowseUrl : '/cp/browse',
+	    filebrowserImageBrowseUrl : '/cp/browse?io=1',
+	    filebrowserWindowWidth  : 800,
+	    filebrowserWindowHeight : 500,
+	    allowedContent: true
+	}).editor;
+};
 
 var taracot_ajax_progress_indicator = function(sel, show) {
 	if (show) {

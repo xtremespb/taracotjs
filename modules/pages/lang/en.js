@@ -74,5 +74,6 @@
 	"root_page": "Root page",
 	"root_page_hint": "Root page is a default page for selected folder. There could be just one root page per folder.",
 	"mode_folders": "mode_folders",
-	"mode_pages": "mode_pages"
+	"mode_pages": "mode_pages",
+	"control_panel": "Control panel"
 }

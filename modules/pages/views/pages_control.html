@@ -131,7 +131,7 @@
 		</div>
 		<h3 class="taracot-h3-underilne uk-margin-bottom">!{root.lang.__('editor')}</h3>
 		<div class="uk-form-row">
-			<textarea rows="3" id="pcontent" class="uk-form-width-large taracot-page-edit-form-control"></textarea>
+			<textarea rows="3" id="pcontent" class="uk-form-width-large"></textarea>
 		</div>
 		<div class="uk-margin-large-top uk-margin-large-bottom">
 			<button class="uk-button uk-button-success" id="btn_edit_save">!{root.lang.__('btn_save')}</button>
@@ -224,7 +224,8 @@ var _lang_vars = {
 	form_contain_errors: "!{root.lang.__('form_contain_errors')}",
 	page_save_success: "!{root.lang.__('page_save_success')}",
 	mode_folders: "!{root.lang.__('mode_folders')}",
-	mode_pages: "!{root.lang.__('mode_pages')}"
+	mode_pages: "!{root.lang.__('mode_pages')}",
+	control_panel: "!{root.lang.__('control_panel')}"
 };
 var locales = !{root.locales};
 var layouts = !{root.layouts};
@@ -242,5 +243,7 @@ for (var i = 0; i < layouts.avail.length; i++) {
 <script src="/js/ckeditor/adapters/jquery.js"></script>
 <script src="/js/jstree/jstree.min.js"></script>
 <script src="/modules/pages/js/pages.min.js"></script>
-<!-- <script src="/modules/pages/js/tree.js"></script>
-<script src="/modules/pages/js/main.js"></script> -->
+<!--
+<script src="/modules/pages/js/tree.js"></script>
+<script src="/modules/pages/js/main.js"></script>
+-->
