@@ -4,8 +4,7 @@
 
 ********************************************************************/
 
-$('#btn-folders').click(function() {
-	show_folders();
+var btn_folders_click_handler = function() {
 	$('#jstree_folders').addClass('uk-hidden');
 	$('#jstree_error').addClass('uk-hidden');
 	$('#jstree_loading').removeClass('uk-hidden');
@@ -55,6 +54,11 @@ $('#btn-folders').click(function() {
 			$('#jstree_error').removeClass('uk-hidden');
 		}
 	});
+};
+
+$('#btn-folders').click(function() {
+	push_state({ mode: 'folders' }, "?mode=folders");
+	show_folders();
 });
 
 $('#btn-tree-new').click(function() {
@@ -107,7 +111,6 @@ $('#btn-tree-save').click(function() {
 		delete fldrs[i].icon;
 		delete fldrs[i].state;
 	}
-	console.log(JSON.stringify(fldrs));
 	$.ajax({
 		type: 'POST',
 		url: '/cp/pages/data/folders/save',

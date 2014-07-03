@@ -1,5 +1,5 @@
 var config = {
-	"taracotjs": "0.0406.30",
+	"taracotjs": "0.0407.03",
 	"port": "3000",
 	"layouts": {
 		"default": "index",
