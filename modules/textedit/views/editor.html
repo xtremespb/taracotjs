@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>!{root.lang.__('module_name')}</title>
+	<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="/css/uikit/uikit.min.css">
+	<link rel="stylesheet" href="/css/uikit/uikit.addons.min.css">
+	<link rel="stylesheet" href="/modules/cp/css/main.css">
+	<link rel="stylesheet" href="/modules/textedit/css/main.css">
+	<link rel="stylesheet" href="/modules/textedit/css/codemirror/codemirror.css">
+	<link rel="stylesheet" href="/modules/textedit/css/codemirror/dialog.css">
+	<link rel="stylesheet" href="/modules/textedit/css/codemirror/foldgutter.css">
+	<script src="/js/admin.min.js"></script>
+</head>
+
+<body>
+	<div class="uk-container uk-container-center">
+		<h1 class="uk-margin-top">!{root.lang.__('module_name')}</h1>
+		<div class="uk-panel uk-panel-box uk-margin-top">
+			<textarea id="cmeditor">!{root.content}</textarea>
+		</div>
+		<div class="uk-margin-top">
+			<button class="uk-button taracot-editor-button uk-button-success" id="btn_save"><i class="uk-icon uk-icon-check"></i>&nbsp;!{root.lang.__('save_changes')}</button>&nbsp;
+			<button class="uk-button taracot-editor-button uk-button-danger" id="btn_cancel">!{root.lang.__('cancel')}</button>
+		</div>
+	</div>
+	<div class="taracot-progress uk-hidden uk-vertical-align uk-text-center">
+		<div class="uk-vertical-align-middle">
+			<img src="/modules/textedit/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
+		</div>
+	</div>
+	<script type="text/javascript">
+	var _lang_vars = {
+		ajax_failed: "!{root.lang.__('ajax_failed')}",
+		document_saved: "!{root.lang.__('document_saved')}"
+	};
+	var file = !{root.file};
+	</script>
+	<script src="/modules/textedit/js/codemirror/codemirror.min.js"></script>
+	<script src="/modules/textedit/js/main.js"></script>
+
+</body>
+
+</html>

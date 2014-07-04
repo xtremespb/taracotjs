@@ -106,6 +106,27 @@ module.exports = function(grunt) {
                 ],
                 dest: 'modules/user/public/modules/user/js/user.min.js'
             },
+            module_textedit_codemirror: {
+                src: [
+                    'modules/textedit/public/modules/textedit/js/codemirror/codemirror.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/brace-fold.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/closebrackets.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/comment.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/dialog.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/foldcode.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/hardwrap.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/match-highlighter.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/matchbrackets.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/search.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/searchcursor.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/sublime.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/mode/css.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/mode/htmlmixed.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/mode/javascript.js',
+                    'modules/textedit/public/modules/textedit/js/codemirror/mode/xml.js'
+                ],
+                dest: 'modules/textedit/public/modules/textedit/js/codemirror/codemirror.min.js'
+            }
         },
         // Compress
         uglify: {
@@ -147,6 +168,11 @@ module.exports = function(grunt) {
             module_user: {
                 files: {
                     'modules/user/public/modules/user/js/user.min.js': '<%= concat.module_user.dest %>'
+                }
+            },
+            module_textedit_codemirror: {
+                files: {
+                    'modules/textedit/public/modules/textedit/js/codemirror/codemirror.min.js': '<%= concat.module_textedit_codemirror.dest %>'
                 }
             }
         }

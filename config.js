@@ -57,6 +57,7 @@ var config = {
 	"graphicsmagick": true,
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
+	"max_edit_file_kb": 1024,
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"blocks": [{
 		"name": "menu"
@@ -100,6 +101,12 @@ var config = {
 		"prefix": "",
 		"cp_id": "menu",
 		"cp_prefix": "/cp/menu/"
+	}, {
+		"name": "textedit",
+		"prefix": "",
+		"cp_id": "textedit",
+		"cp_prefix": "/cp/textedit/",
+		"hidden": true
 	}]
 };
 
