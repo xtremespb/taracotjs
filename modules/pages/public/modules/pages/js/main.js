@@ -96,6 +96,7 @@ var btn_add_item_handler = function() {
 		$(this).val('');
 		$(this).removeClass('uk-form-danger');
 	});
+	$('#pcontent').val('');
 	$('#plang').val(locales[0]);
 	$('#playout').val(layouts.default);
 	$('#pfolder').val('/');
