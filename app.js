@@ -5,6 +5,11 @@
 
 var express = require('express');
 var config = require('./config');
+var version = require('./version');
+var load_modules = require('./load_modules');
+config.taracotjs = version.taracotjs;
+config.blocks = load_modules.blocks;
+config.modules = load_modules.modules;
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var I18n = require('i18n-2');

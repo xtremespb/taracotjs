@@ -49,5 +49,8 @@
 	"download_error": "Download failed",
 	"unzip": "UnZIP file",
 	"unzip_error": "Error while decompressing file(s)",
-	"unzip_success": "Successfuly unzipped"
+	"unzip_success": "Successfuly unzipped",
+	"newfile": "New text file",
+	"new_filename": "New file name",
+	"editfile": "Edit text file"
 }

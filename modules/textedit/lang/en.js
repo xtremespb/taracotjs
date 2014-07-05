@@ -5,6 +5,8 @@
 	"cancel": "Cancel",
 	"file_loading_error": "file_loading_error",
 	"cannot_edit_binary_file": "Cannot edit binary file",
-	"document_saved": "document_saved",
-	"invalid_filename": "invalid_filename"
+	"document_saved": "Document has been saved",
+	"invalid_filename": "Invalid filename",
+	"cancel_confirm": "cancel_confirm",
+	"not_a_file": "not_a_file"
 }

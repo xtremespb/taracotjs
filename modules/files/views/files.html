@@ -29,6 +29,8 @@
 		<button class="uk-button uk-icon-folder taracot-files-button" data-uk-tooltip title="!{root.lang.__('new_folder')}" id="btn_new_folder"></button>
 	</div>&nbsp;&nbsp;
 	<div class="uk-button-group">
+		<button class="uk-button uk-icon-file-o taracot-files-button" data-uk-tooltip title="!{root.lang.__('newfile')}" id="btn_newfile"></button>
+		<button class="uk-button uk-icon-file-text-o taracot-files-button" data-uk-tooltip title="!{root.lang.__('editfile')}" id="btn_editfile"></button>
 		<button class="uk-button uk-icon-copy taracot-files-button" data-uk-tooltip title="!{root.lang.__('copy')}" id="btn_copy"></button>
 		<button class="uk-button uk-icon-cut taracot-files-button" data-uk-tooltip title="!{root.lang.__('cut')}" id="btn_cut"></button>
 		<button class="uk-button uk-icon-paste taracot-files-button" data-uk-tooltip title="!{root.lang.__('paste')}" id="btn_paste"></button>
@@ -78,10 +80,18 @@ var _lang_vars = {
 	cannot_rename_same: "!{root.lang.__('cannot_rename_same')}",
 	download_error: "!{root.lang.__('download_error')}",
 	unzip_error: "!{root.lang.__('unzip_error')}",
-	unzip_success: "!{root.lang.__('unzip_success')}"
+	unzip_success: "!{root.lang.__('unzip_success')}",
+	new_filename: "!{root.lang.__('new_filename')}"
 };
 var _dragdrop_action_taken = false;
+var textedit = !{root.textedit};
 </script>
 <script src="/js/jquery.fileDownload.min.js"></script>
 <script src="/js/plupload/plupload.full.min.js"></script>
 <script src="/modules/files/js/files.min.js"></script>
+<!--
+<script src="/modules/files/js/dragdrop.js"></script>
+<script src="/modules/files/js/dragdrop.helper.js"></script>
+<script src="/modules/files/js/jquery.shifty.js"></script>
+<script src="/modules/files/js/main.js"></script>
+-->
