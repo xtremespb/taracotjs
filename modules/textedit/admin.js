@@ -1,11 +1,12 @@
 module.exports = function(app) {
+	app.set('textedit', true);
 	var i18nm = new(require('i18n-2'))({
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js'
 	});
 	var fs = require('fs-extra');
-	var itob = require('istextorbinary');
+	var itob = require('./itob');
 	var mime = require('mime');
 	var router = app.get('express').Router();
 	var path = app.get('path');
@@ -26,27 +27,33 @@ module.exports = function(app) {
 		}
 		var fp = path.resolve(app.get('config').dir.storage + '/' + fn).replace(/\\/g, '/');
 		var rx1 = new RegExp('^' + path.resolve(app.get('config').dir.storage).replace(/\\/g, '/'));
-		if (!fp.match(rx1) || !fs.existsSync(fp)) {
+		if (!fp.match(rx1)) {
 			return send_error(res);
 		}
-		var stat = fs.statSync(fp);
-		if (!stat.isFile()) {
-			return send_error(res, i18nm.__('not_a_file'));
+		var content = '';
+		var file = {};
+		if (fs.existsSync(fp)) {
+			var stat = fs.statSync(fp);
+			if (stat.isFile()) {
+				var sz = app.get('config').max_edit_file_kb * 1024 || 1048576;
+				if (stat.size > sz) {
+					return send_error(res, i18nm.__('file_too_large'));
+				}
+				if (!itob.check(fp)) {
+					return send_error(res, i18nm.__('cannot_edit_binary_file'));
+				}
+				var content = fs.readFileSync(fp, 'utf8');
+				var file = {
+					name: fn,
+					mime: mime.lookup(fp),
+					size: stat.size
+				};
+			} else { // is not file
+				return send_error(res, i18nm.__('not_a_file'));
+			}
+		} else { // file does exists
+			file.name = fn;
 		}
-		var sz = app.get('config').max_edit_file_kb * 1024 || 1048576;
-		if (stat.size > sz) {
-			return send_error(res, i18nm.__('file_too_large'));
-		}
-		if (!itob.isTextSync(fp)) {
-			return send_error(res, i18nm.__('cannot_edit_binary_file'));
-		}
-		var content = fs.readFileSync(fp, 'utf8');
-		var file = {
-			name: fn,
-			mime: mime.lookup(fp),
-			size: stat.size
-		};
-		var fmime = mime.lookup(fp);
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'editor', {
 			lang: i18nm,
 			content: content,
@@ -87,6 +94,12 @@ module.exports = function(app) {
 			rep.error = i18nm.__("file_too_large");
 			res.send(JSON.stringify(rep));
 			return;
+		}
+		if (fs.existsSync(fp)) {
+			var stat = fs.statSync(fp);
+			if (!stat.isFile()) {
+				return send_error(res, i18nm.__('not_a_file'));
+			}
 		}
 		fs.ensureFile(fp, function(err) {
 			if (err) {

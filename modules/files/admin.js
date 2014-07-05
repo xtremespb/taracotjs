@@ -25,8 +25,11 @@ module.exports = function(app) {
 			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
+		var textedit = 'false';
+		if (app.get('textedit')) textedit = 'true';
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'files', {
 			lang: i18nm,
+			textedit: textedit,
 			locales: JSON.stringify(app.get('config').locales)
 		});
 		app.get('cp').render(req, res, {

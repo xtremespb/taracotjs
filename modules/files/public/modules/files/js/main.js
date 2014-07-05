@@ -23,10 +23,15 @@ var shifty_select_handler = function() {
 	for (var i = 0; i < ns.length; i++) {
 		var id = ns[i].replace('taracot_file_', '');
 		$('#taracot_el_' + id).removeClass('taracot-fade-elipsis');
-		if (ns.length == 1 & file_types[id] == 'd') {
+		if (ns.length == 1 && file_types[id] == 'd') {
 			$('#btn_down').attr('disabled', false);
 		} else {
 			$('#btn_down').attr('disabled', true);
+		}
+		if (ns.length == 1 && file_types[id] == 'f' && textedit) {
+			$('#btn_editfile').attr('disabled', false);
+		} else {
+			$('#btn_editfile').attr('disabled', true);
 		}
 		if (ns.length == 1 && file_mime[id] == 'application/zip') {
 			$('#btn_unzip').attr('disabled', false);
@@ -50,6 +55,7 @@ var shifty_select_handler = function() {
 		$('#btn_cut').attr('disabled', true);
 		$('#btn_rename').attr('disabled', true);
 		$('#btn_download').attr('disabled', true);
+		$('#btn_editfile').attr('disabled', true);
 	}
 };
 
@@ -247,12 +253,51 @@ var drop_target_folder_onleave = function() {
 
 var dblclick_handler = function() {
 	var id = $(this).attr('id').replace('taracot_file_', '');
-	if (file_types[id] != 'd') return;
+	if (file_types[id] != 'd') {
+		open_textedit_window(file_ids[id]);
+		return;
+	}
 	up_dir.push(current_dir);
 	current_dir += '/' + file_ids[id];
 	current_dir = current_dir.replace(/^\//, '');
 	$('#taracot-files-current-dir').html('/' + current_dir);
 	load_files_data(current_dir);
+};
+
+var btnnewfile_handler = function() {
+	$('#taracot-dlg-edit-h1').html(_lang_vars.new_filename);
+	$('#btn_dummy').mouseover();
+	taracot_dlg_edit.show();
+	$('#taracot_dlg_edit_value').val('');
+	$('#taracot_dlg_edit_btn_save').unbind();
+	$('#taracot_dlg_edit_btn_save').click(new_text_file);
+	$('#taracot_dlg_edit_value').select();
+	$('#taracot_dlg_edit_value').focus();
+};
+
+var btneditfile_hanlder = function() {
+	var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
+	if (!ns || !ns.length || ns.length > 1) return;
+	var id = ns[0].replace('taracot_file_', '');
+	if (file_types[id] != 'f') return;
+	$('#btn_dummy').mouseover();
+	open_textedit_window(file_ids[id]);
+};
+
+var new_text_file = function() {
+	$('#taracot_dlg_edit_value').removeClass('uk-form-danger');
+	if (!check_filename($('#taracot_dlg_edit_value').val())) {
+		$('#taracot_dlg_edit_value').addClass('uk-form-danger');
+		$.UIkit.notify({
+			message: _lang_vars.invalid_filename_syntax,
+			status: 'danger',
+			timeout: 2000,
+			pos: 'top-center'
+		});
+		return;
+	}
+	open_textedit_window($('#taracot_dlg_edit_value').val());
+	taracot_dlg_edit.hide();
 };
 
 var btnup_handler = function() {
@@ -827,6 +872,12 @@ var init_buttons_state = function() {
 	$('#btn_upload').attr('disabled', false);
 	$('#btn_download').attr('disabled', true);
 	$('#btn_unzip').attr('disabled', true);
+	if (textedit) {
+		$('#btn_newfile').attr('disabled', false);
+	} else {
+		$('#btn_newfile').attr('disabled', true);
+	}
+	$('#btn_editfile').attr('disabled', true);
 };
 
 $('#btn_refresh').click(btnrefresh_hanlder);
@@ -841,6 +892,8 @@ $('#btn_rename').click(btnrename_handler);
 $('#btn_upload').click(btnupload_handler);
 $('#btn_download').click(btndownload_handler);
 $('#btn_unzip').click(btnunzip_handler);
+$('#btn_newfile').click(btnnewfile_handler);
+$('#btn_editfile').click(btneditfile_hanlder);
 $('#taracot_dlg_upload_btn_clear').click(dlguploadbtnclear_handler);
 $('#taracot_dlg_upload_btn_upload').click(dlguploadbtnupload_handler);
 
@@ -870,6 +923,15 @@ $(document).ready(function() {
 });
 
 // Helper functions (regexp)
+
+var open_textedit_window = function(fn) {
+	var w = parseInt(screen.width / 1.5);
+	var h = 500;
+	var left = parseInt((screen.width / 2) - (w / 2));
+  	var top = parseInt((screen.height / 2) - (h / 2));
+	window.open('/cp/textedit?fn=' + current_dir + '/' + fn, '', 'toolbar=no, location=0, status=no, titlebar=no, menubar=no, width=' + w +', height=' + h + ', top=' + top + ', left=' + left);
+};
+
 var check_filename = function(_fn) {
 	var fn = _fn.replace(/^\s+|\s+$/g, '');
 	if (!fn || fn.length > 80) return false; // null or too long
@@ -877,6 +939,7 @@ var check_filename = function(_fn) {
 	if (fn.match(/^[\^<>\:\"\/\\\|\?\*\x00-\x1f]+$/)) return false; // invalid characters
 	return true;
 };
+
 var check_directory = function(_fn) {
 	if (!_fn) return true; // allow null
 	var fn = _fn.replace(/^\s+|\s+$/g, '');

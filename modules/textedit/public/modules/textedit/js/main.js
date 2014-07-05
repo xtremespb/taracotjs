@@ -46,7 +46,19 @@ var btn_save_click_handler = function() {
 	});
 };
 
+var btn_cancel_click_handler = function(bu) {
+	if (!$('#btn_save').attr('disabled')) {
+		if (!confirm(_lang_vars.cancel_confirm)) return;
+	}
+	window.close();
+};
+
+$(window).bind("beforeunload", function() {
+    if (!$('#btn_save').attr('disabled')) return false;
+});
+
 $('#btn_save').click(btn_save_click_handler);
+$('#btn_cancel').click(btn_cancel_click_handler);
 
 /*******************************************************************
 
@@ -67,10 +79,12 @@ $(document).ready(function() {
 	codemirror.on("change", function() {
 	    $('#btn_save').attr('disabled', false);
 	});
-	if (file.mime.match('javascript')) codemirror.setOption('mode', 'javascript');
-	if (file.mime.match('css')) codemirror.setOption('mode', 'css');
-	if (file.mime.match('xml')) codemirror.setOption('mode', 'xml');
-	if (file.mime.match('html')) codemirror.setOption('mode', 'xml');
+	if (file.mime) {
+		if (file.mime.match('javascript')) codemirror.setOption('mode', 'javascript');
+		if (file.mime.match('css')) codemirror.setOption('mode', 'css');
+		if (file.mime.match('xml')) codemirror.setOption('mode', 'xml');
+		if (file.mime.match('html')) codemirror.setOption('mode', 'xml');
+	}
 });
 
 /*******************************************************************

@@ -126,6 +126,12 @@ module.exports = function(grunt) {
                     'modules/textedit/public/modules/textedit/js/codemirror/mode/xml.js'
                 ],
                 dest: 'modules/textedit/public/modules/textedit/js/codemirror/codemirror.min.js'
+            },
+            module_textedit: {
+                src: [
+                    'modules/textedit/public/modules/textedit/js/main.js'
+                ],
+                dest: 'modules/textedit/public/modules/textedit/js/textedit.min.js'
             }
         },
         // Compress
@@ -173,6 +179,11 @@ module.exports = function(grunt) {
             module_textedit_codemirror: {
                 files: {
                     'modules/textedit/public/modules/textedit/js/codemirror/codemirror.min.js': '<%= concat.module_textedit_codemirror.dest %>'
+                }
+            },
+            module_textedit: {
+                files: {
+                    'modules/textedit/public/modules/textedit/js/textedit.min.js': '<%= concat.module_textedit.dest %>'
                 }
             }
         }
