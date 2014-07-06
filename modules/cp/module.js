@@ -25,18 +25,53 @@ module.exports = function(app) {
 			os_platform: os.platform(),
 			cpu_arch: os.arch(),
 			os_release: os.release(),
-			totalmem: os.totalmem(),
-			freemem: os.freemem(),
+			totalmem: parseInt(os.totalmem() / 1024 / 1024) + ' ' + i18nm.__('MB'),
+			freemem: parseInt(os.freemem() / 1024 / 1024) + ' ' + i18nm.__('MB'),
 			loadavg: loadavg
 		};
-		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'dashboard', {
-			lang: i18nm,
-			os: os_data,
-			config: app.get('config')
+		var start = parseInt((Date.now() - 2592000000) / 1000);
+		app.get('mongodb').collection('statistics').find({
+			day: { $gte: start }
+		}, {
+			limit: 30
+		}).sort({
+			day: 1
+		}).toArray(function(err, items) {
+			var days = [];
+			var months = [];
+			var visitors = [];
+			var hits = [];
+			if (!err && items && items.length) {
+				var _cm;
+				for (var i=0; i<items.length; i++) {
+					var dt = new Date(items[i].day * 1000);
+					var month = dt.getMonth() + 1;
+					var year = dt.getFullYear();
+					if (_cm != month) {
+						_cm = month;
+						months.push({
+							month: i18nm.__('month_' + month),
+							year: year
+						});
+					}
+					days.push(dt.getDate());
+					visitors.push(items[i].visitors);
+					hits.push(items[i].hits);
+				}
+			}
+			var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'dashboard', {
+				lang: i18nm,
+				os: os_data,
+				days: JSON.stringify(days),
+				months: JSON.stringify(months),
+				visitors: JSON.stringify(visitors),
+				hits: JSON.stringify(hits),
+				config: app.get('config')
+			});
+			app.get('cp').render(req, res, {
+				body: body
+			}, i18nm, 'dashboard', req.session.auth);
 		});
-		app.get('cp').render(req, res, {
-			body: body
-		}, i18nm, 'dashboard', req.session.auth);
 	});
 	return router;
 };

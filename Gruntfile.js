@@ -81,6 +81,12 @@ module.exports = function(grunt) {
                 ],
                 dest: 'modules/menu/public/modules/menu/js/menu.min.js'
             },
+            module_cp: {
+                src: [
+                    'modules/cp/public/modules/cp/js/main.js'
+                ],
+                dest: 'modules/cp/public/modules/cp/js/cp.min.js'
+            },
             module_pages: {
                 src: [
                     'modules/pages/public/modules/pages/js/main.js',
@@ -154,6 +160,11 @@ module.exports = function(grunt) {
             module_menu: {
                 files: {
                     'modules/menu/public/modules/menu/js/menu.min.js': '<%= concat.module_menu.dest %>'
+                }
+            },
+            module_cp: {
+                files: {
+                    'modules/cp/public/modules/cp/js/cp.min.js': '<%= concat.module_cp.dest %>'
                 }
             },
             module_pages: {
