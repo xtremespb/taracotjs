@@ -1,5 +1,5 @@
 node_modules/*
-logs/taracotjs.log
+logs/*.log
 tmp/*.zip
 modules/bastra/*
 npm-debug.log
