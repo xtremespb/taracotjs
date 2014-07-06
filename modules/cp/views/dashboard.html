@@ -1,50 +1,70 @@
-<h1>!{root.lang.__("taracot_dashboard")}</h1>!{root.lang.__("up_and_running")}
-<h2>!{root.lang.__("config")}</h2>
+<h1>!{root.lang.__('taracot_dashboard')}</h1>!{root.lang.__('up_and_running')}
+<h2>!{root.lang.__('config')}</h2>
 <table class="uk-table uk-table-hover">
 	<tbody>
 		<tr>
-			<td style="width:30%">!{root.lang.__("current_version")}</td>
+			<td style="width:30%">!{root.lang.__('current_version')}</td>
 			<td style="width:70%">
 				<span class="uk-badge uk-badge-notification uk-badge-success">!{root.config.taracotjs}</span>
 			</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("redis")}</td>
+			<td>!{root.lang.__('redis')}</td>
 			<td>!{root.config.redis.host}:!{root.config.redis.port}</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("default_layout")}</td>
+			<td>!{root.lang.__('default_layout')}</td>
 			<td>!{root.config.default_layout}</td>
 		</tr>
 	</tbody>
 </table>
-<h2>!{root.lang.__("system")}</h2>
+<h2>!{root.lang.__('system')}</h2>
 <table class="uk-table uk-table-hover">
 	<tbody>
 		<tr>
-			<td style="width:30%">!{root.lang.__("hostname")}</td>
+			<td style="width:30%">!{root.lang.__('hostname')}</td>
 			<td style="width:70%">!{root.os.hostname}</span>
 			</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("os")}</td>
+			<td>!{root.lang.__('os')}</td>
 			<td>!{root.os.os_type} / !{root.os.os_platform} / !{root.os.os_release}</span>
 			</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("cpu_arch")}</td>
+			<td>!{root.lang.__('cpu_arch')}</td>
 			<td>!{root.os.cpu_arch}</span>
 			</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("memory_free_total")}</td>
+			<td>!{root.lang.__('memory_free_total')}</td>
 			<td>!{root.os.freemem} / !{root.os.totalmem}</span>
 			</td>
 		</tr>
 		<tr>
-			<td>!{root.lang.__("load average")}</td>
+			<td>!{root.lang.__('load average')}</td>
 			<td>!{root.os.loadavg}</span>
 			</td>
 		</tr>
 	</tbody>
 </table>
+<h2 id="h2_stat">!{root.lang.__('statistics')}</h2>
+<div class="uk-grid uk-margin-top">
+	<div class="uk-width-1-1 uk-margin-large-bottom" id="taracot_stats_wrap">
+		<i class="uk-icon uk-icon-square" style="color:#355D80"></i>&nbsp;!{root.lang.__('number_of_hits')}<br>
+		<i class="uk-icon uk-icon-square" style="color:#FF4C36"></i>&nbsp;!{root.lang.__('number_of_visitors')}<br>
+		<canvas id="taracot_statistics" class="uk-margin-top" height="100"></canvas>
+		<div class="uk-margin-top"><small>!{root.lang.__('chart_hint')}</small></div>
+	</div>
+</div>
+<script>
+	var days = !{root.days};
+	var months = !{root.months};
+	var visitors = !{root.visitors};
+	var hits = !{root.hits};
+	var _lang_vars = {
+		no_stats_avail: "!{root.lang.__('no_stats_avail')}"
+	};
+</script>
+<script src="/js/Chart.min.js"></script>
+<script src="/modules/cp/js/cp.min.js"></script>

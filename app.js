@@ -28,6 +28,7 @@ var captcha = require('./core/' + config.captcha);
 var multer = require('multer');
 var bodyParser = require('body-parser');
 var async = require('async');
+var fs = require('fs');
 
 // Logging
 
@@ -181,6 +182,56 @@ app.use(function(req, res, next) {
 			next();
 		}
 	});
+});
+
+// Get public folders list (to not include into site statistics)
+
+var public_folder = fs.readdirSync('../public');
+var public_folder_dirs = ['/modules/', '/cp/'];
+public_folder.forEach(function(file) {
+	var stat = fs.statSync('../public/' + file);
+	if (stat.isDirectory()) {
+		public_folder_dirs.push('/' + file + '/');
+	}
+});
+var public_folders_rx = new RegExp('^(' + public_folder_dirs.join('|') + ')');
+
+// Update site statistics
+
+app.use(function(req, res, next) {
+	if (req.method == 'GET' && req.url !== '/cp' && !req.url.match(public_folders_rx)) {
+		var now = new Date();
+		var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime() / 1000;
+		var update = {
+			$inc: { hits: 1 }
+		};
+		if (!req.session.statistics_saved || req.session.statistics_saved != today) {
+			update = {
+				$inc: { hits: 1, visitors: 1 }
+			};
+			req.session.statistics_saved = today;
+		}
+		app.get('mongodb').collection('statistics').find({ day: today }, { limit: 1 }).toArray(function(err, items) {
+			if (!err) {
+				if (items && items.length) {
+					app.get('mongodb').collection('statistics').update({
+						day: today
+					}, update, function(err) {
+						next();
+					});
+				} else {
+					update = {
+						day: today, hits: 1, visitors: 1
+					};
+					app.get('mongodb').collection('statistics').insert(update, function(err) {
+						next();
+					});
+				}
+			}
+		});
+	} else {
+		next();
+	}
 });
 
 // Load authorization data

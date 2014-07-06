@@ -249,6 +249,24 @@ async.series([
 				console.log("... success");
 				callback();
 			});
+		},
+		function (callback) {
+			console.log("\nCreating collection: statistics\n");
+			db.createCollection('statistics', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: statistics\n");
+			ensure_indexes('pages_folders', ['day'], null, true);
+			console.log("... success");
+			callback();
 		}
 	],
 	function (err) {
