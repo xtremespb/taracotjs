@@ -12,15 +12,23 @@
 </head>
 
 <body>
-	<div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">!{root.blocks['menu_uikit']}
+	<div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
 		<div class="uk-grid" data-uk-grid-margin>
-			<div class="uk-width-1-1">
-				<h1 class="uk-margin-top uk-margin-bottom">!{root.title}</h1>!{root.content}</div>
+			<div class="uk-width-1-1 uk-margin-top">
+			!{root.blocks['menu_uikit']}
+			</div>
+			<div class="uk-width-1-1 uk-margin-top">
+				!{root.content}
+			</div>
 			<div class="uk-width-1-1 uk-margin-top uk-margin-bottom">
 				<small>TaracotJS &copy; 2014 Michael A. Matveev</small>
 			</div>
 		</div>
 	</div>
+	<script>
+		// Mark the current URL as active in menu
+		var _u="#taracot_menu_item_"+$(location).attr("pathname").replace(/\//g,"_").replace(/^_/,"").replace(/[^a-zA-Z0-9_\-]/g,"");if($(_u)){$(_u).addClass("uk-active");var _r=$(_u).attr("rel");if(_r)$("#"+_r).addClass("uk-active")}
+	</script>
 </body>
 
 </html>

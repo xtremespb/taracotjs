@@ -1,5 +1,6 @@
 module.exports = function(app) {
 	var router = app.get('express').Router();
+	var gaikan = require('gaikan');
 	var i18nm = new(require('i18n-2'))({
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
@@ -26,7 +27,6 @@ module.exports = function(app) {
 				pfilename: fn2
 			}]
 		};
-
 		var data = app.get('mongodb').collection('pages_folders').find({
 			oname: 'folders_json'
 		}, {
@@ -52,18 +52,42 @@ module.exports = function(app) {
 					var bread = folders_find_path(folders_make_hash(folders), pfolder_id).reverse();
 					var bread_html = '<li><a href="/">' + app.get('settings').site_title + '</a></li>';
 					var bread_path = '';
+					var title_arr = [];
 					for (var i = 0; i < bread.length; i++) {
 						bread_path += '/' + bread[i].name;
 						var ln = bread[i][req.i18n.getLocale()] || bread[i].name;
 						bread_html += '<li><a href="' + bread_path + '">' + ln + '</a></li>';
+						title_arr.push(ln);
 					}
-					var data = {
+					title_arr = title_arr.reverse();
+					bread_html += '<li>' + items[0].ptitle + '</li>';
+					bread_html_uikit = '<ul class="uk-breadcrumb">' + bread_html + '</ul>';
+					bread_html_bootstrap = '<ol class="breadcrumb">' + bread_html + '</ol>';
+					var page_data = {
 						title: items[0].ptitle,
-						content: items[0].pcontent,
 						keywords: items[0].keywords,
 						description: items[0].desc,
 						bread: bread,
-						bread_html: bread_html
+						bread_html: bread_html,
+						bread_html_uikit: bread_html_uikit,
+						bread_html_bootstrap: bread_html_bootstrap
+					};
+					var renderer = gaikan.compileFromString(items[0].pcontent);
+					var html_render = renderer(gaikan, page_data, undefined);
+					var full_title = items[0].ptitle;
+					if (title_arr.length) {
+						full_title += ' | ' + title_arr.join(' | ');
+ 					}
+					var data = {
+						title: full_title,
+						page_title: items[0].ptitle,
+						content: html_render,
+						keywords: items[0].keywords,
+						description: items[0].desc,
+						bread: bread,
+						bread_html: bread_html,
+						bread_html_uikit: bread_html_uikit,
+						bread_html_bootstrap: bread_html_bootstrap
 					};
 					var layout = items[0].playout || undefined;
 					app.get('renderer').render(res, layout, data);
