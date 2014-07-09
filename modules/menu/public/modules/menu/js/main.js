@@ -230,7 +230,7 @@ var taracot_ajax_progress_indicator = function(sel, show) {
 	}
 };
 
-var walk_nest_uikit = function(ul, cd) {
+var walk_nest_uikit = function(ul, cd, pnt) {
 	var res = '';
 	if (cd) res += '<div class="uk-dropdown uk-dropdown-navbar">';
 	var nbc = '';
@@ -246,14 +246,17 @@ var walk_nest_uikit = function(ul, cd) {
 		var url = $(this).children('.uk-nestable-item').children('a.uk-nestable-item-url').html();
 		var ddc = '';
 		var pc = '';
+		var pr = '';
+		if (pnt) pr = ' rel="' + pnt + '"';
+		var id = 'taracot_menu_item_' + url.replace(/\//g, '_').replace(/^_/, '').replace(/[^a-zA-Z0-9_\-]/g, '');
 		var nxul = $(this).children('ul.uk-nestable-list');
 		if (nxul.html()) {
 			ddc = ' data-uk-dropdown';
 			pc = ' class="uk-parent"';
 		}
-		res += '<li' + pc + ddc + '><a href="' + url + '">' + text + '</a>';
+		res += '<li id="' + id + '"' + pc + ddc + pr + '><a href="' + url + '">' + text + '</a>';
 		if (nxul.html()) {
-			res += walk_nest_uikit(nxul, true);
+			res += walk_nest_uikit(nxul, true, id);
 		}
 		res += '</li>';
 	});
@@ -262,7 +265,7 @@ var walk_nest_uikit = function(ul, cd) {
 	return res;
 };
 
-var walk_nest_raw = function(ul) {
+var walk_nest_raw = function(ul, pnt) {
 	var res = '';
 	res += '<ul>';
 	var li = $(ul).children('li');
@@ -270,9 +273,12 @@ var walk_nest_raw = function(ul) {
 		var text = $(this).children('.uk-nestable-item').children('span.uk-nestable-item-text').html();
 		var url = $(this).children('.uk-nestable-item').children('a.uk-nestable-item-url').html();
 		var nxul = $(this).children('ul.uk-nestable-list');
-		res += '<li><a href="' + url + '">' + text + '</a>';
+		var id = 'taracot_menu_item_' + url.replace(/\//g, '_').replace(/^_/, '').replace(/[^a-zA-Z0-9_\-]/g, '');
+		var pr = '';
+		if (pnt) pr = ' rel="' + pnt + '"';
+		res += '<li id="' + id + '"' + pr + '><a href="' + url + '">' + text + '</a>';
 		if (nxul.html()) {
-			res += walk_nest_raw(nxul);
+			res += walk_nest_raw(nxul, id);
 		}
 		res += '</li>';
 	});
