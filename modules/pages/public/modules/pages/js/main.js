@@ -356,6 +356,10 @@ $('#btn_edit_cancel').click(function() {
 	if (confirm(_lang_vars.confirm_page_edit_cancel)) show_pages();
 });
 
+$('#btn-parts').click(function() {
+	open_parts_window();
+});
+
 $('#pfolder').change(function() {
 	$('#taracot-pagetype-root').removeClass('uk-hidden');
 	for (var i=0; i<root_pages.length; i++) {
@@ -470,4 +474,12 @@ var taracot_ajax_progress_indicator = function(sel, show) {
 	} else {
 		$('.taracot-progress').addClass('uk-hidden');
 	}
+};
+
+var open_parts_window = function(fn) {
+	var w = parseInt(screen.width / 1.5);
+	var h = 500;
+	var left = parseInt((screen.width / 2) - (w / 2));
+  	var top = parseInt((screen.height / 2) - (h / 2));
+	window.open('/cp/parts', '', 'toolbar=no, location=0, status=no, titlebar=no, menubar=no, width=' + w +', height=' + h + ', top=' + top + ', left=' + left);
 };

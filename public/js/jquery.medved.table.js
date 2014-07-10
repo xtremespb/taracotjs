@@ -57,7 +57,7 @@
 	    }
 	    for (var i=0; i < data.length; i++) {
 	        var table_data = '<tr>';
-	        var _id = data[i][0]
+	        var _id = data[i][0];
 	        for (var j = 1; j <= options.col_count; j++) {
 	            if (j < data[i].length) {
 	                table_data += '<td style="vertical-align:middle">' + options.process_rows[j-1](data[i][j], _id) + '</td>';

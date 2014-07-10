@@ -140,18 +140,19 @@ app.use(function(req, res, next) {
 			return;
 		}
 		// Load blocks
-		load_blocks(req, res);
-		// Set locales from query and from cookie
-		req.i18n.setLocaleFromQuery();
-		req.i18n.setLocaleFromCookie();
-		req.i18n.setLocaleFromSubdomain();
-		// Logging
-		logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
-		// Clear auth_redirect if already authorized
-		if (req.session.auth) {
-			delete req.session.auth_redirect;
-		}
-		next();
+		load_blocks(req, res, function() {
+			// Set locales from query and from cookie
+			req.i18n.setLocaleFromQuery();
+			req.i18n.setLocaleFromCookie();
+			req.i18n.setLocaleFromSubdomain();
+			// Logging
+			logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
+			// Clear auth_redirect if already authorized
+			if (req.session.auth) {
+				delete req.session.auth_redirect;
+			}
+			next();
+		});
 	});
 });
 
@@ -261,7 +262,7 @@ app.use(function(req, res, next) {
 
 // Load blocks
 
-var load_blocks = function(req, res) {
+var load_blocks = function(req, res, callback) {
 	if (!app.get('blocks')) {
 		var blocks = {
 			data: {}
@@ -270,7 +271,6 @@ var load_blocks = function(req, res) {
 	}
 	config.blocks.forEach(function(block) {
 		async.series([
-
 			function(callback) {
 				require('./modules/' + block.name + '/block')(app).data(req, res, function() {
 					callback();
@@ -278,6 +278,7 @@ var load_blocks = function(req, res) {
 			}
 		]);
 	});
+	if (callback) callback();
 };
 
 // Load modules
