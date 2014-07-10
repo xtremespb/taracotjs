@@ -1,6 +1,8 @@
 var load_modules = {
 	blocks: [{
 		name: 'menu'
+	}, {
+		name: 'parts'
 	}],
 	modules: [{
 		name: 'auth',
@@ -46,6 +48,12 @@ var load_modules = {
 		prefix: '',
 		cp_id: 'textedit',
 		cp_prefix: '/cp/textedit/',
+		hidden: true
+	}, {
+		name: 'parts',
+		prefix: '',
+		cp_id: 'parts',
+		cp_prefix: '/cp/parts/',
 		hidden: true
 	}]
 };
