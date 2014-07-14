@@ -18,7 +18,7 @@ module.exports = function(app) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/textedit';
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
 		var fn = req.query.fn;
@@ -42,8 +42,8 @@ module.exports = function(app) {
 				if (!itob.check(fp)) {
 					return send_error(res, i18nm.__('cannot_edit_binary_file'));
 				}
-				var content = fs.readFileSync(fp, 'utf8');
-				var file = {
+				content = fs.readFileSync(fp, 'utf8');
+				file = {
 					name: fn,
 					mime: mime.lookup(fp),
 					size: stat.size
@@ -66,7 +66,7 @@ module.exports = function(app) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/textedit';
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
 		var rep = {

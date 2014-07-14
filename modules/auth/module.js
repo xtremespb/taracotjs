@@ -46,7 +46,34 @@ module.exports = function(app) {
 		if (app.get('config').captcha == 'captcha_gm') {
 			_cap = 'png';
 		}
-		var render = renderer.render_file(path.join(__dirname, 'views'), 'login', {
+		var data = {
+			title: i18nm.__('auth'),
+			page_title: i18nm.__('auth'),
+			keywords: '',
+			description: '',
+			extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
+		};
+		var render = renderer.render_file(path.join(__dirname, 'views'), 'login_user', {
+			lang: i18nm,
+			captcha: _cap,
+			data: data,
+			redirect: req.session.auth_redirect
+		});
+		data.content = render;
+		app.get('renderer').render(res, undefined, data);
+	});
+	router.get('/cp', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
+			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
+			return;
+		}
+		var c = parseInt(Math.random() * 9000 + 1000);
+		var _cap = 'b64';
+		if (app.get('config').captcha == 'captcha_gm') {
+			_cap = 'png';
+		}
+		var render = renderer.render_file(path.join(__dirname, 'views'), 'login_cp', {
 			lang: i18nm,
 			captcha: _cap,
 			redirect: req.session.auth_redirect
