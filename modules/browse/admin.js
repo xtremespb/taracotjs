@@ -22,7 +22,7 @@ module.exports = function(app) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/browse';
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
 		var io = false,

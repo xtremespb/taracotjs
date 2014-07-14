@@ -9,7 +9,7 @@ module.exports = function(app) {
 	router.get('/', function(req, res) {
 		if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp';
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
 		i18nm.setLocale(req.i18n.getLocale());

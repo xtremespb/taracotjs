@@ -24,7 +24,7 @@ module.exports = function(app) {
 		i18nm.setLocale(req.i18n.getLocale());
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/parts';
-			res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'parts_control', {
