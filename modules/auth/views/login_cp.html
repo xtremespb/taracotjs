@@ -7,7 +7,7 @@
 	<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
 	<link rel="stylesheet" href="/css/uikit/uikit.min.css">
 	<link rel="stylesheet" href="/css/uikit/uikit.addons.min.css">
-	<link rel="stylesheet" href="/modules/auth/css/main.css">
+	<link rel="stylesheet" href="/modules/auth/css/cp_auth.css">
 	<script src="/js/admin.min.js"></script>
 </head>
 
@@ -21,7 +21,7 @@
 				<div class="uk-form-row">
 					<input class="uk-width-1-1 uk-form-large taracot-auth-field" type="password" id="auth_password" placeholder="!{root.lang.__('password')}">
 				</div>
-				<div class="uk-form-row">
+				<div class="uk-form-row" id="captcha_div">
 					<input class="uk-form-large uk-width-1-3 taracot-auth-field" type="text" id="auth_captcha" placeholder="!{root.lang.__('captcha')}" style="text-align:center">&nbsp;:&nbsp;
 					<img src="/img/blank.gif" id="auth_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
 				</div>
@@ -53,8 +53,10 @@
 	};
 	var redirect_url = "!{root.redirect}" || "/";
 	var captcha_type = "!{root.captcha}";
+	var captcha_req = !{root.captcha_req};
+	if (!captcha_req) $('#captcha_div').hide();
 	</script>
-	<script src="/modules/auth/js/auth.min.js"></script>
+	<script src="/modules/auth/js/auth_cp.min.js"></script>
 </body>
 
 </html>
