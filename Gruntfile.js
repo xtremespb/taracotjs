@@ -49,11 +49,18 @@ module.exports = function(grunt) {
         },
         // Concat
         concat: {
-            module_auth: {
+            module_auth_cp: {
                 src: [
-                    'modules/auth/public/modules/auth/js/main.js'
+                    'modules/auth/public/modules/auth/js/auth_cp.js'
                 ],
-                dest: 'modules/auth/public/modules/auth/js/auth.min.js'
+                dest: 'modules/auth/public/modules/auth/js/auth_cp.min.js'
+            },
+            module_auth_user: {
+                src: [
+                    'modules/auth/public/modules/auth/js/auth_user.js',
+                    'public/js/helper.js'
+                ],
+                dest: 'modules/auth/public/modules/auth/js/auth_user.min.js'
             },
             admin: {
                 src: [
@@ -148,9 +155,14 @@ module.exports = function(grunt) {
         },
         // Compress
         uglify: {
-            module_auth: {
+            module_auth_cp: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth.min.js': '<%= concat.module_auth.dest %>'
+                    'modules/auth/public/modules/auth/js/auth_cp.min.js': '<%= concat.module_auth_cp.dest %>'
+                }
+            },
+            module_auth_user: {
+                files: {
+                    'modules/auth/public/modules/auth/js/auth_user.min.js': '<%= concat.module_auth_user.dest %>'
                 }
             },
             admin: {

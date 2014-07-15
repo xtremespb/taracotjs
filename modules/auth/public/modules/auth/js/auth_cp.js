@@ -66,7 +66,7 @@ $('#auth_login').click(function() {
 		});
 		return;
 	}
-	if (!$('#auth_captcha').val().match(/^[0-9]{4}$/)) {
+	if (captcha_req && !$('#auth_captcha').val().match(/^[0-9]{4}$/)) {
 		$('#auth_captcha').addClass('uk-form-danger');
 		$('#auth_captcha').focus();
 		$.UIkit.notify({
@@ -93,6 +93,8 @@ $('#auth_login').click(function() {
 					$('#' + data.field).addClass('uk-form-danger');
 					$('#' + data.field).focus();
 				}
+				$('#captcha_div').show();
+				captcha_req = true;
 				if (data.error) {
 					$.UIkit.notify({
 						message: data.error,
