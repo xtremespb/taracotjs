@@ -263,7 +263,7 @@ module.exports = function(app) {
 							}
 							app.get('mongodb').collection('users').update({
 								_id: new ObjectId(id)
-							}, update, function() {
+							}, { $set: update }, function() {
 								rep.status = 1;
 								res.send(JSON.stringify(rep));
 							});

@@ -29,6 +29,7 @@ var multer = require('multer');
 var bodyParser = require('body-parser');
 var async = require('async');
 var fs = require('fs');
+var mailer = require('./core/mailer')(app);
 
 // Logging
 
@@ -84,6 +85,7 @@ app.set('renderer', renderer);
 app.set('logger', logger);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.html');
+app.set('mailer', mailer);
 app.engine('html', gaikan);
 
 // Use items

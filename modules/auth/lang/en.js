@@ -31,5 +31,10 @@
 	"username_or_email_already_registered": "username_or_email_already_registered",
 	"reg_success": "The first step of the registration process has been completed successfully.",
 	"important": "Important",
-	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions."
+	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions.",
+	"mail_register_on": "User registration on:",
+	"mail_register_msg1": "Thank you for registering your user account on our website.",
+	"mail_register_msg2": "The next step is to activate it.",
+	"mail_register_followlink": "Please follow this link to activate your account",
+	"mail_register_footer_notice": "If you didn't register anything, please just ignore this mail"
 }
