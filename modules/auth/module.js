@@ -3,6 +3,7 @@ module.exports = function(app) {
 	var renderer = app.get('renderer');
 	var config = app.get('config');
 	var path = app.get('path');
+	var mailer = app.get('mailer');
 	var crypto = require('crypto');
 	var i18nm = new(require('i18n-2'))({
 		locales: config.locales,
@@ -205,7 +206,7 @@ module.exports = function(app) {
 				password: password_hex,
 				email: email,
 				status: 0
-			}, function() {
+			}, function(err, items) {
 				if (err) {
 					res.send(JSON.stringify({
 						result: 0,
@@ -213,6 +214,11 @@ module.exports = function(app) {
 					}));
 					return;
 				}
+				var md5 = crypto.createHash('md5');
+				var user_id = items[0]._id.toHexString();
+				var act_code = md5.update(config.salt + '.' + Date.now()).digest('hex');
+				var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
+				mailer.send(email, i18nm.__('mail_register_on') + ' ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', { lang: i18nm, site_title: app.get('settings').site_title, register_url: register_url });
 				// Success
 				req.session.captcha_req = false;
 				res.send(JSON.stringify({

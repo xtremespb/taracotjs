@@ -36,6 +36,20 @@ var config = {
 		},
 		"stack": true
 	},
+	"mailer" : {
+		"sender": "TaracotJS <noreply@taracot.org>",
+		"transport" : "sendmail",
+		"sendmail" : {
+    		path: 'c:/XTreme/local/usr/bin/sendmail.exe'
+		},
+		"smtp" : {
+		    service: 'Gmail',
+		    auth: {
+		        user: 'gmail.user@gmail.com',
+		        pass: 'userpass'
+		    }
+		}
+	},
 	"mongo": {
 		"url": "mongodb://localhost/taracotjs",
 		"options": {
