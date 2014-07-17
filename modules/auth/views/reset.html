@@ -1,0 +1,48 @@
+<h1>!{root.data.title}</h1>
+<div id="reset_wrap">
+	<div>!{root.lang.__('reset_hint')}</div>
+	<div class="uk-margin-top"><div class="uk-badge uk-badge-warning">!{root.lang.__('warning')}</div>&nbsp;<small>!{root.lang.__('reset_hint_email')}</small></div>
+	<div class="uk-alert uk-alert-danger" id="taracot-reset-error"></div>
+	<div class="uk-form uk-form-horizontal tc-margin-medium-top">
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="reset_email">!{root.lang.__('email')}:</label>
+			<div class="uk-form-controls">
+				<input type="text" id="reset_email" class="uk-form-width-medium taracot-auth-field" placeholder="">
+			</div>
+		</div>
+		<div class="uk-form-row" id="captcha_div">
+			<label class="uk-form-label" for="reset_password">!{root.lang.__('captcha')}:</label>
+			<div class="uk-form-controls">
+				<input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="reset_captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
+				<img src="/img/blank.gif" id="reset_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<div class="uk-form-controls tc-margin-15 data-uk-margin">
+				<button class="uk-button" id="btn_register">!{root.lang.__('btn_register')}</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="reset_loading">
+	<img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}
+</div>
+<div id="reset_success">
+	<p>!{root.lang.__('reset_success')}</p>
+	<p><div class="uk-badge uk-badge-success">!{root.lang.__('important')}</div>&nbsp;!{root.lang.__('reset_success_email_hint')}</p>
+</div>
+<script type="text/javascript">
+	var _lang_vars = {
+		ajax_failed: "!{root.lang.__('ajax_failed')}",
+		invalid_email_syntax: "!{root.lang.__('invalid_email_syntax')}",
+		invalid_captcha: "!{root.lang.__('invalid_captcha')}"
+	};
+	var captcha_type = "!{root.captcha}";
+	var captcha_req = !{root.captcha_req};
+	if (!captcha_req) $('#captcha_div').hide();
+	$('#taracot-reset-error').hide();
+	$('#reset_loading').hide();
+	$('#reset_success').hide();
+</script>
+<script src="/js/helper.js"></script>
+<script src="/modules/auth/js/register.js"></script>

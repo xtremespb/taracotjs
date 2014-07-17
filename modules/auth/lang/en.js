@@ -32,9 +32,16 @@
 	"reg_success": "The first step of the registration process has been completed successfully.",
 	"important": "Important",
 	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions.",
-	"mail_register_on": "User registration on:",
+	"mail_register_on": "User registration on",
 	"mail_register_msg1": "Thank you for registering your user account on our website.",
 	"mail_register_msg2": "The next step is to activate it.",
 	"mail_register_followlink": "Please follow this link to activate your account",
-	"mail_register_footer_notice": "If you didn't register anything, please just ignore this mail"
+	"mail_register_footer_notice": "If you didn't register anything, please just ignore this mail",
+	"userid_or_code_missing": "User ID or activation code is missing, please check your activation URL.",
+	"invalid_code_syntax": "Code syntax is invalid, please check your activation URL.",
+	"activate": "User activation",
+	"activation_success": "User account activation has been completed. You are logged to the website now.",
+	"unable_to_activate": "Error while activating your user account. Please try again in several minutes or check if your activation URL is complete and valid.",
+	"invalid_userid_syntax": "Invalid user ID syntax",
+	"redirect_btn": "Redirect to the root page"
 }

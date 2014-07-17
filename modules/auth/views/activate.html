@@ -1,0 +1,13 @@
+<h1>!{root.data.title}</h1>
+<p>!{root.act_res}</p>
+<button id="btn_redirect" class="uk-button">!{root.lang.__('redirect_btn')}</button>
+<script type="text/javascript">
+	$('#btn_redirect').hide();
+	var act_status = !{root.act_status};
+	if (act_status) $('#btn_redirect').show();
+	$('#btn_redirect').click(function() {
+		location.href = '/?rnd=' + Math.random().toString().replace('.', '');
+	});
+</script>
+<script src="/js/helper.js"></script>
+<script src="/modules/auth/js/register.js"></script>
