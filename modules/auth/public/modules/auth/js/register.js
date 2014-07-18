@@ -32,6 +32,7 @@ var load_captcha = function() {
 };
 
 $('#reg_captcha_img').click(load_captcha);
+$('#reg_captcha').val('');
 
 // Login button is clicked
 $('#btn_register').click(function() {
@@ -85,6 +86,7 @@ $('#btn_register').click(function() {
 				$('#reg_captcha').val('');
 				if (data.field) {
 					$('#' + data.field).addClass('uk-form-danger');
+					$('#' + data.field).select();
 					$('#' + data.field).focus();
 				}
 				$('#captcha_div').show();
@@ -104,6 +106,7 @@ $('#btn_register').click(function() {
 			$('#reg_loading').hide();
 			$('#taracot-reg-error').html(_lang_vars.ajax_failed);
 			$('#taracot-reg-error').show();
+			$('#reg_captcha').val('');
 			load_captcha();
 		}
 	});

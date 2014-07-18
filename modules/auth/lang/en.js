@@ -43,5 +43,17 @@
 	"activation_success": "User account activation has been completed. You are logged to the website now.",
 	"unable_to_activate": "Error while activating your user account. Please try again in several minutes or check if your activation URL is complete and valid.",
 	"invalid_userid_syntax": "Invalid user ID syntax",
-	"redirect_btn": "Redirect to the root page"
+	"redirect_btn": "Redirect to the root page",
+	"reset_hint": "Use the following form to reset your password.",
+	"reset_hint_email": "After completing this form, you will receive a password reset URL to the e-mail address specified. Follow that link to set a new password for your account.",
+	"reset_success": "The first step of password reset procedure is now completed.",
+	"reset_success_email_hint": "Please check your mailbox for password change URL.",
+	"reset": "Reset your password",
+	"btn_reset": "Reset password",
+	"email_not_registered": "E-mail is not registered",
+	"mail_reset_on": "Reset password on",
+	"mail_reset_msg1": "The first step of password change is complete.",
+	"mail_reset_msg2": "Now the system is ready to change your old password to a new one.",
+	"mail_reset_followlink": "Please follow this link to set new password",
+	"mail_reset_footer_notice": "If you didn't request a password reset, please just ignore this mail. No changes are made to your account."
 }
