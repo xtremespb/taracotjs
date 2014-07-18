@@ -309,6 +309,174 @@ module.exports = function(app) {
 			});
 		});
 	});
+	router.get('/reset', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
+			res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
+			return;
+		}
+		var c = parseInt(Math.random() * 9000 + 1000);
+		var _cap = 'b64';
+		if (app.get('config').captcha == 'captcha_gm') {
+			_cap = 'png';
+		}
+		var data = {
+			title: i18nm.__('reset'),
+			page_title: i18nm.__('reset'),
+			keywords: '',
+			description: '',
+			extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/reset.css" type="text/css">'
+		};
+		var render = renderer.render_file(path.join(__dirname, 'views'), 'reset', {
+			lang: i18nm,
+			captcha: _cap,
+			captcha_req: true,
+			data: data,
+			redirect: req.session.auth_redirect
+		});
+		data.content = render;
+		app.get('renderer').render(res, undefined, data);
+	});
+	router.post('/reset/process', function(req, res) {
+		res.setHeader('Content-Type', 'application/json');
+		i18nm.setLocale(req.i18n.getLocale());
+		var email = req.body.email;
+		var captcha = req.body.captcha;
+		if (!captcha.match(/^[0-9]{4}$/)) {
+			res.send(JSON.stringify({
+				result: 0,
+				field: "reset_captcha",
+				error: i18nm.__("invalid_captcha")
+			}));
+			return;
+		}
+		if (captcha != req.session.captcha) {
+			req.session.captcha = 0;
+			res.send(JSON.stringify({
+				result: 0,
+				field: "reset_captcha",
+				error: i18nm.__("invalid_captcha")
+			}));
+			return;
+		}
+		req.session.captcha = 0;
+		if (!email.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
+			res.send(JSON.stringify({
+				result: 0,
+				field: "reset_email",
+				error: i18nm.__("invalid_email_syntax")
+			}));
+			return;
+		}
+		email = email.toLowerCase();
+		var data = app.get('mongodb').collection('users').find({
+			email: email
+		}, {
+			limit: 1
+		}).toArray(function(err, items) {
+			if (err) {
+				res.send(JSON.stringify({
+					result: 0,
+					error: i18nm.__("reset_failed")
+				}));
+				return;
+			}
+			if (typeof items == 'undefined' || !items.length) {
+				res.send(JSON.stringify({
+					result: 0,
+					field: "reset_email",
+					error: i18nm.__("email_not_registered")
+				}));
+				return;
+			}
+			var md5 = crypto.createHash('md5');
+			var res_code = md5.update(config.salt + '.' + Date.now()).digest('hex');
+			app.get('mongodb').collection('users').update({
+					_id: items[0]._id
+				}, {
+					$set: {
+						res_code: res_code
+					}
+				},
+				function(err) {
+					if (err) {
+						res.send(JSON.stringify({
+							result: 0,
+							error: i18nm.__("reset_failed")
+						}));
+						return;
+					}
+					var user_id = items[0]._id.toHexString();
+					var reset_url = req.protocol + '://' + req.get('host') + '/auth/password?user=' + user_id + '&code=' + res_code;
+					mailer.send(email, i18nm.__('mail_reset_on') + ' ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_reset_html', 'mail_reset_txt', {
+						lang: i18nm,
+						site_title: app.get('settings').site_title,
+						reset_url: reset_url
+					});
+					// Success
+					req.session.captcha_req = false;
+					res.send(JSON.stringify({
+						result: 1
+					}));
+				});
+		});
+	});
+	router.get('/password', function(req, res) {
+		i18nm.setLocale(req.i18n.getLocale());
+		var user = req.query.user;
+		var code = req.query.code;
+		var res_res;
+		if (typeof user == 'undefined' || typeof code == 'undefined') {
+			res_res = i18nm.__("userid_or_code_missing");
+		}
+		if (!user.match(/^[a-f0-9]{24}$/)) {
+			res_res = i18nm.__("invalid_userid_syntax");
+		}
+		if (!code.match(/^[a-f0-9]{32}$/)) {
+			res_res = i18nm.__("invalid_code_syntax");
+		}
+		var data = {
+			title: i18nm.__('password_change'),
+			page_title: i18nm.__('password_change'),
+			keywords: '',
+			description: '',
+			extra_css: ''
+		};
+		if (res_res) {
+			data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
+				lang: i18nm,
+				data: data,
+				res_res: res_res,
+				res_status: false
+			});
+			app.get('renderer').render(res, undefined, data);
+			return;
+		}
+		app.get('mongodb').collection('users').find({
+			_id: new ObjectId(user),
+			res_code: code,
+			status: 0
+		}, {
+			limit: 1
+		}).toArray(function(err, items) {
+			if (err || typeof items == 'undefined' || items.length === 0) {
+				data.content = renderer.render_file(path.join(__dirname, 'views'), 'password', {
+					lang: i18nm,
+					data: data,
+					res_res: i18nm.__("unable_to_reset"),
+					res_status: false
+				});
+				return app.get('renderer').render(res, undefined, data);
+			}
+			data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
+				lang: i18nm,
+				data: data,
+				res_res: '',
+				res_status: res_status
+			});
+			return app.get('renderer').render(res, undefined, data);
+		});
+	});
 	router.get('/logout', function(req, res) {
 		delete req.session.auth;
 		res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
