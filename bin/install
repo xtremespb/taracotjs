@@ -14,6 +14,7 @@ program
   .option('-r, --redishost [host]', 'Specify Redis host')
   .option('-j, --redisport [port]', 'Specify Redis port')
   .option('-p, --port [port]', 'Specify TaracotJS server port')
+  .option('-u, --update', 'version update (no database insertions)')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -68,6 +69,7 @@ async.series([
 			}
 		},
 		function (callback) {
+			if (program.update) return callback();
 			program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
 				if (ok) {
 					config.cookie_secret = generateId(32);
@@ -101,11 +103,13 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			db.collection('users').remove( { username : 'admin' }, function () {
 				callback();
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			console.log("\nCreating default user account\n");
 			var md5 = crypto.createHash('md5');
 			var password_md5 = md5.update(config.salt + '.admin').digest('hex');
@@ -144,6 +148,7 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			console.log("\nAdding default setting (site_title)...\n");
 			db.collection('settings').insert({
 					oname: 'site_title',
@@ -178,6 +183,7 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			console.log("\nAdding default page...\n");
 			db.collection('pages').insert({
 					ptitle: 'Default page',
@@ -188,7 +194,7 @@ async.series([
 					pfolder_id: 'j1_1',
 					pkeywords: 'sample, keywords, here',
 					pdesc: 'This is the sample page',
-					pcontent: 'As you see this, the installation seems to be completed ;-)'
+					pcontent: 'The installation is complete ;-)'
 				}, function (err) {
 					if (err) {
 						console.log("... failed");
@@ -218,6 +224,7 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			console.log("\nAdding default folder tree for pages module...\n");
 			db.collection('pages_folders').insert({
 					oname: 'folders_json',
@@ -251,6 +258,7 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.update) return callback();
 			console.log("\nAdding default item to parts collection...\n");
 			db.collection('parts').insert({
 					pname: 'test',
