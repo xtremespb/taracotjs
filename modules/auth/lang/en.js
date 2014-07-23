@@ -63,5 +63,19 @@
 	"btn_pwd": "Set password",
 	"pwd_success": "New password has been set.",
 	"pwd_success_hint": "You will need to authorize on this webiste using your new password.",
-	"authorize": "Authorize"
+	"authorize": "Authorize",
+	"profile": "User profile",
+	"common_information": "Common information",
+	"status": "Account status",
+	"status_0": "Inactive",
+	"status_1": "Active user",
+	"status_2": "Administrator",
+	"set_email": "E-mail",
+	"current_email": "Current_email",
+	"btn_change_email": "Change e-mail",
+	"set_password": "Password",
+	"current_password": "Current password",
+	"btn_change_password": "Change password",
+	"email_not_set": "E-mail address is not set",
+	"set_avatar": "Set avatar"
 }

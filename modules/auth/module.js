@@ -644,5 +644,27 @@ module.exports = function(app) {
             }));
         });
     });
+    router.get('/profile', function(req, res) {
+        i18nm.setLocale(req.i18n.getLocale());
+        if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect = '/auth/profile';
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+        var data = {
+            title: i18nm.__('profile'),
+            page_title: i18nm.__('profile'),
+            keywords: '',
+            description: '',
+            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_profile.css" type="text/css">'
+        };
+        var render = renderer.render_file(path.join(__dirname, 'views'), 'profile', {
+            lang: i18nm,
+            data: data,
+            auth: req.session.auth
+        });
+        data.content = render;
+        app.get('renderer').render(res, undefined, data);
+    });
     return router;
 };
