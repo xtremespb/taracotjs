@@ -253,6 +253,8 @@ app.use(function(req, res, next) {
 			} else {
 				if (auth != req.session.auth) {
 					req.session.auth = auth;
+					req.session.auth.avatar = '/img/avatars/default.png';
+					if (fs.existsSync(path.join(__dirname, 'public', 'img', 'avatars', auth.id + '.jpg'))) req.session.auth.avatar = '/img/avatars/' + auth._id + '.jpg';
 				}
 			}
 			next();
