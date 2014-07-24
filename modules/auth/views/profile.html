@@ -31,7 +31,7 @@
     </div>
     <div class="uk-form-row">
         <div class="uk-form-controls">
-            <button class="uk-button uk-button-primary uk-button-small">!{root.lang.__('btn_change_email')}</button>
+            <button class="uk-button uk-button-primary uk-button-small" id="btn_email">!{root.lang.__('btn_change_email')}</button>
         </div>
     </div>
     <legend class="uk-margin-top">!{root.lang.__('set_password')}</legend>
@@ -49,31 +49,94 @@
 </div>
 <div id="dlg_password" class="uk-modal">
     <div class="uk-modal-dialog">
-        <a class="uk-modal-close uk-close"></a>
-        <h1>!{root.lang.__('set_password')}</h1>
-        <div class="uk-form uk-form-stacked">
-            <fieldset>
-                <div class="uk-form-row">
-                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
-                    <input class="uk-form-width-small" type="password" id="password">
-                    <input class="uk-form-width-small" type="password" id="password-repeat">
-                </div>
-            </fieldset>
-            <fieldset>
-                <div class="uk-form-row">
-                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
-                    <input class="uk-form-width-medium" type="password" id="current_password">
-                </div>
-            </fieldset>
+    	<h1>!{root.lang.__('set_password')}</h1>
+    	<div id="taracot_pc_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+        <div id="dlg_password_form_wrap">
+	        <p>!{root.lang.__('set_password_hint')}</p>
+	        <div class="uk-alert uk-alert-danger" id="taracot_pc_error"></div>
+	        <div class="uk-form uk-form-stacked">
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+	                    <input class="uk-form-width-medium taracot_pc_field" id="password_current" type="password" id="current_password">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row">
+	                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
+	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
+	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+		            <div class="uk-margin-top" data-uk-margin>
+		            	<button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+		            </div>
+	            </fieldset>
+	        </div>
+        </div>
+    </div>
+</div>
+<div id="dlg_email" class="uk-modal">
+    <div class="uk-modal-dialog">
+    	<h1>!{root.lang.__('set_email_dlg')}</h1>
+    	<div id="taracot_ec_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+        <div id="dlg_email_form_wrap">
+	        <p>!{root.lang.__('set_email_hint')}</p>
+	        <p><span class="uk-badge uk-badge-warning">!{root.lang.__('warning')}</span><small>&nbsp;!{root.lang.__('set_email_hint_2')}</small></p>
+	        <div class="uk-alert uk-alert-danger" id="taracot_ec_error"></div>
+	        <div class="uk-form uk-form-horizontal">
+	        	<fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_email')}:</label>
+	                    <input class="uk-form-width-medium uk-disabled" disabled="disabled" type="email" value="!{root.auth.email}">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('new_email')}:</label>
+	                    <input class="uk-form-width-medium taracot_ec_field" id="ec_email" type="email" id="ec_email">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+	                    <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+		            <div class="uk-margin-top" data-uk-margin>
+		            	<button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+		            </div>
+	            </fieldset>
+	        </div>
         </div>
     </div>
 </div>
 <script>
 var auth_status = "!{root.auth.status}";
+var auth_username = "!{root.auth.username}";
 var auth_email = "!{root.auth.email}";
 if (!auth_email) $('#profile_email').html("!{root.lang.__('email_not_set')}");
 if (auth_status == 1) $('#profile_status').html("!{root.lang.__('status_1')}");
 if (auth_status == 2) $('#profile_status').html("!{root.lang.__('status_2')}");
+$('#taracot_pc_error').hide();
+$('#taracot_pc_loading').hide();
+$('#taracot_ec_loading').hide();
+$('#taracot_ec_error').hide();
+$('#taracot_av_loading').hide();
+$('#taracot_av_error').hide();
+var _lang_vars = {
+	ajax_failed: "!{root.lang.__('ajax_failed')}",
+	invalid_password_syntax: "!{root.lang.__('invalid_password_syntax_or_not_match')}",
+	invalid_email_syntax: "!{root.lang.__('invalid_email_syntax')}",
+	password_saved: "!{root.lang.__('password_saved')}",
+	email_saved: "!{root.lang.__('email_saved')}"
+};
 </script>
 <script src="/js/helper.js"></script>
+<script src="/js/uikit/addons/notify.min.js"></script>
+<script src="/js/plupload/plupload.full.min.js"></script>
 <script src="/modules/auth/js/profile.js"></script>

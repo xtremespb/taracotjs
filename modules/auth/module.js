@@ -220,7 +220,7 @@ module.exports = function(app) {
                 }
                 var user_id = items[0]._id.toHexString();
                 var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
-                mailer.send(email, i18nm.__('mail_register_on') + ' ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', {
+                mailer.send(email, i18nm.__('mail_register_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', {
                     lang: i18nm,
                     site_title: app.get('settings').site_title,
                     register_url: register_url
@@ -408,7 +408,7 @@ module.exports = function(app) {
                     }
                     var user_id = items[0]._id.toHexString();
                     var reset_url = req.protocol + '://' + req.get('host') + '/auth/password?user=' + user_id + '&code=' + res_code;
-                    mailer.send(email, i18nm.__('mail_reset_on') + ' ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_reset_html', 'mail_reset_txt', {
+                    mailer.send(email, i18nm.__('mail_reset_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_reset_html', 'mail_reset_txt', {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
                         reset_url: reset_url
@@ -564,8 +564,26 @@ module.exports = function(app) {
         });
     });
     router.get('/logout', function(req, res) {
+        i18nm.setLocale(req.i18n.getLocale());
+        if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect = '/auth/profile';
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
         delete req.session.auth;
-        res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
+        var data = {
+            title: i18nm.__('logout'),
+            page_title: i18nm.__('logout'),
+            keywords: '',
+            description: '',
+            extra_css: ''
+        };
+        var render = renderer.render_file(path.join(__dirname, 'views'), 'logout', {
+            lang: i18nm,
+            data: data
+        });
+        data.content = render;
+        app.get('renderer').render(res, undefined, data);
     });
     router.post('/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -626,7 +644,7 @@ module.exports = function(app) {
             limit: 1
         }).toArray(function(err, items) {
             if (typeof items != 'undefined' && !err) {
-                if (items.length > 0) {
+                if (items.length > 0 && items[0].status > 0) {
                     req.session.captcha_req = false;
                     req.session.auth = items[0];
                     delete req.session.auth.password;
@@ -665,6 +683,134 @@ module.exports = function(app) {
         });
         data.content = render;
         app.get('renderer').render(res, undefined, data);
+    });
+    router.post('/profile/process', function(req, res) {
+        res.setHeader('Content-Type', 'application/json');
+        i18nm.setLocale(req.i18n.getLocale());
+        var username = req.body.username;
+        var password = req.body.password;
+        var password_new = req.body.password_new;
+        var email_new = req.body.email_new;
+        if (typeof username == 'undefined' || typeof password == 'undefined') {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("username_password_missing")
+            }));
+            return;
+        }
+        if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("invalid_username_syntax")
+            }));
+            return;
+        }
+        if (!password.match(/^.{5,20}$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("invalid_password_syntax")
+            }));
+            return;
+        }
+        if (password_new && !password_new.match(/^.{5,20}$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "pc_password",
+                error: i18nm.__("invalid_new_password_syntax")
+            }));
+            return;
+        }
+        if (email_new && !email_new.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "ec_email",
+                error: i18nm.__("invalid_email_syntax")
+            }));
+            return;
+        }
+        username = username.toLowerCase();
+        var md5 = crypto.createHash('md5');
+        var password_hex = md5.update(config.salt + '.' + password).digest('hex');
+        app.get('mongodb').collection('users').find({
+            username: username,
+            password: password_hex
+        }, {
+            limit: 1
+        }).toArray(function(err, items) {
+            if (err || typeof items == 'undefined' || !items.length) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("invalid_username_or_password")
+                }));
+                return;
+            }
+            if (email_new && items[0].status == 2) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("administrator_cannot_change_email")
+                }));
+                return;
+            }
+            app.get('mongodb').collection('users').find({
+                email: email_new
+            }, {
+                limit: 1
+            }).toArray(function(err, cit) {
+                if (cit && cit.length) {
+                    res.send(JSON.stringify({
+                        result: 0,
+                        field: "password_current",
+                        error: i18nm.__("email_already_taken")
+                    }));
+                    return;
+                }
+                var update = {};
+                if (password_new) update.password = crypto.createHash('md5').update(config.salt + '.' + password_new).digest('hex');
+                if (email_new) {
+                    update.email = email_new;
+                    update.status = 0;
+                    update.act_code = crypto.createHash('md5').update(config.salt + '.' + Date.now()).digest('hex');
+                }
+                if (Object.keys(update).length) {
+                    app.get('mongodb').collection('users').update({
+                        _id: items[0]._id
+                    }, {
+                        $set: update
+                    }, function(err) {
+                        if (err) {
+                            res.send(JSON.stringify({
+                                result: 0,
+                                field: "password_current",
+                                error: i18nm.__("cannot_update")
+                            }));
+                            return;
+                        }
+                        if (email_new) {
+                            delete req.session.auth;
+                            var user_id = items[0]._id.toHexString();
+                            var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + update.act_code;
+                            mailer.send(email_new, i18nm.__('mail_change_email_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_change_email_html', 'mail_change_email_txt', {
+                                lang: i18nm,
+                                site_title: app.get('settings').site_title,
+                                register_url: register_url
+                            });
+                        }
+                        res.send(JSON.stringify({
+                            result: 1
+                        }));
+                    });
+                } else {
+                    res.send(JSON.stringify({
+                        result: 1
+                    }));
+                }
+            });
+        });
     });
     return router;
 };
