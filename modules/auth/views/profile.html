@@ -1,9 +1,9 @@
 <h1>
     <div class="uk-float-left uk-overlay">
-        <img src="!{root.auth.avatar}" width="48" height="48" alt="!{root.auth.username}" class="uk-border-circle">
-        <div class="uk-overlay-area">
-            <div class="uk-overlay-area-content" id="profile_set_avatar"><i class="uk-icon uk-icon-search"></i>
-            </div>
+        <img src="!{root.auth.avatar}" width="48" height="48" alt="!{root.auth.username}" class="uk-border-circle" id="profile_avatar">
+        <div class="uk-overlay-area uk-border-circle" id="profile_set_avatar_dnd">
+            <button class="uk-overlay-area-content uk-button uk-button-link" id="profile_set_avatar"><i class="uk-icon uk-icon-search"></i>
+            </button>
         </div>
     </div>
     &nbsp;!{root.data.title}
@@ -115,7 +115,13 @@
         </div>
     </div>
 </div>
+<div class="taracot-progress uk-vertical-align uk-text-center">
+	<div class="uk-vertical-align-middle">
+		<img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
+	</div>
+</div>
 <script>
+$('.taracot-progress').hide();
 var auth_status = "!{root.auth.status}";
 var auth_username = "!{root.auth.username}";
 var auth_email = "!{root.auth.email}";

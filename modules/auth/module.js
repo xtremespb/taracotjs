@@ -10,6 +10,11 @@ module.exports = function(app) {
         directory: path.join(__dirname, 'lang'),
         extension: '.js'
     });
+    var gm = false;
+    if (app.get('config').graphicsmagick) {
+        gm = require('gm');
+    }
+    var fs = require("fs-extra");
     var ObjectId = require('mongodb').ObjectID;
     router.get('/captcha', function(req, res) {
         var c = parseInt(Math.random() * 9000 + 1000);
@@ -687,130 +692,216 @@ module.exports = function(app) {
     router.post('/profile/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
         i18nm.setLocale(req.i18n.getLocale());
-        var username = req.body.username;
-        var password = req.body.password;
-        var password_new = req.body.password_new;
-        var email_new = req.body.email_new;
-        if (typeof username == 'undefined' || typeof password == 'undefined') {
+        if (!req.session.auth || req.session.auth.status < 1) {
             res.send(JSON.stringify({
                 result: 0,
-                field: "password_current",
-                error: i18nm.__("username_password_missing")
+                field: "",
+                error: i18nm.__("unauth")
             }));
             return;
         }
-        if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
-            res.send(JSON.stringify({
-                result: 0,
-                field: "password_current",
-                error: i18nm.__("invalid_username_syntax")
-            }));
-            return;
-        }
-        if (!password.match(/^.{5,20}$/)) {
-            res.send(JSON.stringify({
-                result: 0,
-                field: "password_current",
-                error: i18nm.__("invalid_password_syntax")
-            }));
-            return;
-        }
-        if (password_new && !password_new.match(/^.{5,20}$/)) {
-            res.send(JSON.stringify({
-                result: 0,
-                field: "pc_password",
-                error: i18nm.__("invalid_new_password_syntax")
-            }));
-            return;
-        }
-        if (email_new && !email_new.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
-            res.send(JSON.stringify({
-                result: 0,
-                field: "ec_email",
-                error: i18nm.__("invalid_email_syntax")
-            }));
-            return;
-        }
-        username = username.toLowerCase();
-        var md5 = crypto.createHash('md5');
-        var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-        app.get('mongodb').collection('users').find({
-            username: username,
-            password: password_hex
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            if (err || typeof items == 'undefined' || !items.length) {
+        if (req.files && req.files.file) { // Avatar upload
+            if (!gm) {
                 res.send(JSON.stringify({
                     result: 0,
-                    field: "password_current",
-                    error: i18nm.__("invalid_username_or_password")
+                    field: "",
+                    error: i18nm.__("server_configuration_dont_support_avatar_upload")
                 }));
                 return;
             }
-            if (email_new && items[0].status == 2) {
+            var file = req.files.file;
+            if (file.size > app.get('config').max_upload_file_mb * 1048576) {
                 res.send(JSON.stringify({
                     result: 0,
-                    field: "password_current",
-                    error: i18nm.__("administrator_cannot_change_email")
+                    field: "",
+                    error: i18nm.__("file_too_big")
                 }));
                 return;
             }
-            app.get('mongodb').collection('users').find({
-                email: email_new
-            }, {
-                limit: 1
-            }).toArray(function(err, cit) {
-                if (cit && cit.length) {
-                    res.send(JSON.stringify({
-                        result: 0,
-                        field: "password_current",
-                        error: i18nm.__("email_already_taken")
-                    }));
-                    return;
-                }
-                var update = {};
-                if (password_new) update.password = crypto.createHash('md5').update(config.salt + '.' + password_new).digest('hex');
-                if (email_new) {
-                    update.email = email_new;
-                    update.status = 0;
-                    update.act_code = crypto.createHash('md5').update(config.salt + '.' + Date.now()).digest('hex');
-                }
-                if (Object.keys(update).length) {
-                    app.get('mongodb').collection('users').update({
-                        _id: items[0]._id
-                    }, {
-                        $set: update
-                    }, function(err) {
+            if (file.mimetype != 'image/png' && file.mimetype != 'image/jpeg') {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "",
+                    error: i18nm.__("unsupported_image_format")
+                }));
+                return;
+            }
+
+            var img = gm(app.get('config').dir.tmp + '/' + file.name);
+            if (!img) {
+                fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "",
+                    error: i18nm.__("unsupported_image_format")
+                }));
+                return;
+            }
+            img.autoOrient();
+            var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
+            img.size(function(err, size) {
+                if (!err) {
+                    if (size.width >= size.height) {
+                        img.resize(null, 128);
+                        img.crop(128, 128, 0, 0);
+                    } else {
+                        img.resize(128, null);
+                        img.crop(128, 128, 0, 0);
+                    }
+                    img.setFormat('jpeg');
+                    img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
                         if (err) {
+                            fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
                             res.send(JSON.stringify({
                                 result: 0,
-                                field: "password_current",
-                                error: i18nm.__("cannot_update")
+                                field: "",
+                                error: i18nm.__("unsupported_image_format")
                             }));
                             return;
                         }
-                        if (email_new) {
-                            delete req.session.auth;
-                            var user_id = items[0]._id.toHexString();
-                            var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + update.act_code;
-                            mailer.send(email_new, i18nm.__('mail_change_email_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_change_email_html', 'mail_change_email_txt', {
-                                lang: i18nm,
-                                site_title: app.get('settings').site_title,
-                                register_url: register_url
-                            });
-                        }
+                        res.send(JSON.stringify({
+                            result: 1,
+                            avatar_id: afn
+                        }));
+                        fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                        return;
+                    });
+                } else {
+                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                    res.send(JSON.stringify({
+                        result: 0,
+                        field: "",
+                        error: i18nm.__("unsupported_image_format")
+                    }));
+                    return;
+                }
+            });
+        } else { // Profile settings
+            var username = req.session.auth.username;
+            var password = req.body.password;
+            var password_new = req.body.password_new;
+            var email_new = req.body.email_new;
+            if (typeof password == 'undefined') {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("username_password_missing")
+                }));
+                return;
+            }
+            if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("invalid_username_syntax")
+                }));
+                return;
+            }
+            if (!password.match(/^.{5,20}$/)) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("invalid_password_syntax")
+                }));
+                return;
+            }
+            if (password_new && !password_new.match(/^.{5,20}$/)) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "pc_password",
+                    error: i18nm.__("invalid_new_password_syntax")
+                }));
+                return;
+            }
+            if (email_new && !email_new.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "ec_email",
+                    error: i18nm.__("invalid_email_syntax")
+                }));
+                return;
+            }
+            username = username.toLowerCase();
+            var md5 = crypto.createHash('md5');
+            var password_hex = md5.update(config.salt + '.' + password).digest('hex');
+            app.get('mongodb').collection('users').find({
+                username: username,
+                password: password_hex
+            }, {
+                limit: 1
+            }).toArray(function(err, items) {
+                if (err || typeof items == 'undefined' || !items.length) {
+                    res.send(JSON.stringify({
+                        result: 0,
+                        field: "password_current",
+                        error: i18nm.__("invalid_username_or_password")
+                    }));
+                    return;
+                }
+                if (email_new && items[0].status == 2) {
+                    res.send(JSON.stringify({
+                        result: 0,
+                        field: "password_current",
+                        error: i18nm.__("administrator_cannot_change_email")
+                    }));
+                    return;
+                }
+                app.get('mongodb').collection('users').find({
+                    email: email_new
+                }, {
+                    limit: 1
+                }).toArray(function(err, cit) {
+                    if (cit && cit.length) {
+                        res.send(JSON.stringify({
+                            result: 0,
+                            field: "password_current",
+                            error: i18nm.__("email_already_taken")
+                        }));
+                        return;
+                    }
+                    var update = {};
+                    if (password_new) update.password = crypto.createHash('md5').update(config.salt + '.' + password_new).digest('hex');
+                    if (email_new) {
+                        update.email = email_new;
+                        update.status = 0;
+                        update.act_code = crypto.createHash('md5').update(config.salt + '.' + Date.now()).digest('hex');
+                    }
+                    if (Object.keys(update).length) {
+                        app.get('mongodb').collection('users').update({
+                            _id: items[0]._id
+                        }, {
+                            $set: update
+                        }, function(err) {
+                            if (err) {
+                                res.send(JSON.stringify({
+                                    result: 0,
+                                    field: "password_current",
+                                    error: i18nm.__("cannot_update")
+                                }));
+                                return;
+                            }
+                            if (email_new) {
+                                delete req.session.auth;
+                                var user_id = items[0]._id.toHexString();
+                                var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + update.act_code;
+                                mailer.send(email_new, i18nm.__('mail_change_email_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_change_email_html', 'mail_change_email_txt', {
+                                    lang: i18nm,
+                                    site_title: app.get('settings').site_title,
+                                    register_url: register_url
+                                });
+                            }
+                            res.send(JSON.stringify({
+                                result: 1
+                            }));
+                        });
+                    } else {
                         res.send(JSON.stringify({
                             result: 1
                         }));
-                    });
-                } else {
-                    res.send(JSON.stringify({
-                        result: 1
-                    }));
-                }
+                    }
+                });
             });
-        });
+        }
     });
     return router;
 };

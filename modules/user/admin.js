@@ -177,6 +177,7 @@ module.exports = function(app) {
 			realname = req.body.realname,
 			status = req.body.status,
 			id = req.body.id;
+		if (realname) realname = realname.replace(/&/g, "").replace(/>/g, "").replace(/</g, "").replace(/"/g, "");
 		if (typeof id != 'undefined' && id) {
 			if (!id.match(/^[a-f0-9]{24}$/)) {
 				rep.status = 0;
@@ -194,7 +195,7 @@ module.exports = function(app) {
 			rep.status = 0;
 			rep.err_fields.push('email');
 		}
-		if (!realname.match(/^(([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])\s([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])+){0,40}$/)) {
+		if (!realname.match(/^.{0,40}$/)) {
 			rep.status = 0;
 			rep.err_fields.push('realname');
 		}

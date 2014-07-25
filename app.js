@@ -11,6 +11,7 @@ config.taracotjs = version.taracotjs;
 config.blocks = load_modules.blocks;
 config.modules = load_modules.modules;
 var path = require('path');
+var crypto = require('crypto');
 var cookieParser = require('cookie-parser');
 var I18n = require('i18n-2');
 var app = express();
@@ -265,7 +266,8 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
 	if (req.session && req.session.auth) {
 		req.session.auth.avatar = '/img/avatars/default.png';
-		if (fs.existsSync(path.join(__dirname, 'public', 'img', 'avatars', auth.id + '.jpg'))) req.session.auth.avatar = '/img/avatars/' + auth._id + '.jpg';
+		var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
+		if (fs.existsSync(path.join(__dirname, 'public', 'img', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/img/avatars/' + afn + '.jpg';
 	}
 	next();
 });

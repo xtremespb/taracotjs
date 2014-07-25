@@ -43,7 +43,7 @@
 		invalid_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
 		invalid_captcha: "!{root.lang.__('invalid_captcha')}"
 	};
-	var redirect_url = "!{root.redirect}" || "/";
+	var redirect_url = "!{root.redirect}" || "/auth/profile";
 	var captcha_type = "!{root.captcha}";
 	var captcha_req = !{root.captcha_req};
 	if (!captcha_req) $('#captcha_div').hide();
