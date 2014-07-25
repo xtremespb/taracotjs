@@ -98,5 +98,6 @@
 	"logout": "Log out",
 	"logged_out": "Logged out successfully. You will be redirected in a few moments.",
 	"administrator_cannot_change_email": "Administrator cannot change e-mail address on profile page. Please use control panel to change e-mail address.",
-	"email_already_taken": "E-mail address has been already registred by someone else"
+	"email_already_taken": "E-mail address has been already registred by someone else",
+	"unsupported_image_format": "Unsupported image format"
 }

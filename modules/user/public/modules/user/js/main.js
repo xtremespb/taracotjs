@@ -128,7 +128,8 @@ $('#taracot-edit-btn-save').click(function() {
 		$('#username').addClass('uk-form-danger');
 		errors = true;
 	}
-	if (!$('#realname').val().match(/^(([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])\s([\wА-Яа-я])+([\wА-Яа-я\-\']{0,1})([\wА-Яа-я])+){0,40}$/)) {
+	var realname = $('#realname').val().replace(/&/g, "").replace(/>/g, "").replace(/</g, "").replace(/"/g, "");
+	if (!realname.match(/^.{0,40}$/)) {
 		$('#realname').addClass('uk-form-danger');
 		errors = true;
 	}
@@ -166,7 +167,7 @@ $('#taracot-edit-btn-save').click(function() {
 		url: '/cp/users/data/save',
 		data: {
 			username: $('#username').val(),
-			realname: $('#realname').val(),
+			realname: realname,
 			email: $('#email').val(),
 			status: $('#status').val(),
 			password: $('#password').val(),

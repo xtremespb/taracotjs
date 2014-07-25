@@ -12,6 +12,7 @@ var config = {
 	],
 	"dir": {
 		"storage": "../public/files",
+		"avatars": "../public/img/avatars",
 		"tmp": "../tmp"
 	},
 	"cookie_secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
