@@ -26,7 +26,8 @@
     "unzip": "~0.1.9",
     "winston": "~0.7.3",
     "nodemailer": "~1.0.2",
-    "nodemailer-sendmail-transport": "~0.1.2"
+    "nodemailer-sendmail-transport": "~0.1.2",
+    "connect-mongo": "~0.4.1"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

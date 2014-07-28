@@ -17,31 +17,19 @@ var config = {
 	},
 	"cookie_secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
 	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
+	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"redis": {
+		"active": true,
 		"host": "localhost",
 		"port": 6379,
 		"prefix": "taracotjs",
 		"password": ""
 	},
-	"log": {
-		"console": {
-			"level": "info",
-			"colorize": true
-		},
-		"file": {
-			"level": "error",
-			"filename": "../logs/taracotjs.log",
-			"json": false,
-			"maxsize": 1048576,
-			"maxFiles": 3
-		},
-		"stack": true
-	},
 	"mailer" : {
 		"sender": "TaracotJS <noreply@taracot.org>",
 		"transport" : "sendmail",
 		"sendmail" : {
-    		path: 'c:/XTreme/local/usr/bin/sendmail.exe'
+    		path: '/usr/sbin/sendmail'
 		},
 		"smtp" : {
 		    service: 'Gmail',
@@ -72,7 +60,20 @@ var config = {
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
 	"max_edit_file_kb": 1024,
-	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd"
+	"log": {
+		"console": {
+			"level": "info",
+			"colorize": true
+		},
+		"file": {
+			"level": "error",
+			"filename": "../logs/taracotjs.log",
+			"json": false,
+			"maxsize": 1048576,
+			"maxFiles": 3
+		},
+		"stack": true
+	}
 };
 
 module.exports = config;
