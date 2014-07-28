@@ -781,6 +781,7 @@ module.exports = function(app) {
             var password = req.body.password;
             var password_new = req.body.password_new;
             var email_new = req.body.email_new;
+            var realname = req.body.realname;
             if (typeof password == 'undefined') {
                 res.send(JSON.stringify({
                     result: 0,
@@ -810,6 +811,15 @@ module.exports = function(app) {
                     result: 0,
                     field: "pc_password",
                     error: i18nm.__("invalid_new_password_syntax")
+                }));
+                return;
+            }
+            if (realname) realname = realname.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ').replace(/</, '').replace(/>/, '').replace(/\"/, '');
+            if (realname && !realname.match(/^.{1,40}$/)) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "rn_password",
+                    error: i18nm.__("invalid_realname")
                 }));
                 return;
             }
@@ -866,6 +876,7 @@ module.exports = function(app) {
                         update.status = 0;
                         update.act_code = crypto.createHash('md5').update(config.salt + '.' + Date.now()).digest('hex');
                     }
+                    if (realname) update.realname = realname;
                     if (Object.keys(update).length) {
                         app.get('mongodb').collection('users').update({
                             _id: items[0]._id
@@ -890,9 +901,9 @@ module.exports = function(app) {
                                     register_url: register_url
                                 });
                             }
-                            res.send(JSON.stringify({
-                                result: 1
-                            }));
+                            var rr = { result: 1 };
+                            if (realname) rr.realname = realname;
+                            res.send(JSON.stringify(rr));
                         });
                     } else {
                         res.send(JSON.stringify({

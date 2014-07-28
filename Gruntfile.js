@@ -74,6 +74,11 @@ module.exports = function(grunt) {
                     'modules/auth/public/modules/auth/js/auth_reset.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/reset.js' ]
                 }
             },
+            module_auth_profile: {
+                files: {
+                    'modules/auth/public/modules/auth/js/auth_profile.min.js': [ 'public/js/helper.js', 'public/js/uikit/addons/notify.min.js', 'modules/auth/public/modules/auth/js/profile.js' ]
+                }
+            },
             admin: {
                 files: {
                     'public/js/admin.min.js': [ 'public/js/jquery.min.js', 'public/js/jquery.history.min.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/uikit.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/helper.js' ]

@@ -29,7 +29,7 @@
 	"invalid_email_syntax": "Invalid e-mail syntax",
 	"username_password_missing": "Username or password is missing",
 	"password_missing": "Password is missing",
-	"username_or_email_already_registered": "username_or_email_already_registered",
+	"username_or_email_already_registered": "Username or email is already registered",
 	"reg_success": "The first step of the registration process has been completed successfully.",
 	"important": "Important",
 	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions.",
@@ -100,5 +100,10 @@
 	"administrator_cannot_change_email": "Administrator cannot change e-mail address on profile page. Please use control panel to change e-mail address.",
 	"email_already_taken": "E-mail address has been already registred by someone else",
 	"unsupported_image_format": "Unsupported image format",
-	"server_configuration_dont_support_avatar_upload": "server_configuration_dont_support_avatar_upload"
+	"server_configuration_dont_support_avatar_upload": "Server configuration doesn't support avatar upload",
+	"realname": "Real name",
+	"btn_change_realname": "Change real name",
+	"set_realname_dlg": "Set real name",
+	"set_realname_hint": "Please fill the form below to change your real name. This name is displayed instead of your username everywhere when possible.",
+	"realname_saved": "New real name has been set"
 }

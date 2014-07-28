@@ -1,5 +1,6 @@
 var dlg_password = new $.UIkit.modal("#dlg_password");
 var dlg_email = new $.UIkit.modal("#dlg_email");
+var dlg_realname = new $.UIkit.modal("#dlg_realname");
 var uploader;
 
 $('#btn_password').click(function() {
@@ -21,7 +22,7 @@ $('#btn_pc_save').click(function() {
     if (!$('#password_current').val().match(/^.{5,20}$/)) {
         $('#password_current').addClass('uk-form-danger');
         $('#password_current').focus();
-        $('#taracot_pc_error').html(_lang_vars.invalid_password_syntax);
+        $('#taracot_pc_error').html(_lang_vars.invalid_current_password_syntax);
         $('#taracot_pc_error').show();
         return;
     }
@@ -113,7 +114,7 @@ $('#btn_ec_save').click(function() {
     if (!$('#ec_password_current').val().match(/^.{5,20}$/)) {
         $('#ec_password_current').addClass('uk-form-danger');
         $('#ec_password_current').focus();
-        $('#taracot_ec_error').html(_lang_vars.invalid_password_syntax);
+        $('#taracot_ec_error').html(_lang_vars.invalid_current_password_syntax);
         $('#taracot_ec_error').show();
         return;
     }
@@ -168,6 +169,103 @@ $('.taracot_ec_field').bind('keypress', function(e) {
     }
 });
 
+$('#btn_realname').click(function() {
+    dlg_realname.show();
+    $('#taracot_rn_loading').hide();
+    $('#dlg_realname_form_wrap').show();
+    $('#taracot_rn_error').hide();
+    $('.taracot_rn_field').each(function() {
+        $(this).val('');
+        $(this).removeClass('uk-form-danger');
+    });
+    $('#rn_realname').val(auth_realname);
+    $('#rn_realname').select();
+    $('#rn_realname').focus();
+});
+
+$('#btn_rn_save').click(function() {
+    $('.taracot_rn_field').each(function() {
+        $(this).removeClass('uk-form-danger');
+    });
+    if (!$('#rn_realname').val().match(/^.{1,40}$/)) {
+        $('#rn_realname').addClass('uk-form-danger');
+        $('#rn_realname').focus();
+        $('#taracot_rn_error').html(_lang_vars.invalid_realname_syntax);
+        $('#taracot_rn_error').show();
+        return;
+    }
+    if (!$('#rn_password_current').val().match(/^.{5,20}$/)) {
+        $('#rn_password_current').addClass('uk-form-danger');
+        $('#rn_password_current').focus();
+        $('#taracot_rn_error').html(_lang_vars.invalid_current_password_syntax);
+        $('#taracot_rn_error').show();
+        return;
+    }
+    $('#taracot_rn_loading').show();
+    $('#dlg_email_form_wrap').hide();
+    $('#taracot_rn_error').hide();
+    dlg_allow_close(false);
+    $.ajax({
+        type: 'POST',
+        url: '/auth/profile/process',
+        data: {
+            password: $('#rn_password_current').val(),
+            realname: $('#rn_realname').val()
+        },
+        dataType: "json",
+        success: function(data) {
+            $('#taracot_rn_loading').hide();
+            $('#dlg_email_form_wrap').show();
+            if (data.result != 1) {
+                dlg_allow_close(true);
+                if (data.field) {
+                    $('#' + data.field).addClass('uk-form-danger');
+                    $('#' + data.field).focus();
+                }
+                if (data.error) {
+                    $('#taracot_rn_error').html(data.error);
+                } else {
+                    $('#taracot_rn_error').html(_lang_vars.ajax_failed);
+                }
+                $('#taracot_rn_error').show();
+            } else {
+                dlg_realname.hide();
+                if (data.realname) {
+                	$('#profile_realname').html(data.realname);
+                	auth_realname = data.realname;
+                } else {
+                	$('#profile_realname').html('');
+                	auth_realname = '';
+                }
+                $.UIkit.notify({
+                    message: _lang_vars.realname_saved,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            dlg_allow_close(true);
+            $('#taracot_rn_loading').hide();
+            $('#dlg_email_form_wrap').show();
+            $('#taracot_rn_error').html(_lang_vars.ajax_failed);
+            $('#taracot_rn_error').show();
+            $('#rn_password_current').focus();
+        }
+    });
+});
+
+$('.taracot_rn_field').bind('keypress', function(e) {
+    if (submitOnEnter(e)) {
+        $('#btn_rn_save').click();
+    }
+});
+
+$('#btn_logout').click(function() {
+	location.href = '/auth/logout?rnd=' + Math.random().toString().replace('.', '');
+});
+
 $('#profile_set_avatar').click(function() {});
 
 var dlg_allow_close = function(val) {
@@ -175,6 +273,8 @@ var dlg_allow_close = function(val) {
     dlg_password.options.keyboard = val;
     dlg_email.options.bgclose = val;
     dlg_email.options.keyboard = val;
+    dlg_realname.options.bgclose = val;
+    dlg_realname.options.keyboard = val;
 };
 
 var uploader_init = function() {
