@@ -105,5 +105,6 @@
 	"btn_change_realname": "Change real name",
 	"set_realname_dlg": "Set real name",
 	"set_realname_hint": "Please fill the form below to change your real name. This name is displayed instead of your username everywhere when possible.",
-	"realname_saved": "New real name has been set"
+	"realname_saved": "New real name has been set",
+	"sign_in": "sign_in"
 }
