@@ -33,7 +33,6 @@ var winston = require('winston');
 var captcha = require('./core/' + config.captcha);
 var multer = require('multer');
 var bodyParser = require('body-parser');
-var async = require('async');
 var fs = require('fs');
 var mailer = require('./core/mailer')(app);
 
@@ -162,20 +161,17 @@ app.use(function(req, res, next) {
             next(err);
             return;
         }
-        // Load blocks
-        load_blocks(req, res, function() {
-            // Set locales from query and from cookie
-            req.i18n.setLocaleFromQuery();
-            req.i18n.setLocaleFromCookie();
-            req.i18n.setLocaleFromSubdomain();
-            // Logging
-            logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
-            // Clear auth_redirect if already authorized
-            if (req.session && req.session.auth) {
-                delete req.session.auth_redirect;
-            }
-            next();
-        });
+        // Set locales from query and from cookie
+        req.i18n.setLocaleFromQuery();
+        req.i18n.setLocaleFromCookie();
+        req.i18n.setLocaleFromSubdomain();
+        // Logging
+        logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
+        // Clear auth_redirect if already authorized
+        if (req.session && req.session.auth) {
+            delete req.session.auth_redirect;
+        }
+        next();
     });
 });
 
@@ -305,34 +301,14 @@ app.use(function(req, res, next) {
 
 // Load blocks
 
-var load_blocks = function(req, res, callback) {
-	if (!app.get('mongodb')) return callback();
-    if (!app.get('blocks')) {
-        var blocks = {
-            data: {}
-        };
-        app.set('blocks', blocks);
-    }
-    var block_functions = [];
-    for (var i=0; i<config.blocks.length; i++) {
-        var block = config.blocks[i];
-        var bf = function(callback) {
-            console.log("Loading " + block.name);
-            require('./modules/' + block.name + '/block')(app).data(req, res, function(data) {
-                console.log("Loaded " + block.name);
-                callback(block.name, data);
-            });
-        };
-        block_functions.push(bf);
-    }
-    var ef = function(cb) {
-        console.log("Finishing");
-        cb();
-        callback();
-    };
-    block_functions.push(ef);
-    async.series(block_functions);
-};
+if (!app.get('blocks')) {
+    var blocks = {};
+    app.set('blocks', blocks);
+}
+
+config.blocks.forEach(function(_block) {
+    app.get('blocks')[_block.name] = require('./modules/' + _block.name + '/block')(app).data;
+});
 
 // Load modules
 
