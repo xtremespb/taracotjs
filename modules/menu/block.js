@@ -3,7 +3,7 @@ var _timestamp_settings_query;
 module.exports = function(app) {
 	var block = {
 		data: function(req, res, callback) {
-			if (_timestamp_settings_query && Date.now() - _timestamp_settings_query <= 60000) return;
+			if (_timestamp_settings_query && Date.now() - _timestamp_settings_query <= 60000) return callback();
 			var lng = req.i18n.getLocale();
 			app.get('mongodb').collection('menu').find({
 				lang: lng

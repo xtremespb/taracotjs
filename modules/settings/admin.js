@@ -31,7 +31,7 @@ module.exports = function(app) {
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'settings_control', {
 			lang: i18nm,
 			locales: JSON.stringify(app.get('config').locales)
-		});
+		}, req);
 		app.get('cp').render(req, res, {
 			body: body,
 			css: '<link rel="stylesheet" href="/modules/settings/css/main.css">' + "\n\t\t"

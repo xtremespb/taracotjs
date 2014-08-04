@@ -68,9 +68,9 @@ module.exports = function(app) {
             captcha_req: captcha_req,
             data: data,
             redirect: req.session.auth_redirect
-        });
+        }, req);
         data.content = render;
-        app.get('renderer').render(res, undefined, data);
+        app.get('renderer').render(res, undefined, data, req);
     });
     router.get('/cp', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
@@ -90,7 +90,7 @@ module.exports = function(app) {
             captcha: _cap,
             captcha_req: captcha_req,
             redirect: req.session.auth_redirect
-        });
+        }, req);
         res.send(render);
     });
     router.get('/register', function(req, res) {
@@ -117,9 +117,9 @@ module.exports = function(app) {
             captcha_req: true,
             data: data,
             redirect: req.session.auth_redirect
-        });
+        }, req);
         data.content = render;
-        app.get('renderer').render(res, undefined, data);
+        app.get('renderer').render(res, undefined, data, req);
     });
     router.post('/register/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -161,7 +161,7 @@ module.exports = function(app) {
             }));
             return;
         }
-        if (!password.match(/^.{5,20}$/)) {
+        if (!password.match(/^.{8,80}$/)) {
             res.send(JSON.stringify({
                 result: 0,
                 field: "reg_password",
@@ -266,8 +266,8 @@ module.exports = function(app) {
                 act_res: act_res,
                 act_status: false,
                 redirect: req.session.auth_redirect
-            });
-            app.get('renderer').render(res, undefined, data);
+            }, req);
+            app.get('renderer').render(res, undefined, data, req);
             return;
         }
         app.get('mongodb').collection('users').find({
@@ -284,8 +284,8 @@ module.exports = function(app) {
                     act_res: i18nm.__("unable_to_activate"),
                     act_status: false,
                     redirect: req.session.auth_redirect
-                });
-                return app.get('renderer').render(res, undefined, data);
+                }, req);
+                return app.get('renderer').render(res, undefined, data, req);
             }
             app.get('mongodb').collection('users').update({
                 _id: new ObjectId(user)
@@ -309,8 +309,8 @@ module.exports = function(app) {
                     act_res: act_msg,
                     act_status: act_status,
                     redirect: req.session.auth_redirect
-                });
-                return app.get('renderer').render(res, undefined, data);
+                }, req);
+                return app.get('renderer').render(res, undefined, data, req);
             });
         });
     });
@@ -338,9 +338,9 @@ module.exports = function(app) {
             captcha_req: true,
             data: data,
             redirect: req.session.auth_redirect
-        });
+        }, req);
         data.content = render;
-        app.get('renderer').render(res, undefined, data);
+        app.get('renderer').render(res, undefined, data, req);
     });
     router.post('/reset/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -455,8 +455,8 @@ module.exports = function(app) {
                 reset_status: false,
                 user: '',
                 code: ''
-            });
-            app.get('renderer').render(res, undefined, data);
+            }, req);
+            app.get('renderer').render(res, undefined, data, req);
             return;
         }
         app.get('mongodb').collection('users').find({
@@ -474,8 +474,8 @@ module.exports = function(app) {
                     reset_status: false,
                     user: '',
                     code: ''
-                });
-                return app.get('renderer').render(res, undefined, data);
+                }, req);
+                return app.get('renderer').render(res, undefined, data, req);
             }
             data.content = renderer.render_file(path.join(__dirname, 'views'), 'password', {
                 lang: i18nm,
@@ -484,8 +484,8 @@ module.exports = function(app) {
                 reset_status: true,
                 user: user,
                 code: code
-            });
-            return app.get('renderer').render(res, undefined, data);
+            }, req);
+            return app.get('renderer').render(res, undefined, data, req);
         });
     });
     router.post('/password/process', function(req, res) {
@@ -501,7 +501,7 @@ module.exports = function(app) {
             }));
             return;
         }
-        if (!password.match(/^.{5,20}$/)) {
+        if (!password.match(/^.{8,80}$/)) {
             res.send(JSON.stringify({
                 result: 0,
                 field: "reg_password",
@@ -586,9 +586,9 @@ module.exports = function(app) {
         var render = renderer.render_file(path.join(__dirname, 'views'), 'logout', {
             lang: i18nm,
             data: data
-        });
+        }, req);
         data.content = render;
-        app.get('renderer').render(res, undefined, data);
+        app.get('renderer').render(res, undefined, data, req);
     });
     router.post('/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -631,7 +631,7 @@ module.exports = function(app) {
             }));
             return;
         }
-        if (!password.match(/^.{5,20}$/)) {
+        if (!password.match(/^.{5,80}$/)) {
             res.send(JSON.stringify({
                 result: 0,
                 field: "auth_password",
@@ -685,9 +685,9 @@ module.exports = function(app) {
             lang: i18nm,
             data: data,
             auth: req.session.auth
-        });
+        }, req);
         data.content = render;
-        app.get('renderer').render(res, undefined, data);
+        app.get('renderer').render(res, undefined, data, req);
     });
     router.post('/profile/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -798,7 +798,7 @@ module.exports = function(app) {
                 }));
                 return;
             }
-            if (!password.match(/^.{5,20}$/)) {
+            if (!password.match(/^.{5,80}$/)) {
                 res.send(JSON.stringify({
                     result: 0,
                     field: "password_current",
@@ -806,7 +806,7 @@ module.exports = function(app) {
                 }));
                 return;
             }
-            if (password_new && !password_new.match(/^.{5,20}$/)) {
+            if (password_new && !password_new.match(/^.{8,80}$/)) {
                 res.send(JSON.stringify({
                     result: 0,
                     field: "pc_password",

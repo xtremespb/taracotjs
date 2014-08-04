@@ -59,7 +59,7 @@ module.exports = function(app) {
 			content: content,
 			file: JSON.stringify(file),
 			locales: JSON.stringify(app.get('config').locales)
-		});
+		}, req);
 		res.send(body);
 	});
 	router.post('/data/save', function(req, res, next) {

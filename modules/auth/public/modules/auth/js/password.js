@@ -3,7 +3,7 @@
 $('#btn_pwd').click(function() {
 	$('#taracot-pwd-error').hide();
 	$('.taracot-auth-field').removeClass('uk-form-danger');
-	if (!$('#pwd_password').val().match(/^.{5,20}$/) || $('#pwd_password').val() != $('#pwd_password_repeat').val()) {
+	if (!$('#pwd_password').val().match(/^.{8,80}$/) || $('#pwd_password').val() != $('#pwd_password_repeat').val()) {
 		$('#pwd_password').addClass('uk-form-danger');
 		$('#pwd_password').focus();
 		$('#taracot-pwd-error').html(_lang_vars.invalid_password_syntax);

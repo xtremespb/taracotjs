@@ -45,7 +45,7 @@ $('#btn_register').click(function() {
 		$('#taracot-reg-error').show();
 		return;
 	}
-	if (!$('#reg_password').val().match(/^.{5,20}$/) || $('#reg_password').val() != $('#reg_password_repeat').val()) {
+	if (!$('#reg_password').val().match(/^.{8,80}$/) || $('#reg_password').val() != $('#reg_password_repeat').val()) {
 		$('#reg_password').addClass('uk-form-danger');
 		$('#reg_password').focus();
 		$('#taracot-reg-error').html(_lang_vars.invalid_password_syntax);

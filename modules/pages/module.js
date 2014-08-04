@@ -90,7 +90,7 @@ module.exports = function(app) {
 						bread_html_bootstrap: bread_html_bootstrap
 					};
 					var layout = items[0].playout || undefined;
-					app.get('renderer').render(res, layout, data);
+					app.get('renderer').render(res, layout, data, req);
 				} else {
 					return next();
 				}

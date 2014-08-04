@@ -24,7 +24,7 @@ module.exports = function(app) {
 				username: auth.realname || auth.username,
 				modules: JSON.stringify(modules),
 				active_module: current
-			});
+			}, req);
 			res.send(render);
 		}
 	};

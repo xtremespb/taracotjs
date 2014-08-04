@@ -41,7 +41,7 @@ module.exports = function(app) {
 				lang: i18nm,
 				locales: JSON.stringify(app.get('config').locales),
 				pages: JSON.stringify(pages)
-			});
+			}, req);
 			app.get('cp').render(req, res, {
 				body: body,
 				css: '<link rel="stylesheet" href="/modules/menu/css/main.css">' + "\n\t\t"

@@ -1,8 +1,6 @@
 var load_modules = {
 	blocks: [{
 		name: 'menu'
-	}, {
-		name: 'parts'
 	}],
 	modules: [{
 		name: 'auth',

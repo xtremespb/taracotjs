@@ -30,7 +30,7 @@ module.exports = function(app) {
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'parts_control', {
 			lang: i18nm,
 			locales: JSON.stringify(app.get('config').locales)
-		});
+		}, req);
 		res.send(body);
 	});
 	router.post('/data/list', function(req, res) {

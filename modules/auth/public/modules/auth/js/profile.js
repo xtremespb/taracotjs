@@ -19,14 +19,14 @@ $('#btn_pc_save').click(function() {
     $('.taracot_pc_field').each(function() {
         $(this).removeClass('uk-form-danger');
     });
-    if (!$('#password_current').val().match(/^.{5,20}$/)) {
+    if (!$('#password_current').val().match(/^.{5,80}$/)) {
         $('#password_current').addClass('uk-form-danger');
         $('#password_current').focus();
         $('#taracot_pc_error').html(_lang_vars.invalid_current_password_syntax);
         $('#taracot_pc_error').show();
         return;
     }
-    if (!$('#pc_password').val().match(/^.{5,20}$/) || $('#pc_password').val() != $('#pc_password_repeat').val()) {
+    if (!$('#pc_password').val().match(/^.{8,80}$/) || $('#pc_password').val() != $('#pc_password_repeat').val()) {
         $('#pc_password').addClass('uk-form-danger');
         $('#pc_password_repeat').addClass('uk-form-danger');
         $('#pc_password').focus();
@@ -111,7 +111,7 @@ $('#btn_ec_save').click(function() {
         $('#taracot_ec_error').show();
         return;
     }
-    if (!$('#ec_password_current').val().match(/^.{5,20}$/)) {
+    if (!$('#ec_password_current').val().match(/^.{5,80}$/)) {
         $('#ec_password_current').addClass('uk-form-danger');
         $('#ec_password_current').focus();
         $('#taracot_ec_error').html(_lang_vars.invalid_current_password_syntax);
@@ -194,7 +194,7 @@ $('#btn_rn_save').click(function() {
         $('#taracot_rn_error').show();
         return;
     }
-    if (!$('#rn_password_current').val().match(/^.{5,20}$/)) {
+    if (!$('#rn_password_current').val().match(/^.{5,80}$/)) {
         $('#rn_password_current').addClass('uk-form-danger');
         $('#rn_password_current').focus();
         $('#taracot_rn_error').html(_lang_vars.invalid_current_password_syntax);

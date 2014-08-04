@@ -32,7 +32,7 @@ module.exports = function(app) {
 		}
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'user_control', {
 			lang: i18nm
-		});
+		}, req);
 		app.get('cp').render(req, res, {
 			body: body,
 			css: '<link rel="stylesheet" href="/modules/user/css/main.css">' + "\n\t\t"

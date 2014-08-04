@@ -67,7 +67,7 @@ module.exports = function(app) {
 				visitors: JSON.stringify(visitors),
 				hits: JSON.stringify(hits),
 				config: app.get('config')
-			});
+			}, req);
 			app.get('cp').render(req, res, {
 				body: body
 			}, i18nm, 'dashboard', req.session.auth);
