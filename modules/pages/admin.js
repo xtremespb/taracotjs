@@ -46,7 +46,7 @@ module.exports = function(app) {
 				folders: folders,
 				locales: JSON.stringify(app.get('config').locales),
 				layouts: JSON.stringify(app.get('config').layouts)
-			});
+			}, req);
 			app.get('cp').render(req, res, {
 				body: body,
 				css: '<link rel="stylesheet" href="/modules/pages/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"

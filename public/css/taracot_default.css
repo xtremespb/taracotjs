@@ -1,0 +1,14 @@
+html, body {
+	background: url('/img/gplaypattern.png') top repeat-x;
+	background-size: 150px;
+}
+
+.tc-margin-bottom {
+	margin-bottom: 30px;
+}
+
+.uk-navbar {
+	-webkit-box-shadow: 0px 0px 2px 0px rgba(50, 50, 50, 0.29);
+	-moz-box-shadow:    0px 0px 2px 0px rgba(50, 50, 50, 0.29);
+	box-shadow:         0px 0px 2px 0px rgba(50, 50, 50, 0.29);
+}

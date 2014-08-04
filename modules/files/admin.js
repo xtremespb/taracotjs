@@ -31,7 +31,7 @@ module.exports = function(app) {
 			lang: i18nm,
 			textedit: textedit,
 			locales: JSON.stringify(app.get('config').locales)
-		});
+		}, req);
 		app.get('cp').render(req, res, {
 			body: body,
 			css: '<link rel="stylesheet" href="/modules/files/css/main.css">' + "\n\t\t"

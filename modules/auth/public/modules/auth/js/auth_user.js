@@ -44,7 +44,7 @@ $('#btn_login').click(function() {
 		$('#taracot-login-error').show();
 		return;
 	}
-	if (!$('#auth_password').val().match(/^.{5,20}$/)) {
+	if (!$('#auth_password').val().match(/^.{5,80}$/)) {
 		$('#auth_password').addClass('uk-form-danger');
 		$('#auth_password').focus();
 		$('#taracot-login-error').html(_lang_vars.invalid_password_syntax);

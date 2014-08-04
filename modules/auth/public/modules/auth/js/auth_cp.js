@@ -55,7 +55,7 @@ $('#auth_login').click(function() {
 		});
 		return;
 	}
-	if (!$('#auth_password').val().match(/^.{5,20}$/)) {
+	if (!$('#auth_password').val().match(/^.{8,80}$/)) {
 		$('#auth_password').addClass('uk-form-danger');
 		$('#auth_password').focus();
 		$.UIkit.notify({

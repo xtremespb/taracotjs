@@ -313,16 +313,25 @@ var load_blocks = function(req, res, callback) {
         };
         app.set('blocks', blocks);
     }
-    config.blocks.forEach(function(block) {
-        async.series([
-            function(callback) {
-                require('./modules/' + block.name + '/block')(app).data(req, res, function() {
-                    callback();
-                });
-            }
-        ]);
-    });
-    if (callback) callback();
+    var block_functions = [];
+    for (var i=0; i<config.blocks.length; i++) {
+        var block = config.blocks[i];
+        var bf = function(callback) {
+            console.log("Loading " + block.name);
+            require('./modules/' + block.name + '/block')(app).data(req, res, function(data) {
+                console.log("Loaded " + block.name);
+                callback(block.name, data);
+            });
+        };
+        block_functions.push(bf);
+    }
+    var ef = function(cb) {
+        console.log("Finishing");
+        cb();
+        callback();
+    };
+    block_functions.push(ef);
+    async.series(block_functions);
 };
 
 // Load modules

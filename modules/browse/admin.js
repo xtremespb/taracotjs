@@ -34,7 +34,7 @@ module.exports = function(app) {
 			io: io,
 			CKEditorFuncNum: CKEditorFuncNum,
 			locales: JSON.stringify(app.get('config').locales)
-		});
+		}, req);
 		res.send(body);
 	});
 	router.post('/data/load', function(req, res) {
