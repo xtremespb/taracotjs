@@ -106,5 +106,11 @@
 	"set_realname_dlg": "Set real name",
 	"set_realname_hint": "Please fill the form below to change your real name. This name is displayed instead of your username everywhere when possible.",
 	"realname_saved": "New real name has been set",
-	"sign_in": "sign_in"
+	"reg": "Register",
+	"password_strength": "Password strength",
+	"password_strength_0": "Invalid password",
+	"password_strength_1": "Poor strength",
+	"password_strength_2": "Medium strength",
+	"password_strength_3": "Good strength",
+	"password_strength_4": "Excelent strength"
 }

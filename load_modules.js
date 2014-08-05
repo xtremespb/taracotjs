@@ -3,6 +3,8 @@ var load_modules = {
 		name: 'menu'
 	}, {
 		name: 'auth'
+	}, {
+		name: 'parts'
 	}],
 	modules: [{
 		name: 'auth',

@@ -6,9 +6,16 @@ module.exports = function(app) {
 	});
 	var block = {
 		data: function(req, res, callback) {
-			var data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_auth', {
-				lang: i18nm
-			}, req);
+			var data = '';
+			if (!req.session.auth) {
+				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_unauth', {
+					lang: i18nm
+				}, req);
+			} else {
+				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_auth', {
+					lang: i18nm
+				}, req);
+			}
 			callback(data);
 		}
 	};
