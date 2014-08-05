@@ -28,7 +28,6 @@ module.exports = function(app) {
     			fa.push(fp);
 			});
 			async.waterfall(fa, function() {
-				console.log("All finished");
 				res.render(_layout, data);
 			});
 		},

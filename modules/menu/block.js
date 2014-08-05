@@ -1,7 +1,12 @@
+var _timestamp_settings_query = {};
+var menu_cache = {};
 module.exports = function(app) {
 	var block = {
 		data: function(req, res, callback) {
 			var lng = req.i18n.getLocale();
+			if (_timestamp_settings_query[lng] && (Date.now() - _timestamp_settings_query[lng] <= 60000) && menu_cache.lng) {
+				return callback(menu_cache.lng);
+			}
 			app.get('mongodb').collection('menu').find({
 				lang: lng
 			}, {
@@ -18,7 +23,9 @@ module.exports = function(app) {
 					data.menu_raw = '';
 					data.menu_uikit = '';
 				}
-				callback(data);
+				menu_cache.lng = data;
+				_timestamp_settings_query[lng] = Date.now();
+				callback(menu_cache.lng);
 			});
 		}
 	};

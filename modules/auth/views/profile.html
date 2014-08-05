@@ -109,6 +109,10 @@
 	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
 	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">
 	                </div>
+	                <div class="uk-form-row">
+	                	<label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
+	                	<div class="uk-progress"><div class="uk-progress-bar" id="pc_password_strength" style="width:0"></div></div>
+	                </div>
 	            </fieldset>
 	            <fieldset>
 		            <div class="uk-margin-top" data-uk-margin>
@@ -184,13 +188,21 @@ var _lang_vars = {
 	invalid_email_syntax: "!{root.lang.__('invalid_email_syntax')}",
 	password_saved: "!{root.lang.__('password_saved')}",
 	email_saved: "!{root.lang.__('email_saved')}",
-	realname_saved: "!{root.lang.__('realname_saved')}"
+	realname_saved: "!{root.lang.__('realname_saved')}",
+	password_strength_0: "!{root.lang.__('password_strength_0')}",
+	password_strength_1: "!{root.lang.__('password_strength_1')}",
+	password_strength_2: "!{root.lang.__('password_strength_2')}",
+	password_strength_3: "!{root.lang.__('password_strength_3')}",
+	password_strength_4: "!{root.lang.__('password_strength_4')}"
 };
 </script>
 <script src="/js/plupload/plupload.full.min.js"></script>
-<!--
+
 <script src="/js/helper.js"></script>
 <script src="/js/uikit/addons/notify.min.js"></script>
+<script src="/modules/auth/js/pwd.js"></script>
 <script src="/modules/auth/js/profile.js"></script>
--->
+
+<!--
 <script src="/modules/auth/js/auth_profile.min.js"></script>
+-->

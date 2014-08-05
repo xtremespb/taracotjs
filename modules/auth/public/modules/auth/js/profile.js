@@ -5,6 +5,7 @@ var uploader;
 
 $('#btn_password').click(function() {
     dlg_password.show();
+    pc_password_event_input();
     $('#taracot_pc_loading').hide();
     $('#dlg_password_form_wrap').show();
     $('#taracot_pc_error').hide();
@@ -14,6 +15,22 @@ $('#btn_password').click(function() {
     });
     $('#password_current').focus();
 });
+
+var pc_password_event_input = function() {
+    var ps = evalPassword($('#pc_password').val());
+    var str = (ps + 1) * 20;
+    $('#pc_password_strength').css('width', str + '%');
+    $('#pc_password_strength').html(_lang_vars['password_strength_' + ps]);
+    $('#pc_password_strength').parent().removeClass('uk-progress-success');
+    $('#pc_password_strength').parent().removeClass('uk-progress-warning');
+    console.log($('#pc_password_strength').parent());
+    $('#pc_password_strength').parent().removeClass('uk-progress-danger');
+    if (ps <= 1) $('#pc_password_strength').parent().addClass('uk-progress-danger');
+    if (ps == 2 || ps == 3) $('#pc_password_strength').parent().addClass('uk-progress-warning');
+    if (ps == 4) $('#pc_password_strength').parent().addClass('uk-progress-success');
+};
+
+$('#pc_password').on('input', pc_password_event_input);
 
 $('#btn_pc_save').click(function() {
     $('.taracot_pc_field').each(function() {
