@@ -1,9 +1,31 @@
 #!/usr/bin/env node
+
 var app = require('../app');
 var config = require('../config');
+var cluster = require('cluster');
+var workers = config.workers || process.env.WORKERS || require('os').cpus().length;
+var port = app.get('port') || 3000;
 
 app.set('port', config.port || process.env.PORT || 3000);
 
-var server = app.listen(app.get('port'), function() {
-  console.log('TaracotJS server listening on port: ' + server.address().port);
+if (cluster.isMaster) {
+  console.log('Starting cluster: %s worker(s)', workers);
+  for (var i = 0; i < workers; ++i) {
+    var worker = cluster.fork().process;
+    console.log('Worker %s has been started', worker.pid);
+  }
+  cluster.on('exit', function(worker) {
+    console.log('Worker %s has been terminated. Restarting...', worker.process.pid);
+    cluster.fork();
+  });
+} else {
+	var server = app.listen(app.get('port'), function() {
+	  console.log('TaracotJS server listening on port: ' + server.address().port);
+	});
+}
+
+process.on('uncaughtException', function (err) {
+  console.error((new Date()).toUTCString() + ' uncaught exception: ', err.message);
+  console.error(err.stack);
+  process.exit(1);
 });

@@ -59,27 +59,6 @@ if (redis_client) {
     });
 }
 
-// Connect to the database and set the corresponding variable
-
-var _connect_to_mongo_db = function(callback) {
-    if (typeof app.get('mongodb') == 'undefined') {
-        mongoclient.connect(config.mongo.url, config.mongo.options, function(err, _db) {
-            if (!err) {
-                _db.on('close', function() {
-                    app.set('mongodb', false);
-                });
-                app.set('mongodb', _db);
-            } else {
-                console.log(err);
-                app.set('mongodb', false);
-            }
-            if (callback) callback();
-        });
-    } else {
-        if (callback) callback();
-    }
-};
-
 // Set variables
 
 app.set('config', config);
@@ -134,7 +113,7 @@ if (redis) {
         secret: config.session_secret
     }));
 } else {
-	app.use(session({
+    app.use(session({
         store: new MongoStore({
             url: config.mongo.url,
             auto_reconnect: false
@@ -146,33 +125,50 @@ if (redis) {
 // Pre-load functions
 
 app.use(function(req, res, next) {
-    _connect_to_mongo_db(function() {
-        var err;
-        // Check database connection
-        if (typeof app.get('mongodb') == 'undefined') {
-            err = new Error(req.i18n.__("database_connection_failed"));
-            err.status = 500;
-            next(err);
-            return;
-        }
-        if (redis && !app.get('redis_connected')) {
-            err = new Error(req.i18n.__("redis_connection_failed"));
-            err.status = 500;
-            next(err);
-            return;
-        }
-        // Set locales from query and from cookie
-        req.i18n.setLocaleFromQuery();
-        req.i18n.setLocaleFromCookie();
-        req.i18n.setLocaleFromSubdomain();
-        // Logging
-        logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
-        // Clear auth_redirect if already authorized
-        if (req.session && req.session.auth) {
-            delete req.session.auth_redirect;
-        }
+    if (typeof app.get('mongodb') == 'undefined' || !app.get('mongodb')) {
+        mongoclient.connect(config.mongo.url, config.mongo.options, function(err, _db) {
+            if (!err) {
+                _db.on('close', function() {
+                    app.set('mongodb', false);
+                });
+                app.set('mongodb', _db);
+            } else {
+                console.log(err);
+                app.set('mongodb', false);
+            }
+            next();
+        });
+    } else {
         next();
-    });
+    }
+});
+
+app.use(function(req, res, next) {
+    var err;
+    // Check database connection
+    if (typeof app.get('mongodb') == 'undefined' || !app.get('mongodb')) {
+        err = new Error(req.i18n.__("database_connection_failed"));
+        err.status = 500;
+        next(err);
+        return;
+    }
+    if (redis && !app.get('redis_connected')) {
+        err = new Error(req.i18n.__("redis_connection_failed"));
+        err.status = 500;
+        next(err);
+        return;
+    }
+    // Set locales from query and from cookie
+    req.i18n.setLocaleFromQuery();
+    req.i18n.setLocaleFromCookie();
+    req.i18n.setLocaleFromSubdomain();
+    // Logging
+    logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
+    // Clear auth_redirect if already authorized
+    if (req.session && req.session.auth) {
+        delete req.session.auth_redirect;
+    }
+    next();
 });
 
 // Load settings
@@ -343,11 +339,12 @@ app.use(function(err, req, res, next) {
         delete _data.stack;
     }
     logger.error(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url + ' ' + err.message, {});
-    if (err.status != 404) console.log("\n" + err.stack + "\n");
+    if (res.statusCode != 404) console.log("\n" + err.stack + "\n");
     res.render('error', {
         message: err.message,
         error: err
     });
+    if (res.statusCode == 500 && err.message == 'no open connections') process.exit(1);
 });
 
 module.exports = app;
