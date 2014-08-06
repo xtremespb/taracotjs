@@ -24,7 +24,7 @@
 	"reg_hint_email": "You will receive a confirmation mail. Please enter your valid e-mail address.",
 	"new_username": "New username",
 	"new_username_hint": "Latin characters, numbers, &quot;_&quot;, &quot;-&quot;, length: 3-20",
-	"password_hint": "5-20 characters",
+	"password_hint": "8 characters or more",
 	"invalid_password_syntax_or_not_match": "Invalid password syntax or passwords do not match",
 	"invalid_email_syntax": "Invalid e-mail syntax",
 	"username_password_missing": "Username or password is missing",
@@ -109,8 +109,8 @@
 	"reg": "Register",
 	"password_strength": "Password strength",
 	"password_strength_0": "Invalid password",
-	"password_strength_1": "Poor strength",
-	"password_strength_2": "Medium strength",
-	"password_strength_3": "Good strength",
-	"password_strength_4": "Excelent strength"
+	"password_strength_1": "Poor",
+	"password_strength_2": "Medium",
+	"password_strength_3": "Good",
+	"password_strength_4": "Excellent"
 }

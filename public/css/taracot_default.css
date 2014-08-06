@@ -17,3 +17,17 @@ html, body {
 	padding-top: 10px;
 	text-align: right;
 }
+
+input[type="submit"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner {
+	border: 0;
+}
+input[type="submit"]:focus,
+input[type="button"]:focus {
+	outline: none;
+}
+input:focus,textarea:focus,select:focus{
+ -webkit-box-shadow:0 0 6px #d8d8d8;
+ -moz-box-shadow:0 0 5px #f0f0f0;
+ box-shadow:0 0 5px #d8d8d8;
+}
