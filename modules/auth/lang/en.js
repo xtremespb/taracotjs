@@ -108,7 +108,7 @@
 	"realname_saved": "New real name has been set",
 	"reg": "Register",
 	"password_strength": "Password strength",
-	"password_strength_0": "Invalid password",
+	"password_strength_0": "None",
 	"password_strength_1": "Poor",
 	"password_strength_2": "Medium",
 	"password_strength_3": "Good",

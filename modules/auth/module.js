@@ -462,7 +462,7 @@ module.exports = function(app) {
         app.get('mongodb').collection('users').find({
             _id: new ObjectId(user),
             res_code: code,
-            status: 1
+            status: { $ne: 0 }
         }, {
             limit: 1
         }).toArray(function(err, items) {
