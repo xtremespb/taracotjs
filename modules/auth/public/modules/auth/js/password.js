@@ -52,6 +52,23 @@ $('#btn_pwd').click(function() {
 	});
 });
 
+// Check password complexity
+
+var pwd_password_event_input = function() {
+    var ps = evalPassword($('#pwd_password').val());
+    var str = (ps + 1) * 20;
+    $('#pwd_password_strength').css('width', str + '%');
+    $('#pwd_password_strength').html(_lang_vars['password_strength_' + ps]);
+    $('#pwd_password_strength').parent().removeClass('uk-progress-success');
+    $('#pwd_password_strength').parent().removeClass('uk-progress-warning');
+    $('#pwd_password_strength').parent().removeClass('uk-progress-danger');
+    if (ps <= 1) $('#pwd_password_strength').parent().addClass('uk-progress-danger');
+    if (ps == 2 || ps == 3) $('#pwd_password_strength').parent().addClass('uk-progress-warning');
+    if (ps == 4) $('#pwd_password_strength').parent().addClass('uk-progress-success');
+};
+
+$('#pwd_password').on('input', pwd_password_event_input);
+
 // Authorize button is clicked
 
 $('#btn_auth').click(function() {
