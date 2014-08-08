@@ -61,12 +61,12 @@ module.exports = function(grunt) {
             },
             module_auth_password: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_password.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/password.js' ]
+                    'modules/auth/public/modules/auth/js/auth_password.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'modules/auth/public/modules/auth/js/password.js' ]
                 }
             },
             module_auth_register: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_register.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/register.js' ]
+                    'modules/auth/public/modules/auth/js/auth_register.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'modules/auth/public/modules/auth/js/register.js' ]
                 }
             },
             module_auth_reset: {
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
             },
             module_auth_profile: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_profile.min.js': [ 'public/js/helper.js', 'public/js/uikit/addons/notify.min.js', 'modules/auth/public/modules/auth/js/profile.js' ]
+                    'modules/auth/public/modules/auth/js/auth_profile.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'public/js/uikit/addons/notify.min.js', 'modules/auth/public/modules/auth/js/profile.js' ]
                 }
             },
             admin: {

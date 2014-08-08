@@ -125,6 +125,32 @@ $('.taracot-auth-field').bind('keypress', function(e) {
 
 $('#reg_username').focus();
 
+// Password strength and match routines
+
+var reg_password_event_input = function() {
+    var ps = evalPassword($('#reg_password').val());
+    var str = (ps + 1) * 20;
+    $('#reg_password_strength').css('width', str + '%');
+    $('#reg_password_strength').html(_lang_vars['password_strength_' + ps]);
+    $('#reg_password_strength').parent().removeClass('uk-progress-success');
+    $('#reg_password_strength').parent().removeClass('uk-progress-warning');
+    $('#reg_password_strength').parent().removeClass('uk-progress-danger');
+    if (ps <= 1) $('#reg_password_strength').parent().addClass('uk-progress-danger');
+    if (ps == 2 || ps == 3) $('#reg_password_strength').parent().addClass('uk-progress-warning');
+    if (ps == 4) $('#reg_password_strength').parent().addClass('uk-progress-success');
+    $('#reg_password_match').css('color', '#eee');
+    if (ps > 0 && $('#reg_password').val() == $('#reg_password_repeat').val()) $('#reg_password_match').css('color', '#9fd256');
+};
+
+var reg_password_repeat_event_input = function() {
+    var ps = evalPassword($('#reg_password').val());
+    $('#reg_password_match').css('color', '#eee');
+    if (ps > 0 && $('#reg_password').val() == $('#reg_password_repeat').val()) $('#reg_password_match').css('color', '#9fd256');
+};
+
+$('#reg_password').on('input', reg_password_event_input);
+$('#reg_password_repeat').on('input', reg_password_repeat_event_input);
+
 // Load captcha image
 
 $(document).ready(function() {

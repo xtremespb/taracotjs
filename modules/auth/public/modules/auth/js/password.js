@@ -65,9 +65,18 @@ var pwd_password_event_input = function() {
     if (ps <= 1) $('#pwd_password_strength').parent().addClass('uk-progress-danger');
     if (ps == 2 || ps == 3) $('#pwd_password_strength').parent().addClass('uk-progress-warning');
     if (ps == 4) $('#pwd_password_strength').parent().addClass('uk-progress-success');
+    $('#pwd_password_match').css('color', '#eee');
+    if (ps > 0 && $('#pwd_password').val() == $('#pwd_password_repeat').val()) $('#pwd_password_match').css('color', '#9fd256');
+};
+
+var pwd_password_repeat_event_input = function() {
+    var ps = evalPassword($('#pwd_password').val());
+    $('#pwd_password_match').css('color', '#eee');
+    if (ps > 0 && $('#pwd_password').val() == $('#pwd_password_repeat').val()) $('#pwd_password_match').css('color', '#9fd256');
 };
 
 $('#pwd_password').on('input', pwd_password_event_input);
+$('#pwd_password_repeat').on('input', pwd_password_repeat_event_input);
 
 // Authorize button is clicked
 
