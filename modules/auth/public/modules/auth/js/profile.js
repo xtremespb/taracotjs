@@ -28,9 +28,18 @@ var pc_password_event_input = function() {
     if (ps <= 1) $('#pc_password_strength').parent().addClass('uk-progress-danger');
     if (ps == 2 || ps == 3) $('#pc_password_strength').parent().addClass('uk-progress-warning');
     if (ps == 4) $('#pc_password_strength').parent().addClass('uk-progress-success');
+    $('#pc_password_match').css('color', '#eee');
+    if (ps > 0 && $('#pc_password').val() == $('#pc_password_repeat').val()) $('#pc_password_match').css('color', '#9fd256');
+};
+
+var pc_password_repeat_event_input = function() {
+    var ps = evalPassword($('#pc_password').val());
+    $('#pc_password_match').css('color', '#eee');
+    if (ps > 0 && $('#pc_password').val() == $('#pc_password_repeat').val()) $('#pc_password_match').css('color', '#9fd256');
 };
 
 $('#pc_password').on('input', pc_password_event_input);
+$('#pc_password_repeat').on('input', pc_password_repeat_event_input);
 
 $('#btn_pc_save').click(function() {
     $('.taracot_pc_field').each(function() {
@@ -347,7 +356,7 @@ var uploader_init = function() {
                 }
             }
             if (data.result == 1 && data.avatar_id) {
-            	$('#profile_avatar').attr('src', '/img/avatars/' + data.avatar_id + '.jpg');
+            	$('#profile_avatar').attr('src', '/images/avatars/' + data.avatar_id + '.jpg');
             }
         }
     });

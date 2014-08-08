@@ -108,6 +108,7 @@
 	                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
 	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
 	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">
+	                    &nbsp;&nbsp;<span class="uk-icon-check uk-icon-medium" style="color:#eee" id="pc_password_match"></span>
 	                    <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
 	                </div>
 	                <div class="uk-form-row">
@@ -128,11 +129,11 @@
 <div id="dlg_email" class="uk-modal">
     <div class="uk-modal-dialog">
     	<h1>!{root.lang.__('set_email_dlg')}</h1>
-    	<div id="taracot_rn_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+    	<div id="taracot_ec_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
         <div id="dlg_email_form_wrap">
 	        <p>!{root.lang.__('set_email_hint')}</p>
 	        <p><span class="uk-badge uk-badge-warning">!{root.lang.__('warning')}</span><small>&nbsp;!{root.lang.__('set_email_hint_2')}</small></p>
-	        <div class="uk-alert uk-alert-danger" id="taracot_rn_error"></div>
+	        <div class="uk-alert uk-alert-danger" id="taracot_ec_error"></div>
 	        <div class="uk-form uk-form-horizontal">
 	        	<fieldset>
 	                <div class="uk-form-row" data-uk-margin>
@@ -143,18 +144,18 @@
 	            <fieldset>
 	                <div class="uk-form-row" data-uk-margin>
 	                    <label class="uk-form-label">!{root.lang.__('new_email')}:</label>
-	                    <input class="uk-form-width-medium taracot_rn_field" id="rn_email" type="email" id="rn_email">
+	                    <input class="uk-form-width-medium taracot_ec_field" id="ec_email" type="email" id="ec_email">
 	                </div>
 	            </fieldset>
 	            <fieldset>
 	                <div class="uk-form-row" data-uk-margin>
 	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
-	                    <input class="uk-form-width-small taracot_rn_field" id="rn_password_current" type="password" id="current_password">
+	                    <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
 	                </div>
 	            </fieldset>
 	            <fieldset>
 		            <div class="uk-margin-top" data-uk-margin>
-		            	<button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
 		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
 		            </div>
 	            </fieldset>
@@ -198,12 +199,4 @@ var _lang_vars = {
 };
 </script>
 <script src="/js/plupload/plupload.full.min.js"></script>
-
-<script src="/js/helper.js"></script>
-<script src="/js/uikit/addons/notify.min.js"></script>
-<script src="/modules/auth/js/pwd.js"></script>
-<script src="/modules/auth/js/profile.js"></script>
-
-<!--
 <script src="/modules/auth/js/auth_profile.min.js"></script>
--->

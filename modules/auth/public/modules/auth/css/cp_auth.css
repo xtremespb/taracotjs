@@ -169,3 +169,19 @@ body {
 		background-color: #444444
 	}
 }
+.taracot_cp_auth_footer {
+    margin-top: -2px;
+    color: #aaa;
+    padding: 5px;
+    padding-top: 8px;
+    text-align: center;
+    font-size: 80%;
+}
+.taracot_cp_auth_footer > a {
+	color: #aaa;
+	text-decoration: none;
+	border-bottom: 1px dotted #eee;
+}
+.taracot_cp_auth_footer > a:hover, .taracot_cp_auth_footer > a:focus, .taracot_cp_auth_footer > a:active {
+	color: #eee;
+}

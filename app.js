@@ -288,9 +288,9 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next) {
     if (req.session && req.session.auth) {
-        req.session.auth.avatar = '/img/avatars/default.png';
+        req.session.auth.avatar = '/images/avatars/default.png';
         var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
-        if (fs.existsSync(path.join(__dirname, 'public', 'img', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/img/avatars/' + afn + '.jpg';
+        if (fs.existsSync(path.join(__dirname, 'public', 'img', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/images/avatars/' + afn + '.jpg';
     }
     next();
 });
