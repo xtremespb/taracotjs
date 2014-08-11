@@ -5,13 +5,13 @@
 	<div class="uk-alert uk-alert-danger" id="taracot-reset-error"></div>
 	<div class="uk-form uk-form-horizontal tc-margin-medium-top">
 		<div class="uk-form-row">
-			<label class="uk-form-label" for="reset_email">!{root.lang.__('email')}:</label>
+			<label class="uk-form-label" for="reset_email">!{root.lang.__('email')}&nbsp;<span class="red-asterisk">*</span>:</label>
 			<div class="uk-form-controls">
 				<input type="text" id="reset_email" class="uk-form-width-medium taracot-auth-field" placeholder="">
 			</div>
 		</div>
 		<div class="uk-form-row" id="captcha_div">
-			<label class="uk-form-label" for="reset_password">!{root.lang.__('captcha')}:</label>
+			<label class="uk-form-label" for="reset_password">!{root.lang.__('captcha')}&nbsp;<span class="red-asterisk">*</span>:</label>
 			<div class="uk-form-controls">
 				<input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="reset_captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
 				<img src="/images/blank.gif" id="reset_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">

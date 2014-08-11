@@ -8,7 +8,7 @@
     <div class="uk-alert uk-alert-danger" id="taracot-reg-error"></div>
     <div class="uk-form uk-form-horizontal tc-margin-medium-top">
         <div class="uk-form-row">
-            <label class="uk-form-label" for="reg_username">!{root.lang.__('new_username')}:</label>
+            <label class="uk-form-label" for="reg_username">!{root.lang.__('new_username')}&nbsp;<span class="red-asterisk">*</span>:</label>
             <div class="uk-form-controls">
                 <input type="text" id="reg_username" class="uk-form-width-medium taracot-auth-field" placeholder="">
                 <p class="uk-form-help-inline">
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="uk-form-row">
-            <label class="uk-form-label" for="reg_password">!{root.lang.__('password_twice')}:</label>
+            <label class="uk-form-label" for="reg_password">!{root.lang.__('password_twice')}&nbsp;<span class="red-asterisk">*</span>:</label>
             <div class="uk-form-controls">
                 <input type="password" id="reg_password" class="uk-form-width-small taracot-auth-field" placeholder="">
                 <input type="password" id="reg_password_repeat" class="uk-form-width-small taracot-auth-field" placeholder="">&nbsp;&nbsp;
@@ -36,13 +36,13 @@
             </div>
         </div>
         <div class="uk-form-row">
-            <label class="uk-form-label" for="reg_email">!{root.lang.__('email')}:</label>
+            <label class="uk-form-label" for="reg_email">!{root.lang.__('email')}&nbsp;<span class="red-asterisk">*</span>:</label>
             <div class="uk-form-controls">
                 <input type="text" id="reg_email" class="uk-form-width-medium taracot-auth-field" placeholder="">
             </div>
         </div>
         <div class="uk-form-row" id="captcha_div">
-            <label class="uk-form-label" for="reg_password">!{root.lang.__('captcha')}:</label>
+            <label class="uk-form-label" for="reg_password">!{root.lang.__('captcha')}&nbsp;<span class="red-asterisk">*</span>:</label>
             <div class="uk-form-controls">
                 <input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="reg_captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
                 <img src="/images/blank.gif" id="reg_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
