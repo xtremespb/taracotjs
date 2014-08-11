@@ -5,7 +5,7 @@
 	"logout": "Log out",
 	"taracot_dashboard": "Dashboard",
 	"User": "User",
-	"up_and_running": "Installation seems to be fine, TaracotJS is up and running.",
+	"up_and_running": "Installation has been completed, TaracotJS is up and running.",
 	"config": "Configuration",
 	"mongo_url": "MongoDB",
 	"redis": "Redis",
