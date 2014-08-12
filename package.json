@@ -27,7 +27,9 @@
     "winston": "~0.7.3",
     "nodemailer": "~1.0.2",
     "nodemailer-sendmail-transport": "~0.1.2",
-    "connect-mongo": "~0.4.1"
+    "connect-mongo": "~0.4.1",
+    "natural": "~0.1.28",
+    "html-to-text": "~0.1.0"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
