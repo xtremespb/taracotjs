@@ -28,6 +28,7 @@ if (config.redis.active) {
 var gaikan = require('gaikan');
 var cp = require('./modules/cp/cp')(app);
 var auth = require('./core/auth')(app);
+var parser = require('./core/parser')(app);
 var renderer = require('./core/renderer')(app);
 var winston = require('winston');
 var captcha = require('./core/' + config.captcha);
@@ -72,6 +73,7 @@ app.set('logger', logger);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.html');
 app.set('mailer', mailer);
+app.set('parser', parser);
 app.set('session', session);
 app.engine('html', gaikan);
 
