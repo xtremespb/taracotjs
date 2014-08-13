@@ -1,0 +1,16 @@
+<h1>!{root.lang.__('module_name')}</h1>
+<div class="uk-form">
+    <fieldset data-uk-margin>
+        <input type="text" class="uk-width-3-4" id="search_query">
+        <button class="uk-button" id="btn_search"><i class="uk-icon-search"></i>
+        </button>
+    </fieldset>
+</div>
+<div id="search_results" class="uk-margin-top uk-margin-bottom"></div>
+<div id="search_pagination" class="uk-margin-top"></div>
+<script type="text/javascript">
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}"
+};
+</script>
+<script src="/modules/search/js/main.js"></script>
