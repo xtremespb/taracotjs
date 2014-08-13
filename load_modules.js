@@ -57,6 +57,10 @@ var load_modules = {
 		cp_id: 'parts',
 		cp_prefix: '/cp/parts/',
 		hidden: true
+	}, {
+		name: 'search',
+		prefix: '/search/',
+		cp_prefix: ''
 	}]
 };
 
