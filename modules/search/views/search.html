@@ -1,16 +1,24 @@
 <h1>!{root.lang.__('module_name')}</h1>
 <div class="uk-form">
     <fieldset data-uk-margin>
-        <input type="text" class="uk-width-3-4" id="search_query">
+        <input type="text" class="uk-width-3-4" id="search_query" placeholder="!{root.lang.__('search_query_placeholder')}">
         <button class="uk-button" id="btn_search"><i class="uk-icon-search"></i>
         </button>
     </fieldset>
 </div>
-<div id="search_results" class="uk-margin-top uk-margin-bottom"></div>
+<div id="search_results" class="taracot-seach-results-margin"></div>
 <div id="search_pagination" class="uk-margin-top"></div>
+<div class="taracot-loading uk-vertical-align uk-text-center" style="display:none">
+	<div class="uk-vertical-align-middle">
+		<img src="/modules/user/images/loading_36x36.gif" width="36" height="36" alt="">
+	</div>
+</div>
 <script type="text/javascript">
 var _lang_vars = {
-    ajax_failed: "!{root.lang.__('ajax_failed')}"
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    no_results: "!{root.lang.__('no_results')}",
+    total_results: "!{root.lang.__('total_results')}",
+    module_name: "!{root.lang.__('module_name')}"
 };
 </script>
-<script src="/modules/search/js/main.js"></script>
+<script src="/modules/search/js/search.min.js"></script>

@@ -1,5 +1,5 @@
 module.exports = function(app) {
-    var items_per_page = 3;
+    var items_per_page = 30;
     var router = app.get('express').Router();
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -7,7 +7,8 @@ module.exports = function(app) {
         extension: '.js'
     });
     var renderer = app.get('renderer'),
-        path = app.get('path');
+        path = app.get('path'),
+        parser = app.get('parser');
     router.get('/', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
         var data = {
@@ -45,10 +46,22 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
+        var query_words = parser.words(query).words.split(/ /);
+        if (!query_words || !query_words.length) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        query_words = parser.stem_all(query_words);
+        var query_arr = [];
+        for (var i=0; i<query_words.length; i++) {
+        	query_arr.push({ swords: new RegExp(query_words[i], 'i') });
+        }
         rep.items = [];
         var find_query = {
-            swords: new RegExp(query, 'i'),
-            slang: req.i18n.getLocale()
+        	slang: req.i18n.getLocale(),
+            $and: query_arr
         };
         app.get('mongodb').collection('search_index').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
