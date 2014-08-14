@@ -124,6 +124,11 @@ module.exports = function(grunt) {
                     'modules/user/public/modules/user/js/user.min.js': 'modules/user/public/modules/user/js/main.js'
                 }
             },
+            module_search: {
+                files: {
+                    'modules/search/public/modules/search/js/search.min.js': [ 'public/js/helper.js', 'modules/search/public/modules/search/js/main.js' ]
+                }
+            },
             module_textedit_codemirror: {
                 files: {
                     'modules/textedit/public/modules/textedit/js/codemirror/codemirror.min.js': [ 'modules/textedit/public/modules/textedit/js/codemirror/codemirror.js', 'modules/textedit/public/modules/textedit/js/codemirror/brace-fold.js', 'modules/textedit/public/modules/textedit/js/codemirror/closebrackets.js', 'modules/textedit/public/modules/textedit/js/codemirror/comment.js', 'modules/textedit/public/modules/textedit/js/codemirror/dialog.js', 'modules/textedit/public/modules/textedit/js/codemirror/foldcode.js', 'modules/textedit/public/modules/textedit/js/codemirror/hardwrap.js', 'modules/textedit/public/modules/textedit/js/codemirror/match-highlighter.js', 'modules/textedit/public/modules/textedit/js/codemirror/matchbrackets.js', 'modules/textedit/public/modules/textedit/js/codemirror/search.js', 'modules/textedit/public/modules/textedit/js/codemirror/searchcursor.js', 'modules/textedit/public/modules/textedit/js/codemirror/sublime.js', 'modules/textedit/public/modules/textedit/js/codemirror/mode/css.js', 'modules/textedit/public/modules/textedit/js/codemirror/mode/htmlmixed.js', 'modules/textedit/public/modules/textedit/js/codemirror/mode/javascript.js', 'modules/textedit/public/modules/textedit/js/codemirror/mode/xml.js' ]

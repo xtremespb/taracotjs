@@ -309,6 +309,24 @@ async.series([
 			ensure_indexes('pages_folders', ['day'], null, true);
 			console.log("... success");
 			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: search_index\n");
+			db.createCollection('search_index', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: search_index\n");
+			ensure_indexes('search_index', ['swords'], null, true);
+			console.log("... success");
+			callback();
 		}
 	],
 	function (err) {
