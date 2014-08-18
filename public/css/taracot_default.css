@@ -116,9 +116,12 @@ input:focus, textarea:focus, select:focus {
 	text-decoration: none;
 	background: #333;
 	outline: none;
+	text-shadow: 0;
+	text-shadow: 0px 0px rgba(0,0,0,0.05), 0px 1px rgba(0,0,0,0.05), 1px 0px rgba(0,0,0,0.05), 0px 0px rgba(0,0,0,0.05);
 }
 .taracot-auth-block-login:hover, .taracot-auth-block-register:hover, .taracot-auth-block-profile:hover, .taracot-auth-block-logout:hover,
-.taracot-auth-block-login:active, .taracot-auth-block-register:active, .taracot-auth-block-profile:active, .taracot-auth-block-logout:active  {
+.taracot-auth-block-login:active, .taracot-auth-block-register:active, .taracot-auth-block-profile:active, .taracot-auth-block-logout:active,
+.taracot-auth-block-login:focus, .taracot-auth-block-register:focus, .taracot-auth-block-profile:focus, .taracot-auth-block-logout:focus  {
 	color: #eee;
 	text-decoration: none;
 	background: #252525;

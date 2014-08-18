@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var async = require('async');
+var config = require('../config');
+
+var port = '80', host = '127.0.0.1', root = '', server_name = '';
+
+program
+  .version(config.taracotjs)
+  .parse(process.argv);
+
+async.series([
+		function (callback) {
+			console.log("This script will generate NGINX server config for you.\n");
+			program.confirm('Continue? ', function(ok){
+				if (ok) {
+					callback();
+				} else {
+					console.log("\n\nAborted");
+					process.exit(code = 0);
+				}
+			});
+		},
+		function (callback) {
+			program.prompt('A port NGINX will listen to [80]: ', function(_port){
+			  	if (_port) port = _port;
+			  	console.log('Will listen to port: ' + port);
+			});
+		}
+	],
+	function (err) {
+		if (err) {
+			console.log("\nScript failed");
+			console.log(err);
+			process.exit(1);
+		}
+		console.log("\nFinished");
+		process.exit(code = 0);
+	}
+);
