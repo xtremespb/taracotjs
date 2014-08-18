@@ -9,16 +9,16 @@ module.exports = function(app) {
 		data: function(req, res, callback) {
 			var lng = req.i18n.getLocale();
 			var data = '';
-			if (!req.session.auth) {
-				if (auth_cache.lng && auth_cache.lng.user === req.session.auth.username) return callback(auth_cache.lng.user);
-				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_unauth', {
+			if (req.session.auth) {
+				if (req.session && req.session.auth && auth_cache.lng && auth_cache.lng.user === req.session.auth.username) return callback(auth_cache.lng.user);
+				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_auth', {
 					lang: i18nm
 				}, req);
 				if (!auth_cache.lng) auth_cache.lng = {};
 				auth_cache.lng.user = data;
 			} else {
 				if (unauth_cache.lng) return callback(unauth_cache.lng);
-				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_auth', {
+				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_unauth', {
 					lang: i18nm
 				}, req);
 				unauth_cache.lng = data;
