@@ -56,7 +56,7 @@ module.exports = function(app) {
         query_words = parser.stem_all(query_words);
         var query_arr = [];
         for (var i=0; i<query_words.length; i++) {
-        	query_arr.push({ swords: new RegExp(query_words[i], 'i') });
+        	query_arr.push({ swords: new RegExp(query_words[i]) });
         }
         rep.items = [];
         var find_query = {

@@ -115,6 +115,7 @@ async.series([
 			var password_md5 = md5.update(config.salt + '.admin').digest('hex');
 			db.collection('users').insert({
 					username: 'admin',
+					username_auth: 'admin',
 					email: 'default@taracot.org',
 					realname: 'Website Administrator',
 					status: 2,
@@ -291,6 +292,19 @@ async.series([
 				console.log("... success");
 				callback();
 			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default item to menu collection...\n");
+			db.collection('menu').insert({ "lang" : "en", "menu_source" : "<li id=\"taracot_menu_1408371943280\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Default page</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>", "menu_raw" : "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li></ul>", "menu_uikit" : "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li></ul></nav>", "menu_uikit_offcanvas" : "<li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li>" }, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
 		},
 		function (callback) {
 			console.log("\nCreating collection: statistics\n");

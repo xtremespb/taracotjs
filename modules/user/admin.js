@@ -190,7 +190,7 @@ module.exports = function(app) {
 			rep.status = 0;
 			rep.err_fields.push('username');
 		}
-		username = username.toLowerCase();
+		var username_auth = username.toLowerCase();
 		if (!email.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)) {
 			rep.status = 0;
 			rep.err_fields.push('email');
@@ -217,7 +217,7 @@ module.exports = function(app) {
 		if (id) {
 			var data = app.get('mongodb').collection('users').find({
 				$or: [{
-					username: username
+					username_auth: username_auth
 				}, {
 					email: email
 				}],
@@ -231,7 +231,7 @@ module.exports = function(app) {
 			}).toArray(function(err, items) {
 				if (typeof items != 'undefined' && !err && items.length > 0) {
 					rep.status = 0;
-					if (items[0].username == username) {
+					if (items[0].username_auth == username_auth) {
 						rep.error = i18nm.__("username_exists");
 						rep.err_fields.push('username');
 					} else {
@@ -252,6 +252,7 @@ module.exports = function(app) {
 						if (items.length > 0) {
 							var update = {
 								username: username,
+								username_auth: username_auth,
 								email: email,
 								realname: realname,
 								status: status
@@ -280,7 +281,7 @@ module.exports = function(app) {
 		} else {
 			var data1 = app.get('mongodb').collection('users').find({
 				$or: [{
-					username: username
+					username_auth: username_auth
 				}, {
 					email: email
 				}]
@@ -289,7 +290,7 @@ module.exports = function(app) {
 			}).toArray(function(err, items) {
 				if (typeof items != 'undefined' && !err && items.length > 0) {
 					rep.status = 0;
-					if (items[0].username == username) {
+					if (items[0].username_auth == username_auth) {
 						rep.error = i18nm.__("username_exists");
 						rep.err_fields.push('username');
 					} else {
@@ -305,6 +306,7 @@ module.exports = function(app) {
 				var password_md5 = md5.update(app.get('config').salt + '.' + password).digest('hex');
 				app.get('mongodb').collection('users').insert({
 					username: username,
+					username_auth: username_auth,
 					email: email,
 					realname: realname,
 					status: status,

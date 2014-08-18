@@ -92,9 +92,11 @@ module.exports = function(app) {
 		var lng = req.body.lng;
 		var menu_source = req.body.menu_source || '',
 			menu_uikit = req.body.menu_uikit || '',
+			menu_uikit_offcanvas = req.body.menu_uikit_offcanvas || '',
 			menu_raw = req.body.menu_raw || '';
 		menu_source = menu_source.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
 		menu_uikit = menu_uikit.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
+		menu_uikit_offcanvas = menu_uikit_offcanvas.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
 		menu_raw = menu_raw.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
 		var _lng = app.get('config').locales[0];
 		for (var i = 0; i < app.get('config').locales.length; i++) {
@@ -122,7 +124,8 @@ module.exports = function(app) {
 				lang: lng,
 				menu_source: menu_source,
 				menu_raw: menu_raw,
-				menu_uikit: menu_uikit
+				menu_uikit: menu_uikit,
+				menu_uikit_offcanvas: menu_uikit_offcanvas
 			};
 			if (typeof items != 'undefined' && items && items.length) {
 				app.get('mongodb').collection('menu').update({
