@@ -1,0 +1,23 @@
+# IP which nodejs is running on
+upstream app_x {
+    server 127.0.0.1:3000;
+}
+
+# nginx server instance
+server {
+    listen 80;
+    server_name x.x.x.x;
+    #access_log /var/log/nginx/x.log;
+
+    location / {
+        root /var/www/x/public;
+        index index.html index.htm index.php;
+        try_files $uri $uri/ @node;
+    }
+
+    location @node {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass http://app_x;
+    }
+}
