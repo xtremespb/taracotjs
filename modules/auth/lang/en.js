@@ -110,7 +110,7 @@
 	"password_strength": "Password complexity",
 	"password_strength_0": "Too short",
 	"password_strength_1": "Weak",
-	"password_strength_2": "Fair",
-	"password_strength_3": "Medium",
+	"password_strength_2": "Medium",
+	"password_strength_3": "Strong",
 	"password_strength_4": "Excellent"
 }

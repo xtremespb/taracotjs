@@ -288,10 +288,6 @@ $('.taracot_rn_field').bind('keypress', function(e) {
     }
 });
 
-$('#btn_logout').click(function() {
-	location.href = '/auth/logout?rnd=' + Math.random().toString().replace('.', '');
-});
-
 $('#profile_set_avatar').click(function() {});
 
 var dlg_allow_close = function(val) {

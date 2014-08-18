@@ -51,6 +51,7 @@ async.series([
 			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');
 			db.collection('users').insert({
 					username: 'rescue',
+					username_auth: 'rescue',
 					email: 'rescue@taracot.org',
 					realname: 'System Rescue',
 					status: 2,

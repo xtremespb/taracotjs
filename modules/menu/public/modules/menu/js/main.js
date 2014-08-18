@@ -84,6 +84,7 @@ $('#btn_menu_save').click(function() {
 	taracot_ajax_progress_indicator('body', true);
 	var menu_source = $('#menu_nest').html();
 	var menu_uikit = '<nav class="uk-navbar">' + walk_nest_uikit($('#menu_nest')) + '</nav>';
+	var menu_uikit_offcanvas = walk_nest_uikit_offcanvas($('#menu_nest'));
 	var menu_raw = walk_nest_raw($('#menu_nest'));
 	$.ajax({
 		type: 'POST',
@@ -93,6 +94,7 @@ $('#btn_menu_save').click(function() {
 			lng: edit_lng,
 			menu_source: menu_source,
 			menu_uikit: menu_uikit,
+			menu_uikit_offcanvas: menu_uikit_offcanvas,
 			menu_raw: menu_raw
 		},
 		success: function(data) {
@@ -254,7 +256,7 @@ var walk_nest_uikit = function(ul, cd, pnt) {
 			ddc = ' data-uk-dropdown';
 			pc = ' class="uk-parent"';
 		}
-		res += '<li id="' + id + '"' + pc + ddc + pr + '><a href="' + url + '">' + text + '</a>';
+		res += '<li class="' + id + '"' + pc + ddc + pr + '><a href="' + url + '">' + text + '</a>';
 		if (nxul.html()) {
 			res += walk_nest_uikit(nxul, true, id);
 		}
@@ -262,6 +264,32 @@ var walk_nest_uikit = function(ul, cd, pnt) {
 	});
 	res += '</ul>';
 	if (cd) res += '</div>';
+	return res;
+};
+
+var walk_nest_uikit_offcanvas = function(ul, pnt, r) {
+	var res = '';
+	if (r) res += '<ul class="uk-nav-sub">';
+	var li = $(ul).children('li');
+	li.each(function() {
+		var text = $(this).children('.uk-nestable-item').children('span.uk-nestable-item-text').html();
+		var url = $(this).children('.uk-nestable-item').children('a.uk-nestable-item-url').html();
+		var nxul = $(this).children('ul.uk-nestable-list');
+		var id = 'taracot_menu_item_' + url.replace(/\//g, '_').replace(/^_/, '').replace(/[^a-zA-Z0-9_\-]/g, '');
+		if (url.match(/^#/)) {
+			id += Date.now();
+			url = '#';
+		}
+		var pr = '';
+		if (pnt) pr = ' rel="' + pnt + '"';
+		if (nxul.html() && !r) id += ' uk-parent';
+		res += '<li class="' + id + '"' + pr + '><a href="' + url + '">' + text + '</a>';
+		if (nxul.html()) {
+			res += walk_nest_uikit_offcanvas(nxul, id, true);
+		}
+		res += '</li>';
+	});
+	if (r) res += '</ul>';
 	return res;
 };
 
@@ -276,7 +304,7 @@ var walk_nest_raw = function(ul, pnt) {
 		var id = 'taracot_menu_item_' + url.replace(/\//g, '_').replace(/^_/, '').replace(/[^a-zA-Z0-9_\-]/g, '');
 		var pr = '';
 		if (pnt) pr = ' rel="' + pnt + '"';
-		res += '<li id="' + id + '"' + pr + '><a href="' + url + '">' + text + '</a>';
+		res += '<li class="' + id + '"' + pr + '><a href="' + url + '">' + text + '</a>';
 		if (nxul.html()) {
 			res += walk_nest_raw(nxul, id);
 		}

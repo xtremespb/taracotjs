@@ -177,13 +177,13 @@ module.exports = function(app) {
             }));
             return;
         }
-        username = username.toLowerCase();
+        var username_auth = username.toLowerCase();
         email = email.toLowerCase();
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
         var data = app.get('mongodb').collection('users').find({
             $or: [{
-                username: username
+                username_auth: username_auth
             }, {
                 email: email
             }]
@@ -211,6 +211,7 @@ module.exports = function(app) {
             var act_code = md5.update(config.salt + '.' + Date.now()).digest('hex');
             app.get('mongodb').collection('users').insert({
                 username: username,
+                username_auth: username_auth,
                 password: password_hex,
                 email: email,
                 act_code: act_code,
@@ -310,7 +311,23 @@ module.exports = function(app) {
                     act_status: act_status,
                     redirect: req.session.auth_redirect
                 }, req);
-                return app.get('renderer').render(res, undefined, data, req);
+                app.get('mongodb').collection('users').find({
+                    _id: new ObjectId(user)
+                }, {
+                    limit: 1
+                }).toArray(function(a_err, a_items) {
+                    if (typeof a_items != 'undefined' && !a_err) {
+                        if (a_items.length > 0 && a_items[0].status > 0) {
+                            req.session.captcha_req = false;
+                            req.session.auth = a_items[0];
+                            delete req.session.auth.password;
+                            return app.get('renderer').render(res, undefined, data, req);
+                        }
+                    }
+                    data.act_res = i18nm.__("unable_to_activate");
+                    data.act_status = false;
+                    return app.get('renderer').render(res, undefined, data, req);
+                });
             });
         });
     });
@@ -643,7 +660,7 @@ module.exports = function(app) {
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
         var data = app.get('mongodb').collection('users').find({
-            username: username,
+            username_auth: username,
             password: password_hex
         }, {
             limit: 1
@@ -818,7 +835,7 @@ module.exports = function(app) {
             if (realname && !realname.match(/^.{1,40}$/)) {
                 res.send(JSON.stringify({
                     result: 0,
-                    field: "rn_password",
+                    field: "rn_realname",
                     error: i18nm.__("invalid_realname")
                 }));
                 return;
@@ -902,7 +919,10 @@ module.exports = function(app) {
                                 });
                             }
                             var rr = { result: 1 };
-                            if (realname) rr.realname = realname;
+                            if (realname) {
+                                rr.realname = realname;
+                                req.session.auth.realname = realname;
+                            }
                             res.send(JSON.stringify(rr));
                         });
                     } else {

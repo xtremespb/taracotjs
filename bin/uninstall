@@ -46,7 +46,7 @@ async.series([
 			});
 		},
 		function (callback) {
-			console.log("\nDropping collection\n");
+			console.log("\nDropping database\n");
 			var md5 = crypto.createHash('md5');
 			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');
 			db.dropDatabase(function (err) {

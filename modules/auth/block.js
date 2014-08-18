@@ -10,11 +10,12 @@ module.exports = function(app) {
 			var lng = req.i18n.getLocale();
 			var data = '';
 			if (!req.session.auth) {
-				if (auth_cache.lng) return callback(auth_cache.lng);
+				if (auth_cache.lng && auth_cache.lng.user === req.session.auth.username) return callback(auth_cache.lng.user);
 				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_unauth', {
 					lang: i18nm
 				}, req);
-				auth_cache.lng = data;
+				if (!auth_cache.lng) auth_cache.lng = {};
+				auth_cache.lng.user = data;
 			} else {
 				if (unauth_cache.lng) return callback(unauth_cache.lng);
 				data = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'block_auth', {

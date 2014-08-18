@@ -19,9 +19,11 @@ module.exports = function(app) {
 				if (typeof items != 'undefined' && items && items.length) {
 					if (items[0].menu_raw) data.menu_raw = items[0].menu_raw;
 					if (items[0].menu_uikit) data.menu_uikit = items[0].menu_uikit;
+					if (items[0].menu_uikit_offcanvas) data.menu_uikit_offcanvas = items[0].menu_uikit_offcanvas;
 				} else {
 					data.menu_raw = '';
 					data.menu_uikit = '';
+					data.menu_uikit_offcanvas = '';
 				}
 				menu_cache.lng = data;
 				_timestamp_settings_query[lng] = Date.now();

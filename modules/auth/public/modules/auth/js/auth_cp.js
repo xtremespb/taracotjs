@@ -77,6 +77,8 @@ $('#auth_login').click(function() {
 		});
 		return;
 	}
+	$('#auth_login').addClass('uk-hidden');
+	$('#auth_progress').removeClass('uk-hidden');
 	$.ajax({
 		type: 'POST',
 		url: '/auth/process',
@@ -87,6 +89,8 @@ $('#auth_login').click(function() {
 		},
 		dataType: "json",
 		success: function(data) {
+			$('#auth_login').removeClass('uk-hidden');
+			$('#auth_progress').addClass('uk-hidden');
 			if (data.result != 1) {
 				$('#auth_captcha').val('');
 				if (data.field) {
@@ -105,6 +109,8 @@ $('#auth_login').click(function() {
 				}
 				load_captcha();
 			} else {
+				$('#auth_login').removeClass('uk-hidden');
+				$('#auth_progress').addClass('uk-hidden');
 				$('#auth_captcha').val('');
 				$('#auth_box_wrap').addClass('uk-hidden');
 				$('#wait_box_wrap').removeClass('uk-hidden');
@@ -127,8 +133,8 @@ $('#auth_login').click(function() {
 
 $('.taracot-auth-field').bind('keypress', function(e) {
 	if (submitOnEnter(e)) {
-		$('#auth_login').click();
 		e.preventDefault();
+		$('#auth_login').click();
 	}
 });
 
