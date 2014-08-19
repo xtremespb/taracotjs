@@ -1,0 +1,12 @@
+.uk-navbar {
+    background: #353535;
+}
+.uk-navbar-nav > li {
+    background: #353535;
+}
+.uk-navbar-nav > li.uk-active > a {
+	background: #252525;
+}
+.uk-navbar-nav > li > a:active {
+	background: #252525;
+}
