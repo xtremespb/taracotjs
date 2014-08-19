@@ -47,6 +47,7 @@ $('#btn_register').click(function() {
 	}
 	if (!$('#reg_password').val().match(/^.{8,80}$/) || $('#reg_password').val() != $('#reg_password_repeat').val()) {
 		$('#reg_password').addClass('uk-form-danger');
+		$('#reg_password_repeat').addClass('uk-form-danger');
 		$('#reg_password').focus();
 		$('#taracot-reg-error').html(_lang_vars.invalid_password_syntax);
 		$('#taracot-reg-error').show();
@@ -86,6 +87,7 @@ $('#btn_register').click(function() {
 				$('#reg_captcha').val('');
 				if (data.field) {
 					$('#' + data.field).addClass('uk-form-danger');
+					if (data.field == 'reg_password') $('#reg_password_repeat').addClass('uk-form-danger');
 					$('#' + data.field).select();
 					$('#' + data.field).focus();
 				}

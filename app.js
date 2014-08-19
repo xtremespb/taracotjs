@@ -37,6 +37,10 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var mailer = require('./core/mailer')(app);
 
+// Enable trusted proxy
+
+app.enable('trust proxy');
+
 // Logging
 
 var logger = new(winston.Logger)({
@@ -161,9 +165,9 @@ app.use(function(req, res, next) {
         return;
     }
     // Set locales from query and from cookie
-    req.i18n.setLocaleFromQuery();
     req.i18n.setLocaleFromCookie();
     req.i18n.setLocaleFromSubdomain();
+    req.i18n.setLocaleFromQuery();
     // Logging
     logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
     // Clear auth_redirect if already authorized

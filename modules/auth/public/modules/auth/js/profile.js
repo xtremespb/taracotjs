@@ -78,6 +78,7 @@ $('#btn_pc_save').click(function() {
                 $('#taracot_pc_loading').hide();
                 $('#dlg_password_form_wrap').show();
                 if (data.field) {
+                    if (data.field == 'pc_password') $('#pc_password_repeat').addClass('uk-form-danger');
                     $('#' + data.field).addClass('uk-form-danger');
                     $('#' + data.field).focus();
                 }
