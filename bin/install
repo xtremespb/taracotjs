@@ -15,6 +15,7 @@ program
   .option('-j, --redisport [port]', 'Specify Redis port')
   .option('-p, --port [port]', 'Specify TaracotJS server port')
   .option('-u, --update', 'version update (no database insertions)')
+  .option('-s, --silent', 'Don\'t ask anything and perform silently')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -27,14 +28,18 @@ async.series([
 			console.log("This script will guide you with TaracotJS basic installation steps.\n");
 			console.log("Database connection is required.");
 			console.log("Current MongoDB URL: " + mongo_url + "\n");
-			program.confirm('Continue? ', function(ok){
-				if (ok) {
-					callback();
-				} else {
-					console.log("\n\nAborted");
-					process.exit(code = 0);
-				}
-			});
+			if (!program.silent) {
+				program.confirm('Continue? ', function(ok){
+					if (ok) {
+						callback();
+					} else {
+						console.log("\n\nAborted");
+						process.exit(code = 0);
+					}
+				});
+			} else {
+				callback();
+			}
 		},
 		function (callback) {
 			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
@@ -70,25 +75,29 @@ async.series([
 		},
 		function (callback) {
 			if (program.update) return callback();
-			program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
-				if (ok) {
-					config.cookie_secret = generateId(32);
-					config.session_secret = generateId(32);
-					config.salt = generateId(64);
-					fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
-						if (err) {
-							console.log("\nCould not save config.js file. Check your permissions");
-							console.log(err);
-							process.exit(1);
-						}
-						console.log("... success");
+			if (!program.silent) {
+				program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
+					if (ok) {
+						config.cookie_secret = generateId(32);
+						config.session_secret = generateId(32);
+						config.salt = generateId(64);
+						fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+							if (err) {
+								console.log("\nCould not save config.js file. Check your permissions");
+								console.log(err);
+								process.exit(1);
+							}
+							console.log("... success");
+							callback();
+						});
+					} else {
+						console.log("\nNote: it's important to set these values for security purposes!");
 						callback();
-					});
-				} else {
-					console.log("\nNote: it's important to set these values for security purposes!");
-					callback();
-				}
-			});
+					}
+				});
+			} else {
+				callback();
+			}
 		},
 		function (callback) {
 			console.log("\nCreating collection: users\n");
