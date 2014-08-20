@@ -11,6 +11,7 @@ program
     .version(config.taracotjs)
     .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
     .option('-s, --silent', 'Don\'t ask anything (perform silently)')
+    .option('-k, --keepstats', 'Keep statistics')
     .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -51,8 +52,12 @@ async.series([
                         for (var i = 0; i < collections.length; i++) {
                             var name = collections[i].name.replace(/^(\w+)\./, '');
                             if (!name.match(/^system\./)) {
-                                console.log(" * dropping " + name);
-                                db.dropCollection(name);
+                                if (name == 'statistics' && program.keepstats) {
+                                	console.log(" * skipping statistics, --keepstats is in effect");
+                                } else {
+                                	console.log(" * dropping " + name);
+                                	db.dropCollection(name);
+                                }
                             }
                         }
                     } else {
