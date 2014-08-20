@@ -14,7 +14,8 @@ program
   .option('-r, --redishost [host]', 'Specify Redis host')
   .option('-j, --redisport [port]', 'Specify Redis port')
   .option('-p, --port [port]', 'Specify TaracotJS server port')
-  .option('-u, --update', 'version update (no database insertions)')
+  .option('-u, --update', 'Version update (no database insertions)')
+  .option('-s, --silent', 'Don\'t ask anything (perform silently)')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -27,6 +28,7 @@ async.series([
 			console.log("This script will guide you with TaracotJS basic installation steps.\n");
 			console.log("Database connection is required.");
 			console.log("Current MongoDB URL: " + mongo_url + "\n");
+			if (program.silent) return callback();
 			program.confirm('Continue? ', function(ok){
 				if (ok) {
 					callback();
@@ -70,6 +72,7 @@ async.series([
 		},
 		function (callback) {
 			if (program.update) return callback();
+			if (program.silent) return callback();
 			program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
 				if (ok) {
 					config.cookie_secret = generateId(32);
