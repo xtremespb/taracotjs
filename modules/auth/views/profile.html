@@ -1,0 +1,201 @@
+<h1>
+    <div class="uk-float-left uk-overlay">
+        <img src="!{root.auth.avatar}" width="48" height="48" alt="!{root.auth.username}" class="uk-border-circle" id="profile_avatar">
+        <div class="uk-overlay-area uk-border-circle" id="profile_set_avatar_dnd">
+            <button class="uk-overlay-area-content uk-button uk-button-link" id="profile_set_avatar"><i class="uk-icon uk-icon-search"></i>
+            </button>
+        </div>
+    </div>
+    &nbsp;!{root.data.title}
+</h1>
+<div class="uk-form uk-form-horizontal">
+    <legend>!{root.lang.__('common_information')}</legend>
+    <div class="uk-form-row">
+        <label class="uk-form-label">!{root.lang.__('username')}:</label>
+        <div class="uk-form-controls">
+            <b>!{root.auth.username}</b>
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <label class="uk-form-label">!{root.lang.__('realname')}:</label>
+        <div class="uk-form-controls">
+            <p id="profile_realname">!{root.auth.realname}</p>
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <div class="uk-form-controls">
+            <button class="uk-button uk-button-primary uk-button-small" id="btn_realname">!{root.lang.__('btn_change_realname')}</button>
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <label class="uk-form-label">!{root.lang.__('status')}:</label>
+        <div class="uk-form-controls">
+            <p id="profile_status">!{root.auth.status}</p>
+        </div>
+    </div>
+    <legend class="uk-margin-top">!{root.lang.__('set_email')}</legend>
+    <div class="uk-form-row">
+        <label class="uk-form-label">!{root.lang.__('current_email')}:</label>
+        <div class="uk-form-controls">
+            <p id="profile_email">!{root.auth.email}</p>
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <div class="uk-form-controls">
+            <button class="uk-button uk-button-primary uk-button-small" id="btn_email">!{root.lang.__('btn_change_email')}</button>
+        </div>
+    </div>
+    <legend class="uk-margin-top">!{root.lang.__('set_password')}</legend>
+    <div class="uk-form-row">
+        <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+        <div class="uk-form-controls">
+            ********
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <div class="uk-form-controls">
+            <button class="uk-button uk-button-primary uk-button-small" id="btn_password">!{root.lang.__('btn_change_password')}</button>
+        </div>
+    </div>
+</div>
+<div id="dlg_realname" class="uk-modal">
+    <div class="uk-modal-dialog">
+    	<h1>!{root.lang.__('set_realname_dlg')}</h1>
+    	<div id="taracot_rn_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+        <div id="dlg_realname_form_wrap">
+	        <p>!{root.lang.__('set_realname_hint')}</p>
+	        <div class="uk-alert uk-alert-danger" id="taracot_rn_error"></div>
+	        <div class="uk-form uk-form-horizontal">
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('realname')}:</label>
+	                    <input class="uk-form-width-medium taracot_rn_field" id="rn_realname" type="text" id="rn_realname">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+	                    <input class="uk-form-width-small taracot_rn_field" id="rn_password_current" type="password" id="current_password">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+		            <div class="uk-margin-top" data-uk-margin>
+		            	<button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+		            </div>
+	            </fieldset>
+	        </div>
+        </div>
+    </div>
+</div>
+<div id="dlg_password" class="uk-modal">
+    <div class="uk-modal-dialog">
+    	<h1>!{root.lang.__('set_password')}</h1>
+    	<div id="taracot_pc_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+        <div id="dlg_password_form_wrap">
+	        <p>!{root.lang.__('set_password_hint')}</p>
+	        <div class="uk-alert uk-alert-danger" id="taracot_pc_error"></div>
+	        <div class="uk-form uk-form-stacked">
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+	                    <input class="uk-form-width-medium taracot_pc_field" id="password_current" type="password" id="current_password">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row">
+	                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
+	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
+	                    <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">
+	                    &nbsp;&nbsp;<span class="uk-icon-check uk-icon-medium" style="color:#eee" id="pc_password_match"></span>
+	                    <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
+	                </div>
+	                <div class="uk-form-row">
+	                	<label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
+	                	<div class="uk-progress"><div class="uk-progress-bar" id="pc_password_strength" style="width:0"></div></div>
+	                </div>
+	            </fieldset>
+	            <fieldset>
+		            <div class="uk-margin-top" data-uk-margin>
+		            	<button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+		            </div>
+	            </fieldset>
+	        </div>
+        </div>
+    </div>
+</div>
+<div id="dlg_email" class="uk-modal">
+    <div class="uk-modal-dialog">
+    	<h1>!{root.lang.__('set_email_dlg')}</h1>
+    	<div id="taracot_ec_loading"><img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
+        <div id="dlg_email_form_wrap">
+	        <p>!{root.lang.__('set_email_hint')}</p>
+	        <p><span class="uk-badge uk-badge-warning">!{root.lang.__('warning')}</span><small>&nbsp;!{root.lang.__('set_email_hint_2')}</small></p>
+	        <div class="uk-alert uk-alert-danger" id="taracot_ec_error"></div>
+	        <div class="uk-form uk-form-horizontal">
+	        	<fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_email')}:</label>
+	                    <input class="uk-form-width-medium uk-disabled" disabled="disabled" type="email" value="!{root.auth.email}">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('new_email')}:</label>
+	                    <input class="uk-form-width-medium taracot_ec_field" id="ec_email" type="email" id="ec_email">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+	                <div class="uk-form-row" data-uk-margin>
+	                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+	                    <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
+	                </div>
+	            </fieldset>
+	            <fieldset>
+		            <div class="uk-margin-top" data-uk-margin>
+		            	<button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
+		            	<button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+		            </div>
+	            </fieldset>
+	        </div>
+        </div>
+    </div>
+</div>
+<div class="taracot-progress uk-vertical-align uk-text-center">
+	<div class="uk-vertical-align-middle">
+		<img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
+	</div>
+</div>
+<script>
+$('.taracot-progress').hide();
+var auth_status = "!{root.auth.status}";
+var auth_username = "!{root.auth.username}";
+var auth_email = "!{root.auth.email}";
+var auth_realname = "!{root.auth.realname}";
+if (!auth_email) $('#profile_email').html("!{root.lang.__('email_not_set')}");
+if (auth_status == 1) $('#profile_status').html("!{root.lang.__('status_1')}");
+if (auth_status == 2) $('#profile_status').html("!{root.lang.__('status_2')}");
+$('#taracot_pc_error').hide();
+$('#taracot_pc_loading').hide();
+$('#taracot_rn_loading').hide();
+$('#taracot_rn_error').hide();
+$('#taracot_av_loading').hide();
+$('#taracot_av_error').hide();
+var _lang_vars = {
+	ajax_failed: "!{root.lang.__('ajax_failed')}",
+	invalid_password_syntax: "!{root.lang.__('invalid_password_syntax_or_not_match')}",
+	invalid_current_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
+	invalid_email_syntax: "!{root.lang.__('invalid_email_syntax')}",
+	password_saved: "!{root.lang.__('password_saved')}",
+	email_saved: "!{root.lang.__('email_saved')}",
+	realname_saved: "!{root.lang.__('realname_saved')}",
+	password_strength_0: "!{root.lang.__('password_strength_0')}",
+	password_strength_1: "!{root.lang.__('password_strength_1')}",
+	password_strength_2: "!{root.lang.__('password_strength_2')}",
+	password_strength_3: "!{root.lang.__('password_strength_3')}",
+	password_strength_4: "!{root.lang.__('password_strength_4')}"
+};
+</script>
+<script src="/js/plupload/plupload.full.min.js"></script>
+<script src="/modules/auth/js/auth_profile.min.js"></script>

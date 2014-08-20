@@ -1,0 +1,9 @@
+.taracot-progress {
+	position: absolute;
+	background: #fff;
+	filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
+	-moz-opacity: 0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;
+	z-index: 1000;
+}

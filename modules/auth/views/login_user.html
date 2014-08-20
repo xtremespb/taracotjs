@@ -1,0 +1,53 @@
+<h1>!{root.data.title}</h1>
+<div id="auth_wrap">
+	<div>!{root.lang.__('auth_hint')}</div>
+	<div class="uk-alert uk-alert-danger" id="taracot-login-error"></div>
+	<div class="uk-form uk-form-horizontal tc-margin-medium-top">
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="auth_username">!{root.lang.__('username')}:</label>
+			<div class="uk-form-controls">
+				<input type="text" id="auth_username" class="uk-form-width-medium taracot-auth-field" placeholder="">
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="auth_password">!{root.lang.__('password')}:</label>
+			<div class="uk-form-controls">
+				<input type="password" id="auth_password" class="uk-form-width-medium taracot-auth-field" placeholder="">
+				<ul class="uk-subnav uk-subnav-line">
+					<li><a href="/auth/reset">!{root.lang.__('reset_password')}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="uk-form-row" id="captcha_div">
+			<label class="uk-form-label" for="auth_password">!{root.lang.__('captcha')}:</label>
+			<div class="uk-form-controls">
+				<input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="auth_captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
+				<img src="/images/blank.gif" id="auth_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<div class="uk-form-controls tc-margin-15 data-uk-margin">
+				<button class="uk-button" id="btn_login">!{root.lang.__('login')}</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="auth_loading">
+	<img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}
+</div>
+<script type="text/javascript">
+	var _lang_vars = {
+		ajax_failed: "!{root.lang.__('ajax_failed')}",
+		invalid_username_syntax: "!{root.lang.__('invalid_username_syntax')}",
+		invalid_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
+		invalid_captcha: "!{root.lang.__('invalid_captcha')}"
+	};
+	var redirect_url = "!{root.redirect}" || "/auth/profile";
+	var captcha_type = "!{root.captcha}";
+	var captcha_req = !{root.captcha_req};
+	if (!captcha_req) $('#captcha_div').hide();
+	$('#taracot-login-error').hide();
+	$('#auth_loading').hide();
+</script>
+<script src="/modules/auth/js/auth_user.min.js"></script>

@@ -1,0 +1,403 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var async = require('async');
+var crypto = require('crypto');
+var config = require('../config');
+var mongoclient = require('mongodb').MongoClient;
+var fs = require('fs');
+var db;
+
+program
+  .version(config.taracotjs)
+  .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
+  .option('-r, --redishost [host]', 'Specify Redis host')
+  .option('-j, --redisport [port]', 'Specify Redis port')
+  .option('-p, --port [port]', 'Specify TaracotJS server port')
+  .option('-u, --update', 'version update (no database insertions)')
+  .option('-s, --silent', 'Don\'t ask anything and perform silently')
+  .parse(process.argv);
+
+var mongo_url = program.mongo || config.mongo.url;
+var redis_host = program.redishost || config.redis.host;
+var redis_port = program.redisport || config.redis.port;
+var port = program.port || config.port;
+
+async.series([
+		function (callback) {
+			console.log("This script will guide you with TaracotJS basic installation steps.\n");
+			console.log("Database connection is required.");
+			console.log("Current MongoDB URL: " + mongo_url + "\n");
+			if (!program.silent) {
+				program.confirm('Continue? ', function(ok){
+					if (ok) {
+						callback();
+					} else {
+						console.log("\n\nAborted");
+						process.exit(code = 0);
+					}
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
+			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
+				if (err) {
+					console.log("\nCould not connect to the MongoDB. Please check config.js");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("\nConnected to MongoDB\n");
+				db = _db;
+				callback();
+			});
+		},
+		function (callback) {
+			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port) {
+				config.mongo.url = mongo_url;
+				config.redis.host = redis_host;
+				config.redis.port = redis_port;
+				config.port = port;
+				console.log("Saving changes to config.js file...");
+				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+					if (err) {
+						console.log("\nCould not save config.js file. Check your permissions");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success\n");
+					callback();
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
+			if (program.update) return callback();
+			if (!program.silent) {
+				program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
+					if (ok) {
+						config.cookie_secret = generateId(32);
+						config.session_secret = generateId(32);
+						config.salt = generateId(64);
+						fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+							if (err) {
+								console.log("\nCould not save config.js file. Check your permissions");
+								console.log(err);
+								process.exit(1);
+							}
+							console.log("... success");
+							callback();
+						});
+					} else {
+						console.log("\nNote: it's important to set these values for security purposes!");
+						callback();
+					}
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
+			console.log("\nCreating collection: users\n");
+			db.createCollection('users', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			db.collection('users').remove( { username : 'admin' }, function () {
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nCreating default user account\n");
+			var md5 = crypto.createHash('md5');
+			var password_md5 = md5.update(config.salt + '.admin').digest('hex');
+			db.collection('users').insert({
+					username: 'admin',
+					username_auth: 'admin',
+					email: 'default@taracot.org',
+					realname: 'Website Administrator',
+					status: 2,
+					password: password_md5
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: users\n");
+			ensure_indexes('users', ['username', 'email', 'realname', 'status']);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: settings\n");
+			db.createCollection('settings', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default setting (site_title)...\n");
+			db.collection('settings').insert({
+					oname: 'site_title',
+					ovalue: 'Taracot JS',
+					olang: 'en'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: settings\n");
+			ensure_indexes('settings', ['oname', 'ovalue', 'olang']);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: pages\n");
+			db.createCollection('pages', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default page...\n");
+			db.collection('pages').insert({
+					ptitle: 'Default page',
+					pfolder: '/',
+					pfilename: '',
+					plang: 'en',
+					playout: config.layouts.default,
+					pfolder_id: 'j1_1',
+					pkeywords: 'sample, keywords, here',
+					pdesc: 'This is the sample page',
+					pcontent: 'The installation is complete ;-)'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: pages\n");
+			ensure_indexes('pages', ['pfolder', 'pfilename', 'plang', 'ptitle']);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: pages_folders\n");
+			db.createCollection('pages_folders', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default folder tree for pages module...\n");
+			db.collection('pages_folders').insert({
+					oname: 'folders_json',
+					ovalue: '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: pages_folders\n");
+			ensure_indexes('pages_folders', ['oname', 'ovalue']);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: parts\n");
+			db.createCollection('parts', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default item to parts collection...\n");
+			db.collection('parts').insert({
+					pname: 'test',
+					plang: 'en',
+					pvalue: 'Just a test example'
+				}, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: parts\n");
+			ensure_indexes('pages', ['pname', 'plang']);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: menu\n");
+			db.createCollection('pages_folders', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			if (program.update) return callback();
+			console.log("\nAdding default item to menu collection...\n");
+			db.collection('menu').insert({ "lang" : "en", "menu_source" : "<li id=\"taracot_menu_1408371943280\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Default page</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>", "menu_raw" : "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li></ul>", "menu_uikit" : "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li></ul></nav>", "menu_uikit_offcanvas" : "<li class=\"taracot_menu_item_\"><a href=\"/\">Default page</a></li>" }, function (err) {
+					if (err) {
+						console.log("... failed");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success");
+					callback();
+				});
+		},
+		function (callback) {
+			console.log("\nCreating collection: statistics\n");
+			db.createCollection('statistics', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: statistics\n");
+			ensure_indexes('pages_folders', ['day'], null, true);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: search_index\n");
+			db.createCollection('search_index', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: search_index\n");
+			ensure_indexes('search_index', ['swords'], null, true);
+			console.log("... success");
+			callback();
+		}
+	],
+	function (err) {
+		if (err) {
+			console.log("\nInstallation failed");
+			console.log(err);
+			process.exit(1);
+		}
+		console.log("\nFinished");
+		process.exit(code = 0);
+	}
+);
+
+/*
+
+ Helper functions
+
+*/
+
+var dummy = function() {};
+
+function generateId(lngth) {
+	if (!lngth) {
+		lngth = 16;
+	}
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < lngth; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
+function ensure_indexes(col, ia, _opt, ow) {
+	var opt = {
+				unique: false,
+				background: true,
+				dropDups: false,
+				w: 1
+			  };
+	if (_opt) opt = _opt;
+	for (var i=0; i<ia.length; ia++) {
+		var i1 = {};
+		i[ia[i]] = 1;
+		var i2 = {};
+		i[ia[i]] = -1;
+		db.ensureIndex(col, i1, opt, dummy);
+		if (!ow) {
+			db.ensureIndex(col, i2, opt, dummy);
+		}
+	}
+}

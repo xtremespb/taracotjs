@@ -1,0 +1,55 @@
+{
+  "name": "taracotjs",
+  "version": "0.0406.27",
+  "description": "TaracotJS CMS: the simple content management system based on Node.JS",
+  "main": "app.js",
+  "dependencies": {
+    "archiver": "~0.10.0",
+    "async": "~0.9.0",
+    "body-parser": "~1.0.2",
+    "captchapng": "~0.0.1",
+    "commander": "1.3.2",
+    "connect": "~2.15.0",
+    "connect-redis": "~2.0.0",
+    "cookie-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "express-session": "~1.0.4",
+    "fs-extra": "~0.9.1",
+    "gaikan": "~2.0.0",
+    "gm": "~1.16.0",
+    "i18n-2": "~0.4.6",
+    "mime": "~1.2.11",
+    "mongodb": "~1.4.5",
+    "multer": "~0.1.0",
+    "redis": "~0.10.2",
+    "static-favicon": "~1.0.2",
+    "unzip": "~0.1.9",
+    "winston": "~0.7.3",
+    "nodemailer": "~1.0.2",
+    "nodemailer-sendmail-transport": "~0.1.2",
+    "connect-mongo": "~0.4.1",
+    "natural": "~0.1.28",
+    "html-to-text": "~0.1.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-jsbeautifier": "~0.2.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node.js",
+    "express.js",
+    "mongodb",
+    "redis",
+    "cms"
+  ],
+  "repository": {
+    "type": "mercurial",
+    "url": "https://code.google.com/p/taracotjs/"
+  },
+  "author": "Michael A. Matveev <xtreme@rh1.ru>",
+  "license": "GPL v.3"
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>!{root.lang.__('module_name')}</title>
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="/css/uikit/uikit.min.css">
+	<link rel="stylesheet" href="/css/uikit/uikit.addons.min.css">
+	<link rel="stylesheet" href="/modules/cp/css/main.css">
+	<link rel="stylesheet" href="/modules/browse/css/main.css">
+	<script src="/js/admin.min.js"></script>
+</head>
+
+<body>
+	<div class="uk-container uk-container-center">
+		<h1 class="uk-margin-top">!{root.lang.__('module_name')}</h1>
+		<div class="uk-panel uk-panel-box taracot-files-panel">
+			<button class="uk-button taracot-files-button uk-button-success" id="btn_select"><i class="uk-icon uk-icon-check"></i>&nbsp;!{root.lang.__('select')}</button>&nbsp;&nbsp;
+			<button class="uk-button uk-icon-refresh taracot-files-button" data-uk-tooltip title="!{root.lang.__('refresh')}" id="btn_refresh"></button>&nbsp;&nbsp;
+			<div class="uk-button-group">
+				<button class="uk-button uk-icon-level-down taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_down')}" id="btn_down"></button>
+				<button class="uk-button uk-icon-level-up taracot-files-button" data-uk-tooltip title="!{root.lang.__('level_up')}" id="btn_up"></button>
+			</div>
+		</div>
+		<span class="uk-panel uk-margin-bottom taracot-stats-panel">
+			<span class="uk-badge uk-badge-notification"><i class="uk-icon-files-o" data-uk-tooltip title="!{root.lang.__('total_files')}"></i></span>&nbsp;
+			<span id="taracot_total_files"></span>&nbsp;&nbsp;<span class="uk-badge uk-badge-notification uk-badge-warning"><i class="uk-icon-folder" data-uk-tooltip title="!{root.lang.__('current_folder')}"></i></span>&nbsp;<span id="taracot-files-current-dir">/</span>
+		</span>
+		<div id="files_grid_progress">
+			<img src="/modules/files/images/loading_36x36.gif" style="width:15px;height:15px">&nbsp;!{root.lang.__('loading_files_data')}
+		</div>
+		<ul id="files_grid"></ul>
+		<div id="taracot_files_bottom" class="uk-margin-top"></div>
+	</div>
+	<script type="text/javascript">
+	var _lang_vars = {
+		ajax_failed: "!{root.lang.__('ajax_failed')}",
+		invalid_dir_syntax: "!{root.lang.__('invalid_dir_syntax')}",
+		no_files: "!{root.lang.__('no_files')}"
+	};
+	var io = !{root.io};
+	var CKEditorFuncNum = "!{root.CKEditorFuncNum}";
+	</script>
+	<script src="/modules/browse/js/jquery.shifty.js"></script>
+	<script src="/modules/browse/js/browse.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+server {
+
+    listen !{root.listen_ip}:!{root.listen_port};
+    server_name !{root.servername};
+    access_log !{root.dir}/logs/access.log;
+    error_log !{root.dir}/logs/error.log;
+    root !{root.dir}/public/;
+
+    location /  {
+        try_files $uri @node;
+    }
+
+    location ~ "^/modules/(?<module>[a-zA-Z]+)/(?<req>.+)$" {
+        rewrite ^/modules/$module/$req$ $req last;
+        root !{root.dir}/modules/$module/public/;
+    }
+
+    location @node {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass http://!{root.taracot_ip}:!{root.taracot_port};
+    }
+
+}

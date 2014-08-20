@@ -1,0 +1,103 @@
+body {
+	background: #fff;
+}
+#cp_logout_submenu {
+	cursor: pointer;
+}
+.cp-navbar {
+	background: none repeat scroll 0 0 #000000;
+	border: medium none;
+	padding: 15px 0;
+}
+.cp-navbar {
+	padding: 15px 0;
+	border: none;
+	background: #222;
+}
+.cp-navbar .uk-navbar-content,
+.cp-navbar .uk-navbar-brand,
+.cp-navbar .uk-navbar-toggle {
+	height: 40px;
+	margin-top: 0;
+	text-shadow: none;
+	color: #ccc;
+}
+.cp-navbar .uk-navbar-nav > li > a {
+	height: 40px;
+	margin: 0;
+	border: none;
+	border-radius: 3px !important;
+	text-shadow: none;
+	font-size: 15px;
+}
+.cp-navbar .uk-navbar-nav > li {
+	margin-left: 20px;
+}
+.cp-navbar .uk-navbar-nav > li:hover > a,
+.cp-navbar .uk-navbar-nav > li > a:focus,
+.cp-navbar .uk-navbar-nav > li.uk-open > a {
+	border: none;
+	color: #FFF;
+}
+.cp-navbar .uk-navbar-nav > li.uk-active > a {
+	background-color: #777;
+	color: #FFF;
+}
+.cp-navbar .uk-navbar-nav > li > a:active {
+	background-color: transparent;
+}
+.cp-nav > li > a {
+	color: #eee;
+}
+.cp-navbar > .uk-container > .uk-navbar-nav > li > a {
+	color: #ccc;
+}
+.cp-navbar > .uk-container > .uk-navbar-nav > .uk-active > a {
+	color: #fff;
+}
+.cp-navbar > .uk-container > .uk-navbar-flip > .uk-navbar-nav > .uk-parent > a {
+	color: #ccc;
+}
+.cp-nav > li > a:hover,
+.cp-nav > li > a:focus,
+.cp-nav > li.uk-active > a {
+	background: #F5F5F5;
+	color: #777;
+}
+.cp-nav .uk-nav-header {
+	color: #222;
+	font-weight: normal;
+}
+.cp-subnav > li:nth-child(n+2) {
+	margin-left: 20px;
+}
+.uk-notify {
+	z-index: 5000;
+}
+.uk-notify-message {
+	text-align: center;
+	color: #fff;
+}
+.uk-notify-message-danger {
+	background: red;
+}
+.uk-notify-message-success {
+	background: green;
+}
+.oc-logo {
+	color: #fff;
+	padding: 16px 0px 0px 10px;
+}
+input[type="submit"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner {
+	border: 0;
+}
+input[type="submit"]:focus,
+input[type="button"]:focus {
+	outline: none;
+}
+input:focus,textarea:focus,select:focus{
+ -webkit-box-shadow:0 0 6px #d8d8d8;
+ -moz-box-shadow:0 0 5px #f0f0f0;
+ box-shadow:0 0 5px #d8d8d8;
+}

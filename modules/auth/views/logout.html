@@ -1,0 +1,7 @@
+<h1>!{root.data.title}</h1>
+<p>!{root.lang.__('logged_out')}</p>
+<script>
+setTimeout( function() {
+	location.href = "/?rnd=" + Math.random().toString().replace('.', '');
+}, 3000);
+</script>
