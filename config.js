@@ -29,7 +29,7 @@ var config = {
 		"sender": "TaracotJS <noreply@taracot.org>",
 		"transport" : "sendmail",
 		"sendmail" : {
-    		path: '/usr/bin/sendmail'
+    		path: '/usr/sbin/sendmail'
 		},
 		"smtp" : {
 		    service: 'Gmail',
