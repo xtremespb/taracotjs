@@ -1,0 +1,14 @@
+#!/bin/sh
+
+/etc/init.d/demo.taracot.org stop
+rm -rf /var/www/taracot/data/www/demo.taracot.org/
+mkdir /var/www/taracot/data/www/demo.taracot.org/
+cd /var/www/taracot/data/www/demo.taracot.org/
+taracotjs-silent /var/www/taracot/data/www/demo.taracot.org/
+npm install
+chown taracot:taracot -R /var/www/taracot/data/www/demo.taracot.org/
+cd bin
+node install --mongo mongodb://demo:password@localhost/taracotjs_demo --silent
+node uninstall --keepstats --silent
+node install --mongo mongodb://demo:password@localhost/taracotjs_demo --port 7071 --demo --silent
+/etc/init.d/demo.taracot.org start
