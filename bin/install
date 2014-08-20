@@ -16,6 +16,7 @@ program
   .option('-p, --port [port]', 'Specify TaracotJS server port')
   .option('-u, --update', 'Version update (no database insertions)')
   .option('-s, --silent', 'Don\'t ask anything (perform silently)')
+  .option('-d, --demo', 'Set demo server options (you won\'t need this)')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -51,12 +52,30 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.demo) {
+				config.captcha = "captcha_gm";
+				config.graphicsmagick = true;
+				console.log("Saving demo server-related changes to config.js file\n");
+				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+					if (err) {
+						console.log("\nCould not save config.js file. Check your permissions");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success\n");
+					callback();
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
 			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port) {
 				config.mongo.url = mongo_url;
 				config.redis.host = redis_host;
 				config.redis.port = redis_port;
 				config.port = port;
-				console.log("Saving changes to config.js file...");
+				console.log("Saving changes to config.js file\n");
 				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
 					if (err) {
 						console.log("\nCould not save config.js file. Check your permissions");
