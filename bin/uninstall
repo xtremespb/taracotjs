@@ -10,6 +10,7 @@ var db;
 program
   .version(config.taracotjs)
   .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
+  .option('-s, --silent', 'Don\'t ask anything (perform silently)')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -19,6 +20,7 @@ async.series([
 			console.log("This script clean up the current database. All data will be lost.\n");
 			console.log("Database connection is required.");
 			console.log("Current MongoDB URL: " + mongo_url + "\n");
+			if (program.silent) return callback();
 			program.confirm('Continue? ', function(ok){
 				if (ok) {
 					callback();
@@ -41,14 +43,7 @@ async.series([
 			});
 		},
 		function (callback) {
-			db.collection('users').remove( { username : 'rescue' }, function () {
-				callback();
-			});
-		},
-		function (callback) {
 			console.log("\nDropping database\n");
-			var md5 = crypto.createHash('md5');
-			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');
 			db.dropDatabase(function (err) {
 					if (err) {
 						console.log("... failed");
