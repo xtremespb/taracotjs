@@ -22,7 +22,6 @@
     "mongodb": "~1.4.5",
     "multer": "~0.1.0",
     "redis": "~0.10.2",
-    "static-favicon": "~1.0.2",
     "unzip": "~0.1.9",
     "winston": "~0.7.3",
     "nodemailer": "~1.0.2",
