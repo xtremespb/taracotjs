@@ -8,70 +8,75 @@ var mongoclient = require('mongodb').MongoClient;
 var db;
 
 program
-  .version(config.taracotjs)
-  .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
-  .option('-s, --silent', 'Don\'t ask anything and perform silently')
-  .parse(process.argv);
+    .version(config.taracotjs)
+    .option('-m, --mongo [url]', 'Specify MongoDB connect URL')
+    .option('-s, --silent', 'Don\'t ask anything (perform silently)')
+    .option('-k, --keepstats', 'Keep statistics')
+    .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
 
 async.series([
-		function (callback) {
-			console.log("This script clean up the current database. All data will be lost.\n");
-			console.log("Database connection is required.");
-			console.log("Current MongoDB URL: " + mongo_url + "\n");
-			if (!program.silent) {
-				program.confirm('Continue? ', function(ok){
-					if (ok) {
-						callback();
-					} else {
-						console.log("\n\nAborted");
-						process.exit(code = 0);
-					}
-				});
-			} else {
-				callback();
-			}
-		},
-		function (callback) {
-			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
-				if (err) {
-					console.log("\nCould not connect to the MongoDB. Please check config.js");
-					console.log(err);
-					process.exit(1);
-				}
-				console.log("\nConnected to MongoDB");
-				db = _db;
-				callback();
-			});
-		},
-		function (callback) {
-			db.collection('users').remove( { username : 'rescue' }, function () {
-				callback();
-			});
-		},
-		function (callback) {
-			console.log("\nDropping database\n");
-			var md5 = crypto.createHash('md5');
-			var password_md5 = md5.update(config.salt + '.rescue').digest('hex');
-			db.dropDatabase(function (err) {
-					if (err) {
-						console.log("... failed");
-						console.log(err);
-						process.exit(1);
-					}
-					console.log("... success");
-					callback();
-				});
-		}
-	],
-	function (err) {
-		if (err) {
-			console.log("\nDatabase cleanup complete.");
-			console.log(err);
-			process.exit(1);
-		}
-		console.log("\nFinished");
-		process.exit(code = 0);
-	}
+
+        function(callback) {
+            console.log("This script clean up the current database. All data will be lost.\n");
+            console.log("Database connection is required.");
+            console.log("Current MongoDB URL: " + mongo_url + "\n");
+            if (program.silent) return callback();
+            program.confirm('Continue? ', function(ok) {
+                if (ok) {
+                    callback();
+                } else {
+                    console.log("\n\nAborted");
+                    process.exit(code = 0);
+                }
+            });
+        },
+        function(callback) {
+            mongoclient.connect(mongo_url, config.mongo_options, function(err, _db) {
+                if (err) {
+                    console.log("\nCould not connect to the MongoDB. Please check config.js");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("\nConnected to MongoDB");
+                db = _db;
+                callback();
+            });
+        },
+        function(callback) {
+            db.collectionNames(function(err, collections) {
+                if (!err) {
+                    if (collections && collections.length > 1) {
+                        console.log("\nDropping all collections in database\n");
+                        for (var i = 0; i < collections.length; i++) {
+                            var name = collections[i].name.replace(/^(\w+)\./, '');
+                            if (!name.match(/^system\./)) {
+                                if (name == 'statistics' && program.keepstats) {
+                                	console.log(" * skipping statistics, --keepstats is in effect");
+                                } else {
+                                	console.log(" * dropping " + name);
+                                	db.dropCollection(name);
+                                }
+                            }
+                        }
+                    } else {
+                        console.log("\nNo items to drop. Database is already empty.");
+                    }
+                    callback();
+                } else {
+                    callback(err.errmsg);
+                }
+            });
+        }
+    ],
+    function(err) {
+        if (err) {
+            console.log("\nDatabase cleanup complete.");
+            console.log(err);
+            process.exit(1);
+        }
+        console.log("\nFinished");
+        process.exit(code = 0);
+    }
 );
