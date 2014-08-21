@@ -13,7 +13,8 @@ var data = {
 	dir 		 : path.join(__dirname, '..').replace(/\\/g, '/'),
 	listen_ip    : '127.0.0.1',
 	listen_port  : '80',
-	servername   : ''
+	servername   : '',
+	pname		 : ''
 };
 
 program
@@ -22,7 +23,7 @@ program
 
 async.series([
 		function (callback) {
-			console.log("This script will generate NGINX server config for you.\n");
+			console.log("This script will generate NGINX server config and init.d/monit scripts for you.\n");
 			program.confirm('Continue? ', function(ok){
 				if (ok) {
 					callback();
@@ -56,20 +57,46 @@ async.series([
 			  	}
 			  	data.servername = _servername;
 			  	console.log('* Server name(s) set to: ' + data.servername);
+			  	var fns = data.servername.split(' ');
+				data.pname = fns[0];
 			  	callback();
 			});
 		},
 		function (callback) {
-			console.log("\nGenerating configuration file...");
-			var render = gaikan.compileFromFile('.nginx.template');
-			var nginx = render(gaikan, data, undefined);
-			var fs = require('fs');
-			var fns = data.servername.split(' ');
-			fs.writeFile("./nginx/" + fns[0], nginx, function(err) {
+			console.log("\nGenerating NGINX configuration file...");
+			var nginx_render = gaikan.compileFromFile('.nginx.template');
+			var nginx = nginx_render(gaikan, data, undefined);
+			fs.writeFile("./nginx/" + data.pname + '.conf', nginx, function(err) {
 			    if(err) {
 			        return callback(err);
 			    } else {
-			        console.log("\nThe file " + fns[0] + " was saved!");
+			        console.log("\nThe file " + data.pname + ".conf was saved!");
+			        callback();
+			    }
+			});
+		},
+		function (callback) {
+			console.log("\nGenerating init.d script...");
+			var initd_render = gaikan.compileFromFile('.initd.template');
+			var initd = initd_render(gaikan, data, undefined);
+			fs.writeFile("./init.d/" + data.pname, initd, function(err) {
+			    if(err) {
+			        return callback(err);
+			    } else {
+			        console.log("\nThe file " + data.pname + " was saved!");
+			        callback();
+			    }
+			});
+		},
+		function (callback) {
+			console.log("\nGenerating monit script...");
+			var monit_render = gaikan.compileFromFile('.monit.template');
+			var monit = monit_render(gaikan, data, undefined);
+			fs.writeFile("./init.d/" + data.pname + '.monit', monit, function(err) {
+			    if(err) {
+			        return callback(err);
+			    } else {
+			        console.log("\nThe file " + data.pname + ".monit was saved!");
 			        callback();
 			    }
 			});

@@ -14,8 +14,9 @@ program
   .option('-r, --redishost [host]', 'Specify Redis host')
   .option('-j, --redisport [port]', 'Specify Redis port')
   .option('-p, --port [port]', 'Specify TaracotJS server port')
-  .option('-u, --update', 'version update (no database insertions)')
-  .option('-s, --silent', 'Don\'t ask anything and perform silently')
+  .option('-u, --update', 'Version update (no database insertions)')
+  .option('-s, --silent', 'Don\'t ask anything (perform silently)')
+  .option('-d, --demo', 'Set demo server options (you won\'t need this)')
   .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -28,18 +29,15 @@ async.series([
 			console.log("This script will guide you with TaracotJS basic installation steps.\n");
 			console.log("Database connection is required.");
 			console.log("Current MongoDB URL: " + mongo_url + "\n");
-			if (!program.silent) {
-				program.confirm('Continue? ', function(ok){
-					if (ok) {
-						callback();
-					} else {
-						console.log("\n\nAborted");
-						process.exit(code = 0);
-					}
-				});
-			} else {
-				callback();
-			}
+			if (program.silent) return callback();
+			program.confirm('Continue? ', function(ok){
+				if (ok) {
+					callback();
+				} else {
+					console.log("\n\nAborted");
+					process.exit(code = 0);
+				}
+			});
 		},
 		function (callback) {
 			mongoclient.connect(mongo_url, config.mongo_options, function (err, _db) {
@@ -54,12 +52,30 @@ async.series([
 			});
 		},
 		function (callback) {
+			if (program.demo) {
+				config.captcha = "captcha_gm";
+				config.graphicsmagick = true;
+				console.log("Saving demo server-related changes to config.js file\n");
+				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+					if (err) {
+						console.log("\nCould not save config.js file. Check your permissions");
+						console.log(err);
+						process.exit(1);
+					}
+					console.log("... success\n");
+					callback();
+				});
+			} else {
+				callback();
+			}
+		},
+		function (callback) {
 			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port) {
 				config.mongo.url = mongo_url;
 				config.redis.host = redis_host;
 				config.redis.port = redis_port;
 				config.port = port;
-				console.log("Saving changes to config.js file...");
+				console.log("Saving changes to config.js file\n");
 				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
 					if (err) {
 						console.log("\nCould not save config.js file. Check your permissions");
@@ -75,29 +91,26 @@ async.series([
 		},
 		function (callback) {
 			if (program.update) return callback();
-			if (!program.silent) {
-				program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
-					if (ok) {
-						config.cookie_secret = generateId(32);
-						config.session_secret = generateId(32);
-						config.salt = generateId(64);
-						fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
-							if (err) {
-								console.log("\nCould not save config.js file. Check your permissions");
-								console.log(err);
-								process.exit(1);
-							}
-							console.log("... success");
-							callback();
-						});
-					} else {
-						console.log("\nNote: it's important to set these values for security purposes!");
+			if (program.silent) return callback();
+			program.confirm('Installation script can update secrets and salt. Continue? ', function (ok) {
+				if (ok) {
+					config.cookie_secret = generateId(32);
+					config.session_secret = generateId(32);
+					config.salt = generateId(64);
+					fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
+						if (err) {
+							console.log("\nCould not save config.js file. Check your permissions");
+							console.log(err);
+							process.exit(1);
+						}
+						console.log("... success");
 						callback();
-					}
-				});
-			} else {
-				callback();
-			}
+					});
+				} else {
+					console.log("\nNote: it's important to set these values for security purposes!");
+					callback();
+				}
+			});
 		},
 		function (callback) {
 			console.log("\nCreating collection: users\n");
