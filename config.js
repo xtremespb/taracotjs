@@ -56,7 +56,7 @@ var config = {
 		}
 	},
 	"captcha": "captcha_native",
-	"graphicsmagick": false,
+	"graphicsmagick": true,
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
 	"max_edit_file_kb": 1024,
