@@ -1,6 +1,8 @@
 var dlg_password = new $.UIkit.modal("#dlg_password");
 var dlg_email = new $.UIkit.modal("#dlg_email");
 var dlg_realname = new $.UIkit.modal("#dlg_realname");
+$.loadingIndicator();
+
 var uploader;
 
 $('#btn_password').click(function() {
@@ -229,7 +231,7 @@ $('#btn_rn_save').click(function() {
         return;
     }
     $('#taracot_rn_loading').show();
-    $('#dlg_email_form_wrap').hide();
+    $('#dlg_realname_form_wrap').hide();
     $('#taracot_rn_error').hide();
     dlg_allow_close(false);
     $.ajax({
@@ -242,7 +244,7 @@ $('#btn_rn_save').click(function() {
         dataType: "json",
         success: function(data) {
             $('#taracot_rn_loading').hide();
-            $('#dlg_email_form_wrap').show();
+            $('#dlg_realname_form_wrap').show();
             if (data.result != 1) {
                 dlg_allow_close(true);
                 if (data.field) {
@@ -275,7 +277,7 @@ $('#btn_rn_save').click(function() {
         error: function() {
             dlg_allow_close(true);
             $('#taracot_rn_loading').hide();
-            $('#dlg_email_form_wrap').show();
+            $('#dlg_realname_form_wrap').show();
             $('#taracot_rn_error').html(_lang_vars.ajax_failed);
             $('#taracot_rn_error').show();
             $('#rn_password_current').focus();
@@ -322,7 +324,7 @@ var uploader_init = function() {
     	uploader.start();
     });
     uploader.bind('Error', function(up, err) {
-    	taracot_progress_indicator('body', false);
+    	$.loadingIndicator('hide');
     	$.UIkit.notify({
             message: err.message,
             status: 'danger',
@@ -331,10 +333,10 @@ var uploader_init = function() {
         });
     });
     uploader.bind('UploadProgress', function(up, file) {
-    	taracot_progress_indicator('body', true);
+    	$.loadingIndicator('show');
     });
     uploader.bind('FileUploaded', function(upldr, file, object) {
-    	taracot_progress_indicator('body', false);
+    	$.loadingIndicator('hide');
         var data;
         try {
             data = eval(object.response);
@@ -357,21 +359,6 @@ var uploader_init = function() {
             }
         }
     });
-};
-
-var taracot_progress_indicator = function(sel, show) {
-	if (show) {
-		var destination = $(sel).offset();
-		$('.taracot-progress').css({
-			top: destination.top,
-			left: destination.left,
-			width: $(sel).width(),
-			height: $(sel).height()
-		});
-		$('.taracot-progress').show();
-	} else {
-		$('.taracot-progress').hide();
-	}
 };
 
 $(document).ready(function() {
