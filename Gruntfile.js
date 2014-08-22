@@ -51,7 +51,7 @@ module.exports = function(grunt) {
         uglify: {
             module_auth_cp: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_cp.min.js': 'modules/auth/public/modules/auth/js/auth_cp.js'
+                    'modules/auth/public/modules/auth/js/auth_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/auth/public/modules/auth/js/auth_cp.js' ]
                 }
             },
             module_auth_user: {
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
             },
             module_auth_profile: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_profile.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'public/js/uikit/addons/notify.min.js', 'modules/auth/public/modules/auth/js/profile.js' ]
+                    'modules/auth/public/modules/auth/js/auth_profile.min.js': [ 'public/js/helper.js', 'public/js/jquery.medved.loading.js', 'modules/auth/public/modules/auth/js/pwd.js', 'public/js/uikit/addons/notify.min.js', 'modules/auth/public/modules/auth/js/profile.js' ]
                 }
             },
             admin: {

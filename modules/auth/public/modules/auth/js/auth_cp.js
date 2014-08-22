@@ -1,4 +1,5 @@
 var captcha_loading = false;
+$.loadingIndicator();
 
 var load_captcha = function() {
 	if (typeof captcha_type != 'undefined' && captcha_type == 'png') {
@@ -113,7 +114,7 @@ $('#auth_login').click(function() {
 				$('#auth_progress').addClass('uk-hidden');
 				$('#auth_captcha').val('');
 				$('#auth_box_wrap').addClass('uk-hidden');
-				$('#wait_box_wrap').removeClass('uk-hidden');
+				$.loadingIndicator('show');
 				location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');
 			}
 		},
