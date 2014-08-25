@@ -76,5 +76,16 @@
 	"mode_folders": "mode_folders",
 	"mode_pages": "mode_pages",
 	"control_panel": "Control panel",
-	"parts": "Parts"
+	"parts": "Parts",
+	"document_locked": "Document is locked",
+	"document_locked_hint": "Another user is currently editing the document you've requested. You may take (&quot;steal&quot;) the lock, but all unsaved changes will be lost.",
+	"document_locked_by": "Locked by",
+	"document_locked_on": "Lock time",
+	"cancel_edit": "Cancel",
+	"steal_lock": "Steal lock",
+	"lock_remove_error": "Unable to remove the lock. Please try again in a few moments.",
+	"lock_removed": "Lock has been removed. You may edit the document now.",
+	"document_outdated": "Document is outdated",
+	"document_outdated_hint": "Somebody has made changes since you've started to edit the current document. If you save now, you will overwrite the changes somebody has done before.",
+	"save_anyway": "Save anyway"
 }

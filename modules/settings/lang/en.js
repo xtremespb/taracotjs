@@ -21,5 +21,7 @@
 	"any_language": "Any",
 	"save_success": "Item has been successfully saved",
 	"option_exists": "Option/language pair already exists",
-	"unauth": "unauth"
+	"unauth": "You are not authorized",
+	"hint": "Hint",
+	"settings_edit_hint": "Confuguration settings are reloaded every minute. You will need to wait till the changes will take effect on the frontend."
 }

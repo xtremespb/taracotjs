@@ -27,6 +27,18 @@ module.exports = function(app) {
     			};
     			fa.push(fp);
 			});
+			var global_description = app.get('settings').site_description || '',
+				global_keywords = app.get('settings').site_keywords || '';
+			if (data.keywords && global_keywords) {
+				data.keywords += ', ' + global_keywords;
+			} else {
+				data.keywords = global_keywords;
+			}
+			if (data.description && global_description) {
+				data.description += '. ' + global_description;
+			} else {
+				data.description = global_description;
+			}
 			async.waterfall(fa, function() {
 				res.render(_layout, data);
 			});

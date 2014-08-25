@@ -199,6 +199,32 @@
 	<button class="uk-button uk-margin-top uk-button-danger taracot-tree-save-controls" id="btn-tree-cancel">!{root.lang.__('cancel')}</button>
 	<button class="uk-button uk-margin-top uk-button-danger taracot-tree-save-controls" id="btn-tree-clear">!{root.lang.__('clear')}</button>
 </div>
+<div id="taracot_lock_dlg" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h1>!{root.lang.__('document_locked')}</h1>
+		<p>!{root.lang.__('document_locked_hint')}</p>
+		<p>!{root.lang.__('document_locked_by')}: <b><span id="document_lock_username"></span></b><br>
+		!{root.lang.__('document_locked_on')}: <span id="document_lock_timestamp"></span>
+		</p>
+		<div class="uk-margin-top">
+			<button class="uk-button uk-button-danger" type="button" id="btn_steal_lock">!{root.lang.__('steal_lock')}</button>
+			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
+		</div>
+	</div>
+</div>
+<div id="taracot_outdated_dlg" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h1>!{root.lang.__('document_outdated')}</h1>
+		<p>!{root.lang.__('document_outdated_hint')}</p>
+		</p>
+		<div class="uk-margin-top">
+			<button class="uk-button uk-button-danger" type="button" id="btn_force_save_outdated">!{root.lang.__('save_anyway')}</button>
+			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
+		</div>
+	</div>
+</div>
 <div class="taracot-progress uk-hidden uk-vertical-align uk-text-center">
 	<div class="uk-vertical-align-middle">
 		<img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
@@ -228,9 +254,12 @@ var _lang_vars = {
 	page_save_success: "!{root.lang.__('page_save_success')}",
 	mode_folders: "!{root.lang.__('mode_folders')}",
 	mode_pages: "!{root.lang.__('mode_pages')}",
-	control_panel: "!{root.lang.__('control_panel')}"
+	control_panel: "!{root.lang.__('control_panel')}",
+	lock_remove_error: "!{root.lang.__('lock_remove_error')}",
+	lock_removed: "!{root.lang.__('lock_removed')}"
 };
 var locales = !{root.locales};
+var current_username = "!{root.auth.username}";
 var layouts = !{root.layouts};
 var folders_preload = !{root.folders};
 for (var i = 0; i < locales.length; i++) {
@@ -245,8 +274,10 @@ for (var i = 0; i < layouts.avail.length; i++) {
 <script src="/js/ckeditor/ckeditor.js"></script>
 <script src="/js/ckeditor/adapters/jquery.js"></script>
 <script src="/js/jstree/jstree.min.js"></script>
-<script src="/modules/pages/js/pages.min.js"></script>
 <!--
+<script src="/js/moment.min.js"></script>
+<script src="/js/jquery.medved.loading.js"></script>
 <script src="/modules/pages/js/tree.js"></script>
 <script src="/modules/pages/js/main.js"></script>
 -->
+<script src="/modules/pages/js/pages.min.js"></script>

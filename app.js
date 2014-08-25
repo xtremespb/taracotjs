@@ -179,16 +179,17 @@ app.use(function(req, res, next) {
 
 // Load settings
 
-var _timestamp_settings_query = Date.now() - 60000;
+var _timestamp_settings_query = {};
 
 app.use(function(req, res, next) {
-    if (Date.now() - _timestamp_settings_query <= 60000) {
+    var _lng = req.i18n.getLocale();
+    if (_timestamp_settings_query._lng && Date.now() - _timestamp_settings_query._lng <= 60000) {
         next();
         return;
     }
     var find_query = {
         $or: [{
-            olang: req.i18n.getLocale()
+            olang: _lng
         }, {
             olang: ''
         }]
@@ -198,7 +199,7 @@ app.use(function(req, res, next) {
             var settings = {};
             for (var i = 0; i < items.length; i++) {
                 settings[items[i].oname] = items[i].ovalue;
-                _timestamp_settings_query = Date.now();
+                _timestamp_settings_query._lng = Date.now();
             }
             app.set('settings', settings);
             next();
