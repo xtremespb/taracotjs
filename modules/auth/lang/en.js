@@ -112,5 +112,6 @@
 	"password_strength_1": "Weak",
 	"password_strength_2": "Medium",
 	"password_strength_3": "Strong",
-	"password_strength_4": "Excellent"
+	"password_strength_4": "Excellent",
+	"admin_panel": "Control panel"
 }

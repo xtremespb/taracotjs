@@ -45,6 +45,7 @@ module.exports = function(app) {
             var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'pages_control', {
                 lang: i18nm,
                 folders: folders,
+                auth: req.session.auth,
                 locales: JSON.stringify(app.get('config').locales),
                 layouts: JSON.stringify(app.get('config').layouts)
             }, req);
@@ -57,9 +58,9 @@ module.exports = function(app) {
 
     /*
 
-	Pages
+    Pages
 
-	*/
+    */
 
     router.post('/data/list', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
@@ -196,7 +197,6 @@ module.exports = function(app) {
         }
         // Get pages from MongoDB
         rep.data = {};
-
         app.get('mongodb').collection('pages').find({
             pfilename: ''
         }, {
@@ -214,12 +214,63 @@ module.exports = function(app) {
                 if (typeof items != 'undefined' && !err) {
                     if (items.length > 0) {
                         rep.data = items[0];
+                        // Set lock
+                        if (!rep.data.lock_username) {
+                            rep.data.lock_username = req.session.auth.username;
+                            rep.data.lock_timestamp = Date.now();
+                            app.get('mongodb').collection('pages').update({
+                                _id: new ObjectId(id)
+                            }, {
+                                $set: {
+                                    lock_username: rep.data.lock_username,
+                                    lock_timestamp: rep.data.lock_timestamp
+                                }
+                            }, function(_err) {});
+                        }
                     }
                 }
                 // Return results
                 rep.status = 1;
                 res.send(JSON.stringify(rep));
             });
+        });
+    });
+
+    router.post('/data/lock', function(req, res) {
+        i18nm.setLocale(req.i18n.getLocale());
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var rep = {};
+        var id = req.body.pid;
+        var lock_username = req.body.username;
+        if ((id && !id.match(/^[a-f0-9]{24}$/)) || lock_username.length > 80) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var data = {};
+        if (!lock_username) lock_username = '';
+        data.lock_username = '';
+        if (lock_username) data.lock_timestamp = 1000;
+        app.get('mongodb').collection('pages').update({
+            _id: new ObjectId(id)
+        }, {
+            $set: data
+        }, function(_err) {
+            if (_err) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                res.send(JSON.stringify(rep));
+                return;
+            }
+            rep.status = 1;
+            return res.send(JSON.stringify(rep));
         });
     });
 
@@ -246,7 +297,8 @@ module.exports = function(app) {
             pkeywords = req.body.pkeywords,
             pdesc = req.body.pdesc,
             pcontent = req.body.pcontent,
-            id = req.body.pid;
+            id = req.body.pid,
+            current_timestamp = req.body.current_timestamp;
         if (typeof id != 'undefined' && id) {
             if (!id.match(/^[a-f0-9]{24}$/)) {
                 rep.status = 0;
@@ -302,11 +354,12 @@ module.exports = function(app) {
                 }, {
                     limit: 1
                 }).toArray(function(err, items) {
-                    var menu_source, menu_uikit, menu_raw, menu_id;
+                    var menu_source, menu_uikit, menu_uikit_offcanvas, menu_raw, menu_id;
                     if (!err && items && items.length && items[0].menu_source && items[0].menu_raw && items[0].menu_uikit) {
                         menu_source = items[0].menu_source;
                         menu_raw = items[0].menu_raw;
                         menu_uikit = items[0].menu_uikit;
+                        menu_uikit_offcanvas = items[0].menu_uikit_offcanvas;
                     }
                     var data = app.get('mongodb').collection('pages').find({
                         pfilename: pfilename,
@@ -325,7 +378,7 @@ module.exports = function(app) {
                             res.send(JSON.stringify(rep));
                             return;
                         }
-                        var data = app.get('mongodb').collection('pages').find({
+                        app.get('mongodb').collection('pages').find({
                             _id: new ObjectId(id)
                         }, {
                             limit: 1
@@ -341,8 +394,24 @@ module.exports = function(app) {
                                         playout: playout,
                                         pkeywords: pkeywords,
                                         pdesc: pdesc,
-                                        pcontent: pcontent
+                                        pcontent: pcontent,
+                                        lock_username: '',
+                                        lock_timestamp: 0,
+                                        last_modified: Date.now()
                                     };
+                                    if (items[0].lock_username && items[0].lock_username != req.session.auth.username) {
+                                        rep.status = 0;
+                                        rep.lock_username = items[0].lock_username;
+                                        rep.lock_timestamp = items[0].lock_timestamp;
+                                        rep.locked = 1;
+                                        return res.send(JSON.stringify(rep));
+                                    }
+                                    if (items[0].last_modified && items[0].last_modified != current_timestamp) {
+                                        rep.status = 0;
+                                        rep.outdated = 1;
+                                        rep.current_timestamp = items[0].last_modified;
+                                        return res.send(JSON.stringify(rep));
+                                    }
                                     app.get('mongodb').collection('pages').update({
                                         _id: new ObjectId(id)
                                     }, update, function(_err) {
@@ -395,11 +464,13 @@ module.exports = function(app) {
                                         menu_source = menu_source.replace(rx1, 'href="' + url_new + '"').replace(rx2, '>' + url_new + '<');
                                         menu_raw = menu_raw.replace(rx1, 'href="' + url_new + '"');
                                         menu_uikit = menu_uikit.replace(rx1, 'href="' + url_new + '"');
+                                        menu_uikit_offcanvas = menu_uikit_offcanvas.replace(rx1, 'href="' + url_new + '"');
                                         var data = {
                                             lang: plang,
                                             menu_source: menu_source,
                                             menu_raw: menu_raw,
-                                            menu_uikit: menu_uikit
+                                            menu_uikit: menu_uikit,
+                                            menu_uikit_offcanvas: menu_uikit_offcanvas
                                         };
                                         app.get('mongodb').collection('menu').update({
                                             lang: plang
@@ -439,7 +510,8 @@ module.exports = function(app) {
                         playout: playout,
                         pkeywords: pkeywords,
                         pdesc: pdesc,
-                        pcontent: pcontent
+                        pcontent: pcontent,
+                        last_modified: Date.now()
                     }, function(_err, _items) {
                         if (!_err) {
                             var url = pfolder + '/' + pfilename;
@@ -500,9 +572,9 @@ module.exports = function(app) {
 
     /*
 
-	Folders
+    Folders
 
-	*/
+    */
 
     router.post('/data/folders/load', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());

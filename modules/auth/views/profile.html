@@ -169,7 +169,10 @@ var auth_email = "!{root.auth.email}";
 var auth_realname = "!{root.auth.realname}";
 if (!auth_email) $('#profile_email').html("!{root.lang.__('email_not_set')}");
 if (auth_status == 1) $('#profile_status').html("!{root.lang.__('status_1')}");
-if (auth_status == 2) $('#profile_status').html("!{root.lang.__('status_2')}");
+if (auth_status == 2) {
+	$('#profile_status').html("!{root.lang.__('status_2')}");
+	$('#profile_status').append('&nbsp;<a href="/cp" class="uk-button uk-button-link uk-button-mini">' + "[!{root.lang.__('admin_panel')}]" + '</a>');
+}
 $('#taracot_pc_error').hide();
 $('#taracot_pc_loading').hide();
 $('#taracot_rn_loading').hide();
