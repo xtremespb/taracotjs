@@ -1,20 +1,20 @@
 body {
-	background: #444;
+    background: #444;
 }
 .uk-notify-message {
-	text-align: center;
-	color: #fff;
+    text-align: center;
+    color: #fff;
 }
 .uk-notify-message-danger {
-	background: red;
+    background: red;
 }
 #auth_captcha_img {
-	cursor: pointer;
+    cursor: pointer;
 }
 #auth_box {
-	-webkit-box-shadow: 0 6px 6px -6px black;
-	-moz-box-shadow: 0 6px 6px -6px black;
-	box-shadow: 0 6px 6px -6px black;
+    -webkit-box-shadow: 0 6px 6px -6px black;
+    -moz-box-shadow: 0 6px 6px -6px black;
+    box-shadow: 0 6px 6px -6px black;
 }
 .taracot_cp_auth_footer {
     margin-top: -2px;
@@ -25,23 +25,24 @@ body {
     font-size: 80%;
 }
 .taracot_cp_auth_footer > a {
-	color: #aaa;
-	text-decoration: none;
-	border-bottom: 1px dotted #eee;
+    color: #aaa;
+    text-decoration: none;
+    border-bottom: 1px dotted #eee;
 }
 .taracot_cp_auth_footer > a:hover, .taracot_cp_auth_footer > a:focus, .taracot_cp_auth_footer > a:active {
-	color: #eee;
+    color: #eee;
 }
-input[type="submit"]::-moz-focus-inner,
-input[type="button"]::-moz-focus-inner {
-	border: 0;
+input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {
+    border: 0;
 }
-input[type="submit"]:focus,
-input[type="button"]:focus {
-	outline: none;
+input[type="submit"]:focus, input[type="button"]:focus {
+    outline: none;
 }
-input:focus,textarea:focus,select:focus{
- -webkit-box-shadow:0 0 6px #aaa;
- -moz-box-shadow:0 0 5px #aaa;
- box-shadow:0 0 5px #aaa;
+input:focus, textarea:focus, select:focus {
+    -webkit-box-shadow: 0 0 6px #aaa;
+    -moz-box-shadow: 0 0 5px #aaa;
+    box-shadow: 0 0 5px #aaa;
+}
+.placeholder {
+    color: #aaa;
 }
