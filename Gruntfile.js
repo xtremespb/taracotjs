@@ -51,7 +51,7 @@ module.exports = function(grunt) {
         uglify: {
             module_auth_cp: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/auth/public/modules/auth/js/auth_cp.js' ]
+                    'modules/auth/public/modules/auth/js/auth_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/jquery.placeholder.js', 'modules/auth/public/modules/auth/js/auth_cp.js' ]
                 }
             },
             module_auth_user: {

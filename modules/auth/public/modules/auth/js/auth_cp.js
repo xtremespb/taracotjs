@@ -1,5 +1,6 @@
 var captcha_loading = false;
 $.loadingIndicator();
+$('input').placeholder();
 
 var load_captcha = function() {
 	if (typeof captcha_type != 'undefined' && captcha_type == 'png') {
