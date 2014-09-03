@@ -14,7 +14,7 @@ TaracotJS is fast and minimalist CMS based on Node.js. It has the following feat
 
 ## Installation guide
 
-Follow the following guide for TaracotJS instance installation: http://wiki.taracot.org/doku.php?id=installation
+Follow the following guide for TaracotJS instance installation: https://wiki.taracot.org/doku.php?id=installation
 
 ### Pre-requisites
 
@@ -26,7 +26,7 @@ MongoDB and Redis are required. If your operating system is x64-based Windows, y
 
 Mercurial repository is available at: https://code.google.com/p/taracotjs/. Use Mercurial (Hg) to checkout.
 
-Please visit http://wiki.taracot.org/ for more information on this project.
+Please visit https://wiki.taracot.org/ for more information on this project.
 
 ## License
 
