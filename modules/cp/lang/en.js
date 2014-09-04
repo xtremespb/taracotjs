@@ -35,5 +35,6 @@
 	"number_of_visitors": "Number of unique site visitors",
 	"no_stats_avail": "No statistical data currently available. At least two days are required to show charts.",
 	"chart_hint": "The left (X) axis represents the number of visits, the right (Y) axis represents the corresponding days of month",
-	"MB": "MB"
+	"MB": "MB",
+	"modules": "Modules"
 }

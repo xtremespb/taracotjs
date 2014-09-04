@@ -2,71 +2,80 @@
 <html dir="ltr">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=2.0,user-scalable=0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=2.0,user-scalable=0">
     <meta name="format-detection" content="telephone=no">
     <link name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<title>!{root.cp_lang.__("control_panel")}</title>
-	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-	<link rel="stylesheet" href="/css/uikit/uikit.min.css">
-	<link rel="stylesheet" href="/css/uikit/uikit.addons.min.css">
-	<link rel="stylesheet" href="/modules/cp/css/main.css">!{root.data.css}
-	<script src="/js/admin.min.js"></script>
+    <title>!{root.cp_lang.__("control_panel")}</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/uikit/uikit.min.css">
+    <link rel="stylesheet" href="/css/uikit/uikit.addons.min.css">
+    <link rel="stylesheet" href="/modules/cp/css/main.css">!{root.data.css}
+    <script src="/js/admin.min.js"></script>
 </head>
 
 <body>
-	<nav class="cp-navbar uk-navbar uk-navbar-attached uk-margin-bottom">
-		<div class="uk-container uk-container-center">
-			<a href="#tm-offcanvas" class="uk-navbar-toggle uk-hidden-large" data-uk-offcanvas></a>
-			<a class="uk-navbar-brand uk-hidden-medium uk-hidden-small" href="/">
-				<img src="/images/logo.png" style="width:32px;height:32px;margin-right:10px">TaracotJS</a> <a class="uk-navbar-brand uk-hidden-large uk-navbar-center" href="/">TaracotJS</a>
-			<ul class="uk-navbar-nav uk-hidden-medium uk-hidden-small" id="taracot-modules">
-				<li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a>
-				</li>
-			</ul>
-			<div class="uk-navbar-flip uk-hidden-medium uk-hidden-small">
-				<ul class="uk-navbar-nav">
-					<li class="uk-parent" data-uk-dropdown> <a href="#" id="cp_logout_submenu"><b>!{root.cp_lang.__("User")}</b>: !{root.username}&nbsp;<i class="uk-icon-caret-down"></i></a>
-						<div class="uk-dropdown uk-dropdown-navbar">
-							<ul class="uk-nav uk-nav-navbar">
-								<li><a href="/auth/logout">!{root.cp_lang.__("logout")}</a>
-								</li>
-							</ul>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-	<div id="tm-offcanvas" class="uk-offcanvas">
-		<div class="uk-offcanvas-bar">
-			<h2 class="oc-logo">TaracotJS</h2>
-			<ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" id="taracot-modules-offcanvas" data-uk-nav="{multiple:true}">
-				<li class="uk-parent"><a href="#"><i class="uk-icon-user"></i>&nbsp;!{root.username}</a>
-					<ul class="uk-nav-sub">
-						<li><a href="/auth/logout"><i class="uk-icon-sign-out"></i>&nbsp;!{root.cp_lang.__("logout")}</a>
-						</li>
-					</ul>
-				</li>
-				<li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a>
-				</li>
-			</ul>
-		</div>
-	</div>
-	<div class="uk-container uk-container-center">!{root.data.body}</div>
-	<script type="text/javascript">
-	var _modules = !{
-		root.modules
-	};
-	for (var i = 0; i < _modules.length; i++) {
-		var _item = '<li class="taracot-module-menu-item taracot-module-id-' + _modules[i].id + '"><a href="' + _modules[i].prefix + '">' + _modules[i].name + '</a></li>';
-		$('#taracot-modules').append(_item);
-		$('#taracot-modules-offcanvas').append(_item);
-	}
-	$('.taracot-module-menu-item').removeClass('uk-active');
-	$('.taracot-module-id-!{root.active_module}').addClass('uk-active');
-	</script>
+    <nav class="cp-navbar uk-navbar uk-navbar-attached uk-margin-bottom">
+        <div class="uk-container uk-container-center">
+            <a href="#tm-offcanvas" class="uk-navbar-toggle uk-hidden-medium uk-hidden-large" data-uk-offcanvas></a>
+            <a class="uk-navbar-brand uk-hidden-small" href="/">
+                <img src="/modules/cp/images/logo_taracot_cp.png" style="width:131px;height:35px">
+            </a>
+            <a class="uk-navbar-brand uk-hidden-medium uk-hidden-large uk-navbar-center" href="/">
+                TaracotJS
+            </a>
+            <ul class="uk-navbar-nav uk-hidden-small">
+                <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a>
+                </li>
+                <li class="uk-parent uk-hidden-small" data-uk-dropdown><a href="#" style="cursor:pointer">!{root.cp_lang.__("modules")}&nbsp;<i class="uk-icon-caret-down"></i></a>
+                	<div class="uk-dropdown uk-dropdown-navbar">
+                		<ul class="uk-nav uk-nav-navbar" id="taracot-modules">
+                        </ul>
+                	</div>
+                </li>
+            </ul>
+            <div class="uk-navbar-flip uk-hidden-small">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-parent" data-uk-dropdown><a href="#" id="cp_logout_submenu"><b>!{root.cp_lang.__("User")}</b>: !{root.username}&nbsp;<i class="uk-icon-caret-down"></i></a>
+                        <div class="uk-dropdown uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                <li><a href="/auth/logout">!{root.cp_lang.__("logout")}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="tm-offcanvas" class="uk-offcanvas">
+        <div class="uk-offcanvas-bar">
+            <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" id="taracot-modules-offcanvas" data-uk-nav="{multiple:true}">
+                <li class="uk-parent"><a href="#"><i class="uk-icon-user"></i>&nbsp;!{root.username}</a>
+                    <ul class="uk-nav-sub">
+                        <li><a href="/auth/logout"><i class="uk-icon-sign-out"></i>&nbsp;!{root.cp_lang.__("logout")}</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="uk-active taracot-cp-top-navbar taracot-module-menu-item taracot-module-id-dashboard"><a href="/cp">!{root.cp_lang.__("dashboard")}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="uk-container uk-container-center">!{root.data.body}</div>
+    <script type="text/javascript">
+    var _modules = !{
+        root.modules
+    };
+    for (var i = 0; i < _modules.length; i++) {
+        var _item = '<li class="taracot-module-menu-item taracot-module-id-' + _modules[i].id + '"><a href="' + _modules[i].prefix + '">' + _modules[i].name + '</a></li>';
+        $('#taracot-modules').append(_item);
+        $('#taracot-modules-offcanvas').append(_item);
+    }
+    $('.taracot-module-menu-item').removeClass('uk-active');
+    $('.taracot-module-id-!{root.active_module}').addClass('uk-active');
+    </script>
 </body>
 
 </html>
