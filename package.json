@@ -1,6 +1,6 @@
 {
   "name": "taracotjs",
-  "version": "0.0409.04",
+  "version": "0.4.248",
   "description": "TaracotJS CMS: the simple content management system based on Node.JS",
   "main": "app.js",
   "dependencies": {
