@@ -4,6 +4,7 @@ var current_id = '',
     folders_edit_dlg = $.UIkit.modal("#taracot_pages_folders_edit_dlg"),
     folders_select_dlg = $.UIkit.modal("#taracot_pages_folders_select_dlg"),
     outdated_dlg = $.UIkit.modal("#taracot_outdated_dlg"),
+    autosave_dlg = $.UIkit.modal("#taracot_autosave_dlg"),
     lock_dlg = $.UIkit.modal("#taracot_lock_dlg"),
     folders_edit = false,
     jstree_folders,
@@ -11,7 +12,8 @@ var current_id = '',
     folders_data,
     root_pages = [],
     current_folder = '',
-    ckeditor;
+    ckeditor,
+    auto_save_timer;
 
 $.loadingIndicator();
 
@@ -89,6 +91,76 @@ var show_pages = function() {
 
 /*******************************************************************
 
+ Auto-save functions
+
+********************************************************************/
+
+var auto_save_data = function() {
+    var ptitle = $.trim($('#ptitle').val());
+    var pfilename = $.trim($('#pfilename').val());
+    var pfolder = $.trim($('#pfolder').val());
+    var pfolder_id = $('#pfolder_id').val();
+    if (!pfolder_id) {
+        pfolder_id = jstree_get_root_id();
+    }
+    var plang = $('#plang').val();
+    var playout = $('#playout').val();
+    var plangcopy = false;
+    if ($('#plangcopy').attr('checked')) {
+        plangcopy = true;
+    }
+    var pkeywords = $.trim($('#pkeywords').val());
+    var pdesc = $.trim($('#pdesc').val());
+    var data = {
+        pid: current_id,
+        ptitle: ptitle,
+        pfilename: pfilename,
+        pfolder: pfolder,
+        pfolder_id: pfolder_id,
+        plang: plang,
+        plangcopy: plangcopy,
+        playout: playout,
+        pkeywords: pkeywords,
+        pdesc: pdesc,
+        current_timestamp: current_timestamp,
+        pcontent: $('#pcontent').val()
+    };
+    $.jStorage.set("_taracot_pages_autosave", data);
+    auto_save_timer = setTimeout(auto_save_data, 5000);
+};
+
+$('#btn_restore_autosave').click(function() {
+    var data = $.jStorage.get("_taracot_pages_autosave");
+    if (data) {
+        autosave_dlg.hide();
+        push_state({
+            mode: 'edit_page',
+            current_id: data.pid
+        }, "?mode=edit_page");
+        current_id = data.pid;
+        current_timestamp = data.current_timestamp;
+        current_folder = '';
+        $('#taracot_pages_edit_action').html(_lang_vars.action_edit);
+        $('#plangcopy_row').addClass('uk-hidden');
+        $('#playout').val(layouts.default);
+        $('.taracot-page-edit-form-control').each(function() {
+            $(this).val('');
+        });
+        var _data = {
+            data: data
+        };
+        edit_item_show(_data);
+    }
+
+});
+
+$('#btn_dont_restore_autosave').click(function() {
+    $.jStorage.set("_taracot_pages_autosave", false);
+    autosave_dlg.hide();
+});
+
+/*******************************************************************
+
  Pages table button handlers
 
 ********************************************************************/
@@ -113,6 +185,7 @@ var btn_add_item_handler = function() {
     $('#taracot-pagetype-regular > a').click();
     taracot_ajax_progress_indicator('body', true);
     if (!ckeditor) init_ckeditor();
+    auto_save_timer = setTimeout(auto_save_data, 5000);
     $.ajax({
         type: 'POST',
         url: '/cp/pages/data/rootpages',
@@ -139,6 +212,39 @@ $('#btn-add-item').click(function() {
     }, "?mode=add_page");
     btn_add_item_handler();
 });
+
+var edit_item_show = function(data) {
+    if (!ckeditor) init_ckeditor();
+    $('#taracot_pages_list').addClass('uk-hidden');
+    $('#taracot_pages_edit').removeClass('uk-hidden');
+    $('#taracot_pages_edit').show();
+    if (data.root_pages) root_pages = data.root_pages;
+    if (data.data) data = data.data;
+    if (data.ptitle) $('#ptitle').val(data.ptitle);
+    if (data.pfilename && data.pfilename.length) {
+        $('#pfilename').val(data.pfilename);
+        $('#taracot-pagetype-regular > a').click();
+    } else {
+        $('#taracot-pagetype-root > a').click();
+    }
+    if (data.pfolder) {
+        $('#pfolder').val(data.pfolder);
+        current_folder = data.pfolder;
+    }
+    if (data.pfolder_id) $('#pfolder_id').val(data.pfolder_id);
+    if (data.plang) $('#plang').val(data.plang);
+    if (data.playout) $('#playout').val(data.playout);
+    if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
+    if (data.pdesc) $('#pdesc').val(data.pdesc);
+    if (data.pcontent) {
+        $('#pcontent').val(data.pcontent);
+    } else {
+        $('#pcontent').val('');
+    }
+    $('#pfolder').change();
+    if (data.last_modified) current_timestamp = data.last_modified;
+    auto_save_timer = setTimeout(auto_save_data, 5000);
+};
 
 var edit_item = function(id) {
     push_state({
@@ -170,35 +276,7 @@ var edit_item = function(id) {
                     if (data.data.lock_timestamp) $('#document_lock_timestamp').html(moment(data.data.lock_timestamp).fromNow());
                     return lock_dlg.show();
                 }
-                if (!ckeditor) init_ckeditor();
-                $('#taracot_pages_list').addClass('uk-hidden');
-                $('#taracot_pages_edit').removeClass('uk-hidden');
-                $('#taracot_pages_edit').show();
-                if (data.root_pages) root_pages = data.root_pages;
-                if (data.data) data = data.data;
-                if (data.ptitle) $('#ptitle').val(data.ptitle);
-                if (data.pfilename && data.pfilename.length) {
-                    $('#pfilename').val(data.pfilename);
-                    $('#taracot-pagetype-regular > a').click();
-                } else {
-                    $('#taracot-pagetype-root > a').click();
-                }
-                if (data.pfolder) {
-                    $('#pfolder').val(data.pfolder);
-                    current_folder = data.pfolder;
-                }
-                if (data.pfolder_id) $('#pfolder_id').val(data.pfolder_id);
-                if (data.plang) $('#plang').val(data.plang);
-                if (data.playout) $('#playout').val(data.playout);
-                if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
-                if (data.pdesc) $('#pdesc').val(data.pdesc);
-                if (data.pcontent) {
-                    $('#pcontent').val(data.pcontent);
-                } else {
-                    $('#pcontent').val('');
-                }
-                $('#pfolder').change();
-                if (data.last_modified) current_timestamp = data.last_modified;
+                edit_item_show(data);
             } else {
                 var _err = _lang_vars.ajax_failed;
                 if (data.error) {
@@ -306,9 +384,9 @@ $('#btn_steal_lock').click(function() {
 });
 
 $('#btn_force_save_outdated').click(function() {
-	outdated_dlg.hide();
-	current_timestamp = current_timestamp_new;
-	$('#btn_edit_save').click();
+    outdated_dlg.hide();
+    current_timestamp = current_timestamp_new;
+    $('#btn_edit_save').click();
 });
 
 $('#btn_edit_save').click(function() {
@@ -381,6 +459,8 @@ $('#btn_edit_save').click(function() {
         success: function(data) {
             taracot_ajax_progress_indicator('body', false);
             if (data.status == 1) {
+                if (auto_save_timer) window.clearTimeout(auto_save_timer);
+                $.jStorage.set("_taracot_pages_autosave", false);
                 $.UIkit.notify({
                     message: _lang_vars.page_save_success,
                     status: 'success',
@@ -432,6 +512,8 @@ $('.taracot-page-edit-form-control').bind('keypress', function(e) {
 
 $('#btn_edit_cancel').click(function() {
     if (confirm(_lang_vars.confirm_page_edit_cancel)) {
+        if (auto_save_timer) window.clearTimeout(auto_save_timer);
+        $.jStorage.set("_taracot_pages_autosave", false);
         $.loadingIndicator('show');
         $.ajax({
             type: 'POST',
@@ -481,6 +563,7 @@ $('#pfolder').change(function() {
 ********************************************************************/
 
 $(document).ready(function() {
+    var autosave = $.jStorage.get("_taracot_pages_autosave");
     $('#taracot_table').medvedTable({
         col_count: 4,
         sort_mode: 1,
@@ -490,9 +573,14 @@ $(document).ready(function() {
     });
     $('#pfolder').attr('readonly', true);
     folders_data = folders_preload;
+    init_ckeditor();
+    if (autosave) {
+        $('#autosave_title').html('&mdash;');
+        if (autosave.ptitle) $('#autosave_title').html(autosave.ptitle);
+        return autosave_dlg.show();
+    }
     bind_history();
     history_handler();
-    init_ckeditor();
 });
 
 /*******************************************************************

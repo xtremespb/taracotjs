@@ -81,7 +81,7 @@ module.exports = function(grunt) {
             },
             admin: {
                 files: {
-                    'public/js/admin.min.js': [ 'public/js/jquery.min.js', 'public/js/jquery.history.min.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/uikit.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/helper.js' ]
+                    'public/js/admin.min.js': [ 'public/js/json2.js', 'public/js/jquery.min.js', 'public/js/jquery.history.min.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/uikit.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/helper.js' ]
                 }
             },
             module_files: {
@@ -101,7 +101,7 @@ module.exports = function(grunt) {
             },
             module_pages: {
                 files: {
-                    'modules/pages/public/modules/pages/js/pages.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/moment.min.js', 'modules/pages/public/modules/pages/js/main.js', 'modules/pages/public/modules/pages/js/tree.js' ]
+                    'modules/pages/public/modules/pages/js/pages.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/jstorage.js', 'public/js/moment.min.js', 'modules/pages/public/modules/pages/js/main.js', 'modules/pages/public/modules/pages/js/tree.js' ]
                 }
             },
             module_parts: {
