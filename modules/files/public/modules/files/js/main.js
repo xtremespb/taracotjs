@@ -96,6 +96,7 @@ var uploader_init = function() {
 		plupload.each(files, function(file) {
 			$('#taracot_upload_box').append('<div class="uk-alert" id="' + file.id + '"><b>' + file.name + '</b> (' + plupload.formatSize(file.size) + ')<div class="uk-progress uk-progress-mini uk-progress-success"><div class="uk-progress-bar" style="width: 0%"></div></div></div>');
 		});
+		if ($("#cbx_upload_auto_start").is(':checked')) dlguploadbtnupload_handler();
 	});
 	uploader.bind('Error', function(up, err) {
 		$.UIkit.notify({

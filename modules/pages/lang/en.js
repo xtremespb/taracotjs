@@ -87,5 +87,10 @@
 	"lock_removed": "Lock has been removed. You may edit the document now.",
 	"document_outdated": "Document is outdated",
 	"document_outdated_hint": "Somebody has made changes since you've started to edit the current document. If you save now, you will overwrite the changes somebody has done before.",
-	"save_anyway": "Save anyway"
+	"save_anyway": "Save anyway",
+	"document_autosave": "Document restored",
+	"document_autosave_hint": "Your previous changes were not saved, this could happen because you occassionaly closed your browser window or system has been crashed. We can restore the unsaved document for you.",
+	"unsaved_title": "Document title",
+	"restore_autosave": "Restore",
+	"dont_restore_autosave": "Don't restore"
 }

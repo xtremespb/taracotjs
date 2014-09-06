@@ -218,9 +218,21 @@
 		<a class="uk-modal-close uk-close"></a>
 		<h1>!{root.lang.__('document_outdated')}</h1>
 		<p>!{root.lang.__('document_outdated_hint')}</p>
-		</p>
 		<div class="uk-margin-top">
 			<button class="uk-button uk-button-danger" type="button" id="btn_force_save_outdated">!{root.lang.__('save_anyway')}</button>
+			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
+		</div>
+	</div>
+</div>
+<div id="taracot_autosave_dlg" class="uk-modal">
+	<div class="uk-modal-dialog">
+		<a class="uk-modal-close uk-close"></a>
+		<h1>!{root.lang.__('document_autosave')}</h1>
+		<p>!{root.lang.__('document_autosave_hint')}</p>
+		<p><b>!{root.lang.__('unsaved_title')}:</b> <span id="autosave_title"></span></p>
+		<div class="uk-margin-top">
+			<button class="uk-button uk-button-success" type="button" id="btn_restore_autosave">!{root.lang.__('restore_autosave')}</button>
+			<button class="uk-button uk-button-danger" type="button" id="btn_dont_restore_autosave">!{root.lang.__('dont_restore_autosave')}</button>
 			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
 		</div>
 	</div>
@@ -275,6 +287,7 @@ for (var i = 0; i < layouts.avail.length; i++) {
 <script src="/js/ckeditor/adapters/jquery.js"></script>
 <script src="/js/jstree/jstree.min.js"></script>
 <!--
+<script src="/js/jstorage.js"></script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/modules/pages/js/tree.js"></script>

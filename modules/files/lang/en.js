@@ -52,5 +52,6 @@
 	"unzip_success": "Successfuly unzipped",
 	"newfile": "New text file",
 	"new_filename": "New file name",
-	"editfile": "Edit text file"
+	"editfile": "Edit text file",
+	"upload_auto_start": "Auto start upload when files added"
 }
