@@ -113,5 +113,6 @@
 	"password_strength_2": "Medium",
 	"password_strength_3": "Strong",
 	"password_strength_4": "Excellent",
-	"admin_panel": "Control panel"
+	"admin_panel": "Control panel",
+	"social_hint": "If you have one of the following social services account, you may authorize by clicking the buttons below"
 }

@@ -10,6 +10,10 @@ module.exports = function(app) {
         directory: path.join(__dirname, 'lang'),
         extension: '.js'
     });
+    // Social Auth: begin
+    var config_auth = require('../../config_auth');
+    for (var key in config_auth) app.use('/auth/', require('./providers/' + key)(app));
+    // Social Auth: end
     var gm = false;
     if (app.get('config').graphicsmagick) {
         gm = require('gm');
@@ -62,12 +66,17 @@ module.exports = function(app) {
             description: '',
             extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
         };
+        var _config_auth = config_auth;
+        for (var key in _config_auth) {
+            if (_config_auth[key].clientSecret) delete _config_auth[key].clientSecret;
+        }
         var render = renderer.render_file(path.join(__dirname, 'views'), 'login_user', {
             lang: i18nm,
             captcha: _cap,
             captcha_req: captcha_req,
             data: data,
-            redirect: req.session.auth_redirect
+            redirect: req.session.auth_redirect,
+            config_auth: JSON.stringify(_config_auth)
         }, req);
         data.content = render;
         app.get('renderer').render(res, undefined, data, req);
@@ -479,7 +488,9 @@ module.exports = function(app) {
         app.get('mongodb').collection('users').find({
             _id: new ObjectId(user),
             res_code: code,
-            status: { $ne: 0 }
+            status: {
+                $ne: 0
+            }
         }, {
             limit: 1
         }).toArray(function(err, items) {
@@ -831,7 +842,7 @@ module.exports = function(app) {
                 }));
                 return;
             }
-            if (realname) realname = realname.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ').replace(/</, '').replace(/>/, '').replace(/\"/, '');
+            if (realname) realname = realname.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/</, '').replace(/>/, '').replace(/\"/, '');
             if (realname && !realname.match(/^.{1,40}$/)) {
                 res.send(JSON.stringify({
                     result: 0,
@@ -918,7 +929,9 @@ module.exports = function(app) {
                                     register_url: register_url
                                 });
                             }
-                            var rr = { result: 1 };
+                            var rr = {
+                                result: 1
+                            };
                             if (realname) {
                                 rr.realname = realname;
                                 req.session.auth.realname = realname;

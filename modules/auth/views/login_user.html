@@ -1,5 +1,6 @@
 <h1>!{root.data.title}</h1>
 <div id="auth_wrap">
+	<div style="display:none" id="auth_social"></div>
 	<div>!{root.lang.__('auth_hint')}</div>
 	<div class="uk-alert uk-alert-danger" id="taracot-login-error"></div>
 	<div class="uk-form uk-form-horizontal tc-margin-medium-top">
@@ -41,13 +42,19 @@
 		ajax_failed: "!{root.lang.__('ajax_failed')}",
 		invalid_username_syntax: "!{root.lang.__('invalid_username_syntax')}",
 		invalid_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
-		invalid_captcha: "!{root.lang.__('invalid_captcha')}"
+		invalid_captcha: "!{root.lang.__('invalid_captcha')}",
+		social_hint: "!{root.lang.__('social_hint')}"
 	};
 	var redirect_url = "!{root.redirect}" || "/auth/profile";
 	var captcha_type = "!{root.captcha}";
 	var captcha_req = !{root.captcha_req};
+	var config_auth = !{root.config_auth};
 	if (!captcha_req) $('#captcha_div').hide();
 	$('#taracot-login-error').hide();
 	$('#auth_loading').hide();
 </script>
+<script src="/js/helper.js"></script>
+<script src="/modules/auth/js/auth_user.js"></script>
+<!--
 <script src="/modules/auth/js/auth_user.min.js"></script>
+-->
