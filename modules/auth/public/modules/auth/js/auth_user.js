@@ -117,4 +117,13 @@ $('#auth_username').focus();
 
 $(document).ready(function() {
 	load_captcha();
+	var social_auth = '';
+	for (var key in config_auth) {
+		var request_uri = config_auth[key].requestURL.replace('[client_id]', config_auth[key].clientID).replace('[redirect_uri]', config_auth[key].callbackURL);
+		social_auth += '<a href="' + request_uri + '" class="uk-button"><i class="uk-icon-facebook"></i>&nbsp;Facebook</a>';
+    }
+    if (social_auth) {
+    	$('#auth_social').html('<div class="uk-margin-top">' + _lang_vars.social_hint + ':</div><div class="uk-margin-bottom uk-margin-top" uk-data-margin>' + social_auth + '</div>');
+    	$('#auth_social').show();
+    }
 });
