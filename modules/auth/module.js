@@ -11,7 +11,7 @@ module.exports = function(app) {
         extension: '.js'
     });
     // Social Auth: begin
-    var config_auth = require('../../config_auth');
+    var config_auth = app.get('config_auth');
     for (var key in config_auth) app.use('/auth/', require('./providers/' + key)(app));
     // Social Auth: end
     var gm = false;
@@ -66,7 +66,7 @@ module.exports = function(app) {
             description: '',
             extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
         };
-        var _config_auth = config_auth;
+        var _config_auth = JSON.parse(JSON.stringify(config_auth));
         for (var key in _config_auth) {
             if (_config_auth[key].clientSecret) delete _config_auth[key].clientSecret;
         }
@@ -859,11 +859,11 @@ module.exports = function(app) {
                 }));
                 return;
             }
-            username = username.toLowerCase();
+            var username_auth = username.toLowerCase();
             var md5 = crypto.createHash('md5');
             var password_hex = md5.update(config.salt + '.' + password).digest('hex');
             app.get('mongodb').collection('users').find({
-                username: username,
+                username_auth: username_auth,
                 password: password_hex
             }, {
                 limit: 1
@@ -946,6 +946,101 @@ module.exports = function(app) {
                 });
             });
         }
+    });
+    router.post('/oauth/process', function(req, res) {
+        res.setHeader('Content-Type', 'application/json');
+        i18nm.setLocale(req.i18n.getLocale());
+        if (!req.session.auth || req.session.auth.status < 1) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "",
+                error: i18nm.__("unauth")
+            }));
+            return;
+        }
+        if (!req.session.auth.need_finish) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "",
+                error: i18nm.__("unauth")
+            }));
+            return;
+        }
+        var username = req.body.username_new;
+        var password = req.body.password_new;
+        if (typeof password == 'undefined') {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("invalid_password_syntax")
+            }));
+            return;
+        }
+        if (!username.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("invalid_username_syntax")
+            }));
+            return;
+        }
+        if (!password.match(/^.{5,80}$/)) {
+            res.send(JSON.stringify({
+                result: 0,
+                field: "password_current",
+                error: i18nm.__("invalid_password_syntax")
+            }));
+            return;
+        }
+        var username_auth = username.toLowerCase();
+        password = crypto.createHash('md5').update(config.salt + '.' + password).digest('hex');
+        app.get('mongodb').collection('users').find({
+            username_auth: username
+        }, {
+            limit: 1
+        }).toArray(function(err, items) {
+            if (err) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "password_current",
+                    error: i18nm.__("ajax_failed")
+                }));
+                return;
+            }
+            if (items && items.length) {
+                res.send(JSON.stringify({
+                    result: 0,
+                    field: "set_username",
+                    error: i18nm.__("username_already_registered")
+                }));
+                return;
+            }
+            app.get('mongodb').collection('users').update({
+                _id: new ObjectId(req.session.auth._id)
+            }, {
+                $set: {
+                    username: username,
+                    username_auth: username_auth,
+                    need_finish: '',
+                    password: password
+                }
+            }, function(err) {
+                if (err) {
+                    res.send(JSON.stringify({
+                        result: 0,
+                        field: "set_username",
+                        error: i18nm.__("cannot_update")
+                    }));
+                    return;
+                }
+                req.session.auth.username = username;
+                req.session.auth.need_finish = '';
+                res.send(JSON.stringify({
+                    result: 1,
+                    username: username
+                }));
+            });
+        });
     });
     return router;
 };

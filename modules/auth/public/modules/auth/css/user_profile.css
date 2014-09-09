@@ -18,3 +18,10 @@
 	color: #fff;
 	outline: 0;
 }
+#taracot_oauth_finish_wrap {
+	margin-top: 30px;
+	margin-bottom: 25px;
+}
+.taracot_oauth_finish {
+	border: 1px solid #bbb;
+}
