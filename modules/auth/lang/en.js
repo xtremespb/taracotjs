@@ -30,6 +30,7 @@
 	"username_password_missing": "Username or password is missing",
 	"password_missing": "Password is missing",
 	"username_or_email_already_registered": "Username or email is already registered",
+	"username_already_registered": "Username is already registered",
 	"reg_success": "The first step of the registration process has been completed successfully.",
 	"important": "Important",
 	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions.",
@@ -88,7 +89,7 @@
 	"set_email_hint_2": "Make sure you enter the valid e-mail address. As you click the &quot;Save&quot; button, you will be logged out from website and will need to check your new mailbox for account activation instructions.",
 	"set_email_dlg": "Change your e-mail",
 	"new_email": "New e-mail address",
-	"invalid_email_syntax_or_not_match": "invalid_email_syntax_or_not_match",
+	"invalid_email_syntax_or_not_match": "Invalid email syntax",
 	"email_saved": "New e-mail address has been saved. Now you need to check your mailbox for account activation instructions.<br><br>You will be redirected to the login page in a few moments.",
 	"mail_change_email_on": "Change e-mail address on",
 	"mail_change_email_msg1": "You have changed your e-mail address to the current one.",
@@ -114,5 +115,10 @@
 	"password_strength_3": "Strong",
 	"password_strength_4": "Excellent",
 	"admin_panel": "Control panel",
-	"social_hint": "If you have one of the following social services account, you may authorize by clicking the buttons below"
+	"social_hint": "If you have one of the following social services account, you may authorize by clicking the buttons below",
+	"social_auth_finish_hint": "You've successfully finished your account registration. Your username and password are automatically generated, so you may want to change them to be able to log in locally.",
+	"set_username_password": "Set username and password",
+	"set_username_password_hint": "Please enter the username and password you will use on the website. Please note that you can set your username just once.",
+	"username_password_saved": "Username and password are set",
+	"unauth": "You are not auhorized to perform the requested operation"
 }

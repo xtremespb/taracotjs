@@ -5,6 +5,7 @@
 
 var express = require('express');
 var config = require('./config');
+var config_auth = require('./config_auth');
 var version = require('./version');
 var load_modules = require('./load_modules');
 config.taracotjs = version.taracotjs;
@@ -67,6 +68,7 @@ if (redis_client) {
 // Set variables
 
 app.set('config', config);
+app.set('config_auth', config_auth);
 app.set('express', express);
 app.set('cp', cp);
 app.set('auth-core', auth);

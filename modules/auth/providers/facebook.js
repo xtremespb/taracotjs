@@ -1,6 +1,5 @@
 module.exports = function(app) {
     var router = app.get('express').Router();
-    var config_auth = require('../../../config_auth');
     var request = require('request');
     var crypto = require('crypto');
     var config = app.get('config');
@@ -9,30 +8,27 @@ module.exports = function(app) {
     if (app.get('config').graphicsmagick) {
         gm = require('gm');
     }
-
     router.get('/facebook', function(req, res) {
+        var config_auth = app.get('config_auth');
         var code = req.query.code;
         if (!code) return res.redirect(303, "/auth?reason=no_code&rnd=" + Math.random().toString().replace('.', ''));
-        var url = 'https://graph.facebook.com/oauth/access_token?client_id=' + config_auth.facebook.clientID + '&client_secret=' + config_auth.facebook.clientSecret + '&redirect_uri=' + config_auth.facebook.callbackURL + '&code=' + code + '&rnd=' + Math.random().toString().replace('.', '');
+        var url = 'https://graph.facebook.com/oauth/access_token?client_id=' + config_auth.facebook.clientID + '&client_secret=' + config_auth.facebook.clientSecret + '&redirect_uri=' + config_auth.facebook.callbackURL + '&code=' + code;
         request.get(url, function(error, response, body) {
-            if (error || !body) {
-                return res.redirect(303, "/auth?reason=no_response&rnd=" + Math.random().toString().replace('.', ''));
-            }
+            if (error || !body) return res.redirect(303, "/auth?reason=no_response&rnd=" + Math.random().toString().replace('.', ''));
             var res_arr1 = body.split(/&/);
             var data = {};
             for (var i = 0; i < res_arr1.length; i++) {
                 var res_arr2 = res_arr1[i].split(/=/);
                 if (res_arr2.length == 2) data[res_arr2[0]] = res_arr2[1];
             }
-            if (!data.access_token) return res.redirect(303, "/auth?reason=no_access_token&rnd=" + Math.random().toString().replace('.', ''));
+            if (!data.access_token) {
+                return res.send(config_auth);
+                return res.redirect(303, "/auth?reason=no_access_token&rnd=" + Math.random().toString().replace('.', ''));
+            }
             var data_url = 'https://graph.facebook.com/me?access_token=' + data.access_token;
             request.get(data_url, function(error, response, body) {
-                if (error || response.statusCode != 200) {
-                    // return res.send(body);
-                    return res.redirect(303, "/auth?reason=no_response_token&rnd=" + Math.random().toString().replace('.', ''));
-                }
+                if (error || response.statusCode != 200) return res.redirect(303, "/auth?reason=no_response_token&rnd=" + Math.random().toString().replace('.', ''));
                 var user_data = JSON.parse(body);
-                // return res.send(JSON.stringify(user_data));
                 app.get('mongodb').collection('users').find({
                     email: user_data.email
                 }, {
@@ -46,6 +42,7 @@ module.exports = function(app) {
                             realname: user_data.name,
                             email: user_data.email,
                             username_auth: 'fb_' + _now,
+                            need_finish: '1',
                             status: 1
                         };
                         app.get('mongodb').collection('users').insert(user, function(err, items) {
