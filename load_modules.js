@@ -61,6 +61,10 @@ var load_modules = {
 		name: 'search',
 		prefix: '/search/',
 		cp_prefix: ''
+	}, {
+		name: 'blog',
+		prefix: '',
+		cp_prefix: '/cp/blog/'
 	}]
 };
 

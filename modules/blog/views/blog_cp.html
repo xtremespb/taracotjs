@@ -1,0 +1,69 @@
+<h1>!{root.lang.__('module_name_cp')}</h1>
+<ul class="uk-tab" data-uk-tab="{connect:'#blog_tabs'}">
+    <li class="uk-active"><a href="">!{root.lang.__('mode')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_areas')}</a>
+    </li>
+</ul>
+<ul id="blog_tabs" class="uk-panel uk-panel-box uk-switcher taracot-blog-panel">
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('blog_mode_hint')}</div>
+        <ul class="uk-subnav uk-subnav-pill uk-alert taracot-blog-mode-select" data-uk-switcher="{connect:'#blog_mode'}">
+            <li id="blog_mode_private" class="taracot-blog-mode"><a href="">!{root.lang.__('blog_private')}</a>
+            </li>
+            <li id="blog_mode_moderation" class="taracot-blog-mode"><a href="">!{root.lang.__('blog_moderation')}</a>
+            </li>
+            <li id="blog_mode_public" class="taracot-blog-mode"><a href="">!{root.lang.__('blog_public')}</a>
+            </li>
+        </ul>
+        <ul id="blog_mode" class="uk-switcher uk-margin-top">
+            <li>!{root.lang.__('blog_private_desc')}</li>
+            <li>!{root.lang.__('blog_moderation_desc')}</li>
+            <li>!{root.lang.__('blog_public_desc')}</li>
+        </ul>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('blog_areas_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_area_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_area_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="blog_areas">
+            <thead>
+                <tr id="blog_areas_th">
+                    <th style="width:150px">!{root.lang.__('area_id')}</th>
+                </tr>
+            </thead>
+            <tbody id="blog_areas_tb">
+            </tbody>
+        </table>
+    </li>
+</ul>
+<div class="uk-margin-top">
+    <button class="uk-button" id="btn_save"><i class="uk-icon-save"></i>&nbsp;!{root.lang.__('save_all_changes')}</button>
+    <div class="uk-float-right uk-margin-top taracot_changes_hint">
+        <i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('changes_are_not_saved_immediately')}
+    </div>
+</div>
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    save_success: "!{root.lang.__('save_success')}",
+    confirm_delete_area: "!{root.lang.__('confirm_delete_area')}"
+};
+var locales = !{
+    root.locales
+};
+var init_mode = "!{root.init_mode}",
+    init_areas = !{
+        root.init_areas
+    };
+for (var i = 0; i < locales.length; i++) $('#blog_areas_th').append('<th>' + locales[i] + '</th>');
+$('#blog_areas_th').append('<th style="width:30px"></th>');
+if ($('#blog_areas tr').length > 1) {
+    $('#blog_areas').show();
+} else {
+    $('#blog_areas').hide();
+}
+</script>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/modules/blog/js/blog_cp.js"></script>

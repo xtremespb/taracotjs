@@ -30,5 +30,6 @@
 	"no_results_in_table": "No items found",
 	"email_exists": "Duplicate e-mail",
 	"username_exists": "Duplicate username",
-	"save_success": "Item has been successfully saved"
+	"save_success": "Item has been successfully saved",
+	"groups": "Groups (separated by comma)"
 }

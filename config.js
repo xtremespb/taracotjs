@@ -1,5 +1,7 @@
 var config = {
 	"port": "3000",
+	"gid": "",
+	"uid": "",
 	"layouts": {
 		"default": "index",
 		"avail": [

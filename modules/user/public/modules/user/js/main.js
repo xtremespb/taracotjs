@@ -73,17 +73,20 @@ var load_edit_data = function(id) {
 			if (data.status == 1) {
 				$('#taracot-modal-edit-wrap').removeClass('uk-hidden');
 				if (typeof data.user !== undefined) {
-					if (typeof data.user.username !== undefined) {
+					if (typeof data.user.username !== 'undefined') {
 						$('#username').val(data.user.username);
 					}
-					if (typeof data.user.realname !== undefined) {
+					if (typeof data.user.realname !== 'undefined') {
 						$('#realname').val(data.user.realname);
 					}
-					if (typeof data.user.email !== undefined) {
+					if (typeof data.user.email !== 'undefined') {
 						$('#email').val(data.user.email);
 					}
-					if (typeof data.user.status !== undefined) {
+					if (typeof data.user.status !== 'undefined') {
 						$('#status').val(data.user.status);
+					}
+					if (typeof data.user.groups !== 'undefined') {
+						$('#groups').val(data.user.groups);
 					}
 				}
 				$('#username').focus();
@@ -171,6 +174,7 @@ $('#taracot-edit-btn-save').click(function() {
 			email: $('#email').val(),
 			status: $('#status').val(),
 			password: $('#password').val(),
+			groups: $('#groups').val(),
 			id: current_id
 		},
 		dataType: "json",

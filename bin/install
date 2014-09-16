@@ -15,6 +15,8 @@ program
   .option('-j, --redisport [port]', 'Specify Redis port')
   .option('-p, --port [port]', 'Specify TaracotJS server port')
   .option('-u, --update', 'Version update (no database insertions)')
+  .option('-i, --uid [uid]', 'Set user ID')
+  .option('-g, --gid [gid]', 'Set group ID')
   .option('-s, --silent', 'Don\'t ask anything (perform silently)')
   .option('-d, --demo', 'Set demo server options (you won\'t need this)')
   .parse(process.argv);
@@ -23,6 +25,8 @@ var mongo_url = program.mongo || config.mongo.url;
 var redis_host = program.redishost || config.redis.host;
 var redis_port = program.redisport || config.redis.port;
 var port = program.port || config.port;
+var uid = program.uid || config.uid;
+var gid = program.gid || config.gid;
 
 async.series([
 		function (callback) {
@@ -70,11 +74,13 @@ async.series([
 			}
 		},
 		function (callback) {
-			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port) {
+			if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port || gid != config.gid || uid != config.uid) {
 				config.mongo.url = mongo_url;
 				config.redis.host = redis_host;
 				config.redis.port = redis_port;
 				config.port = port;
+				config.uid = uid;
+				config.gid = gid;
 				console.log("Saving changes to config.js file\n");
 				fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function (err) {
 					if (err) {

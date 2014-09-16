@@ -20,7 +20,9 @@ if (cluster.isMaster) {
   });
 } else {
 	var server = app.listen(app.get('port'), function() {
-	  console.log('TaracotJS server listening on port: ' + server.address().port);
+	  console.log('Worker listening on port: ' + server.address().port);
+	  if (config.gid) process.setgid(config.gid);
+	  if (config.uid) process.setuid(config.uid);
 	});
 }
 
