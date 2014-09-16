@@ -1,0 +1,27 @@
+.taracot-blog-form-hint {
+	font-size: 90%;
+	color: #666;
+}
+.taracot-blog-panel {
+	border-top: 0;
+	background-color: #fff;
+	padding: 8px;
+}
+ul#blog_tabs > li.uk-active > ul.uk-subnav > li > a {
+	color: #eee;
+	text-shadow: 0;
+	box-shadow: 0;
+}
+ul#blog_tabs > li.uk-active > ul.uk-subnav > li > a:hover {
+	color: #444;
+}
+ul#blog_tabs > li.uk-active > ul.uk-subnav > li.uk-active > a:hover {
+	color: #fff;
+}
+.uk-subnav-pill > li > a:hover, .uk-subnav-pill > li > a:focus {
+	text-shadow: 0px 0px 0px rgba(150, 150, 150, 0);
+}
+.taracot_changes_hint {
+	font-size: 90%;
+	color: #ee0000;
+}
