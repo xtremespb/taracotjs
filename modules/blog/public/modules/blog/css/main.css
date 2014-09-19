@@ -25,3 +25,13 @@ ul#blog_tabs > li.uk-active > ul.uk-subnav > li.uk-active > a:hover {
 	font-size: 90%;
 	color: #ee0000;
 }
+.wysibb-texarea, .wysibb-texarea:active {
+    border: none !important;
+    margin: 0 !important;
+    outline: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+.taracot-post-options {
+	background-color: #fff;
+}

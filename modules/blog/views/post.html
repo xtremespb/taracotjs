@@ -1,10 +1,73 @@
-<h1>!{root.lang.__('blog_post')}</h1>
-<div class="uk-form uk-form-stacked">
-    <div class="uk-form-row">
-        <label class="uk-form-label" for="post_title">!{root.lang.__('post_title')}</label>
-        <div class="uk-form-controls">
-        	<input type="text" id="post_title" class="uk-width-1-1 taracot_blog_post_field">
-        	<div class="uk-form-help-block taracot-blog-form-hint">!{root.lang.__('post_title_hint')}</div>
+<h1 id="post_head">!{root.lang.__('blog_post')}</h1>
+<div id="post_err_msg" style="display:none"></div>
+<div id="post_editor">
+	<div id="post_form_err" class="uk-alert uk-alert-danger" style="display:none"></div>
+    <div class="uk-form uk-form-stacked">
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="post_title">!{root.lang.__('post_title')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="post_title" class="uk-width-1-1 taracot_blog_post_field">
+                <div class="uk-form-help-block taracot-blog-form-hint">!{root.lang.__('post_title_hint')}</div>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="post_area">!{root.lang.__('post_area')}</label>
+            <div class="uk-form-controls">
+                <select id="post_area" class="taracot_blog_post_field"></select>
+                <div class="uk-form-help-block taracot-blog-form-hint">!{root.lang.__('post_area_hint')}</div>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="post_keywords">!{root.lang.__('post_keywords')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="post_keywords" class="uk-width-1-1 taracot_blog_post_field">
+                <div class="uk-form-help-block taracot-blog-form-hint">!{root.lang.__('post_keywords_hint')}</div>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="post_content">!{root.lang.__('post_content')}</label>
+            <div class="uk-form-controls">
+                <textarea id="post_content"></textarea>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label">!{root.lang.__('post_options')}</label>
+            <div class="uk-form-controls uk-panel uk-panel-box taracot-post-options">
+                <div>
+                    <label for="post_draft">
+                        <input type="checkbox" id="post_draft">&nbsp;!{root.lang.__('post_draft')}</label>
+                </div>
+                <div>
+                    <label for="post_comments">
+                        <input type="checkbox" id="post_comments" checked>&nbsp;!{root.lang.__('post_comments')}</label>
+                </div>
+            </div>
+        </div>
+        <div class="uk-margin-top">
+            <button class="uk-button uk-button-success" id="btn_post_save">!{root.lang.__('btn_post_save')}</button>
         </div>
     </div>
 </div>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/modules/blog/js/wysibb/jquery.wysibb.min.js"></script>
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    save_success: "!{root.lang.__('save_success')}",
+    edit_post:  "!{root.lang.__('edit_post')}",
+    invalid_title:  "!{root.lang.__('invalid_title')}",
+    invalid_keywords: "!{root.lang.__('invalid_keywords')}",
+    invalid_content:  "!{root.lang.__('invalid_content')}"
+};
+var blog_mode = "!{root.blog_mode}",
+    blog_areas = !{
+        root.blog_areas
+    },
+	locale = "!{root.locale}",
+	blog_data = !{root.blog_data};
+for (var i = 0; i < blog_areas.length; i++) {
+	$('#post_area').append('<option value="' + blog_areas[i].id + '">' + blog_areas[i][locale] + '</option>');
+
+}
+</script>
+<script src="/modules/blog/js/blog_post.js"></script>
