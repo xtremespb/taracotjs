@@ -5,7 +5,7 @@
 	text-align: left;
 }
 .taracot-blog-post-title {
-	font-size: 180%;
+	font-size: 200%;
 }
 .taracot-blog-post-title > a {
 	text-decoration: none;
@@ -25,10 +25,12 @@
 .taracot-blog-post-keywords {
 	color: #444;
 	font-size: 90%;
-	margin-top: 10px;
 }
 .taracot-blog-post-area {
 	margin-top: 6px;
 	margin-bottom: 15px;
 	font-size: 90%;
+}
+.taracot-blog-post-content {
+	margin-bottom: 10px;
 }

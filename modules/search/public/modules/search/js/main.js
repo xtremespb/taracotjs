@@ -53,7 +53,7 @@ var render_results = function(data, total) {
         var title = data[i][0],
             desc = data[i][1],
             url = data[i][2];
-        $('#search_results').append('<div uk-data-margin><div><a href="' + url + '" class="taracot-search-res-title">' + title + '</a><div><a href="' + url + '" class="taracot-search-res-link">' + window.location.protocol + '//' + window.location.host + url + '</a></div><div class="taracot-search-res-desc uk-margin-bottom">' + desc + '</div></div>');
+        $('#search_results').append('<div data-uk-margin><div><a href="' + url + '" class="taracot-search-res-title">' + title + '</a><div><a href="' + url + '" class="taracot-search-res-link">' + window.location.protocol + '//' + window.location.host + url + '</a></div><div class="taracot-search-res-desc uk-margin-bottom">' + desc + '</div></div>');
     }
     if (!data.length) {
         $('#search_results').html(_lang_vars.no_results);

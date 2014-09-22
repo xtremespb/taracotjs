@@ -38,5 +38,9 @@
 	"unable_to_find_post": "Unable to find the requested post",
 	"blog_error": "Blog error",
 	"invalid_skip_value": "Invalid query value provided. Please check your query or try again in a few moments.",
-	"unauth": "Not authorized"
+	"unauth": "Not authorized",
+	"post_not_found": "The requested post couldn't be found, or you may have no access rights to requested post.",
+	"read_more": "Read more",
+	"delete_post": "Delete post",
+	"post_del_confirm": "Are you sure to delete the current post?"
 }
