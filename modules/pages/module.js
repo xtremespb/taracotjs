@@ -8,14 +8,15 @@ module.exports = function(app) {
 	});
 	router.get(/(.*)/, function(req, res, next) {
 		i18nm.setLocale(req.i18n.getLocale());
-		var url_parts = req.params[0].split('/');
+		var param = req.params[0];
+		var url_parts = param.split('/');
 		url_parts.forEach(function(fn) {
 			if (fn.match(/ /)) return next(); // whitespace
 			if (fn.match(/^[\^<>\/\:\"\\\|\?\*\x00-\x1f]+$/)) return next(); // invalid characters
 		});
 		var fd1 = url_parts.join('/');
 		var fn1 = '';
-		var fd2 = req.params[0].split('/').slice(0, -1).join('/') || '/';
+		var fd2 = param.split('/').slice(0, -1).join('/') || '/';
 		var fn2 = url_parts[url_parts.length - 1];
 		var find_query = {
 			plang: req.i18n.getLocale(),

@@ -842,7 +842,7 @@ module.exports = function(app) {
                 }));
                 return;
             }
-            if (realname) realname = realname.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/</, '').replace(/>/, '').replace(/\"/, '');
+            if (realname) realname = realname.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '');
             if (realname && !realname.match(/^.{1,40}$/)) {
                 res.send(JSON.stringify({
                     result: 0,

@@ -126,7 +126,7 @@ $(document).ready(function() {
 		social_auth += '<a href="' + request_uri + '" class="uk-button"><i class="uk-icon-' + icon + '"></i>&nbsp;' + snn + '</a>&nbsp;';
     }
     if (social_auth) {
-    	$('#auth_social').html('<div class="uk-margin-top">' + _lang_vars.social_hint + ':</div><div class="uk-margin-bottom uk-margin-top" uk-data-margin>' + social_auth + '</div>');
+    	$('#auth_social').html('<div class="uk-margin-top">' + _lang_vars.social_hint + ':</div><div class="uk-margin-bottom uk-margin-top" data-uk-margin>' + social_auth + '</div>');
     	$('#auth_social').show();
     }
 });

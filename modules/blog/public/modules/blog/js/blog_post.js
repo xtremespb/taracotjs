@@ -5,10 +5,10 @@ $('#btn_post_save').click(function() {
     var post_area = $('#post_area').val();
     var post_keywords = $('#post_keywords').val();
     var post_content = $('#post_content').bbcode();
-    var post_draft = false;
-    if ($("#post_draft").is(':checked')) post_draft = true;
-    var post_comments = false;
-    if ($("#post_comments").is(':checked')) post_comments = true;
+    var post_draft = '';
+    if ($("#post_draft").is(':checked')) post_draft = '1';
+    var post_comments = '';
+    if ($("#post_comments").is(':checked')) post_comments = '1';
     // Check values
     $('.taracot_blog_post_field').each(function() {
         $(this).removeClass('uk-form-danger');
@@ -58,10 +58,10 @@ $('#btn_post_save').click(function() {
             if (data.status == 1) {
 
             } else {
-            	$('#post_form_err').html(_lang_vars.ajax_failed);
-            	if (data.error) $('#post_form_err').html(data.error);
-            	$('#post_form_err').show();
-            	$(window).scrollTop($("#post_form_err").offset().top);
+                $('#post_form_err').html(_lang_vars.ajax_failed);
+                if (data.error) $('#post_form_err').html(data.error);
+                $('#post_form_err').show();
+                $(window).scrollTop($("#post_form_err").offset().top);
             }
         },
         error: function() {
@@ -75,9 +75,17 @@ $('#btn_post_save').click(function() {
 
 $(document).ready(function() {
     var wbbOpt = {};
-    $("#post_content").wysibb(wbbOpt);
-    if (typeof blog_data != 'undefined') {
-        $('#blog_head').html(_lang_vars.edit_post);
+    if (blog_data) {
+        $('#post_head').html(_lang_vars.edit_post);
+        if (blog_data.post_title) $('#post_title').val(blog_data.post_title);
+        if (blog_data.post_area) $('#post_area').val(blog_data.post_area);
+        if (blog_data.post_keywords) $('#post_keywords').val(blog_data.post_keywords);
+        if (blog_data.post_content) $('#post_content').val(blog_data.post_content);
+        $('#post_draft').prop('checked', false);
+        if (blog_data.post_draft) $('#post_draft').prop('checked', true);
+        $('#post_comments').prop('checked', false);
+        if (blog_data.post_comments) $('#post_comments').prop('checked', true);
     }
+    $("#post_content").wysibb(wbbOpt);
     $('#post_title').focus();
 });

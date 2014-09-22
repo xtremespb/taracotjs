@@ -36,11 +36,6 @@ var load_modules = {
 		cp_prefix: '/cp/browse/',
 		hidden: true
 	}, {
-		name: 'pages',
-		prefix: '',
-		cp_id: 'pages',
-		cp_prefix: '/cp/pages/'
-	}, {
 		name: 'menu',
 		prefix: '',
 		cp_id: 'menu',
@@ -65,6 +60,11 @@ var load_modules = {
 		name: 'blog',
 		prefix: '',
 		cp_prefix: '/cp/blog/'
+	}, {
+		name: 'pages',
+		prefix: '',
+		cp_id: 'pages',
+		cp_prefix: '/cp/pages/'
 	}]
 };
 
