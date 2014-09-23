@@ -1,5 +1,9 @@
 <h1 id="post_head">!{root.lang.__('blog_post')}</h1>
 <div id="post_err_msg" style="display:none"></div>
+<div id="post_success_msg" style="display:none">
+    !{root.lang.__('post_has_been_saved')}
+    <div class="uk-margin-top"><a href="#" class="uk-button" id="post_success_link">!{root.lang.__('go_to_post')}</a></div>
+</div>
 <div id="post_editor">
 	<div id="post_form_err" class="uk-alert uk-alert-danger" style="display:none"></div>
     <div class="uk-form uk-form-stacked">
@@ -44,7 +48,8 @@
             </div>
         </div>
         <div class="uk-margin-top">
-            <button class="uk-button uk-button-success" id="btn_post_save">!{root.lang.__('btn_post_save')}</button>
+            <button class="uk-button uk-button-success" id="btn_post_save">!{root.lang.__('btn_post_save')}</button>&nbsp;
+            <a class="uk-button" href="/blog">!{root.lang.__('btn_cancel')}</a>
         </div>
     </div>
 </div>
@@ -70,4 +75,5 @@ for (var i = 0; i < blog_areas.length; i++) {
 
 }
 </script>
+<script src="/js/helper.js"></script>
 <script src="/modules/blog/js/blog_post.js"></script>

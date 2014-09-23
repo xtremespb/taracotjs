@@ -15,12 +15,19 @@ module.exports = function(app) {
         extension: '.js'
     });
 
-    router.get(/^\/blog(\/(keywords|area)\/(.*))?\/?$/, function(req, res) {
+    //
+    // Load blog feed based on user query
+    //
+
+    router.get(/^\/blog(\/(keywords|area|user)\/(.*))?\/?$/, function(req, res) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
         var query = {
             post_lang: _locale,
             post_draft: {
+                $ne: '1'
+            },
+            post_deleted: {
                 $ne: '1'
             }
         };
@@ -44,6 +51,14 @@ module.exports = function(app) {
             }
             if (req.params[1] == 'keywords') {
                 var keyword = String(req.params[2]).replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\//g, '');
+                if (keyword && keyword.length > 2 && keyword.length < 50) {
+                    query.post_keywords = new RegExp('(^|, )' + keyword + '($|,)');
+                    blog_page_url = '/blog/keyword/' + keyword + '?page=';
+                }
+            }
+            if (req.params[1] == 'user') {
+                var user = String(req.params[2]);
+
                 if (keyword && keyword.length > 2 && keyword.length < 50) {
                     query.post_keywords = new RegExp('(^|, )' + keyword + '($|,)');
                     blog_page_url = '/blog/keyword/' + keyword + '?page=';
@@ -274,11 +289,34 @@ module.exports = function(app) {
         }); // count
     });
 
+    //
+    // Create new post (GUI)
+    //
+
     router.get('/blog/post', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
         var mode = app.set('settings').blog_mode || 'private',
             areas = app.set('settings').blog_areas || '[]';
+
+        if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect = '/blog/post';
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+
+        if (mode == 'private') {
+            var allow = false;
+            if (req.session.auth.status == 2) allow = true;
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_post) allow = true;
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+            if (!allow) return render_page(i18nm.__('blog_error'), i18nm.__('unauth_to_create_post'), req, res, 'error');
+        }
+
+        console.log(mode);
+        console.log(req.session.auth.status);
+        console.log(req.session.auth.groups_hash);
+
         var data = {
             title: i18nm.__('blog_post'),
             page_title: i18nm.__('blog_post'),
@@ -298,6 +336,10 @@ module.exports = function(app) {
         return app.get('renderer').render(res, undefined, data, req);
     });
 
+    //
+    // Save changes to post (or create new post) (AJAX)
+    //
+
     router.post('/blog/post/save', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         var rep = {
@@ -308,6 +350,18 @@ module.exports = function(app) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
+        }
+        var mode = app.set('settings').blog_mode || 'private';
+        if (mode == 'private') {
+            var allow = false;
+            if (req.session.auth.status == 2) allow = true;
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_post) allow = true;
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+            if (!allow) {
+                rep.status = 0;
+                rep.error = i18nm.__("unauth_to_create_post");
+                return res.send(JSON.stringify(rep));
+            }
         }
         var post_id = req.body.post_id,
             post_title = req.body.post_title,
@@ -370,13 +424,13 @@ module.exports = function(app) {
             post_content_cut_html = '',
             cut = 0;
         var bbcode_post = xbbcode.process({
-            text: post_content.replace(/\[cut\]/ig, ""),
+            text: post_content.replace(/\[cut\]/ig, "").replace(/\[\/\*\]/g, ''),
             removeMisalignedTags: true,
             addInLineBreaks: true
         });
         if (!bbcode_post || bbcode_post.error) {
             rep.status = 0;
-            rep.error = i18nm.__(bbcode_post.error);
+            rep.error = i18nm.__('bbcode_process_failed');
             return res.send(JSON.stringify(rep));
         }
         post_content_html = bbcode_post.html;
@@ -407,7 +461,6 @@ module.exports = function(app) {
             post_draft: post_draft,
             post_comments: post_comments
         };
-        console.log(update);
         if (post_id) { // Save changes to the old post
             app.get('mongodb').collection('blog').find({
                 _id: new ObjectId(post_id)
@@ -420,6 +473,18 @@ module.exports = function(app) {
                     rep.status = 0;
                     rep.error = i18nm.__("unable_to_find_post");
                     return res.send(JSON.stringify(rep));
+                }
+                var id_session = String(req.session.auth._id);
+                var id_post =  String(items[0].post_user_id);
+                if (id_session != id_post) {
+                    var allow = false;
+                    if (req.session.auth.status == 2) allow = true;
+                    if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+                    if (!allow) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("unauth_to_create_post");
+                        return res.send(JSON.stringify(rep));
+                    }
                 }
                 app.get('mongodb').collection('blog').update({
                     _id: new ObjectId(post_id)
@@ -438,17 +503,22 @@ module.exports = function(app) {
             update.post_timestamp = Date.now();
             update.post_user_id = req.session.auth._id;
             update.post_lang = _locale;
+            update.post_deleted = '';
             app.get('mongodb').collection('blog').insert(update, function(_err, _items) {
                 if (_err) {
                     rep.status = 0;
                     return res.send(JSON.stringify(rep));
                 }
                 // Success
+                if (_items[0]._id) rep.post_id = _items[0]._id.toHexString();
                 return res.send(JSON.stringify(rep));
             });
         }
-        return res.send(JSON.stringify(rep));
     });
+
+    //
+    // View post (GUI)
+    //
 
     router.get('/blog/post/:id', function(req, res, next) {
         var _locale = req.i18n.getLocale();
@@ -508,7 +578,9 @@ module.exports = function(app) {
                     keywords = keywords.replace(/, /, '');
                 }
                 var buttons = '';
-                if (req.session.auth._id === items[0].post_user_id) {
+                var id_session = String(req.session.auth._id);
+                var id_post =  String(items[0].post_user_id);
+                if (req.session.auth && id_session === id_post) {
                     buttons += parts_button_class(gaikan, {
                         icon: 'pencil',
                         text: i18nm.__('edit_post'),
@@ -516,7 +588,7 @@ module.exports = function(app) {
                         url: '/blog/post/edit/' + items[0]._id.toHexString()
                     }, undefined);
                 }
-                if (req.session.auth.status == 2) {
+                if (req.session.auth && req.session.auth.status == 2) {
                     buttons += parts_button_delete_post(gaikan, {
                         text: i18nm.__('delete_post'),
                         post_del_confirm: i18nm.__('post_del_confirm'),
@@ -559,6 +631,10 @@ module.exports = function(app) {
         });
     });
 
+    //
+    // Edit post (GUI)
+    //
+
     router.get('/blog/post/edit/:id', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
@@ -569,6 +645,14 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err) return render_page(i18nm.__('blog_error'), i18nm.__('db_request_failed'), req, res, 'error');
             if (!items || !items.length) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
+            var id_session = String(req.session.auth._id),
+                id_post =  String(items[0].post_user_id);
+            if (id_session != id_post) {
+                var allow = false;
+                if (req.session.auth.status == 2) allow = true;
+                if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+                if (!allow) return render_page(i18nm.__('blog_error'), i18nm.__('unauth_to_edit_post'), req, res, 'error');
+            }
             var mode = app.set('settings').blog_mode || 'private',
                 areas = app.set('settings').blog_areas || '[]';
             var data = {
@@ -594,6 +678,10 @@ module.exports = function(app) {
             return app.get('renderer').render(res, undefined, data, req);
         });
     });
+
+    //
+    // Helper functions
+    //
 
     var render_page = function(title, body, req, res, template) {
         if (!template) template = 'blog';

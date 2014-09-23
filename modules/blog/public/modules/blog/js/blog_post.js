@@ -56,7 +56,15 @@ $('#btn_post_save').click(function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status == 1) {
-
+                $('#post_editor').hide();
+                $('#post_success_msg').show();
+                if (data.post_id || post_id) {
+                    var id = data.post_id || post_id;
+                    $('#post_success_link').attr('href', '/blog/post/' + id);
+                    $('#post_success_link').show();
+                } else {
+                    $('#post_success_link').hide();
+                }
             } else {
                 $('#post_form_err').html(_lang_vars.ajax_failed);
                 if (data.error) $('#post_form_err').html(data.error);
@@ -74,7 +82,19 @@ $('#btn_post_save').click(function() {
 });
 
 $(document).ready(function() {
-    var wbbOpt = {};
+    var wbbOpt = {
+        imgupload: false,
+        buttons: "bold,italic,underline,strike,sup,sub,|,img,video,link,|,bullist,numlist,|,fontcolor,fontsize,fontfamily,|,justifyleft,justifycenter,justifyright,|,quote,code,offtop,table,removeFormat,cutpage",
+        allButtons: {
+            cutpage: {
+                title: 'CUT',
+                buttonText: 'CUT',
+                transform: {
+                    '<div class="uk-border-circle" style="display:inline-block;background-color:#444;color:#eee;padding:3px 6px 3px 6px"><i class="uk-icon-cut"></i></div>': '[cut]'
+                }
+            }
+        }
+    };
     if (blog_data) {
         $('#post_head').html(_lang_vars.edit_post);
         if (blog_data.post_title) $('#post_title').val(blog_data.post_title);
@@ -88,4 +108,11 @@ $(document).ready(function() {
     }
     $("#post_content").wysibb(wbbOpt);
     $('#post_title').focus();
+});
+
+$('.taracot_blog_post_field').bind('keypress', function(e) {
+    if (submitOnEnter(e)) {
+        $('#btn_post_save').click();
+        e.preventDefault();
+    }
 });

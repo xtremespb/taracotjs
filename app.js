@@ -273,10 +273,9 @@ app.use(function(req, res, next) {
 // Load authorization data
 
 app.use(function(req, res, next) {
-    if (!req.sesison || !req.session.auth_check_timestamp) {
+    if (req.sesison && !req.session.auth_check_timestamp) {
         if (req.session) req.session.auth_check_timestamp = Date.now();
-        next();
-        return;
+        return next();
     }
     if (Date.now() - req.session.auth_check_timestamp >= 10000) {
         req.session.auth_check_timestamp = Date.now();
@@ -288,10 +287,10 @@ app.use(function(req, res, next) {
                     req.session.auth = auth;
                 }
             }
-            next();
+            return next();
         });
     } else {
-        next();
+        return next();
     }
 });
 

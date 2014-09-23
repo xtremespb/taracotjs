@@ -42,5 +42,11 @@
 	"post_not_found": "The requested post couldn't be found, or you may have no access rights to requested post.",
 	"read_more": "Read more",
 	"delete_post": "Delete post",
-	"post_del_confirm": "Are you sure to delete the current post?"
+	"post_del_confirm": "Are you sure to delete the current post?",
+	"post_has_been_saved": "Your post has been saved successfully.",
+	"go_to_post": "Go to post",
+	"bbcode_process_failed": "Error while processing BBCode tags. Please check your post and try again.",
+	"btn_cancel": "Cancel",
+	"unauth_to_create_post": "The blog is in private mode, and you are not authorized to create or edit posts. Please contact the website administrator if you consider this as a mistake.",
+	"unauth_to_edit_post": "You are not authorized to edit the requested post. Please contact website administrator if you think this is an error."
 }
