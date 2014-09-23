@@ -95,7 +95,7 @@ var XBBCODE = (function() {
     tags = {
         "b": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-b">';
+                return '<span class="taracot-bbcode-b">';
             },
             closeTag: function(params,content) {
                 return '</span>';
@@ -115,7 +115,7 @@ var XBBCODE = (function() {
         },
         "code": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-code">';
+                return '<span class="taracot-bbcode-code">';
             },
             closeTag: function(params,content) {
                 return '</span>';
@@ -145,7 +145,7 @@ var XBBCODE = (function() {
         },
         "i": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-i">';
+                return '<span class="taracot-bbcode-i">';
             },
             closeTag: function(params,content) {
                 return '</span>';
@@ -161,6 +161,13 @@ var XBBCODE = (function() {
                     myUrl = "";
                 }
 
+                if (params) {
+                    var data = params.substr(1).match(/width=(\d*),height=(\d*)/);
+                    if (data[1] && data[2]) {
+                        return '<img src="' + myUrl + '" style="width:'+data[1]+'px;height:'+data[2]+'px" />';
+                    }
+                }
+
                 return '<img src="' + myUrl + '" />';
             },
             closeTag: function(params,content) {
@@ -170,9 +177,17 @@ var XBBCODE = (function() {
         },
         "list": {
             openTag: function(params,content) {
-                return '<ul>';
+                var _st;
+                if (params) {
+                    _st = parseInt(params.substr(1));
+                    if (!_st || _st == "NaN") return '<ol>';
+                    return '<ol start="' + _st + '">'
+                } else {
+                    return '<ul>';
+                }
             },
             closeTag: function(params,content) {
+                if (params) return '</ol>';
                 return '</ul>';
             },
             restrictChildrenTo: ["*", "li"]
@@ -188,7 +203,7 @@ var XBBCODE = (function() {
         },
         "php": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-code">';
+                return '<span class="taracot-bbcode-code">';
             },
             closeTag: function(params,content) {
                 return '</span>';
@@ -197,7 +212,7 @@ var XBBCODE = (function() {
         },
         "quote": {
             openTag: function(params,content) {
-                return '<blockquote class="xbbcode-blockquote">';
+                return '<blockquote class="taracot-bbcode-blockquote">';
             },
             closeTag: function(params,content) {
                 return '</blockquote>';
@@ -205,29 +220,83 @@ var XBBCODE = (function() {
         },
         "s": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-s">';
+                return '<span class="taracot-bbcode-s">';
             },
             closeTag: function(params,content) {
                 return '</span>';
+            }
+        },
+        "left": {
+            openTag: function(params,content) {
+                return '<div class="taracot-bbcode-left">';
+            },
+            closeTag: function(params,content) {
+                return '</div>';
+            }
+        },
+        "right": {
+            openTag: function(params,content) {
+                return '<div class="taracot-bbcode-right">';
+            },
+            closeTag: function(params,content) {
+                return '</div>';
+            }
+        },
+        "center": {
+            openTag: function(params,content) {
+                return '<div class="taracot-bbcode-center">';
+            },
+            closeTag: function(params,content) {
+                return '</div>';
+            }
+        },
+        "sub": {
+            openTag: function(params,content) {
+                return '<sub>';
+            },
+            closeTag: function(params,content) {
+                return '</sub>';
+            }
+        },
+        "sup": {
+            openTag: function(params,content) {
+                return '<sup>';
+            },
+            closeTag: function(params,content) {
+                return '</sup>';
             }
         },
         "size": {
             openTag: function(params,content) {
-
                 var mySize = parseInt(params.substr(1),10) || 0;
-                if (mySize < 4 || mySize > 40) {
-                    mySize = 14;
-                }
-
-                return '<span class="xbbcode-size-' + mySize + '">';
+                return '<span class="taracot-bbcode-size-' + mySize + '">';
             },
             closeTag: function(params,content) {
                 return '</span>';
             }
         },
+        "font": {
+            openTag: function(params,content) {
+                var font = "'" + params.substr(1) + "'" || "'Helvetica Neue',Helvetica,Arial,sans-serif";
+                return '<span style="font-family:' + font + '">';
+            },
+            closeTag: function(params,content) {
+                return '</span>';
+            }
+        },
+        "video": {
+            openTag: function(params,content) {
+                var video = content || '';
+                return '<iframe width="560" height="315" src="//www.youtube.com/embed/' + video + '" frameborder="0" allowfullscreen>';
+            },
+            closeTag: function(params,content) {
+                return '</iframe>';
+            },
+            displayContent: false
+        },
         "table": {
             openTag: function(params,content) {
-                return '<table class="xbbcode-table">';
+                return '<table class="taracot-bbcode-table">';
             },
             closeTag: function(params,content) {
                 return '</table>';
@@ -256,7 +325,7 @@ var XBBCODE = (function() {
         },
         "thead": {
             openTag: function(params,content) {
-                return '<thead class="xbbcode-thead">';
+                return '<thead class="taracot-bbcode-thead">';
             },
             closeTag: function(params,content) {
                 return '</thead>';
@@ -266,7 +335,7 @@ var XBBCODE = (function() {
         },
         "td": {
             openTag: function(params,content) {
-                return '<td class="xbbcode-td">';
+                return '<td class="taracot-bbcode-td">';
             },
             closeTag: function(params,content) {
                 return '</td>';
@@ -275,7 +344,7 @@ var XBBCODE = (function() {
         },
         "th": {
             openTag: function(params,content) {
-                return '<td class="xbbcode-th">';
+                return '<td class="taracot-bbcode-th">';
             },
             closeTag: function(params,content) {
                 return '</td>';
@@ -284,7 +353,7 @@ var XBBCODE = (function() {
         },
         "tr": {
             openTag: function(params,content) {
-                return '<tr class="xbbcode-tr">';
+                return '<tr class="taracot-bbcode-tr">';
             },
             closeTag: function(params,content) {
                 return '</tr>';
@@ -294,7 +363,7 @@ var XBBCODE = (function() {
         },
         "u": {
             openTag: function(params,content) {
-                return '<span class="xbbcode-u">';
+                return '<span class="taracot-bbcode-u">';
             },
             closeTag: function(params,content) {
                 return '</span>';

@@ -1,36 +1,86 @@
 .taracot-blog-badge {
-	font-size: 85%;
+    font-size: 85%;
 }
 .uk-pagination {
-	text-align: left;
+    text-align: left;
 }
 .taracot-blog-post-title {
-	font-size: 200%;
+    font-size: 32px;
 }
 .taracot-blog-post-title > a {
-	text-decoration: none;
-	color: #444;
-	outline: 0;
+    text-decoration: none;
+    color: #444;
+    outline: 0;
 }
 .taracot-blog-post-badges {
-	margin-top: 5px;
-	margin-bottom: 25px;
-	display: inline-block;
-	border: 1px solid #ccc;
-	padding: 3px 3px 3px 6px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 3px 3px 3px 6px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 .taracot-blog-post-keywords {
-	color: #444;
-	font-size: 90%;
+    color: #444;
+    font-size: 90%;
 }
 .taracot-blog-post-area {
-	margin-top: 6px;
-	margin-bottom: 15px;
-	font-size: 90%;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    font-size: 90%;
 }
 .taracot-blog-post-content {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
+}
+/* BBCode */
+
+.taracot-bbcode-b {
+    font-weight: bold;
+}
+.taracot-bbcode-blockquote {}
+
+.taracot-bbcode-code {
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+.taracot-bbcode-i {
+    font-style: italic;
+}
+.taracot-bbcode-s {
+    text-decoration: line-through;
+}
+.taracot-bbcode-size-50 {
+    font-size: 50%;
+}
+.taracot-bbcode-size-85 {
+    font-size: 85%;
+}
+.taracot-bbcode-size-100 {
+    font-size: 100%;
+}
+.taracot-bbcode-size-150 {
+    font-size: 150%;
+}
+.taracot-bbcode-size-200 {
+    font-size: 200%;
+}
+.taracot-bbcode-u {
+    text-decoration: underline;
+}
+.taracot-bbcode-table {
+    border-collapse: collapse;
+}
+.taracot-bbcode-tr {} .taracot-bbcode-table, .taracot-bbcode-th, .taracot-bbcode-td {
+    border: 1px solid #666;
+}
+.taracot-bbcode-left {
+	text-align: left;
+}
+.taracot-bbcode-right {
+	text-align: right;
+}
+.taracot-bbcode-center {
+	text-align: center;
 }
