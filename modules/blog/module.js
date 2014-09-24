@@ -19,7 +19,7 @@ module.exports = function(app) {
     // Load blog feed based on user query
     //
 
-    router.get(/^\/blog(\/(keywords|area|user)\/(.*))?\/?$/, function(req, res) {
+    router.get(/^\/blog(\/(keywords|area|user|moderation)\/(.*))?\/?$/, function(req, res) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
         var query = {
@@ -29,264 +29,288 @@ module.exports = function(app) {
             },
             post_deleted: {
                 $ne: '1'
-            }
+            },
+            post_moderated: '1'
         };
         var blog_page_url = '/blog?page=';
-        if (req.params && req.params[1] && req.params[2]) {
-            if (req.params[1] == 'area') {
-                var blog_areas;
-                try {
-                    blog_areas = JSON.parse(app.set('settings').blog_areas);
-                } catch (ex) {
-                    blog_areas = [];
+        var check_user = '';
+        if (req.params && req.params[1] && req.params[2] && req.params[1] == 'user') check_user = String(req.params[2]).replace(/\//, '');
+        get_id_by_username(check_user, function(check_user_data) {
+            if (req.params && req.params[1] && req.params[2]) {
+                if (req.params[1] == 'area') {
+                    var blog_areas;
+                    try {
+                        blog_areas = JSON.parse(app.set('settings').blog_areas);
+                    } catch (ex) {
+                        blog_areas = [];
+                    }
+                    var area = '';
+                    for (var a = 0; a < blog_areas.length; a++) {
+                        if (blog_areas[a].id == req.params[2]) area = blog_areas[a].id;
+                    }
+                    if (area) {
+                        query.post_area = area;
+                        blog_page_url = '/blog/area/' + area + '?page=';
+                    }
                 }
-                var area = '';
-                for (var a = 0; a < blog_areas.length; a++) {
-                    if (blog_areas[a].id == req.params[2]) area = blog_areas[a].id;
+                if (req.params[1] == 'keywords') {
+                    var keyword = String(req.params[2]).replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\//g, '');
+                    if (keyword && keyword.length > 2 && keyword.length < 50) {
+                        query.post_keywords = new RegExp('(^|, )' + keyword + '($|,)');
+                        blog_page_url = '/blog/keyword/' + keyword + '?page=';
+                    }
                 }
-                if (area) {
-                    query.post_area = area;
-                    blog_page_url = '/blog/area/' + area + '?page=';
-                }
-            }
-            if (req.params[1] == 'keywords') {
-                var keyword = String(req.params[2]).replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\//g, '');
-                if (keyword && keyword.length > 2 && keyword.length < 50) {
-                    query.post_keywords = new RegExp('(^|, )' + keyword + '($|,)');
-                    blog_page_url = '/blog/keyword/' + keyword + '?page=';
-                }
-            }
-            if (req.params[1] == 'user') {
-                var user = String(req.params[2]);
-
-                if (keyword && keyword.length > 2 && keyword.length < 50) {
-                    query.post_keywords = new RegExp('(^|, )' + keyword + '($|,)');
-                    blog_page_url = '/blog/keyword/' + keyword + '?page=';
-                }
-            }
-        }
-        var total = 0,
-            page = parseInt(req.query.page) || 1,
-            max_pages = 10,
-            items_per_page = 10;
-        if (page && (page == "NaN" || page < 0)) return render_page(i18nm.__('blog_error'), i18nm.__('invalid_skip_value'), req, res, 'error');
-        var skip = (page - 1) * items_per_page;
-        app.get('mongodb').collection('blog').find(query).count(function(err, items_count) {
-            if (!err && items_count > 0) {
-                var data = app.get('mongodb').collection('blog').find(query, {
-                    skip: skip,
-                    limit: items_per_page
-                }).sort({
-                    post_timestamp: -1
-                }).toArray(function(err, items) {
-                    // Error handler
-                    // if (err) return res.send(err);
-                    if (items && items.length) {
-                        var users_arr = [],
-                            users_hash = {};
-                        for (var u = 0; u < items.length; u++) {
-                            if (!users_hash[items[u].post_user_id]) {
-                                users_hash[items[u].post_user_id] = 1;
-                                users_arr.push({
-                                    _id: new ObjectId(items[u].post_user_id)
-                                });
-                            }
+                if (req.params[1] == 'user') {
+                    if (check_user_data && check_user_data._id) {
+                        query.post_user_id = check_user_data._id.toHexString();
+                        blog_page_url = '/blog/user/' + check_user + '?page=';
+                        if (String(check_user_data._id.toHexString()) === String(req.session.auth._id)) {
+                            delete query.post_draft;
+                            delete query.post_moderated;
                         }
-                        app.get('mongodb').collection('users').find({
-                            $or: users_arr
-                        }).toArray(function(err, users_db) {
-                            var usernames = {};
-                            if (users_db) {
-                                for (var k = 0; k < users_db.length; k++) usernames[users_db[k]._id] = users_db[k].username;
-                            }
-                            var blog_feed = '';
-                            var parts_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_post.html');
-                            var parts_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html');
-                            var parts_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html');
-                            var parts_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html');
-                            var parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html');
-                            var parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html');
-                            var parts_keyword = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_keyword.html');
-                            var parts_button = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button.html');
-                            var parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html');
-                            var blog_areas;
-                            try {
-                                blog_areas = JSON.parse(app.set('settings').blog_areas);
-                            } catch (ex) {
-                                blog_areas = [];
-                            }
-                            for (var i = 0; i < items.length; i++) {
-                                if (items[i].post_title) items[i].post_title = items[i].post_title.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-                                if (items[i].post_keywords) items[i].post_keywords = items[i].post_keywords.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-                                if (items[i].post_area) items[i].post_area = items[i].post_area.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-                                if (items[i].post_content) items[i].post_content = items[i].post_content.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                                var timestamp = '',
-                                    badges = '';
-                                if (items[i].post_timestamp) {
-                                    timestamp = moment(items[i].post_timestamp).locale(_locale).fromNow();
-                                } else {
-                                    timestamp = moment().locale(_locale).fromNow();
-                                }
-                                badges += parts_badge(gaikan, {
-                                    icon: 'clock-o',
-                                    text: timestamp
-                                }, undefined);
-                                if (usernames[items[i].post_user_id]) {
-                                    badges += parts_badge(gaikan, {
-                                        icon: 'user',
-                                        text: usernames[items[i].post_user_id]
-                                    }, undefined);
-                                }
-                                var keywords = '';
-                                if (items[i].post_keywords) {
-                                    var keywords_arr = items[i].post_keywords.split(',');
-                                    for (var kw = 0; kw < keywords_arr.length; kw++) {
-                                        var keyword = keywords_arr[kw].replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-                                        keywords += ', ' + parts_keyword(gaikan, {
-                                            url: '/blog/keywords/' + keyword,
-                                            text: keyword
+                    }
+                }
+                if (req.params[1] == 'moderation') {
+                    var allow = false;
+                    if (req.session.auth.status == 2) allow = true;
+                    if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+                    if (allow) {
+                        query.post_moderated = '';
+                        blog_page_url = '/blog/moderation/all/?page=';
+                    } else {
+                        return render_page(i18nm.__('blog_error'), i18nm.__('moderate_permission_denied'), req, res, 'error');
+                    }
+                }
+            }
+            var total = 0,
+                page = parseInt(req.query.page) || 1,
+                max_pages = 10,
+                items_per_page = 10;
+            if (page && (page == "NaN" || page < 0)) return render_page(i18nm.__('blog_error'), i18nm.__('invalid_skip_value'), req, res, 'error');
+            var skip = (page - 1) * items_per_page;
+            app.get('mongodb').collection('blog').find({
+                post_moderated: '',
+                post_deleted: '',
+                post_draft: ''
+            }).count(function(modreq_err, modreq_count) {
+                app.get('mongodb').collection('blog').find(query).count(function(err, items_count) {
+                    if (!err && items_count > 0) {
+                        var data = app.get('mongodb').collection('blog').find(query, {
+                            skip: skip,
+                            limit: items_per_page
+                        }).sort({
+                            post_timestamp: -1
+                        }).toArray(function(err, items) {
+                            // Error handler
+                            if (err) return render_page(i18nm.__('module_name'), i18nm.__('no_records_found'), req, res, 'error');
+                            if (items && items.length) {
+                                var users_arr = [],
+                                    users_hash = {};
+                                for (var u = 0; u < items.length; u++) {
+                                    if (!users_hash[items[u].post_user_id]) {
+                                        users_hash[items[u].post_user_id] = 1;
+                                        users_arr.push({
+                                            _id: new ObjectId(items[u].post_user_id)
                                         });
                                     }
-                                    keywords = keywords.replace(/, /, '');
                                 }
-                                var post_area = '';
-                                for (var a = 0; a < blog_areas.length; a++) {
-                                    if (blog_areas[a].id == items[i].post_area) post_area = blog_areas[a][_locale];
-                                }
-                                var content = items[i].post_content_html;
-                                if (items[i].post_cut) {
-                                    content = items[i].post_content_cut_html;
-                                }
-                                var buttons = '';
-                                if (items[i].post_cut) {
-                                    buttons += parts_button(gaikan, {
-                                        icon: 'angle-double-right',
-                                        text: i18nm.__('read_more'),
-                                        url: '/blog/post/' + items[0]._id.toHexString()
-                                    }, undefined);
-                                }
-                                if (buttons) {
-                                    buttons = parts_buttons_wrap(gaikan, {
-                                        buttons: buttons
-                                    }, undefined);
-                                }
-                                blog_feed += parts_post(gaikan, {
-                                    lang: i18nm,
-                                    post_title: items[i].post_title,
-                                    post_content: content,
-                                    post_area_id: items[i].post_area,
-                                    post_area: post_area,
-                                    post_keywords: keywords,
-                                    post_badges: badges,
-                                    buttons: buttons,
-                                    post_url: '/blog/post/' + items[i]._id.toHexString()
-                                }, undefined);
-                            }
-                            // Pagination begin
-                            var num_pages = Math.ceil(items_count / items_per_page);
-                            var pgnt = '';
-                            if (num_pages > 1) {
-                                if (num_pages > max_pages) {
-                                    if (page > 1) {
-                                        // pgnt += '<li id="taracot-pgnt-' + (page - 1) + '"><a href="#"><i class="uk-icon-angle-double-left"></i></a></li>';
-                                        var _p = page - 1;
-                                        pgnt += parts_page_normal(gaikan, {
-                                            url: blog_page_url + _p,
-                                            text: '«'
+                                app.get('mongodb').collection('users').find({
+                                    $or: users_arr
+                                }).toArray(function(err, users_db) {
+                                    var usernames = {};
+                                    if (users_db) {
+                                        for (var k = 0; k < users_db.length; k++) usernames[users_db[k]._id] = users_db[k].username;
+                                    }
+                                    var blog_feed = '';
+                                    var parts_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_post.html');
+                                    var parts_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html');
+                                    var parts_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html');
+                                    var parts_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html');
+                                    var parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html');
+                                    var parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html');
+                                    var parts_keyword = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_keyword.html');
+                                    var parts_button = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button.html');
+                                    var parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html');
+                                    var parts_moderation_alert = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_alert.html');
+                                    var blog_areas;
+                                    try {
+                                        blog_areas = JSON.parse(app.set('settings').blog_areas);
+                                    } catch (ex) {
+                                        blog_areas = [];
+                                    }
+                                    if (modreq_count && modreq_count > 0) {
+                                        blog_feed += parts_moderation_alert(gaikan, {
+                                            notice: i18nm.__('posts_avaiting_moderation'),
+                                            count: modreq_count
                                         }, undefined);
                                     }
-                                    if (page > 3) {
-                                        // pgnt += '<li id="taracot-pgnt-1"><a href="#">1</i></a></li>';
-                                        pgnt += parts_page_normal(gaikan, {
-                                            url: '/blog?page=1',
-                                            text: '1'
-                                        }, undefined);
-                                    }
-                                    var _st = page - 2;
-                                    if (_st < 1) {
-                                        _st = 1;
-                                    }
-                                    if (_st - 1 > 1) {
-                                        // pgnt += '<li>...</li>';
-                                        pgnt += parts_page_span(gaikan, {
-                                            class: 'taracot-dots',
-                                            text: '...'
-                                        }, undefined);
-                                    }
-                                    var _en = page + 2;
-                                    if (_en > num_pages) {
-                                        _en = num_pages;
-                                    }
-                                    for (var i = _st; i <= _en; i++) {
-                                        // pgnt += '<li id="taracot-pgnt-' + i + '"><a href="#">' + i + '</a></li>';
-                                        if (page == i) {
-                                            pgnt += parts_page_span(gaikan, {
-                                                class: 'active',
-                                                text: i
-                                            }, undefined);
+                                    for (var i = 0; i < items.length; i++) {
+                                        if (items[i].post_title) items[i].post_title = items[i].post_title.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                                        if (items[i].post_keywords) items[i].post_keywords = items[i].post_keywords.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                                        if (items[i].post_area) items[i].post_area = items[i].post_area.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                                        if (items[i].post_content) items[i].post_content = items[i].post_content.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                        var timestamp = '',
+                                            badges = '';
+                                        if (items[i].post_timestamp) {
+                                            timestamp = moment(items[i].post_timestamp).locale(_locale).fromNow();
                                         } else {
-                                            pgnt += parts_page_normal(gaikan, {
-                                                url: blog_page_url + i,
-                                                text: i
+                                            timestamp = moment().locale(_locale).fromNow();
+                                        }
+                                        badges += parts_badge(gaikan, {
+                                            icon: 'clock-o',
+                                            text: timestamp
+                                        }, undefined);
+                                        if (usernames[items[i].post_user_id]) {
+                                            badges += parts_badge(gaikan, {
+                                                icon: 'user',
+                                                text: usernames[items[i].post_user_id]
                                             }, undefined);
                                         }
-                                    }
-                                    if (_en < num_pages - 1) {
-                                        // pgnt += '<li><span>...</span></li>';
-                                        pgnt += parts_page_span(gaikan, {
-                                            class: 'taracot-dots',
-                                            text: '...'
-                                        }, undefined);
-                                    }
-                                    if (page <= num_pages - 3) {
-                                        // pgnt += '<li id="taracot-pgnt-' + num_pages + '"><a href="#">' + num_pages + '</a></li>';
-                                        pgnt += parts_page_normal(gaikan, {
-                                            url: blog_page_url + num_pages,
-                                            text: num_pages
-                                        }, undefined);
-                                    }
-                                    if (page < num_pages) {
-                                        // pgnt += '<li id="taracot-pgnt-' + (page + 1) + '"><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>';
-                                        var _p = page + 1;
-                                        pgnt += parts_page_normal(gaikan, {
-                                            url: blog_page_url + _p,
-                                            text: '»'
-                                        }, undefined);
-                                    }
-                                } else {
-                                    for (var i = 1; i <= num_pages; i++) {
-                                        // pgnt += '<li id="taracot-pgnt-' + i + '"><a href="#">' + i + '</a></li>';
-                                        if (i == page) {
-                                            pgnt += parts_page_span(gaikan, {
-                                                class: 'active',
-                                                text: i
-                                            }, undefined);
-                                        } else {
-                                            pgnt += parts_page_normal(gaikan, {
-                                                url: blog_page_url + i,
-                                                text: i
+                                        var keywords = '';
+                                        if (items[i].post_keywords) {
+                                            var keywords_arr = items[i].post_keywords.split(',');
+                                            for (var kw = 0; kw < keywords_arr.length; kw++) {
+                                                var keyword = keywords_arr[kw].replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+                                                keywords += ', ' + parts_keyword(gaikan, {
+                                                    url: '/blog/keywords/' + keyword,
+                                                    text: keyword
+                                                });
+                                            }
+                                            keywords = keywords.replace(/, /, '');
+                                        }
+                                        var post_area = '';
+                                        for (var a = 0; a < blog_areas.length; a++) {
+                                            if (blog_areas[a].id == items[i].post_area) post_area = blog_areas[a][_locale];
+                                        }
+                                        var content = items[i].post_content_html;
+                                        if (items[i].post_cut) {
+                                            content = items[i].post_content_cut_html;
+                                        }
+                                        var buttons = '';
+                                        if (items[i].post_cut) {
+                                            buttons += parts_button(gaikan, {
+                                                icon: 'angle-double-right',
+                                                text: i18nm.__('read_more'),
+                                                url: '/blog/post/' + items[0]._id.toHexString()
                                             }, undefined);
                                         }
+                                        if (buttons) {
+                                            buttons = parts_buttons_wrap(gaikan, {
+                                                buttons: buttons
+                                            }, undefined);
+                                        }
+                                        blog_feed += parts_post(gaikan, {
+                                            lang: i18nm,
+                                            post_title: items[i].post_title,
+                                            post_content: content,
+                                            post_area_id: items[i].post_area,
+                                            post_area: post_area,
+                                            post_keywords: keywords,
+                                            post_badges: badges,
+                                            buttons: buttons,
+                                            blog_text: i18nm.__('module_name'),
+                                            post_url: '/blog/post/' + items[i]._id.toHexString()
+                                        }, undefined);
                                     }
-                                }
-                                blog_feed += parts_pagination(gaikan, {
-                                    pages: pgnt
-                                }, undefined);
+                                    // Pagination begin
+                                    var num_pages = Math.ceil(items_count / items_per_page);
+                                    var pgnt = '';
+                                    if (num_pages > 1) {
+                                        if (num_pages > max_pages) {
+                                            if (page > 1) {
+                                                var _p = page - 1;
+                                                pgnt += parts_page_normal(gaikan, {
+                                                    url: blog_page_url + _p,
+                                                    text: '«'
+                                                }, undefined);
+                                            }
+                                            if (page > 3) {
+                                                pgnt += parts_page_normal(gaikan, {
+                                                    url: '/blog?page=1',
+                                                    text: '1'
+                                                }, undefined);
+                                            }
+                                            var _st = page - 2;
+                                            if (_st < 1) {
+                                                _st = 1;
+                                            }
+                                            if (_st - 1 > 1) {
+                                                pgnt += parts_page_span(gaikan, {
+                                                    class: 'taracot-dots',
+                                                    text: '...'
+                                                }, undefined);
+                                            }
+                                            var _en = page + 2;
+                                            if (_en > num_pages) {
+                                                _en = num_pages;
+                                            }
+                                            for (var i = _st; i <= _en; i++) {
+                                                if (page == i) {
+                                                    pgnt += parts_page_span(gaikan, {
+                                                        class: 'active',
+                                                        text: i
+                                                    }, undefined);
+                                                } else {
+                                                    pgnt += parts_page_normal(gaikan, {
+                                                        url: blog_page_url + i,
+                                                        text: i
+                                                    }, undefined);
+                                                }
+                                            }
+                                            if (_en < num_pages - 1) {
+                                                pgnt += parts_page_span(gaikan, {
+                                                    class: 'taracot-dots',
+                                                    text: '...'
+                                                }, undefined);
+                                            }
+                                            if (page <= num_pages - 3) {
+                                                pgnt += parts_page_normal(gaikan, {
+                                                    url: blog_page_url + num_pages,
+                                                    text: num_pages
+                                                }, undefined);
+                                            }
+                                            if (page < num_pages) {
+                                                var _p = page + 1;
+                                                pgnt += parts_page_normal(gaikan, {
+                                                    url: blog_page_url + _p,
+                                                    text: '»'
+                                                }, undefined);
+                                            }
+                                        } else {
+                                            for (var i = 1; i <= num_pages; i++) {
+                                                if (i == page) {
+                                                    pgnt += parts_page_span(gaikan, {
+                                                        class: 'active',
+                                                        text: i
+                                                    }, undefined);
+                                                } else {
+                                                    pgnt += parts_page_normal(gaikan, {
+                                                        url: blog_page_url + i,
+                                                        text: i
+                                                    }, undefined);
+                                                }
+                                            }
+                                        }
+                                        blog_feed += parts_pagination(gaikan, {
+                                            pages: pgnt
+                                        }, undefined);
 
-                            } // Pagination needed
-                            // Pagination end
-                            return render_page(i18nm.__('module_name'), blog_feed, req, res);
-                        }); // users data
-                    } else {
-                        // No items handler
-                        // return res.send('no items');
+                                    } // Pagination needed
+                                    // Pagination end
+                                    return render_page(i18nm.__('module_name'), blog_feed, req, res);
+                                }); // users data
+                            } else {
+                                // No items handler
+                                return render_page(i18nm.__('module_name'), i18nm.__('no_records_found'), req, res, 'error');
+                            }
+                        }); // data
+                    } else { // Error or count = 0
+                        // Error or no count = 0
+                        return render_page(i18nm.__('module_name'), i18nm.__('no_records_found'), req, res, 'error');
                     }
-                }); // data
-            } else { // Error or count = 0
-                // Error or no count = 0
-                // return res.send(err + ' -- ' + items_count);
-            }
-        }); // count
+                }); // count
+            });
+        }); // get_username_by_id
     });
 
     //
@@ -312,11 +336,6 @@ module.exports = function(app) {
             if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
             if (!allow) return render_page(i18nm.__('blog_error'), i18nm.__('unauth_to_create_post'), req, res, 'error');
         }
-
-        console.log(mode);
-        console.log(req.session.auth.status);
-        console.log(req.session.auth.groups_hash);
-
         var data = {
             title: i18nm.__('blog_post'),
             page_title: i18nm.__('blog_post'),
@@ -461,6 +480,11 @@ module.exports = function(app) {
             post_draft: post_draft,
             post_comments: post_comments
         };
+        if (mode == 'moderation') {
+            update.post_moderated = '';
+            if (req.session.auth.status == 2) update.post_moderated = '1';
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) update.post_moderated = '1';
+        }
         if (post_id) { // Save changes to the old post
             app.get('mongodb').collection('blog').find({
                 _id: new ObjectId(post_id)
@@ -475,7 +499,7 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
                 var id_session = String(req.session.auth._id);
-                var id_post =  String(items[0].post_user_id);
+                var id_post = String(items[0].post_user_id);
                 if (id_session != id_post) {
                     var allow = false;
                     if (req.session.auth.status == 2) allow = true;
@@ -530,6 +554,9 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err) return render_page(i18nm.__('blog_error'), i18nm.__('db_request_failed'), req, res, 'error');
             if (!items || !items.length) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
+            var id_session = String(req.session.auth._id);
+                var id_post = String(items[0].post_user_id);
+            if (id_session != id_post) if (items[0].post_draft && items[0].status < 2 && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
             app.get('mongodb').collection('users').find({
                 _id: new ObjectId(items[0].post_user_id)
             }).toArray(function(err, users_db) {
@@ -539,6 +566,8 @@ module.exports = function(app) {
                 var parts_button_class = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_class.html');
                 var parts_button_delete_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_delete_post.html');
                 var parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html');
+                var parts_moderation_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_badge.html');
+                var parts_comments_form = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comments_form.html');
                 try {
                     blog_areas = JSON.parse(app.set('settings').blog_areas);
                 } catch (ex) {
@@ -579,8 +608,8 @@ module.exports = function(app) {
                 }
                 var buttons = '';
                 var id_session = String(req.session.auth._id);
-                var id_post =  String(items[0].post_user_id);
-                if (req.session.auth && id_session === id_post) {
+                var id_post = String(items[0].post_user_id);
+                if ((req.session.auth && id_session === id_post) || req.session.auth.status == 2 || (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator)) {
                     buttons += parts_button_class(gaikan, {
                         icon: 'pencil',
                         text: i18nm.__('edit_post'),
@@ -592,7 +621,25 @@ module.exports = function(app) {
                     buttons += parts_button_delete_post(gaikan, {
                         text: i18nm.__('delete_post'),
                         post_del_confirm: i18nm.__('post_del_confirm'),
-                        url: '/blog/post/delete/' + items[0]._id.toHexString()
+                        url: '/blog/post/moderate/delete/' + items[0]._id.toHexString()
+                    }, undefined);
+                }
+                var mode = app.set('settings').blog_mode || 'private';
+                if (mode == 'moderation') {
+                    var mb = false;
+                    if (req.session.auth.status == 2) mb = true;
+                    if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) mb = true;
+                    if (mb && !items[0].post_moderated) buttons += parts_button_class(gaikan, {
+                        icon: 'unlock',
+                        text: i18nm.__('allow_post'),
+                        class: 'button-small',
+                        url: '/blog/post/moderate/allow/' + items[0]._id.toHexString()
+                    }, undefined);
+                    if (mb && items[0].post_moderated) buttons += parts_button_class(gaikan, {
+                        icon: 'lock',
+                        text: i18nm.__('disallow_post'),
+                        class: 'button-small',
+                        url: '/blog/post/moderate/disallow/' + items[0]._id.toHexString()
                     }, undefined);
                 }
                 if (buttons) {
@@ -606,6 +653,21 @@ module.exports = function(app) {
                 if (items[0].post_area) items[0].post_area = items[0].post_area.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
                 if (items[0].post_content) items[0].post_content = items[0].post_content.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+                var title_ex = items[0].post_title;
+                if (!items[0].post_moderated) title_ex += parts_moderation_badge(gaikan, {
+                    notice: i18nm.__('post_needs_moderation')
+                }, undefined);
+
+                var comments_form = '',
+                    comments_flow = '';
+
+                if (items[0].post_comments) {
+                    comments_form = parts_comments_form(gaikan, {
+                        lang: i18nm
+                    }, undefined);
+                    console.log(comments_form);
+                }
+
                 var data = {
                     title: items[0].post_title + ' | ' + i18nm.__('module_name'),
                     page_title: items[0].post_title + ' | ' + i18nm.__('module_name'),
@@ -613,13 +675,16 @@ module.exports = function(app) {
                     description: '',
                     extra_css: '<link rel="stylesheet" href="/modules/blog/css/frontend.css">',
                     lang: i18nm,
-                    post_title: items[0].post_title,
+                    post_title: title_ex,
                     post_content: items[0].post_content_html,
                     post_area_id: items[0].post_area,
                     post_area: post_area,
                     post_keywords: keywords,
+                    blog_text: i18nm.__('module_name'),
                     buttons: buttons,
-                    post_badges: badges
+                    post_badges: badges,
+                    comments_form: comments_form,
+                    comments_flow: comments_flow
                 };
                 var render = renderer.render_file(path.join(__dirname, 'views'), 'post_view', {
                     lang: i18nm,
@@ -646,7 +711,7 @@ module.exports = function(app) {
             if (err) return render_page(i18nm.__('blog_error'), i18nm.__('db_request_failed'), req, res, 'error');
             if (!items || !items.length) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
             var id_session = String(req.session.auth._id),
-                id_post =  String(items[0].post_user_id);
+                id_post = String(items[0].post_user_id);
             if (id_session != id_post) {
                 var allow = false;
                 if (req.session.auth.status == 2) allow = true;
@@ -679,6 +744,59 @@ module.exports = function(app) {
         });
     });
 
+    router.get('/blog/post/moderate/:func/:id', function(req, res, next) {
+        var id = req.params.id,
+            fn = req.params.func;
+        if (!id || !id.match(/^[a-f0-9]{24}$/) || !fn) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
+        if (fn != 'allow' && fn != 'disallow' && fn != 'delete') return render_page(i18nm.__('blog_error'), i18nm.__('invalid_moderation_function'), req, res, 'error');
+        var allow = false;
+        if (req.session.auth.status == 2) allow = true;
+        if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) allow = true;
+        if (!allow) return render_page(i18nm.__('blog_error'), i18nm.__('moderate_permission_denied'), req, res, 'error');
+        app.get('mongodb').collection('blog').find({
+            _id: new ObjectId(id)
+        }).toArray(function(err, items) {
+            if (err || !items || !items.length) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
+            if (items[0].post_deleted) return render_page(i18nm.__('moderation'), i18nm.__('post_has_been_deleted'), req, res, 'error');
+            if (fn == 'allow') {
+                app.get('mongodb').collection('blog').update({
+                    _id: new ObjectId(id)
+                }, {
+                    $set: {
+                        post_moderated: '1'
+                    }
+                }, function(_err, _items) {
+                    if (_err) return render_page(i18nm.__('moderation'), i18nm.__('moderate_actions_failed'), req, res, 'error');
+                    return res.redirect(303, "/blog/post/" + id + "?rnd=" + Math.random().toString().replace('.', ''));
+                });
+            }
+            if (fn == 'disallow') {
+                app.get('mongodb').collection('blog').update({
+                    _id: new ObjectId(id)
+                }, {
+                    $set: {
+                        post_moderated: ''
+                    }
+                }, function(_err, _items) {
+                    if (_err) return render_page(i18nm.__('moderation'), i18nm.__('moderate_actions_failed'), req, res, 'error');
+                    return res.redirect(303, "/blog/post/" + id + "?rnd=" + Math.random().toString().replace('.', ''));
+                });
+            }
+            if (fn == 'delete') {
+                app.get('mongodb').collection('blog').update({
+                    _id: new ObjectId(id)
+                }, {
+                    $set: {
+                        post_deleted: '1'
+                    }
+                }, function(_err, _items) {
+                    if (_err) return render_page(i18nm.__('moderation'), i18nm.__('moderate_actions_failed'), req, res, 'error');
+                    render_page(i18nm.__('moderation'), i18nm.__('post_has_been_deleted'), req, res, 'error');
+                });
+            }
+        });
+    });
+
     //
     // Helper functions
     //
@@ -700,6 +818,16 @@ module.exports = function(app) {
         page_data.content = render;
         app.get('renderer').render(res, undefined, page_data, req);
     };
+
+    var get_id_by_username = function(user, callback) {
+        if (!user || !user.match(/^[A-Za-z0-9_\-]{3,20}$/)) return callback();
+        app.get('mongodb').collection('users').find({
+            username: user
+        }).toArray(function(err, items) {
+            if (err || !items || !items.length) return callback();
+            callback(items[0]);
+        });
+    }
 
     return router;
 };

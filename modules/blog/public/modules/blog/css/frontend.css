@@ -39,9 +39,7 @@
 .taracot-bbcode-b {
     font-weight: bold;
 }
-.taracot-bbcode-blockquote {}
-
-.taracot-bbcode-code {
+.taracot-bbcode-blockquote {} .taracot-bbcode-code {
     white-space: pre-wrap;
     font-family: monospace;
 }
@@ -76,11 +74,23 @@
     border: 1px solid #666;
 }
 .taracot-bbcode-left {
-	text-align: left;
+    text-align: left;
 }
 .taracot-bbcode-right {
-	text-align: right;
+    text-align: right;
 }
 .taracot-bbcode-center {
-	text-align: center;
+    text-align: center;
+}
+.uk-breadcrumb > li > a {
+    font-size: 85%;
+    text-decoration: underline;
+}
+.taracot-moderation-notice-alert {
+    display: inline-block;
+    float: right;
+}
+.taracot-moderation-notice-alert > a, .taracot-moderation-notice-alert > a:hover, .taracot-moderation-notice-alert > a:focus, .taracot-moderation-notice-alert > a:active {
+    color: #fff;
+    text-decoration: none;
 }

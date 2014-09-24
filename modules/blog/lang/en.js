@@ -48,5 +48,15 @@
 	"bbcode_process_failed": "Error while processing BBCode tags. Please check your post and try again.",
 	"btn_cancel": "Cancel",
 	"unauth_to_create_post": "The blog is in private mode, and you are not authorized to create or edit posts. Please contact the website administrator if you consider this as a mistake.",
-	"unauth_to_edit_post": "You are not authorized to edit the requested post. Please contact website administrator if you think this is an error."
+	"unauth_to_edit_post": "You are not authorized to edit the requested post. Please contact website administrator if you think this is an error.",
+	"moderation_mode_notice": "Blog is running in moderation mode. This means that your post has to be approved by moderation team before it becomes actually published.",
+	"allow_post": "Allow post",
+	"disallow_post": "Disallow post",
+	"post_needs_moderation": "Post needs moderation",
+	"moderation": "Moderation",
+	"post_has_been_deleted": "Post has been deleted. It still remains in database as archived and may be restored later.",
+	"no_records_found": "No posts found in requested blog area or keyword.",
+	"moderate_permission_denied": "Your account doesn't have a permission to perform administrative or moderation tasks.",
+	"posts_avaiting_moderation": "Post moderation is required",
+	"post_comment_text": "post_comment_text"
 }

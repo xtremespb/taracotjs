@@ -1,5 +1,12 @@
 <div class="taracot-blog-post-title"><a href="!{root.post_url}">!{root.post_title}</a></div>
-<div class="taracot-blog-post-area"><a href="/blog/area/!{root.post_area_id}">!{root.post_area}</a>&nbsp;</div>
+<div class="taracot-blog-post-area">
+    <ul class="uk-breadcrumb">
+        <li><a href="/blog">!{root.blog_text}</a>
+        </li>
+        <li><a href="/blog/area/!{root.post_area_id}">!{root.post_area}</a>
+        </li>
+    </ul>
+</div>
 <div class="taracot-blog-post-content">!{root.post_content}</div>!{root.buttons}
 <div class="taracot-blog-post-keywords"><i class="uk-icon-tag"></i>&nbsp;!{root.post_keywords}</div>
 <div class="taracot-blog-post-badges">!{root.post_badges}</div>
