@@ -57,6 +57,7 @@ $('#btn_post_save').click(function() {
             $.loadingIndicator('hide');
             if (data.status == 1) {
                 $('#post_editor').hide();
+                $('#moderation_mode_notice').hide();
                 $('#post_success_msg').show();
                 if (data.post_id || post_id) {
                     var id = data.post_id || post_id;
