@@ -32,6 +32,8 @@
 	"btn_post_save": "Save post",
 	"edit_post": "Edit post",
 	"invalid_title": "Invalid post title",
+	"invalid_post": "Invalid post",
+	"invalid_comment": "Invalid comment",
 	"invalid_keywords": "Invalid keywords",
 	"invalid_area": "Invalid area",
 	"invalid_content": "Invalid content",
@@ -58,5 +60,9 @@
 	"no_records_found": "No posts found in requested blog area or keyword.",
 	"moderate_permission_denied": "Your account doesn't have a permission to perform administrative or moderation tasks.",
 	"posts_avaiting_moderation": "Post moderation is required",
-	"post_comment_text": "post_comment_text"
+	"post_comment_text": "Post comment",
+	"ctrl_enter": "Ctrl+Enter",
+	"comments_disallowed": "Comments are not allowed for this post",
+	"reply_link": "Reply",
+	"post_new_comment": "Post new comment"
 }

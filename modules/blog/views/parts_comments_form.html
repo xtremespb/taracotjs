@@ -1,9 +1,11 @@
-<div class="uk-form uk-form-stacked">
+<div id="comment_new" class="taracot-comment-new-link" style="display:none">[ !{root.lang.__('post_new_comment')} ]</div>
+<div id="taracot_comment_form_wrap" style="display:none"></div>
+<div class="uk-form uk-form-stacked" id="taracot_comment_form">
     <fieldset data-uk-margin>
         <div class="uk-form-row">
-            <label class="uk-form-label" for="post_comment_text">!{root.lang.__('post_comment_text')}</label>
             <div class="uk-form-controls">
-            	<textarea id="post_comment_text"></textarea>
+            	<textarea id="post_comment_text" class="uk-form-width-large"></textarea><br>
+            	<button class="uk-button uk-button-small" disabled="disabled" id="btn_post_comment_loading" style="display:none"><img src="/modules/blog/images/loading_16x16.gif" class="taracot-post-comment-loading">&nbsp;!{root.lang.__('post_comment_text')}</button><button class="uk-button uk-button-small" id="btn_post_comment" data-uk-tooltip="{pos:'right'}" title="!{root.lang.__('ctrl_enter')}"><i class="uk-icon-comment"></i>&nbsp;!{root.lang.__('post_comment_text')}</button><div class="taracot-post-comment-error"></div>
             </div>
         </div>
     </fieldset>
