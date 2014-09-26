@@ -94,3 +94,56 @@
     color: #fff;
     text-decoration: none;
 }
+#taracot_comment_form {
+	margin-bottom: 20px;
+}
+#btn_post_comment, #btn_post_comment_loading {
+	margin-top:3px;
+}
+.taracot-post-comment-loading {
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+}
+.taracot-post-comment-error {
+	display: inline-block;
+	color: red;
+	font-size: 90%;
+	padding-left: 15px;
+}
+.taracot-comment-reply-link {
+	color: #2A5DB0;
+	text-decoration: underline;
+	font-size: 80%;
+	cursor: pointer;
+}
+.taracot-comment-new-link {
+	color: #2A5DB0;
+	text-decoration: underline;
+	cursor: pointer;
+	margin-bottom: 20px;
+}
+.taracot-comment-avatar {
+	width:35px;
+	display: inline-block;
+	position: relative;
+	float: left;
+}
+.taracot-comment-avatar-image {
+	width: 35px;
+	height: 35px;
+}
+.taracot-comment-body {
+	margin-left:45px;
+	position: relative;
+}
+.taracot-comment {
+	margin-top: 10px;
+}
+.taracot-comment-username {
+	font-weight: bold;
+}
+.taracot-comment-meta {
+	font-size: 80%;
+	color: #666;
+}

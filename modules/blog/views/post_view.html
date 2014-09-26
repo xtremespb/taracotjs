@@ -10,5 +10,14 @@
 <div class="taracot-blog-post-content">!{root.data.post_content}</div>
 <div class="taracot-blog-post-keywords"><i class="uk-icon-tag"></i>&nbsp;!{root.data.post_keywords}</div>
 <div class="taracot-blog-post-badges">!{root.data.post_badges}</div>
+<script>
+var post_id = '!{root.data.post_id}',
+    _lang_vars = {
+        ajax_failed: "!{root.lang.__('ajax_failed')}"
+    };
+</script>
 !{root.data.comments_form}
-!{root.data.comments_flow}
+<div id="taracot_comments_flow">
+	!{root.data.comments_flow}
+</div>
+<script src="/modules/blog/js/blog_comment.js"></script>
