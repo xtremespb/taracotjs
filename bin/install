@@ -369,6 +369,42 @@ async.series([
 			ensure_indexes('search_index', ['swords'], null, true);
 			console.log("... success");
 			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: blog\n");
+			db.createCollection('blog', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: blog\n");
+			ensure_indexes('blog', ['post_timestamp', 'post_moderated', 'post_filtered', 'post_draft', 'post_user_id', 'post_keywords', 'post_area', 'post_lang'], null, true);
+			console.log("... success");
+			callback();
+		},
+		function (callback) {
+			console.log("\nCreating collection: blog_comments\n");
+			db.createCollection('blog_comments', function (err, collection) {
+				if (err) {
+					console.log("... failed");
+					console.log(err);
+					process.exit(1);
+				}
+				console.log("... success");
+				callback();
+			});
+		},
+		function (callback) {
+			console.log("\nCreating indexes for collection: blog_comments\n");
+			ensure_indexes('blog_comments', ['post_id'], null, true);
+			console.log("... success");
+			callback();
 		}
 	],
 	function (err) {

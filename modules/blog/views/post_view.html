@@ -13,11 +13,14 @@
 <script>
 var post_id = '!{root.data.post_id}',
     _lang_vars = {
-        ajax_failed: "!{root.lang.__('ajax_failed')}"
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        comment_delete_confirm: "!{root.lang.__('comment_delete_confirm')}",
+        comment_deleted: "!{root.lang.__('comment_deleted')}"
     };
 </script>
 !{root.data.comments_form}
 <div id="taracot_comments_flow">
 	!{root.data.comments_flow}
 </div>
+<script src="/js/jquery.medved.loading.js"></script>
 <script src="/modules/blog/js/blog_comment.js"></script>
