@@ -1,5 +1,6 @@
 var comment_parent = '';
 if (!$('#taracot_comment_form').is(':visible')) $('.taracot-comment-reply-link').hide();
+$.loadingIndicator();
 
 $('#btn_post_comment').click(function() {
     var comment = $('#post_comment_text').val().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
@@ -23,18 +24,18 @@ $('#btn_post_comment').click(function() {
             if (data.status == 1) {
                 $('#post_comment_text').val('');
                 if (comment_parent) $('#comment_' + comment_parent).show();
-                $('#taracot_comment_form_wrap').show()
+                $('#taracot_comment_form_wrap').show();
                 $('#taracot_comment_form').detach().appendTo($('#taracot_comment_form_wrap'));
                 $('#comment_new').hide();
                 if (data.comment_html && data.comment_id) {
                     if (comment_parent) {
                         var _save_margin = '',
-                            _set = false;;
+                            _set = false;
                         $("#taracot_comments_flow > .taracot-comment").each(function() {
                             if (_set) return;
                             var id = $(this).attr('id').replace('taracot_comment_', '');
                             if (id == comment_parent) return _save_margin = $(this).css('margin-left');
-                            if ($(this).css('margin-left') == _save_margin) {
+                            if ($(this).css('margin-left') <= _save_margin) {
                                 var _margin = parseInt(_save_margin.replace('px', '')) + 15;
                                 data.comment_html = data.comment_html.replace(/\[set_margin\]/, _margin);
                                 $(this).before(data.comment_html);
@@ -50,14 +51,14 @@ $('#btn_post_comment').click(function() {
                         $('#taracot_comments_flow').append(data.comment_html);
                     }
                     $('html,body').animate({
-                        scrollTop: $('#taracot_comment_' + (data.comment_id).offset().top - 50)
+                        scrollTop: $('#taracot_comment_' + data.comment_id).offset().top - 50
                     }, 200, function() {
                         $('#taracot_comment_' + data.comment_id).animate({
                             opacity: 0
                         }, 100, function() {
                             $('#taracot_comment_' + data.comment_id).animate({
                                 opacity: 1
-                            }, 100);
+                            }, 300);
                         });
                     });
                     $('#btn_post_comment').hover();
@@ -97,13 +98,42 @@ var taracot_comment_reply_link_handler = function() {
 
 $('.taracot-comment-new-link').click(function() {
     if (comment_parent) $('#comment_' + comment_parent).show();
-    $('#taracot_comment_form_wrap').show()
+    $('#taracot_comment_form_wrap').show();
     $('#taracot_comment_form').detach().appendTo($('#taracot_comment_form_wrap'));
     $('#comment_new').hide();
     comment_parent = '';
 });
 
+var taracot_comment_delete_handler = function() {
+    if (!confirm(_lang_vars.comment_delete_confirm)) return;
+    var comment_id = $(this).attr('id').replace('comment_delete_', '');
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/blog/post/comment/delete',
+        dataType: "json",
+        data: {
+            comment_id: comment_id
+        },
+        success: function(data) {
+            $.loadingIndicator('hide');
+            if (data.status == 1) {
+                $('#taracot_comment_' + comment_id).html(_lang_vars.comment_deleted);
+                $('#taracot_comment_' + comment_id).addClass('taracot-comment-deleted');
+            } else {
+                if (data.error) return alert(data.error);
+                alert(_lang_vars.ajax_failed);
+            }
+        },
+        error: function() {
+            $.loadingIndicator('hide');
+            alert(_lang_vars.ajax_failed);
+        }
+    });
+};
+
 $('.taracot-comment-reply-link').click(taracot_comment_reply_link_handler);
+$('.taracot-comment-delete').click(taracot_comment_delete_handler);
 
 $('#post_comment_text').keydown(function(e) {
     if (e.ctrlKey && e.keyCode == 13) {

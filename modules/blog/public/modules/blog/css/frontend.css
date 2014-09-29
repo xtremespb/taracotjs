@@ -147,3 +147,21 @@
 	font-size: 80%;
 	color: #666;
 }
+.taracot-comment-delete {
+	font-weight: normal;
+	font-size: 80%;
+	color: #2A5DB0;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.taracot-comment-deleted {
+	font-size: 85%;
+	color: #666;
+}
+.taracot-blog-post-badges > span > a {
+	color: #444;
+	text-decoration: none;
+}
+.taracot-blog-post-badges > span > a:hover {
+	text-decoration: underline;
+}

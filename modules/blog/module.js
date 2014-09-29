@@ -163,9 +163,10 @@ module.exports = function(app) {
                                             text: timestamp
                                         }, undefined);
                                         if (usernames[items[i].post_user_id]) {
-                                            badges += parts_badge(gaikan, {
+                                            badges += parts_badge_link(gaikan, {
                                                 icon: 'user',
-                                                text: usernames[items[i].post_user_id]
+                                                text: usernames[items[i].post_user_id],
+                                                url: '/blog/user/' + usernames[items[i].post_user_id]
                                             }, undefined);
                                         }
                                         var keywords = '';
@@ -486,6 +487,8 @@ module.exports = function(app) {
             update.post_moderated = '';
             if (req.session.auth.status == 2) update.post_moderated = '1';
             if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) update.post_moderated = '1';
+        } else {
+            update.post_moderated = '';
         }
         if (post_id) { // Save changes to the old post
             app.get('mongodb').collection('blog').find({
@@ -556,6 +559,12 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err) return render_page(i18nm.__('blog_error'), i18nm.__('db_request_failed'), req, res, 'error');
             if (!items || !items.length) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
+            var mb = false;
+            if (req.session.auth && req.session.auth.status == 2) mb = true;
+            if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) mb = true;
+            var own_post = false;
+            if (req.session.auth && req.session.auth._id == items[0].post_user_id) own_post = true;
+            if (items[0].post_draft && !mb && !own_post) return render_page(i18nm.__('blog_error'), i18nm.__('post_is_a_draft'), req, res, 'error');
             var id_session;
             if (req.session.auth) id_session = String(req.session.auth._id);
             var id_post = String(items[0].post_user_id);
@@ -600,6 +609,9 @@ module.exports = function(app) {
                     var parts_moderation_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_badge.html');
                     var parts_comments_form = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comments_form.html');
                     var parts_comment = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment.html');
+                    var parts_comment_delete = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_delete.html');
+                    var parts_comment_deleted = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_deleted.html');
+
                     try {
                         blog_areas = JSON.parse(app.set('settings').blog_areas);
                     } catch (ex) {
@@ -621,9 +633,10 @@ module.exports = function(app) {
                         text: timestamp
                     }, undefined);
                     if (users_db_hash[items[0].post_user_id]) {
-                        badges += parts_badge(gaikan, {
+                        badges += parts_badge_link(gaikan, {
                             icon: 'user',
-                            text: users_db_hash[items[0].post_user_id]
+                            text: users_db_hash[items[0].post_user_id],
+                            url: '/blog/user/' + users_db_hash[items[0].post_user_id]
                         }, undefined);
                     }
                     var keywords = '';
@@ -658,10 +671,8 @@ module.exports = function(app) {
                         }, undefined);
                     }
                     var mode = app.set('settings').blog_mode || 'private';
+
                     if (mode == 'moderation') {
-                        var mb = false;
-                        if (req.session.auth && req.session.auth.status == 2) mb = true;
-                        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) mb = true;
                         if (mb && !items[0].post_moderated) buttons += parts_button_class(gaikan, {
                             icon: 'unlock',
                             text: i18nm.__('allow_post'),
@@ -690,7 +701,7 @@ module.exports = function(app) {
                                 area[i].children.push(comment_to_move);
                             }
                         }
-                    }
+                    };
 
                     for (var c = 0; c < cm_items.length; c++) {
                         if (cm_items[c] && cm_items[c].comment_parent) {
@@ -711,15 +722,31 @@ module.exports = function(app) {
                                 timestamp = moment().locale(_locale).fromNow();
                             }
                             var avatar_url = avatars_hash[item.comment_user_id] || "/images/avatars/default.png";
-                            comments += parts_comment(gaikan, {
-                                username: users_db_hash[item.comment_user_id],
-                                comment: item.comment_text,
-                                reply_link: i18nm.__('reply_link'),
-                                comment_id: item._id.toHexString(),
-                                timestamp: timestamp,
-                                level: level * 15,
-                                avatar_url: avatar_url
-                            });
+                            var delete_btn = '';
+                            if (mb) {
+                                delete_btn = parts_comment_delete(gaikan, {
+                                    id: item._id.toHexString(),
+                                    text_delete: i18nm.__('delete_comment')
+                                }, undefined);
+                            }
+                            if (item.comment_deleted) {
+                                comments += parts_comment_deleted(gaikan, {
+                                    comment_id: item._id.toHexString(),
+                                    level: level * 15,
+                                    deleted_text: i18nm.__('comment_deleted')
+                                });
+                            } else {
+                                comments += parts_comment(gaikan, {
+                                    username: users_db_hash[item.comment_user_id],
+                                    comment: item.comment_text,
+                                    reply_link: i18nm.__('reply_link'),
+                                    comment_id: item._id.toHexString(),
+                                    timestamp: timestamp,
+                                    level: level * 15,
+                                    avatar_url: avatar_url,
+                                    delete_btn: delete_btn
+                                });
+                            }
                             if (item.children)
                                 for (var i = 0; i < item.children.length; i++) _get_comments(item.children[i], level + 1);
                         }
@@ -957,6 +984,61 @@ module.exports = function(app) {
     });
 
     //
+    // Delete comment
+    //
+
+    router.post('/blog/post/comment/delete', function(req, res, next) {
+        var _locale = req.i18n.getLocale();
+        var rep = {
+            status: 1
+        };
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var mb = false;
+        if (req.session.auth && req.session.auth.status == 2) mb = true;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) mb = true;
+        if (!mb) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var comment_id = req.body.comment_id;
+        if (!comment_id || !comment_id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_comment");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('blog_comments').find({
+            _id: new ObjectId(comment_id)
+        }).toArray(function(err, items) {
+            if (err || !items || !items.length) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_comment");
+                return res.send(JSON.stringify(rep));
+            }
+            app.get('mongodb').collection('blog_comments').update({
+                    _id: new ObjectId(comment_id)
+                }, {
+                    $set: {
+                        comment_deleted: '1'
+                    }
+                },
+                function(_err, _items) {
+                    if (_err) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("invalid_comment");
+                        return res.send(JSON.stringify(rep));
+                    }
+                    return res.send(JSON.stringify(rep));
+                });
+        });
+    });
+
+    //
     // Helper functions
     //
 
@@ -986,7 +1068,7 @@ module.exports = function(app) {
             if (err || !items || !items.length) return callback();
             callback(items[0]);
         });
-    }
+    };
 
     return router;
 };
