@@ -45,7 +45,7 @@ $('#btn_post_comment').click(function() {
                         if (!_set) {
                             var _margin = parseInt(_save_margin.replace('px', '')) + 15;
                             data.comment_html = data.comment_html.replace(/\[set_margin\]/, _margin);
-                            $('#taracot_comments_flow').after(data.comment_html);
+                            $('#taracot_comments_flow').append(data.comment_html);
                         }
                     } else {
                         $('#taracot_comments_flow').append(data.comment_html);

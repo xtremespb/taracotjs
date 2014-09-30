@@ -488,7 +488,7 @@ module.exports = function(app) {
             if (req.session.auth.status == 2) update.post_moderated = '1';
             if (req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator) update.post_moderated = '1';
         } else {
-            update.post_moderated = '';
+            update.post_moderated = '1';
         }
         if (post_id) { // Save changes to the old post
             app.get('mongodb').collection('blog').find({
@@ -598,7 +598,7 @@ module.exports = function(app) {
                     for (var u = 0; u < users_db.length; u++) users_db_hash[users_db[u]._id.toHexString()] = users_db[u].username;
                     for (var key in users_db_hash) {
                         var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + key).digest('hex');
-                        if (fs.existsSync(path.join('..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) avatars_hash[key] = '/images/avatars/' + afn + '.jpg';
+                        if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) avatars_hash[key] = '/images/avatars/' + afn + '.jpg';
                     }
                     var parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html');
                     var parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html');

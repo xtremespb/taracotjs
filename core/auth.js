@@ -23,12 +23,11 @@ module.exports = function(app) {
                             items[0].groups_hash = {};
                             for (var i=0; i<groups_arr.length; i++) items[0].groups_hash[groups_arr[i]] = true;
                         }
-                        callback(items[0]);
-                        return;
+                        return callback(items[0]);
                     }
                 }
-                callback(false);
-                return;
+                req.session.auth = false;
+                return callback(false);
             });
         }
     };
