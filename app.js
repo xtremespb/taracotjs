@@ -281,11 +281,12 @@ app.use(function(req, res, next) {
         req.session.auth_check_timestamp = Date.now();
         app.get('auth-core').check(req, function(auth) {
             if (!auth) {
-                delete req.session.auth;
+                req.session.auth = false;
             } else {
                 if (auth != req.session.auth) {
                     req.session.auth = auth;
                 }
+                if (!auth.username) delete req.session.auth;
             }
             return next();
         });

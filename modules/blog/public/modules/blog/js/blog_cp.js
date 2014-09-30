@@ -82,6 +82,7 @@ $(document).ready(function() {
         $(this).remove();
     });
     $('.taracot-blog-mode').removeClass('uk-active');
+    $('#blog_mode_private').click();
     if (init_mode == 'private') $('#blog_mode_private').click();
     if (init_mode == 'moderation') $('#blog_mode_moderation').click();
     if (init_mode == 'public') $('#blog_mode_public').click();

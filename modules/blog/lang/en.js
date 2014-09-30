@@ -66,7 +66,7 @@
 	"reply_link": "Reply",
 	"post_new_comment": "Post new comment",
 	"delete_comment": "Delete",
-	"comment_delete_confirm": "comment_delete_confirm",
+	"comment_delete_confirm": "Are you sure you wish to delete the requested comment?",
 	"comment_deleted": "Comment has been deleted",
 	"post_is_a_draft": "Post is currently saved as a draft. Please visit this page later to check for updates."
 }
