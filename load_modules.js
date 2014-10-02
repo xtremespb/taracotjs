@@ -61,6 +61,10 @@ var load_modules = {
 		prefix: '',
 		cp_prefix: '/cp/blog/'
 	}, {
+		name: 'social',
+		prefix: '/social/',
+		cp_prefix: ''
+	}, {
 		name: 'pages',
 		prefix: '',
 		cp_id: 'pages',

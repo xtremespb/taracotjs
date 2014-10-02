@@ -147,6 +147,7 @@ async.series([
 					email: 'default@taracot.org',
 					realname: 'Website Administrator',
 					status: 2,
+					regdate: Date.now(),
 					password: password_md5
 				}, function (err) {
 					if (err) {
