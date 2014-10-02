@@ -224,6 +224,7 @@ module.exports = function(app) {
                 password: password_hex,
                 email: email,
                 act_code: act_code,
+                regdate: Date.now(),
                 status: 0
             }, function(err, items) {
                 if (err) {
