@@ -5,11 +5,11 @@
             </li>
             <li><a href="#">!{root.lang.__('my_friends')}</a>
             </li>
-            <li><a href="#">!{root.lang.__('my_invitations')}</a>
+            <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}</a>
             </li>
             <li><a href="#">!{root.lang.__('messages')}</a>
             </li>
-            <li><a href="#">!{root.lang.__('search_for_people')}</a>
+            <li id="switcher_area_search"><a href="#">!{root.lang.__('search_for_people')}</a>
             </li>
         </ul>
     </div>
@@ -31,7 +31,10 @@
                 <div class="taracot_social_header" id="taracot_social_my_friends">!{root.lang.__('my_friends')}</div>
             </li>
             <li>
-                <div class="taracot_social_header" id="taracot_social_my_invitations">!{root.lang.__('my_invitations')}</div>
+                <div class="taracot_social_header" id="taracot_social_my_invitations">!{root.lang.__('my_invitations')}
+                </div>
+                <div id="inv_res" class="uk-margin-top"></div>
+                <div class="search_for_people_user_wrap uk-margin-top"></div>
             </li>
             <li>
                 <div class="taracot_social_header" id="taracot_social_messages">!{root.lang.__('messages')}</div>
@@ -51,7 +54,7 @@
                     </div>
                     <div id="search_for_people_res" class="uk-margin-top"></div>
                 </div>
-                <div id="search_for_people_user_wrap">
+                <div class="search_for_people_user_wrap">
                 </div>
             </li>
         </ul>
@@ -62,10 +65,16 @@ var _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
         regdate: "!{root.lang.__('regdate')}",
         unknown_regdate: "!{root.lang.__('unknown_regdate')}",
-        add_friend: "!{root.lang.__('add_friend')}"
+        add_friend: "!{root.lang.__('add_friend')}",
+        loading_data: "!{root.lang.__('loading_data')}",
+        friendship_request_sent: "!{root.lang.__('friendship_request_sent')}",
+        friendship_request_recv: "!{root.lang.__('friendship_request_recv')}",
+        friendship_estb: "!{root.lang.__('friendship_estb')}"
     },
     current_locale = "!{root.locale}",
-    current_user = !{root.current_user};
+    current_user = !{
+        root.current_user
+    };
 </script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>

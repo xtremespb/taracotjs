@@ -5,7 +5,9 @@
 
 var express = require('express');
 var config = require('./config');
-var config_auth = require('./config_auth');
+var config_auth = {};
+var fs = require('fs');
+if (fs.existsSync('./config_auth.js')) config_auth = require('./config_auth');
 var version = require('./version');
 var load_modules = require('./load_modules');
 config.taracotjs = version.taracotjs;
@@ -35,7 +37,6 @@ var winston = require('winston');
 var captcha = require('./core/' + config.captcha);
 var multer = require('multer');
 var bodyParser = require('body-parser');
-var fs = require('fs');
 var mailer = require('./core/mailer')(app);
 
 // Enable trusted proxy
