@@ -12,5 +12,11 @@
 	"regdate": "Registration date",
 	"unknown_regdate": "unknown",
 	"regdate_text": "regdate_text",
-	"add_friend": "Add friend"
+	"add_friend": "Add friend",
+	"loading_data": "Loading data from server, please be patient...",
+	"friendship_request_already_sent": "Friendship request has been already sent",
+	"no_invitations_found": "You don't have any friendship invitations yet.",
+	"friendship_request_sent": "Friendship request sent",
+	"friendship_request_recv": "Accept friendship request",
+	"friendship_estb": "Your friend"
 }
