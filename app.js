@@ -4,6 +4,7 @@
 // Load libraries
 
 var express = require('express');
+var cookieParser = require('cookie-parser');
 var config = require('./config');
 var config_auth = {};
 var fs = require('fs');
@@ -15,7 +16,6 @@ config.blocks = load_modules.blocks;
 config.modules = load_modules.modules;
 var path = require('path');
 var crypto = require('crypto');
-var cookieParser = require('cookie-parser');
 var I18n = require('i18n-2');
 var app = express();
 var session = require('express-session');
@@ -63,6 +63,7 @@ if (redis_client) {
     });
     redis_client.on("error", function(err) {
         app.set('redis_connected', false);
+        console.log("Redis error: " + err);
     });
 }
 
@@ -70,6 +71,7 @@ if (redis_client) {
 
 app.set('config', config);
 app.set('config_auth', config_auth);
+app.set('redis_client', redis_client);
 app.set('express', express);
 app.set('cp', cp);
 app.set('auth-core', auth);

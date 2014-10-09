@@ -25,10 +25,12 @@
             new _image_loader(cImageSrc, _start_animation);
         },
         show: function() {
+            $('#_taracot-loading-modal').show();
             _taracot_loading_modal.show();
         },
         hide: function() {
             _taracot_loading_modal.hide();
+            $('#_taracot-loading-modal').hide();
         }
     };
 

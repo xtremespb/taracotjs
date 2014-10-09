@@ -1,33 +1,61 @@
 #!/usr/bin/env node
 
-var app = require('../app');
-var config = require('../config');
-var cluster = require('cluster');
-var workers = config.workers || process.env.WORKERS || require('os').cpus().length;
-var port = app.get('port') || 3000;
+var config = require('../config'),
+    version = require('../version');
 
-app.set('port', config.port || process.env.PORT || 3000);
+var app = require('../app'),
+    http = require('http').Server(app),
+    io = require('socket.io')(http),
+    io_redis = require('socket.io-redis'),
+    port = config.port || process.env.PORT || 3000,
+    redis_client = app.get('redis_client');
 
-if (cluster.isMaster) {
-  console.log('Starting cluster: %s worker(s)', workers);
-  for (var i = 0; i < workers; ++i) {
-    var worker = cluster.fork().process;
-    console.log('Worker %s has been started', worker.pid);
-  }
-  cluster.on('exit', function(worker) {
-    console.log('Worker %s has been terminated. Restarting...', worker.process.pid);
-    cluster.fork();
-  });
-} else {
-	var server = app.listen(app.get('port'), function() {
-	  console.log('Worker listening on port: ' + server.address().port);
-	  if (config.gid) process.setgid(config.gid);
-	  if (config.uid) process.setuid(config.uid);
-	});
-}
+if (config.redis.active)
+    io.adapter(io_redis({
+        host: config.redis.host,
+        port: config.redis.port,
+        key: config.redis.prefix + '_socket_io'
+    }));
 
-process.on('uncaughtException', function (err) {
-  console.error((new Date()).toUTCString() + ' uncaught exception: ', err.message);
-  console.error(err.stack);
-  process.exit(1);
+var server = http.listen(port, function() {
+    if (config.gid) process.setgid(config.gid);
+    if (config.uid) process.setuid(config.uid);
+    console.log('[%s] server listening on port: ' + port, process.pid);
 });
+
+io.on('connection', function(socket) {
+
+    console.log('[' + process.pid + '] [connected] ' + io.sockets.length);
+    for (var key in io.sockets.connected) console.log('[' + process.pid + '] ' + key);
+    socket.on('set_session', function(userid, userid_hash) {
+        if (userid && userid.match(/^[0-9a-z]{24}$/) && userid_hash && userid_hash.match(/^[0-9a-z]{32}$/)) {
+            var sid = userid + userid_hash;
+            redis_client.get('taracot_socketio_sessions_' + sid, function(err, _sessions) {
+                var sessions = [];
+                if (_sessions) sessions = _sessions.split(',');
+                sessions.push(socket.id);
+                redis_client.set('taracot_socketio_sessions_' + sid, sessions.join(','));
+                redis_client.set('taracot_socketio_sid_' + socket.id, sid);
+            });
+        }
+    });
+
+    socket.on('disconnect', function() {
+        console.log('[' + process.pid + '] [disconnect] ' + socket.id);
+        if (socket.id)
+            redis_client.get('taracot_socketio_sid_' + socket.id, function(err, _sid) {
+                if (!_sid) return;
+                redis_client.get('taracot_socketio_sessions_' + _sid, function(err, _sessions) {
+                    if (!_sessions) return;
+                    var sessions = _sessions.split(',');
+                    for (var i = 0; i < sessions.length; i++)
+                        if (!io.sockets.connected[sessions[i]]) sessions.splice(i, 1);
+                    redis_client.set('taracot_socketio_sessions_' + _sid, sessions.join(','));
+                    redis_client.del('taracot_socketio_sid_' + socket.id);
+                });
+            });
+    });
+
+});
+
+app.set('socket.io', io);
