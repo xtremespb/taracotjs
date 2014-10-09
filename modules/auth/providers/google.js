@@ -57,6 +57,7 @@ module.exports = function(app) {
                             }).toArray(function(err, items) {
                                 if (err || typeof items == 'undefined' || !items || !items.length) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
                                 req.session.auth = items[0];
+                                req.session.auth.timestamp = Date.now();
                                 delete req.session.auth.password;
                                 if (!gm) return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                 var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
@@ -90,6 +91,7 @@ module.exports = function(app) {
                         });
                     } else {
                         req.session.auth = items[0];
+                        req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                     }

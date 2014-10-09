@@ -18,5 +18,14 @@
 	"no_invitations_found": "You don't have any friendship invitations yet.",
 	"friendship_request_sent": "Friendship request sent",
 	"friendship_request_recv": "Accept friendship request",
-	"friendship_estb": "Your friend"
+	"friendship_estb": "Your friend",
+	"no_friendship_request_found": "No friendship request found",
+	"send_msg": "Send message",
+	"post_message": "Send message",
+	"ctrl_enter": "Ctrl+Enter",
+	"user_not_found": "User not found",
+	"cannot_load_conversation": "Cannot load conversations list from server",
+	"invalid_user_id": "Invalid user ID",
+	"last_timestamp": "Last message",
+	"total_msg": "total messages"
 }

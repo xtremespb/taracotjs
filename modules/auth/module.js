@@ -313,6 +313,7 @@ module.exports = function(app) {
                     act_status = false;
                 } else {
                     req.session.auth = items[0];
+                    req.session.auth.timestamp = Date.now();
                 }
                 data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
                     lang: i18nm,
@@ -330,6 +331,7 @@ module.exports = function(app) {
                         if (a_items.length > 0 && a_items[0].status > 0) {
                             req.session.captcha_req = false;
                             req.session.auth = a_items[0];
+                            req.session.auth.timestamp = Date.now();
                             delete req.session.auth.password;
                             return app.get('renderer').render(res, undefined, data, req);
                         }
@@ -681,6 +683,7 @@ module.exports = function(app) {
                 if (items.length > 0 && items[0].status > 0) {
                     req.session.captcha_req = false;
                     req.session.auth = items[0];
+                    req.session.auth.timestamp = Date.now();
                     delete req.session.auth.password;
                     res.send(JSON.stringify({
                         result: 1

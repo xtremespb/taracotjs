@@ -1,13 +1,13 @@
 <div class="uk-grid">
     <div class="uk-width-large-2-10 uk-width-medium-3-10 uk-width-small-1-1">
-        <ul class="uk-nav uk-nav-side uk-width-1-1" data-uk-switcher="{connect:'#taracot_social_pages'}">
-            <li class="uk-active"><a href="#">!{root.lang.__('my_page')}</a>
+        <ul class="uk-nav uk-nav-side uk-width-1-1 taracot-social-nav" data-uk-switcher="{connect:'#taracot_social_pages'}">
+            <li id="switcher_area_mypage" class="uk-active"><a href="#">!{root.lang.__('my_page')}</a>
             </li>
-            <li><a href="#">!{root.lang.__('my_friends')}</a>
+            <li id="switcher_area_friends"><a href="#">!{root.lang.__('my_friends')}</a>
             </li>
             <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}</a>
             </li>
-            <li><a href="#">!{root.lang.__('messages')}</a>
+            <li id="switcher_area_msg"><a href="#">!{root.lang.__('messages')}</a>
             </li>
             <li id="switcher_area_search"><a href="#">!{root.lang.__('search_for_people')}</a>
             </li>
@@ -22,26 +22,50 @@
                         <img src="!{root._current_user.avatar}" alt="" class="taracot-mypage-avatar">
                     </div>
                     <div class="uk-grid-9-10 taracot-mypage-userdata-wrap">
-                        <div class="taracot_social_header" id="taracot_social_my_page">!{root._current_user.name}</div>
+                        <div class="taracot-social-header" id="taracot_social_my_page">!{root._current_user.name}</div>
                         <div>!{root.lang.__('regdate')}: !{root._current_user.regdate_text}</div>
                     </div>
                 </div>
             </li>
             <li>
-                <div class="taracot_social_header" id="taracot_social_my_friends">!{root.lang.__('my_friends')}</div>
-            </li>
-            <li>
-                <div class="taracot_social_header" id="taracot_social_my_invitations">!{root.lang.__('my_invitations')}
-                </div>
-                <div id="inv_res" class="uk-margin-top"></div>
+                <div id="friends" class="taracot-social-title" id="taracot_social_my_friends">!{root.lang.__('my_friends')}</div>
+                <div id="friends_list_res" class="taracot-result-list uk-margin-top"></div>
                 <div class="search_for_people_user_wrap uk-margin-top"></div>
             </li>
             <li>
-                <div class="taracot_social_header" id="taracot_social_messages">!{root.lang.__('messages')}</div>
+                <div class="taracot-social-title" id="taracot_social_my_invitations">!{root.lang.__('my_invitations')}
+                </div>
+                <div id="inv_res" class="taracot-result-list uk-margin-top"></div>
+                <div class="search_for_people_user_wrap uk-margin-top"></div>
+            </li>
+            <li id="taracot_social_messages_tab">
+                <div id="taracot_social_messages_list_wrap">
+                    <div class="taracot-social-title">!{root.lang.__('messages')}</div>
+                    <div id="conv_list_res" class="taracot-result-list uk-margin-top"></div>
+                </div>
+                <div id="taracot_social_messages_send_wrap">
+                    <div class="taracot-social-title" id="taracot_messages_title">!{root.lang.__('messages')}</div>
+                    <div class="taracot-messaging-area uk-panel uk-panel-box"></div>
+                    <div id="taracot_comment_form_wrap" style="display:none"></div>
+                    <div class="uk-form uk-form-stacked" id="taracot_social_messages_form">
+                        <fieldset data-uk-margin>
+                            <div class="uk-form-row">
+                                <div class="uk-form-controls">
+                                    <textarea id="social_message_text" class="uk-form-width-large"></textarea>
+                                    <br>
+                                    <button class="uk-button uk-button-small taracot-send-msg-btn" disabled="disabled" id="btn_send_msg_loading" style="display:none">
+                                        <img src="/modules/blog/images/loading_16x16.gif">&nbsp;!{root.lang.__('post_message')}</button>
+                                    <button class="uk-button uk-button-small taracot-send-msg-btn" id="btn_send_msg" data-uk-tooltip="{pos:'right'}" title="!{root.lang.__('ctrl_enter')}"><i class="uk-icon-comment"></i>&nbsp;!{root.lang.__('post_message')}</button>
+                                    <div class="taracot-post-comment-error"></div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
             </li>
             <li>
                 <div id="search_for_people_form_wrap">
-                    <div class="taracot_social_header" id="taracot_social_search_for_people">!{root.lang.__('search_for_people')}</div>
+                    <div class="taracot-social-title" id="taracot_social_search_for_people">!{root.lang.__('search_for_people')}</div>
                     <div>!{root.lang.__('enter_username_realname_or_email')}:</div>
                     <div class="uk-form">
                         <fieldset>
@@ -52,7 +76,7 @@
                             </div>
                         </fieldset>
                     </div>
-                    <div id="search_for_people_res" class="uk-margin-top"></div>
+                    <div id="search_for_people_res" class="taracot-result-list uk-margin-top"></div>
                 </div>
                 <div class="search_for_people_user_wrap">
                 </div>
@@ -69,14 +93,22 @@ var _lang_vars = {
         loading_data: "!{root.lang.__('loading_data')}",
         friendship_request_sent: "!{root.lang.__('friendship_request_sent')}",
         friendship_request_recv: "!{root.lang.__('friendship_request_recv')}",
-        friendship_estb: "!{root.lang.__('friendship_estb')}"
+        friendship_estb: "!{root.lang.__('friendship_estb')}",
+        send_msg: "!{root.lang.__('send_msg')}",
+        last_timestamp: "!{root.lang.__('last_timestamp')}",
+        total_msg: "!{root.lang.__('total_msg')}",
+        social: "!{root.lang.__('social')}"
     },
     current_locale = "!{root.locale}",
     current_user = !{
         root.current_user
     };
+    var save_title = $(document).find("title").text();
 </script>
+<script src="/js/socket.io.min.js"></script>
+<script src="/js/jquery.history.min.js"></script>
 <script src="/js/moment.min.js"></script>
+<script src="/js/helper.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/js/uikit/addons/notify.min.js"></script>
 <script src="/modules/social/js/social.js"></script>

@@ -1,6 +1,12 @@
-.taracot_social_header {
+.taracot-social-header {
     font-size: 32px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    padding-top: 4px;
+}
+.taracot-social-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    padding-top: 7px;
 }
 .uk-comment-avatar {
     width: 39px;
@@ -38,4 +44,51 @@
 }
 .uk-notify-message-danger {
     background: red;
+}
+.taracot-messaging-area {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    height: 400px;
+}
+.taracot-send-msg-btn, #social_message_text {
+    margin-top: 5px;
+}
+.taracot-messages-title-avatar {
+    width: 35px;
+    height: 35px;
+}
+.taracot-messaging-area {
+    overflow: auto;
+}
+.taracot-social-msg-avatar {
+    width:35px;
+    display: inline-block;
+    position: relative;
+    float: left;
+}
+.taracot-social-msg-avatar-image {
+    width: 35px;
+    height: 35px;
+}
+.taracot-social-msg-body {
+    margin-left:45px;
+    position: relative;
+    margin-bottom: 10px;
+}
+.taracot-social-msg-username {
+    font-weight: bold;
+}
+.taracot-social-msg-meta {
+    font-size: 80%;
+    color: #666;
+}
+.taracot-conv-card > header {
+    padding: 0px;
+}
+.taracot-conv-card {
+    border-left: 3px solid transparent;
+}
+.taracot-conv-card:hover {
+    border-left: 3px solid #666;
+    cursor: pointer;
 }
