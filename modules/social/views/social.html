@@ -3,11 +3,11 @@
         <ul class="uk-nav uk-nav-side uk-width-1-1 taracot-social-nav" data-uk-switcher="{connect:'#taracot_social_pages'}">
             <li id="switcher_area_mypage" class="uk-active"><a href="#">!{root.lang.__('my_page')}</a>
             </li>
-            <li id="switcher_area_friends"><a href="#">!{root.lang.__('my_friends')}</a>
+            <li id="switcher_area_friends"><a href="#">!{root.lang.__('my_friends')}<div class="uk-badge uk-badge-success uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_friends">0</div></a>
             </li>
-            <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}</a>
+            <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_inv">0</div></a>
             </li>
-            <li id="switcher_area_msg"><a href="#">!{root.lang.__('messages')}</a>
+            <li id="switcher_area_msg"><a href="#">!{root.lang.__('messages')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_msg"><i class="uk-icon-envelope"></i></div></a>
             </li>
             <li id="switcher_area_search"><a href="#">!{root.lang.__('search_for_people')}</a>
             </li>
@@ -102,8 +102,10 @@ var _lang_vars = {
     current_locale = "!{root.locale}",
     current_user = !{
         root.current_user
-    };
-    var save_title = $(document).find("title").text();
+    },
+    _init_friends_count = !{root.friends_count},
+    _init_inv_count = !{root.inv_count};
+var save_title = $(document).find("title").text();
 </script>
 <script src="/js/socket.io.min.js"></script>
 <script src="/js/jquery.history.min.js"></script>

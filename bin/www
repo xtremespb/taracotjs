@@ -25,8 +25,6 @@ var server = http.listen(port, function() {
 
 io.on('connection', function(socket) {
 
-    console.log('[' + process.pid + '] [connected] ' + io.sockets.length);
-    for (var key in io.sockets.connected) console.log('[' + process.pid + '] ' + key);
     socket.on('set_session', function(userid, userid_hash) {
         if (userid && userid.match(/^[0-9a-z]{24}$/) && userid_hash && userid_hash.match(/^[0-9a-z]{32}$/)) {
             var sid = userid + userid_hash;
@@ -41,7 +39,6 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function() {
-        console.log('[' + process.pid + '] [disconnect] ' + socket.id);
         if (socket.id)
             redis_client.get('taracot_socketio_sid_' + socket.id, function(err, _sid) {
                 if (!_sid) return;

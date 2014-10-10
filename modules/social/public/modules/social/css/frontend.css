@@ -92,3 +92,7 @@
     border-left: 3px solid #666;
     cursor: pointer;
 }
+.taracot-nav-badge {
+    margin-right: -10px;
+    min-width: 25px;
+}
