@@ -13,7 +13,10 @@ var _search_people_skip,
     _nav_startup = false,
     _nav_current_page = '',
     _chat_data_me = {},
-    _chat_data_pn = {};
+    _chat_data_pn = {},
+    _counter_friends = 0,
+    _counter_inv = 0,
+    _flag_messages = false;
 
 var _search_people = function(query, skip) {
     if (_search_in_progress) return;
@@ -309,6 +312,8 @@ var taracot_btn_accept_friend_handler = function() {
             $.loadingIndicator('hide');
             if (data.status == 1 && data.friend_id) {
                 $('.taracot-btn-accept-friend').replaceWith('<div class="uk-badge uk-badge-success uk-badge-notification">' + _lang_vars.friendship_estb + '</div>');
+                _counter_inv--;
+                _update_nav_counters();
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
@@ -511,6 +516,8 @@ $('[data-uk-switcher]').on('uk.switcher.show', function(event, area) {
         _load_friends_list(0);
     }
     if ($(area).attr('id') === 'switcher_area_msg') {
+        _flag_messages = false;
+        _update_nav_counters();
         _nav_current_page = 'msg';
         push_state({
             mode: 'msg'
@@ -623,10 +630,22 @@ $(window).scroll(function() {
 $(document).ready(function() {
     bind_history();
     history_handler();
+    _counter_friends = _init_friends_count;
+    _counter_inv = _init_inv_count;
+    _update_nav_counters();
     // Handle Socket.io events
     var socket = io();
     socket.on('connect', function() {
         socket.emit('set_session', current_user.id, current_user.id_hash);
+    });
+    socket.on('social_new_friend', function(msg) {
+        _counter_friends++;
+        _update_nav_counters();
+        if (_nav_current_page == 'friends' && $('#friends_list_res').is(':visible')) $('#switcher_area_friends').click();
+    });
+    socket.on('social_new_inv', function(msg) {
+        _counter_inv++;
+        _update_nav_counters();
     });
     socket.on('social_chat_msg', function(msg) {
         if (_nav_current_page == 'msg' && $('.taracot-social-msg-text').is(':visible')) {
@@ -641,6 +660,9 @@ $(document).ready(function() {
             var dt = moment(msg.timestamp).fromNow();
             $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, msg.msg));
             $('.taracot-messaging-area').scrollTop(1000000);
+        } else {
+            _flag_messages = true;
+            _update_nav_counters();
         }
     });
 });
@@ -650,6 +672,21 @@ $(document).ready(function() {
  Helper functions
 
 ********************************************************************/
+
+var _update_nav_counters = function() {
+    $('#taracot_notify_friends').hide();
+    $('#taracot_notify_inv').hide();
+    $('#taracot_notify_msg').hide();
+    if (_counter_friends) {
+        $('#taracot_notify_friends').html(_counter_friends);
+        $('#taracot_notify_friends').show();
+    }
+    if (_counter_inv) {
+        $('#taracot_notify_inv').html(_counter_inv);
+        $('#taracot_notify_inv').show();
+    }
+    if (_flag_messages) $('#taracot_notify_msg').show();
+};
 
 var _reset_scrolling_pagination = function() {
     _search_people_skip = undefined;

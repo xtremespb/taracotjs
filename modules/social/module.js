@@ -36,26 +36,45 @@ module.exports = function(app) {
         };
         var _regdate = i18nm.__('unknown_regdate');
         if (req.session.auth.regdate) _regdate = moment(req.session.auth.regdate).locale(_locale).fromNow();
-        var current_user = {
-            username: req.session.auth.username,
-            realname: req.session.auth.realname,
-            name: req.session.auth.realname || req.session.auth.username,
-            avatar: req.session.auth.avatar,
-            regdate: req.session.auth.regdate,
-            regdate_text: _regdate,
-            email: req.session.auth.email,
-            id: req.session.auth._id,
-            id_hash: crypto.createHash('md5').update(app.get('config').salt + '.' + req.session.auth._id).digest('hex')
-        };
-        var render = renderer.render_file(path.join(__dirname, 'views'), 'social', {
-            lang: i18nm,
-            locale: _locale,
-            data: data,
-            current_user: JSON.stringify(current_user),
-            _current_user: current_user
-        }, req);
-        data.content = render;
-        return app.get('renderer').render(res, undefined, data, req);
+        app.get('mongodb').collection('social_friends').find({
+            $or: [{
+                u1: req.session.auth._id,
+                friends: '1'
+            }, {
+                u2: req.session.auth._id,
+                friends: '1'
+            }]
+        }).count(function(err, friends_count) {
+            app.get('mongodb').collection('social_friends').find({
+                u2: req.session.auth._id,
+                friends: {
+                    $ne: '1'
+                }
+            }).count(function(err, inv_count) {
+                var current_user = {
+                    username: req.session.auth.username,
+                    realname: req.session.auth.realname,
+                    name: req.session.auth.realname || req.session.auth.username,
+                    avatar: req.session.auth.avatar,
+                    regdate: req.session.auth.regdate,
+                    regdate_text: _regdate,
+                    email: req.session.auth.email,
+                    id: req.session.auth._id,
+                    id_hash: crypto.createHash('md5').update(app.get('config').salt + '.' + req.session.auth._id).digest('hex')
+                };
+                var render = renderer.render_file(path.join(__dirname, 'views'), 'social', {
+                    lang: i18nm,
+                    locale: _locale,
+                    data: data,
+                    current_user: JSON.stringify(current_user),
+                    _current_user: current_user,
+                    friends_count: friends_count || '0',
+                    inv_count: inv_count || '0'
+                }, req);
+                data.content = render;
+                return app.get('renderer').render(res, undefined, data, req);
+            });
+        });
     });
 
     router.post('/user/friends/search', function(req, res, next) {
@@ -267,6 +286,10 @@ module.exports = function(app) {
                         return res.send(JSON.stringify(rep));
                     }
                     // Friendship request saved
+                    var _sm = {
+                        friend_id: fid
+                    };
+                    socketsender.emit(fid, 'social_new_inv', _sm);
                     rep.friend_id = fid;
                     return res.send(JSON.stringify(rep));
                 });
@@ -335,6 +358,11 @@ module.exports = function(app) {
                         return res.send(JSON.stringify(rep));
                     }
                     // Friendship request saved
+                    var _sm = {
+                        friend_id: fid
+                    };
+                    socketsender.emit(req.session.auth._id, 'social_new_friend', _sm);
+                    socketsender.emit(fid, 'social_new_friend', _sm);
                     rep.friend_id = fid;
                     return res.send(JSON.stringify(rep));
                 });
@@ -558,7 +586,7 @@ module.exports = function(app) {
                         }
                     },
                     function(callback) {
-                        app.get('mongodb').collection('social_messages').find({
+                        var db_query_msg = {
                             $or: [{
                                 $and: [{
                                     u1: req.session.auth._id
@@ -572,32 +600,41 @@ module.exports = function(app) {
                                     u2: req.session.auth._id
                                 }]
                             }]
-                        }, {
-                            limit: 100
-                        }).sort({
-                            timestamp: 1
-                        }).toArray(function(err, messages) {
+                        };
+                        app.get('mongodb').collection('social_messages').find(db_query_msg).count(function(err, total_msg_cnt) {
                             if (err) {
                                 rep.status = 0;
                                 rep.error = i18nm.__("cannot_load_messages");
                                 callback();
                                 return res.send(JSON.stringify(rep));
                             }
-                            rep.messages = [];
-                            if (messages.length) rep.messages = messages;
-                            rep.user = m_user[0];
-                            rep.user.avatar = "/images/avatars/default.png";
-                            delete rep.user.password;
-                            delete rep.user.email;
-                            rep.me = {};
-                            rep.me.username = req.session.auth.username;
-                            rep.me.realname = req.session.auth.realname;
-                            rep.me.avatar = req.session.auth.avatar;
-                            rep.me.id = req.session.auth._id;
-                            var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.user._id.toHexString()).digest('hex');
-                            if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
-                            callback();
-                            return res.send(JSON.stringify(rep));
+                            var _last = 0;
+                            if (total_msg_cnt > 150) _last = total_msg_cnt - 150;
+                            app.get('mongodb').collection('social_messages').find(db_query_msg).skip(_last).sort({
+                                timestamp: 1
+                            }).toArray(function(err, messages) {
+                                if (err) {
+                                    rep.status = 0;
+                                    rep.error = i18nm.__("cannot_load_messages");
+                                    callback();
+                                    return res.send(JSON.stringify(rep));
+                                }
+                                rep.messages = [];
+                                if (messages.length) rep.messages = messages;
+                                rep.user = m_user[0];
+                                rep.user.avatar = "/images/avatars/default.png";
+                                delete rep.user.password;
+                                delete rep.user.email;
+                                rep.me = {};
+                                rep.me.username = req.session.auth.username;
+                                rep.me.realname = req.session.auth.realname;
+                                rep.me.avatar = req.session.auth.avatar;
+                                rep.me.id = req.session.auth._id;
+                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.user._id.toHexString()).digest('hex');
+                                if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
+                                callback();
+                                return res.send(JSON.stringify(rep));
+                            });
                         });
                     }
                 ]);
@@ -677,8 +714,7 @@ module.exports = function(app) {
                     $inc: {
                         msg_count: 1
                     }
-                }, function(err) {
-                });
+                }, function(err) {});
                 var _sm = {
                     from: req.session.auth._id,
                     to: m_user[0]._id.toHexString(),
@@ -693,6 +729,78 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/conversations', function(req, res, next) {
+        var _locale = req.i18n.getLocale();
+        var rep = {
+            status: 1
+        };
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('social_conversations').find({
+            $or: [{
+                u1: req.session.auth._id
+            }, {
+                u2: req.session.auth._id
+            }]
+        }).sort({
+            last_timestamp: -1
+        }).toArray(function(err, conversations) {
+            if (err) {
+                rep.status = 0;
+                rep.error = i18nm.__("cannot_load_conversation");
+                return res.send(JSON.stringify(rep));
+            }
+            if (conversations) {
+                var users = [];
+                for (var i = 0; i < conversations.length; i++) {
+                    var user = conversations[i].u1;
+                    if (user == req.session.auth._id) user = conversations[i].u2;
+                    users.push({
+                        _id: new ObjectId(user)
+                    });
+                }
+                app.get('mongodb').collection('users').find({
+                    $or: users
+                }).toArray(function(err, users) {
+                    if (err || !users || !users.length) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("cannot_load_conversation");
+                        return res.send(JSON.stringify(rep));
+                    }
+                    var users_hash = {};
+                    for (var u = 0; u < users.length; u++) {
+                        users[u].avatar = "/images/avatars/default.png";
+                        var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + users[u]._id.toHexString()).digest('hex');
+                        if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) users[u].avatar = '/images/avatars/' + afn + '.jpg';
+                        users_hash[users[u]._id] = users[u];
+                    }
+                    var conv = [];
+                    for (var c = 0; c < conversations.length; c++) {
+                        var user = conversations[c].u1;
+                        if (user == req.session.auth._id) user = conversations[c].u2;
+                        var ci = {
+                            user_id: user,
+                            avatar: users_hash[user].avatar,
+                            name: users_hash[user].realname || users_hash[user].username,
+                            last_timestamp: moment(conversations[c].last_timestamp || Date.now()).locale(_locale).fromNow(),
+                            msg_count: conversations[c].msg_count || 0
+                        };
+                        conv.push(ci);
+                    }
+                    rep.conversations = conv;
+                    return res.send(JSON.stringify(rep));
+                });
+            } else {
+                rep.conversations = [];
+                return res.send(JSON.stringify(rep));
+            }
+        });
+    });
+
+    router.post('/user/messages/markread', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         var rep = {
             status: 1
