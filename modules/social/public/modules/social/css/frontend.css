@@ -21,16 +21,6 @@
 .taracot-social-username {
     font-weight: bold;
 }
-.taracot-user-search-card > header {
-    padding: 0px;
-}
-.taracot-user-search-card {
-    border-left: 3px solid transparent;
-}
-.taracot-user-search-card:hover {
-    border-left: 3px solid #666;
-    cursor: pointer;
-}
 .taracot-mypage-avatar-wrap {
     width: 53px;
 }
@@ -88,11 +78,37 @@
 .taracot-conv-card {
     border-left: 3px solid transparent;
 }
-.taracot-conv-card:hover {
-    border-left: 3px solid #666;
+.taracot-conv-card > .uk-comment-header {
+    padding: 3px 0 3px 3px;
+    border: 1px solid transparent;
     cursor: pointer;
+    background-color: transparent;
+    margin-bottom: 5px;
+}
+.taracot-conv-card > .uk-comment-header:hover {
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+.taracot-user-search-card {
+    border-left: 3px solid transparent;
+}
+.taracot-user-search-card > .uk-comment-header {
+    padding: 3px 0 3px 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background-color: transparent;
+    margin-bottom: 5px;
+}
+.taracot-user-search-card > .uk-comment-header:hover {
+    background-color: #eee;
+    border: 1px solid #ccc;
 }
 .taracot-nav-badge {
     margin-right: -10px;
     min-width: 25px;
+}
+.taracot-conv-card-unread > .uk-comment-header, .taracot-conv-card-unread > .uk-comment-header:hover {
+    background-color: #FFE4B2;
+    padding: 3px 0 3px 3px;
+    border: 1px solid #FFA500;
 }
