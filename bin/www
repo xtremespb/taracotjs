@@ -28,6 +28,8 @@ io.on('connection', function(socket) {
     socket.on('set_session', function(userid, userid_hash) {
         if (userid && userid.match(/^[0-9a-z]{24}$/) && userid_hash && userid_hash.match(/^[0-9a-z]{32}$/)) {
             var sid = userid + userid_hash;
+            redis_client.set('taracot_socketio_online_' + userid, 1);
+            socket.broadcast.emit('taracot_user_online', { id: userid });
             redis_client.get('taracot_socketio_sessions_' + sid, function(err, _sessions) {
                 var sessions = [];
                 if (_sessions) sessions = _sessions.split(',');
@@ -42,6 +44,9 @@ io.on('connection', function(socket) {
         if (socket.id)
             redis_client.get('taracot_socketio_sid_' + socket.id, function(err, _sid) {
                 if (!_sid) return;
+                var _userid = _sid.substr(0, 24);
+                socket.broadcast.emit('taracot_user_offline', { id: _userid });
+                redis_client.set('taracot_socketio_online_' + _userid, 0);
                 redis_client.get('taracot_socketio_sessions_' + _sid, function(err, _sessions) {
                     if (!_sessions) return;
                     var sessions = _sessions.split(',');

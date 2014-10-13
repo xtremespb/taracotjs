@@ -27,5 +27,6 @@
 	"cannot_load_conversation": "Cannot load conversations list from server",
 	"invalid_user_id": "Invalid user ID",
 	"last_timestamp": "Last message",
-	"total_msg": "total messages"
+	"total_msg": "total messages",
+	"invalid_username": "invalid_username"
 }
