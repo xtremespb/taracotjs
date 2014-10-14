@@ -141,7 +141,7 @@ module.exports = function(app) {
                 rep.items = items;
                 var _multi = redis_client.multi();
                 for (var j = 0; j < rep.items.length; j++) {
-                    _multi.get('taracot_socketio_online_' + rep.items[j]._id);
+                    _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
                 }
                 _multi.exec(function(err, online) {
                     if (err || !online) online = [];
@@ -442,7 +442,7 @@ module.exports = function(app) {
                     rep.items = items;
                     var _multi = redis_client.multi();
                     for (var j = 0; j < rep.items.length; j++) {
-                        _multi.get('taracot_socketio_online_' + rep.items[j]._id);
+                        _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
                     }
                     _multi.exec(function(err, online) {
                         if (err || !online) online = [];
@@ -527,7 +527,7 @@ module.exports = function(app) {
                     rep.items = items;
                     var _multi = redis_client.multi();
                     for (var j = 0; j < rep.items.length; j++) {
-                        _multi.get('taracot_socketio_online_' + rep.items[j]._id);
+                        _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
                     }
                     _multi.exec(function(err, online) {
                         if (err || !online) online = [];
@@ -658,30 +658,34 @@ module.exports = function(app) {
                                 rep.me.realname = req.session.auth.realname;
                                 rep.me.avatar = req.session.auth.avatar;
                                 rep.me.id = req.session.auth._id;
-                                app.get('mongodb').collection('social_conversations').find({
-                                    $or: [{
-                                        u1: req.session.auth._id,
-                                        u2: m_user[0]._id.toHexString()
-                                    }, {
-                                        u1: m_user[0]._id.toHexString(),
-                                        u2: req.session.auth._id
-                                    }]
-                                }).toArray(function(err, _conv) {
-                                    if (err || !_conv || !_conv.length) return;
-                                    var uid = 'u1_unread_flag';
-                                    if (_conv[0].u2 == req.session.auth._id) uid = 'u2_unread_flag';
-                                    var update = {
-                                        $set: {}
-                                    };
-                                    update.$set[uid] = '';
-                                    app.get('mongodb').collection('social_conversations').update({
-                                        _id: _conv[0]._id
-                                    }, update, function(err) {});
+                                redis_client.get(app.get('config').redis.prefix + 'socketio_online_' + m_user[0]._id.toHexString(), function(err, online) {
+                                    rep.user.online = '0';
+                                    if (online && online == 1) rep.user.online = '1';
+                                    app.get('mongodb').collection('social_conversations').find({
+                                        $or: [{
+                                            u1: req.session.auth._id,
+                                            u2: m_user[0]._id.toHexString()
+                                        }, {
+                                            u1: m_user[0]._id.toHexString(),
+                                            u2: req.session.auth._id
+                                        }]
+                                    }).toArray(function(err, _conv) {
+                                        if (err || !_conv || !_conv.length) return;
+                                        var uid = 'u1_unread_flag';
+                                        if (_conv[0].u2 == req.session.auth._id) uid = 'u2_unread_flag';
+                                        var update = {
+                                            $set: {}
+                                        };
+                                        update.$set[uid] = '';
+                                        app.get('mongodb').collection('social_conversations').update({
+                                            _id: _conv[0]._id
+                                        }, update, function(err) {});
+                                    });
+                                    var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.user._id.toHexString()).digest('hex');
+                                    if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
+                                    callback();
+                                    return res.send(JSON.stringify(rep));
                                 });
-                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.user._id.toHexString()).digest('hex');
-                                if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
-                                callback();
-                                return res.send(JSON.stringify(rep));
                             });
                         });
                     }
@@ -703,7 +707,7 @@ module.exports = function(app) {
             return res.send(JSON.stringify(rep));
         }
         var uid = req.body.user_id;
-        if (!uid.match(/^[a-f0-9]{24}$/)) {
+        if (!uid || !uid.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_user_id");
             return res.send(JSON.stringify(rep));
@@ -834,7 +838,7 @@ module.exports = function(app) {
                     for (var j = 0; j < conversations.length; j++) {
                         var usr = conversations[j].u1;
                         if (usr == req.session.auth._id) usr = conversations[j].u2;
-                        _multi.get('taracot_socketio_online_' + usr);
+                        _multi.get(app.get('config').redis.prefix + 'socketio_online_' + usr);
                     }
                     _multi.exec(function(err, online) {
                         if (err || !online) online = [];
@@ -908,6 +912,52 @@ module.exports = function(app) {
             app.get('mongodb').collection('social_conversations').update({
                 _id: _conv[0]._id
             }, update, function(err) {});
+            return res.send(JSON.stringify(rep));
+        });
+    });
+
+    router.post('/user/messages/typing', function(req, res, next) {
+        var _locale = req.i18n.getLocale();
+        var rep = {
+            status: 1
+        };
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var fid = req.body.id;
+        if (!fid.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_user_id");
+            return res.send(JSON.stringify(rep));
+        }
+        var mode = req.body.mode;
+        if (mode != 'start' && mode != 'stop') {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_mode");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('social_conversations').find({
+            $or: [{
+                u1: req.session.auth._id,
+                u2: fid
+            }, {
+                u1: fid,
+                u2: req.session.auth._id
+            }]
+        }).toArray(function(err, _conv) {
+            if (err || !_conv || !_conv.length) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_user_id");
+                return res.send(JSON.stringify(rep));
+            }
+            var _sm = {
+                rct: fid,
+                mod: mode
+            };
+            socketsender.emit(fid, 'social_typing', _sm);
             return res.send(JSON.stringify(rep));
         });
     });

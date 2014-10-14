@@ -24,7 +24,7 @@ var config = {
 		"active": true,
 		"host": "localhost",
 		"port": 6379,
-		"prefix": "taracotjs",
+		"prefix": "taracotjs_",
 		"password": ""
 	},
 	"mailer" : {

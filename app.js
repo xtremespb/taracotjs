@@ -23,7 +23,9 @@ var mongoclient = require('mongodb').MongoClient;
 var redis, redis_client, RedisStore, MongoStore;
 if (config.redis.active) {
     redis = require("redis");
-    redis_client = redis.createClient(config.redis.port, config.redis.host, {});
+    redis_client = redis.createClient(config.redis.port, config.redis.host, {
+        return_buffers: false
+    });
     RedisStore = require('connect-redis')(session);
 } else {
     MongoStore = require('connect-mongo')(session);

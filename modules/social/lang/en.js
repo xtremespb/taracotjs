@@ -28,5 +28,7 @@
 	"invalid_user_id": "Invalid user ID",
 	"last_timestamp": "Last message",
 	"total_msg": "total messages",
-	"invalid_username": "invalid_username"
+	"invalid_username": "Invalid username or ID",
+	"unauth": "Unauthorized",
+	"typing_a_message": "typing a message"
 }
