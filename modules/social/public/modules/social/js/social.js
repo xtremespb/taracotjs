@@ -42,8 +42,8 @@ var _search_people = function(query, skip) {
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
                         if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
-                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id  + '"></i>';
-                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot_user_online_circle_' + data.items[i]._id  + '" style="color:green"></i>';
+                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
+                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#search_for_people_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
                     }
                 } else {
@@ -87,8 +87,8 @@ var _load_inv = function(skip) {
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
                         if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
-                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id  + '"></i>';
-                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot_user_online_circle_' + data.items[i]._id  + '" style="color:green"></i>';
+                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
+                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#inv_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + ' &nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
                     }
                 } else {
@@ -132,8 +132,8 @@ var _load_friends_list = function(skip) {
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
                         if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
-                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id  + '"></i>';
-                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot_user_online_circle_' + data.items[i]._id  + '" style="color:green"></i>';
+                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
+                        if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#friends_list_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
                     }
                 } else {
@@ -168,8 +168,8 @@ var _load_conv_list = function() {
                     for (var i = 0; i < data.conversations.length; i++) {
                         var unread_class = '';
                         if (data.conversations[i].unread_flag && data.conversations[i].unread_flag == '1') unread_class = ' taracot-conv-card-unread';
-                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.conversations[i].user_id  + '"></i>';
-                        if (data.conversations[i].user_online && data.conversations[i].user_online == '1') _online = '<i class="uk-icon-circle taracot_user_online_circle_' + data.conversations[i].user_id  + '" style="color:green"></i>';
+                        var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
+                        if (data.conversations[i].user_online && data.conversations[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
                         $('#conv_list_res').append('<div class="taracot-btn-send-msg taracot-conv-card' + unread_class + '" id="btn_send_msg_' + data.conversations[i].user_id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.conversations[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + data.conversations[i].name + '</div><div class="uk-comment-meta">' + _lang_vars.last_timestamp + ': ' + data.conversations[i].last_timestamp + ', ' + _lang_vars.total_msg + ': ' + data.conversations[i].msg_count + '</div></header></div>');
                     }
                     $('.taracot-btn-send-msg').unbind();
@@ -366,7 +366,9 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
                 $('#taracot_social_messages_list_wrap').hide();
                 $('#taracot_social_messages_send_wrap').show();
                 var name = data.user.realname || data.user.username;
-                $('#taracot_messages_title').html('<img src="' + data.user.avatar + '" class="taracot-messages-title-avatar">&nbsp;' + name);
+                var _online = '<i class="uk-icon-circle-thin taracot-user-online-flag-small taracot_user_online_circle_' + id + '"></i>';
+                if (data.user.online && data.user.online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot-user-online-flag-small taracot_user_online_circle_' + id + '"></i>';
+                $('#taracot_messages_title').html('<div class="taracot-relative-wrap"><img src="' + data.user.avatar + '" class="taracot-messages-title-avatar">&nbsp;' + name +  _online + '</div>');
                 $('#social_message_text').val('');
                 $('#social_message_text').focus();
                 push_state({
@@ -541,6 +543,32 @@ $('[data-uk-switcher]').on('uk.switcher.show', function(event, area) {
     }
 });
 
+$('#social_message_text').typing({
+    start: function(event, $elem) {
+        $.ajax({
+            type: 'POST',
+            url: '/social/user/messages/typing',
+            dataType: "json",
+            data: {
+                id: _current_msg_id,
+                mode: 'start'
+            }
+        });
+    },
+    stop: function(event, $elem) {
+        $.ajax({
+            type: 'POST',
+            url: '/social/user/messages/typing',
+            dataType: "json",
+            data: {
+                id: _current_msg_id,
+                mode: 'stop'
+            }
+        });
+    },
+    delay: 3000
+});
+
 /*******************************************************************
 
  History API handler
@@ -682,6 +710,11 @@ $(document).ready(function() {
             }
             var dt = moment(msg.timestamp).fromNow();
             $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, msg.msg));
+            if ($('.taracot-messaging-area-typing').is(':visible') && msg.from == current_user.id) {
+                $('.taracot-messaging-area-typing').appendTo('.taracot-messaging-area');
+            } else {
+                $('.taracot-messaging-area-typing').remove();
+            }
             $('.taracot-messaging-area').scrollTop(1000000);
         } else {
             _flag_messages = true;
@@ -689,11 +722,22 @@ $(document).ready(function() {
             if ($('#conv_list_res').is(':visible')) _load_conv_list();
         }
     });
+    socket.on('social_typing', function(msg) {
+        if (_nav_current_page == 'msg' && $('.taracot-messaging-area').is(':visible')) {
+            $('.taracot-messaging-area-typing').remove();
+            if (msg.mod != 'stop') {
+                var _name = _chat_data_pn.realname || _chat_data_pn.username;
+                $('.taracot-messaging-area').append('<div class="taracot-messaging-area-typing">' + _name + ' ' + _lang_vars.typing_a_message + '...</div>');
+            }
+            $('.taracot-messaging-area').scrollTop(1000000);
+        }
+    });
     socket.on('taracot_user_offline', function(msg) {
-        if (msg && msg.id) $('.taracot_user_online_circle_' + msg.id).removeClass('uk-icon-circle').addClass('uk-icon-circle-thin');
+        if (msg && msg.id) $('.taracot_user_online_circle_' + msg.id).removeClass('uk-icon-circle').addClass('uk-icon-circle-thin').removeClass('taracot-user-online');
+        $('.taracot-messaging-area-typing').remove();
     });
     socket.on('taracot_user_online', function(msg) {
-        if (msg && msg.id) $('.taracot_user_online_circle_' + msg.id).removeClass('uk-icon-circle-thin').addClass('uk-icon-circle');
+        if (msg && msg.id) $('.taracot_user_online_circle_' + msg.id).removeClass('uk-icon-circle-thin').addClass('uk-icon-circle').addClass('taracot-user-online');
     });
 });
 

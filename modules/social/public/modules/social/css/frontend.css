@@ -112,3 +112,21 @@
     padding: 3px 0 3px 3px;
     border: 1px solid #FFA500;
 }
+.taracot-user-online {
+    color: #64A45D;
+}
+.taracot-messaging-area-typing {
+    color: #666;
+    font-size: 80%;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+.taracot-relative-wrap {
+    position: relative;
+}
+.taracot-user-online-flag-small {
+    font-size: 50%;
+    position: absolute;
+    left: 20px;
+    top: 18px;
+}
