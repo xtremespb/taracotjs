@@ -164,16 +164,18 @@ var _load_conv_list = function() {
             $.loadingIndicator('hide');
             if (data.status == 1) {
                 $('#conv_list_res').html('');
-                if (data.conversations) {
+                if (data.conversations && data.conversations.length) {
                     for (var i = 0; i < data.conversations.length; i++) {
                         var unread_class = '';
                         if (data.conversations[i].unread_flag && data.conversations[i].unread_flag == '1') unread_class = ' taracot-conv-card-unread';
                         var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
                         if (data.conversations[i].user_online && data.conversations[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
-                        $('#conv_list_res').append('<div class="taracot-btn-send-msg taracot-conv-card' + unread_class + '" id="btn_send_msg_' + data.conversations[i].user_id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.conversations[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + data.conversations[i].name + '</div><div class="uk-comment-meta">' + _lang_vars.last_timestamp + ': ' + data.conversations[i].last_timestamp + ', ' + _lang_vars.total_msg + ': ' + data.conversations[i].msg_count + '</div></header></div>');
+                        $('#conv_list_res').append('<div class="taracot-btn-send-msg taracot-conv-card' + unread_class + '" id="btn_send_msg_' + data.conversations[i].user_id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.conversations[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + data.conversations[i].name + '</div><div class="uk-comment-meta">' + _lang_vars.last_timestamp + ': ' + data.conversations[i].last_tstamp + ', ' + _lang_vars.total_msg + ': ' + data.conversations[i].msg_count + '</div></header></div>');
                     }
                     $('.taracot-btn-send-msg').unbind();
                     $('.taracot-btn-send-msg').click(taracot_btn_send_msg_handler);
+                } else {
+                    $('#conv_list_res').html(_lang_vars.no_conversations);
                 }
             } else {
                 $('#conv_list_res').html(_lang_vars.ajax_failed);
@@ -387,7 +389,7 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
                         mavatar = data.user.avatar;
                         mname = data.user.realname || data.user.username;
                     }
-                    var dt = moment(data.messages[i].timestamp).fromNow(),
+                    var dt = moment(data.messages[i].tstamp).fromNow(),
                         mmsg = data.messages[i].msg;
                     $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, mmsg));
                 }
@@ -708,7 +710,7 @@ $(document).ready(function() {
                     }
                 });
             }
-            var dt = moment(msg.timestamp).fromNow();
+            var dt = moment(msg.tstamp).fromNow();
             $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, msg.msg));
             if ($('.taracot-messaging-area-typing').is(':visible') && msg.from == current_user.id) {
                 $('.taracot-messaging-area-typing').appendTo('.taracot-messaging-area');

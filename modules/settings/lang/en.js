@@ -1,5 +1,5 @@
 {
-	"module_name": "Settings",
+	"module_name": "Settings registry",
 	"add": "New option",
 	"select_all": "Select all",
 	"select_none": "Select none",

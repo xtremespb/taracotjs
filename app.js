@@ -6,9 +6,8 @@
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var config = require('./config');
-var config_auth = {};
 var fs = require('fs');
-if (fs.existsSync('./config_auth.js')) config_auth = require('./config_auth');
+var config_auth = require('./config_auth');
 var version = require('./version');
 var load_modules = require('./load_modules');
 config.taracotjs = version.taracotjs;

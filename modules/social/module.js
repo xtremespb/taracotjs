@@ -494,7 +494,7 @@ module.exports = function(app) {
         app.get('mongodb').collection('social_friends').find(db_query).count(function(err, items_count) {
             if (err || !items_count) {
                 rep.status = 0;
-                rep.error = i18nm.__("no_invitations_found");
+                rep.error = i18nm.__("no_friends_found");
                 return res.send(JSON.stringify(rep));
             }
             app.get('mongodb').collection('social_friends').find(db_query, {
@@ -639,7 +639,7 @@ module.exports = function(app) {
                             var _last = 0;
                             if (total_msg_cnt > 150) _last = total_msg_cnt - 150;
                             app.get('mongodb').collection('social_messages').find(db_query_msg).skip(_last).sort({
-                                timestamp: 1
+                                tstamp: 1
                             }).toArray(function(err, messages) {
                                 if (err) {
                                     rep.status = 0;
@@ -738,7 +738,7 @@ module.exports = function(app) {
                 u1: req.session.auth._id,
                 u2: m_user[0]._id.toHexString(),
                 msg: msg,
-                timestamp: Date.now()
+                tstamp: Date.now()
             }, function(err) {
                 if (err) {
                     rep.status = 0;
@@ -759,7 +759,7 @@ module.exports = function(app) {
                     if (_conv[0].u2 == m_user[0]._id.toHexString()) uid = 'u2_unread_flag';
                     var update = {
                         $set: {
-                            last_timestamp: Date.now()
+                            last_tstamp: Date.now()
                         },
                         $inc: {
                             msg_count: 1
@@ -775,7 +775,7 @@ module.exports = function(app) {
                     from: req.session.auth._id,
                     to: m_user[0]._id.toHexString(),
                     msg: msg,
-                    timestamp: Date.now()
+                    tstamp: Date.now()
                 };
                 socketsender.emit(req.session.auth._id, 'social_chat_msg', _sm);
                 socketsender.emit(m_user[0]._id.toHexString(), 'social_chat_msg', _sm);
@@ -802,14 +802,14 @@ module.exports = function(app) {
                 u2: req.session.auth._id
             }]
         }).sort({
-            last_timestamp: -1
+            last_tstamp: -1
         }).toArray(function(err, conversations) {
             if (err) {
                 rep.status = 0;
                 rep.error = i18nm.__("cannot_load_conversation");
                 return res.send(JSON.stringify(rep));
             }
-            if (conversations) {
+            if (conversations && conversations.length) {
                 var users = [];
                 for (var i = 0; i < conversations.length; i++) {
                     var user = conversations[i].u1;
@@ -853,7 +853,7 @@ module.exports = function(app) {
                                 user_id: user,
                                 avatar: users_hash[user].avatar,
                                 name: users_hash[user].realname || users_hash[user].username,
-                                last_timestamp: moment(conversations[c].last_timestamp || Date.now()).locale(_locale).fromNow(),
+                                last_tstamp: moment(conversations[c].last_tstamp || Date.now()).locale(_locale).fromNow(),
                                 msg_count: conversations[c].msg_count || 0,
                                 unread_flag: unread_flag,
                                 user_online: '0'

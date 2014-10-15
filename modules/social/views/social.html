@@ -3,11 +3,11 @@
         <ul class="uk-nav uk-nav-side uk-width-1-1 taracot-social-nav" data-uk-switcher="{connect:'#taracot_social_pages'}">
             <li id="switcher_area_mypage" class="uk-active"><a href="#">!{root.lang.__('my_page')}</a>
             </li>
-            <li id="switcher_area_friends"><a href="#">!{root.lang.__('my_friends')}<div class="uk-badge uk-badge-success uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_friends">0</div></a>
+            <li id="switcher_area_friends"><a href="#">!{root.lang.__('my_friends')}<div class="uk-badge uk-badge-success uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_friends" style="display:none">0</div></a>
             </li>
-            <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_inv">0</div></a>
+            <li id="switcher_area_inv"><a href="#">!{root.lang.__('my_invitations')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_inv" style="display:none">0</div></a>
             </li>
-            <li id="switcher_area_msg"><a href="#">!{root.lang.__('messages')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_msg"><i class="uk-icon-envelope"></i></div></a>
+            <li id="switcher_area_msg"><a href="#">!{root.lang.__('messages')}<div class="uk-badge uk-badge-warning uk-badge-notification uk-float-right taracot-nav-badge" id="taracot_notify_msg" style="display:none"><i class="uk-icon-envelope"></i></div></a>
             </li>
             <li id="switcher_area_search"><a href="#">!{root.lang.__('search_for_people')}</a>
             </li>
@@ -98,7 +98,8 @@ var _lang_vars = {
         last_timestamp: "!{root.lang.__('last_timestamp')}",
         total_msg: "!{root.lang.__('total_msg')}",
         social: "!{root.lang.__('social')}",
-        typing_a_message: "!{root.lang.__('typing_a_message')}"
+        typing_a_message: "!{root.lang.__('typing_a_message')}",
+        no_conversations: "!{root.lang.__('no_conversations')}"
     },
     current_locale = "!{root.locale}",
     current_user = !{
