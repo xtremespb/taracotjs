@@ -61,7 +61,7 @@
         </div>
     </div>
     <script>
-    var _u = ".taracot_menu_item_" + $(location).attr("pathname").replace(/\//g, "_").replace(/^_/, "").replace(/[^a-zA-Z0-9_\-]/g, "");
+    var _u = ".taracot_menu_item_" + $(location).attr("pathname").replace(/\/$/, "").replace(/\//g, "_").replace(/^_/, "").replace(/[^a-zA-Z0-9_\-]/g, "");
     if ($(_u)) {
         $(_u).addClass("uk-active");
         var _r = $(_u).attr("rel");

@@ -30,5 +30,7 @@
 	"total_msg": "total messages",
 	"invalid_username": "Invalid username or ID",
 	"unauth": "Unauthorized",
-	"typing_a_message": "typing a message"
+	"typing_a_message": "typing a message",
+	"no_conversations": "Currently you don't have any conversations.",
+	"no_friends_found": "You don't have any friends on this website yet."
 }
