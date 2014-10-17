@@ -4,7 +4,8 @@ module.exports = function(app) {
 	var i18nm = new(require('i18n-2'))({
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
-		extension: '.js'
+		extension: '.js',
+    	devMode: false
 	});
 	router.get(/(.*)/, function(req, res, next) {
 		i18nm.setLocale(req.i18n.getLocale());

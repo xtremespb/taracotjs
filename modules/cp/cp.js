@@ -4,7 +4,8 @@ module.exports = function(app) {
 			var i18ncp = new(require('i18n-2'))({
 				locales: app.get('config').locales,
 				directory: app.get('path').join(__dirname, '..', 'cp', 'lang'),
-				extension: '.js'
+				extension: '.js',
+    			devMode: false
 			});
 			var modules = [];
 			app.get('config').modules.forEach(function(module) {

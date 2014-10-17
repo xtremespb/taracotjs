@@ -111,7 +111,8 @@ I18n.expressBind(app, {
     locales: config.locales,
     cookieName: 'taracotjs-locale',
     directory: path.join(__dirname, 'core', 'lang'),
-    extension: '.js'
+    extension: '.js',
+    devMode: false
 });
 
 // Connect Redis or fallback to Mongo
