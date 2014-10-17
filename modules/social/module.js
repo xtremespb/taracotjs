@@ -6,7 +6,6 @@ module.exports = function(app) {
         path = app.get('path'),
         ObjectId = require('mongodb').ObjectID,
         crypto = require('crypto'),
-        moment = require('moment'),
         fs = require('fs'),
         async = require('async'),
         socketsender = require('../../core/socketsender')(app),
@@ -15,12 +14,15 @@ module.exports = function(app) {
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js'
+        extension: '.js',
+        devMode: false
     });
 
     router.get('/', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
+        var moment = require('moment');
+        moment.locale(_locale);
         var mode = app.set('settings').social_mode || 'private',
             areas = app.set('settings').social_areas || '[]';
         if (!req.session.auth || req.session.auth.status < 1) {
@@ -36,7 +38,7 @@ module.exports = function(app) {
             extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/social/css/frontend.css" type="text/css">'
         };
         var _regdate = i18nm.__('unknown_regdate');
-        if (req.session.auth.regdate) _regdate = moment(req.session.auth.regdate).locale(_locale).fromNow();
+        if (req.session.auth.regdate) _regdate = req.session.auth.regdate;
         app.get('mongodb').collection('social_friends').find({
             $or: [{
                 u1: req.session.auth._id,
@@ -58,7 +60,7 @@ module.exports = function(app) {
                     name: req.session.auth.realname || req.session.auth.username,
                     avatar: req.session.auth.avatar,
                     regdate: req.session.auth.regdate,
-                    regdate_text: _regdate,
+                    regdate_text: moment(_regdate).format('LLL'),
                     email: req.session.auth.email,
                     id: req.session.auth._id,
                     id_hash: crypto.createHash('md5').update(app.get('config').salt + '.' + req.session.auth._id).digest('hex')
@@ -853,7 +855,7 @@ module.exports = function(app) {
                                 user_id: user,
                                 avatar: users_hash[user].avatar,
                                 name: users_hash[user].realname || users_hash[user].username,
-                                last_tstamp: moment(conversations[c].last_tstamp || Date.now()).locale(_locale).fromNow(),
+                                last_tstamp: conversations[c].last_tstamp || Date.now(),
                                 msg_count: conversations[c].msg_count || 0,
                                 unread_flag: unread_flag,
                                 user_online: '0'

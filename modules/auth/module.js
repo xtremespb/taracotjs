@@ -8,7 +8,8 @@ module.exports = function(app) {
     var i18nm = new(require('i18n-2'))({
         locales: config.locales,
         directory: path.join(__dirname, 'lang'),
-        extension: '.js'
+        extension: '.js',
+        devMode: false
     });
     // Social Auth: begin
     var config_auth = app.get('config_auth');

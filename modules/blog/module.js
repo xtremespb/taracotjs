@@ -5,7 +5,6 @@ module.exports = function(app) {
         renderer = app.get('renderer'),
         path = app.get('path'),
         ObjectId = require('mongodb').ObjectID,
-        moment = require('moment'),
         user_cache = {},
         xbbcode = require('../../core/xbbcode.js'),
         crypto = require('crypto'),
@@ -14,7 +13,8 @@ module.exports = function(app) {
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js'
+        extension: '.js',
+        devMode: false
     });
 
     //
@@ -23,7 +23,9 @@ module.exports = function(app) {
 
     router.get(/^\/blog(\/(keywords|area|user|moderation)\/(.*))?\/?$/, function(req, res) {
         var _locale = req.i18n.getLocale();
+        var moment = require('moment');
         i18nm.setLocale(_locale);
+        moment.locale(_locale);
         var query = {
             post_lang: _locale,
             post_draft: {
@@ -154,9 +156,9 @@ module.exports = function(app) {
                                         var timestamp = '',
                                             badges = '';
                                         if (items[i].post_timestamp) {
-                                            timestamp = moment(items[i].post_timestamp).locale(_locale).fromNow();
+                                            timestamp = moment(items[i].post_timestamp).fromNow();
                                         } else {
-                                            timestamp = moment().locale(_locale).fromNow();
+                                            timestamp = moment(Date.now()).fromNow();
                                         }
                                         badges += parts_badge(gaikan, {
                                             icon: 'clock-o',
@@ -552,6 +554,8 @@ module.exports = function(app) {
     router.get('/blog/post/:id', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         i18nm.setLocale(_locale);
+        var moment = require('moment');
+        moment.locale(_locale);
         var id = req.params.id;
         if (!id || !id.match(/^[a-f0-9]{24}$/)) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
         app.get('mongodb').collection('blog').find({
@@ -624,9 +628,9 @@ module.exports = function(app) {
                     var timestamp = '',
                         badges = '';
                     if (items[0].post_timestamp) {
-                        timestamp = moment(items[0].post_timestamp).locale(_locale).fromNow();
+                        timestamp = moment(items[0].post_timestamp).fromNow();
                     } else {
-                        timestamp = moment().locale(_locale).fromNow();
+                        timestamp = moment(Date.now()).fromNow();
                     }
                     badges += parts_badge(gaikan, {
                         icon: 'clock-o',
@@ -717,9 +721,9 @@ module.exports = function(app) {
                         if (item) {
                             var timestamp;
                             if (item.comment_timestamp) {
-                                timestamp = moment(item.comment_timestamp).locale(_locale).fromNow();
+                                timestamp = item.comment_timestamp;
                             } else {
-                                timestamp = moment().locale(_locale).fromNow();
+                                timestamp = Date.now();
                             }
                             var avatar_url = avatars_hash[item.comment_user_id] || "/images/avatars/default.png";
                             var delete_btn = '';
@@ -741,7 +745,7 @@ module.exports = function(app) {
                                     comment: item.comment_text,
                                     reply_link: i18nm.__('reply_link'),
                                     comment_id: item._id.toHexString(),
-                                    timestamp: timestamp,
+                                    timestamp: moment(timestamp).format('L LT'),
                                     level: level * 15,
                                     avatar_url: avatar_url,
                                     delete_btn: delete_btn
@@ -780,6 +784,7 @@ module.exports = function(app) {
                         description: '',
                         extra_css: '<link rel="stylesheet" href="/modules/blog/css/frontend.css">',
                         lang: i18nm,
+                        current_locale: _locale,
                         post_title: title_ex,
                         post_content: items[0].post_content_html,
                         post_area_id: items[0].post_area,
@@ -911,6 +916,8 @@ module.exports = function(app) {
 
     router.post('/blog/post/comment', function(req, res, next) {
         var _locale = req.i18n.getLocale();
+        var moment = require('moment');
+        moment.locale(_locale);
         var rep = {
             status: 1
         };
@@ -953,7 +960,7 @@ module.exports = function(app) {
                 return res.send(JSON.stringify(rep));
             }
             var parts_comment = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment.html'),
-                timestamp = moment().locale(_locale).fromNow();
+                timestamp = Date.now();
             var comment = {
                 comment_parent: comment_parent,
                 post_id: post_id,
@@ -972,7 +979,7 @@ module.exports = function(app) {
                     comment: comment_text,
                     reply_link: i18nm.__('reply_link'),
                     comment_id: _items[0]._id.toHexString(),
-                    timestamp: timestamp,
+                    timestamp: moment(timestamp).format('L LT'),
                     level: '[set_margin]',
                     avatar_url: req.session.auth.avatar
                 });
@@ -1054,7 +1061,8 @@ module.exports = function(app) {
         var render = renderer.render_file(path.join(__dirname, 'views'), template, {
             lang: i18nm,
             title: title,
-            content: body
+            content: body,
+            current_locale: req.i18n.getLocale()
         }, req);
         page_data.content = render;
         app.get('renderer').render(res, undefined, page_data, req);

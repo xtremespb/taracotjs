@@ -4,7 +4,8 @@ module.exports = function(app) {
 	var i18nm = new(require('i18n-2'))({
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
-		extension: '.js'
+		extension: '.js',
+    	devMode: false
 	});
 	router.get('/', function(req, res) {
 		if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2) {

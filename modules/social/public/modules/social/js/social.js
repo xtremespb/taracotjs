@@ -41,7 +41,7 @@ var _search_people = function(query, skip) {
                         var name = data.items[i].realname || data.items[i].username;
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
-                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
+                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).format('LLL');
                         var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#search_for_people_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
@@ -86,7 +86,7 @@ var _load_inv = function(skip) {
                         var name = data.items[i].realname || data.items[i].username;
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
-                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
+                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).format('LLL');
                         var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#inv_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + ' &nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
@@ -131,7 +131,7 @@ var _load_friends_list = function(skip) {
                         var name = data.items[i].realname || data.items[i].username;
                         var regdate_text = '';
                         if (!data.items[i].regdate) regdate_text = _lang_vars.unknown_regdate;
-                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).lang(current_locale).fromNow();
+                        if (!regdate_text) regdate_text = moment(data.items[i].regdate).format('LLL');
                         var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         if (data.items[i].user_online && data.items[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.items[i]._id + '"></i>';
                         $('#friends_list_res').append('<div class="taracot-user-search-card" id="taracot_user_card_' + data.items[i]._id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.items[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + name + '</div><div class="uk-comment-meta">' + _lang_vars.regdate + ': ' + regdate_text + '</div></header></div>');
@@ -227,13 +227,13 @@ var taracot_user_search_card_handler = function(_par, _uid) {
                 $('#search_for_people_form_wrap').hide();
                 $('.taracot-result-list').hide();
                 $('.taracot-social-title').hide();
-                var name = data.user.realname || data.user.uid;
+                var name = data.user.realname || data.user.username;
                 var regdate_text = '';
                 if (!data.user.regdate) regdate_text = _lang_vars.unknown_regdate;
-                if (!regdate_text) regdate_text = moment(data.user.regdate).lang(current_locale).fromNow();
+                if (!regdate_text) regdate_text = moment(data.user.regdate).format('LLL');
                 var buttons = '';
-                buttons += '<button class="uk-button uk-button-small taracot-btn-send-msg" id="btn_send_msg_' + data.user._id + '"><i class="uk-icon-envelope"></i>&nbsp;' + _lang_vars.send_msg + '</button>&nbsp;';
                 if (current_user.id != data.user._id) {
+                    buttons += '<button class="uk-button uk-button-small taracot-btn-send-msg" id="btn_send_msg_' + data.user._id + '"><i class="uk-icon-envelope"></i>&nbsp;' + _lang_vars.send_msg + '</button>&nbsp;';
                     if (data.friendship && data.friendship == '0') buttons += '<button class="uk-button uk-button-small taracot-btn-add-friend" id="btn_add_friend_' + data.user._id + '"><i class="uk-icon-plus"></i>&nbsp;' + _lang_vars.add_friend + '</button>';
                     if (data.friendship && data.friendship == '1') buttons += '<div class="uk-badge uk-badge-success uk-badge-notification">' + _lang_vars.friendship_estb + '</div>';
                     if (data.friendship && data.friendship == '2') buttons += '<button class="uk-button uk-button-small" disabled="true"><i class="uk-icon-plus"></i>&nbsp;' + _lang_vars.friendship_request_sent + '</button>';
@@ -389,9 +389,7 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
                         mavatar = data.user.avatar;
                         mname = data.user.realname || data.user.username;
                     }
-                    var dt = moment(data.messages[i].tstamp).fromNow(),
-                        mmsg = data.messages[i].msg;
-                    $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, mmsg));
+                    $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, data.messages[i].tstamp, data.messages[i].msg));
                 }
                 $('.taracot-messaging-area').scrollTop(1000000);
             } else {
@@ -511,6 +509,7 @@ $('[data-uk-switcher]').on('uk.switcher.show', function(event, area) {
         push_state({
             mode: 'search'
         }, "?mode=search");
+        $('#search_for_people_query').removeClass('uk-form-danger');
         $('.taracot-result-list').show();
         $('#search_for_people_res').html('');
         $('.search_for_people_user_wrap').hide();
@@ -675,6 +674,7 @@ $(window).scroll(function() {
 $(document).ready(function() {
     bind_history();
     history_handler();
+    moment.locale(current_locale);
     _counter_friends = _init_friends_count;
     _counter_inv = _init_inv_count;
     _update_nav_counters();
@@ -710,8 +710,7 @@ $(document).ready(function() {
                     }
                 });
             }
-            var dt = moment(msg.tstamp).fromNow();
-            $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, dt, msg.msg));
+            $('.taracot-messaging-area').append(_get_chat_msg_html(mavatar, mname, msg.tstamp, msg.msg));
             if ($('.taracot-messaging-area-typing').is(':visible') && msg.from == current_user.id) {
                 $('.taracot-messaging-area-typing').appendTo('.taracot-messaging-area');
             } else {
@@ -774,5 +773,6 @@ var _reset_scrolling_pagination = function() {
 };
 
 var _get_chat_msg_html = function(mavatar, mname, dt, mmsg) {
-    return '<div class="taracot-social-msg"><div class="taracot-social-msg-avatar"><img src="' + mavatar + '" alt="" class="taracot-social-msg-avatar-image uk-border-rounded"></div><div class="taracot-social-msg-body"><div class="taracot-social-msg-username">' + mname + '</div><div class="taracot-social-msg-meta">' + dt + '</div><div class="taracot-social-msg-text">' + mmsg + '</div></div></div>';
+    var dtx = moment(dt).calendar();
+    return '<div class="taracot-social-msg"><div class="taracot-social-msg-avatar"><img src="' + mavatar + '" alt="" class="taracot-social-msg-avatar-image uk-border-rounded"></div><div class="taracot-social-msg-body"><div class="taracot-social-msg-username">' + mname + '</div><div class="taracot-social-msg-meta">' + dtx + '</div><div class="taracot-social-msg-text">' + mmsg + '</div></div></div>';
 };
