@@ -278,15 +278,6 @@ app.use(function(req, res, next) {
 // Load authorization data
 
 app.use(function(req, res, next) {
-    if (req.session && req.session.auth) {
-        req.session.auth.avatar = '/images/avatars/default.png';
-        var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
-        if (fs.existsSync(path.join(__dirname, 'public', 'images', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/images/avatars/' + afn + '.jpg';
-    }
-    next();
-});
-
-app.use(function(req, res, next) {
     app.get('auth-core').check(req, function(auth) {
         if (!auth) {
             req.session.auth = false;
@@ -296,6 +287,17 @@ app.use(function(req, res, next) {
         }
         return next();
     });
+});
+
+// Load avatar
+
+app.use(function(req, res, next) {
+    if (req.session && req.session.auth) {
+        req.session.auth.avatar = '/images/avatars/default.png';
+        var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
+        if (fs.existsSync(path.join(__dirname, 'public', 'images', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/images/avatars/' + afn + '.jpg';
+    }
+    next();
 });
 
 // Load blocks

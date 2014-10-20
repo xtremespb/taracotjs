@@ -16,7 +16,6 @@ module.exports = function(app) {
                 limit: 1
             }).toArray(function(err, items) {
                 if (!err && items && items.length) {
-                    console.log(items[0]);
                     delete items[0].password;
                     if (items[0].groups) {
                         var groups_arr = items[0].groups.split(',');
