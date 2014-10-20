@@ -370,7 +370,7 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
                 var name = data.user.realname || data.user.username;
                 var _online = '<i class="uk-icon-circle-thin taracot-user-online-flag-small taracot_user_online_circle_' + id + '"></i>';
                 if (data.user.online && data.user.online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot-user-online-flag-small taracot_user_online_circle_' + id + '"></i>';
-                $('#taracot_messages_title').html('<div class="taracot-relative-wrap"><img src="' + data.user.avatar + '" class="taracot-messages-title-avatar">&nbsp;' + name +  _online + '</div>');
+                $('#taracot_messages_title').html('<div class="taracot-relative-wrap"><img src="' + data.user.avatar + '" class="taracot-messages-title-avatar">&nbsp;' + name + _online + '</div>');
                 $('#social_message_text').val('');
                 $('#social_message_text').focus();
                 push_state({
