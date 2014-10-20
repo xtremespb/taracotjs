@@ -15,7 +15,7 @@ module.exports = function(app) {
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: false
+        devMode: true
     });
 
     router.get('/', function(req, res, next) {
