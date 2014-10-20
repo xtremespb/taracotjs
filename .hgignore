@@ -1,5 +1,0 @@
-node_modules/*
-logs/*.log
-tmp/*.zip
-modules/bastra/*
-npm-debug.log

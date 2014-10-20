@@ -6,11 +6,23 @@ TaracotJS is fast and minimalist CMS based on Node.js. It has the following feat
  - MongoDB as a database storage and Redis for session storage - for maximum perfomance
  - Independent Module structure
  - Multilanguage support out of the box
+ - Crossplatfrom - works everywhere where Node.JS does
  - Multifunctional file browser with drag-and-drop and Zip/Unzip support
  - Built-in website statistics
  - WYSIWYG-based page editor (based on CKEditor)
- - Crossplatfrom - works everywhere where Node.JS does
- - And many more 8-)
+ - Blogging plattform (comments, different modes such as private, moderation and public)
+ - Social network framework with basic functionality (friendship request, real-time messaging using Socket.IO etc.)
+ - Social services authorization using OAuth protocol
+ - Configurable navigation menu
+ - And many, many more
+
+## Official website and demo
+
+Official website: https://taracot.org
+
+TaracotJS demo website is available: https://demo.taracot.org, https://demo.taracot.org/cp (use admin/admin as login/password).
+
+Note: the demo instance is being automatically re-installed every hour.
 
 ## Installation guide
 
@@ -24,7 +36,7 @@ MongoDB and Redis are required. If your operating system is x64-based Windows, y
 
 ## Documentation
 
-Mercurial repository is available at: https://code.google.com/p/taracotjs/. Use Mercurial (Hg) to checkout.
+Github repository is available at: https://github.com/xtremespb/taracotjs
 
 Please visit https://wiki.taracot.org/ for more information on this project.
 
