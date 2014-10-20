@@ -278,35 +278,24 @@ app.use(function(req, res, next) {
 // Load authorization data
 
 app.use(function(req, res, next) {
-    if (req.sesison && !req.session.auth_check_timestamp) {
-        if (req.session) req.session.auth_check_timestamp = Date.now();
-        return next();
-    }
-    if (Date.now() - req.session.auth_check_timestamp >= 10000) {
-        req.session.auth_check_timestamp = Date.now();
-        app.get('auth-core').check(req, function(auth) {
-            if (!auth) {
-                req.session.auth = false;
-            } else {
-                if (auth != req.session.auth) {
-                    req.session.auth = auth;
-                }
-                if (!auth.username) delete req.session.auth;
-            }
-            return next();
-        });
-    } else {
-        return next();
-    }
-});
-
-app.use(function(req, res, next) {
     if (req.session && req.session.auth) {
         req.session.auth.avatar = '/images/avatars/default.png';
         var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
         if (fs.existsSync(path.join(__dirname, 'public', 'images', 'avatars', afn + '.jpg'))) req.session.auth.avatar = '/images/avatars/' + afn + '.jpg';
     }
     next();
+});
+
+app.use(function(req, res, next) {
+    app.get('auth-core').check(req, function(auth) {
+        if (!auth) {
+            req.session.auth = false;
+        } else {
+            req.session.auth = auth;
+            if (!auth.username) delete req.session.auth;
+        }
+        return next();
+    });
 });
 
 // Load blocks

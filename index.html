@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=2.0,user-scalable=0">
+    <meta name="format-detection" content="telephone=no">
+    <link name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>TaracotJS - the simple CMS based on Node.JS, MongoDB and Redis</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/uikit/uikit.min.css">
+    <link rel="stylesheet" href="/css/taracot_theme.min.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/uikit/uikit.min.js"></script>
+    <!--[if lt IE 10]>
+    <script type="text/javascript">
+        var _user_has_ie = true;
+    </script>
+    <![endif]-->
+    <script src="/js/tty.js"></script>
+    <script src="/js/taracot.min.js"></script>
+</head>
+
+<body>
+    <div class="taracot-nav-block uk-vertical-align uk-hidden-small">
+        <div class="uk-vertical-align-middle" uk-data-margin>
+            <div><a href="#taracot-link-home" class="taracot-nav-btn taracot-nav-btn-active taracot-nav-btn-home" data-uk-smooth-scroll>Home</a><a href="#taracot-link-downloads" class="taracot-nav-btn taracot-nav-btn-downloads" data-uk-smooth-scroll>Download</a>&nbsp;&nbsp;
+                <img src="/images/logo_taracot.png" class="taracot-logo" alt="TaracotJS">&nbsp;&nbsp;<a href="#taracot-link-getstarted" class="taracot-nav-btn taracot-nav-btn-get-started" data-uk-smooth-scroll>Get Started</a><a href="#dlg_demo" class="taracot-nav-btn" data-uk-modal>Demo</a>
+            </div>
+        </div>
+    </div>
+    <div class="taracot-nav-block-mobile uk-vertical-align uk-hidden-medium uk-hidden-large">
+        <div class="uk-vertical-align-middle">
+            <div class="taracot-navbar-toggle">
+                <a class="uk-navbar-toggle uk-hidden-large" href="#taracot-nav-offcanvas" data-uk-offcanvas></a>
+            </div>
+            <img src="/images/logo_taracot.png" class="taracot-logo-mobile" alt="TaracotJS">
+        </div>
+    </div>
+    <div id="taracot-nav-offcanvas" class="uk-offcanvas">
+        <div class="uk-offcanvas-bar">
+            <ul class="uk-nav uk-nav-offcanvas" data-uk-nav="{multiple:true}">
+                <li class="uk-active"><a href="?home">Home</a>
+                </li>
+                <li><a href="?downloads#taracot-link-downloads">Download</a>
+                </li>
+                <li><a href="?get_started#taracot-link-getstarted">Get started</a>
+                </li>
+                <li><a href="#dlg_demo" data-uk-modal>Demo</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="taracot-features-intro uk-vertical-align uk-cover-background" id="taracot-link-home">
+        <div class="uk-vertical-align-middle">
+            <div class="taracot-nav-block-dummy uk-hidden-small"></div>
+            <span class="taracot-feature-h1">At the forefront</span>
+            <div data-uk-margin>
+                <div class="uk-icon-code taracot-feature-icon uk-border-circle" data-uk-tooltip="{pos:'bottom'}" title="Open source"></div>
+                <div class="uk-icon-database taracot-feature-icon uk-border-circle" data-uk-tooltip="{pos:'bottom'}" title="MongoDB and Redis"></div>
+                <div class="uk-icon-html5 taracot-feature-icon uk-border-circle" data-uk-tooltip="{pos:'bottom'}" title="Based on HTML5 techs"></div>
+                <div class="uk-icon-leaf taracot-feature-icon uk-border-circle" data-uk-tooltip="{pos:'bottom'}" title="Simple and lightweigt"></div>
+                <div class="uk-icon-paw taracot-feature-icon uk-border-circle" data-uk-tooltip="{pos:'bottom'}" title="The bear paw!"></div>
+            </div>
+        </div>
+    </div>
+    <div class="taracot-features-subline">
+    </div>
+    <div class="taracot-features-one taracot-nav-home" data-uk-scrollspy="{repeat:true}">
+        <div class="taracot-feature-h2 uk-width-3-4 uk-container-center">The simple content management system written in pure JavaScript</div>
+        <div class="taracot-feature-h3 uk-container-center">TaracotJS is a simple content management system (CMS) written in JavaScript on both client and server sides (using Node). It's free, open source and is running on multiple platrforms including Linux, MacOS and Windows. All modern browsers are supported.</div>
+        <div class="taracot-features-image">
+            <img src="/images/SvnhqxNL783YxNU.png">
+        </div>
+    </div>
+    <div class="taracot-features-one">
+        <div class="taracot-feature-h2 uk-width-3-4 uk-container-center">The module structure: use one of existing modules or write your own</div>
+        <div class="taracot-feature-h3 uk-container-center">Currently available (and included): authorization/registration/profile module, file browser, file manager, menu control, pages editor, parts editor, fulltext search with morphology support, settings, text editor with syntax highlighting, user control, blog with comments support, social network authorization, social network core module.</div>
+        <img src="/images/features_1.png" class="taracot-features-image uk-responsive-width uk-responsive-height">
+    </div>
+    <div class="taracot-features-one">
+        <div class="taracot-feature-h2 uk-width-3-4 uk-container-center">Works on all modern devices: the responsive backend</div>
+        <div class="taracot-feature-h3 uk-container-center">No need for desktop computer to make changes on your website: all major mobile browsers (especially Google Chrome) are fully functional.</div>
+        <img src="/images/features_2.png" class="taracot-features-image uk-responsive-width uk-responsive-height">
+    </div>
+    <a name="taracot-link-downloads"></a>
+    <div class="taracot-features-one taracot-nav-downloads" data-uk-scrollspy="{repeat:true}">
+        <div class="taracot-feature-h2 uk-width-3-4 uk-container-center" id="taracot-link-downloads">Downloads and source</div>
+        <div class="taracot-feature-h3 uk-container-center">You may browse or fork the source code - it's licensed under GPL license.</div>
+        <div class="uk-panel taracot-features-image">
+            <div class="uk-panel-box uk-downloads-panel uk-container-center">
+                <h3>Source code repository:</h3>
+                <i class="uk-icon-external-link-square"></i>&nbsp;<a href="https://github.com/xtremespb/taracotjs" target="_blank">https://github.com/xtremespb/taracotjs</a>
+                <br>
+                <i class="uk-icon-external-link-square"></i>&nbsp;<a href="https://code.google.com/p/taracotjs-generator/" target="_blank">https://code.google.com/p/taracotjs-generator/</a>
+                <h3>Latest TaracotJS version as ZIP archive:</h3>
+                <i class="uk-icon-external-link-square"></i>&nbsp;<a href="https://taracot.org/source/taracotjs/latest.zip" target="_blank">https://taracot.org/source/taracotjs/latest.zip</a>
+                <br>
+                <h3>NPM Repository:</h3>
+                <i class="uk-icon-external-link-square"></i>&nbsp;<a href="https://www.npmjs.org/package/taracotjs-generator" target="_blank">https://www.npmjs.org/package/taracotjs-generator</a>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="taracot-features-one taracot-nav-get-started" data-uk-scrollspy="{repeat:true}">
+        <div class="taracot-feature-h2 uk-width-3-4 uk-container-center" id="taracot-link-getstarted">
+            <a name="taracot-link-getstarted"></a>Installation: simple as 1-2-3</div>
+        <div class="taracot-feature-h3 uk-container-center">
+            <p>Install Node.js, MongoDB and Redis, then run TaracotJS with just four simple commands.</p>
+            <p>Please refer to the <a href="https://wiki.taracot.org" target="_blank">official Wiki</a> for more information.</p>
+        </div>
+        <div class="taracot-features-image">
+            <button class="uk-button uk-button-large uk-button-success" id="btn_console_show">Show me how!</button>
+        </div>
+    </div>
+    <div class="taracot-features-footer uk-vertical-align">
+        <div class="uk-vertical-align-middle">
+            <div>
+                <noindex>
+                    <div class="uk-margin-bottom" data-uk-margin>
+                        <div class="taracot-features-footer-text">&copy; 2014 Michael A. Matveev.</div>
+                        <div class="taracot-features-footer-text">TaracotJS is licensed under <a href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GPL License</a> (version 3 or later). Some images are <a href="http://www.freepik.com/" target="_blank">designed by Freepik.com</a>.</div>
+                    </div>
+                </noindex>
+                <div>
+                    <noindex>
+                        <a href="http://nodejs.org/" target="_blank" class="taracot-footer-logo">
+                            <img src="/images/logo_nodejs_bw.png" class="uk-margin-top">
+                        </a>
+                        <a href="http://getuikit.com/" target="_blank" class="taracot-footer-logo">
+                            <img src="/images/logo_uikit_bw.png" class="uk-margin-top">
+                        </a>
+                        <a href="http://redis.io/" target="_blank" class="taracot-footer-logo">
+                            <img src="/images/logo_redis_bw.png" class="uk-margin-top">
+                        </a>
+                        <a href="http://www.mongodb.com/" target="_blank" class="taracot-footer-logo">
+                            <img src="/images/logo_mongodb_bw.png" class="uk-margin-top">
+                        </a>
+                    </noindex>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dlg_console_show" class="uk-modal">
+        <div class="uk-modal-dialog uk-modal-dialog-frameless">
+            <a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+            <div class="taracot-terminal-showcase-wrap">
+                <div id="taracot-terminal-showcase" data-uk-scrollspy></div>
+            </div>
+        </div>
+    </div>
+    <div id="dlg_demo" class="uk-modal">
+        <div class="uk-modal-dialog">
+            <a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+            <h2>Demo</h2>
+            <div>There is a pre-installed TaracotJS demo available (opens in a new window):</div>
+            <div class="uk-panel uk-panel-box uk-margin-top"><a href="https://demo.taracot.org" target="_blank">https://demo.taracot.org</a>
+            </div>
+            <div class="uk-margin-top">Control panel backend (opens in a new window, use admin/admin as login/password):</div>
+            <div class="uk-panel uk-panel-box uk-margin-top"><a href="https://demo.taracot.org/cp/" target="_blank">https://demo.taracot.org/cp/</a>
+            </div>
+            <div class="uk-margin-top uk-alert" data-uk-alert>
+                <a href="" class="uk-alert-close uk-close"></a>
+                <p><i class="uk-icon-warning"></i>&nbsp;The TaracotJS is reinstalled hourly. Therefore, the website is under maintenance every single hour. Please be patient.</p>
+            </div>
+        </div>
+</body>
+
+</html>

@@ -15,16 +15,15 @@ module.exports = function(app) {
             }, {
                 limit: 1
             }).toArray(function(err, items) {
-                if (typeof items != 'undefined' && !err) {
-                    if (items.length > 0) {
-                        delete items[0].password;
-                        if (items[0].groups) {
-                            var groups_arr = items[0].groups.split(',');
-                            items[0].groups_hash = {};
-                            for (var i=0; i<groups_arr.length; i++) items[0].groups_hash[groups_arr[i]] = true;
-                        }
-                        return callback(items[0]);
+                if (!err && items && items.length) {
+                    console.log(items[0]);
+                    delete items[0].password;
+                    if (items[0].groups) {
+                        var groups_arr = items[0].groups.split(',');
+                        items[0].groups_hash = {};
+                        for (var i = 0; i < groups_arr.length; i++) items[0].groups_hash[groups_arr[i]] = true;
                     }
+                    return callback(items[0]);
                 }
                 req.session.auth = false;
                 return callback(false);
