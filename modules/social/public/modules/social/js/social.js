@@ -170,7 +170,9 @@ var _load_conv_list = function() {
                         if (data.conversations[i].unread_flag && data.conversations[i].unread_flag == '1') unread_class = ' taracot-conv-card-unread';
                         var _online = '<i class="uk-icon-circle-thin taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
                         if (data.conversations[i].user_online && data.conversations[i].user_online == '1') _online = '<i class="uk-icon-circle taracot-user-online taracot_user_online_circle_' + data.conversations[i].user_id + '"></i>';
-                        $('#conv_list_res').append('<div class="taracot-btn-send-msg taracot-conv-card' + unread_class + '" id="btn_send_msg_' + data.conversations[i].user_id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.conversations[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + data.conversations[i].name + '</div><div class="uk-comment-meta">' + _lang_vars.last_timestamp + ': ' + data.conversations[i].last_tstamp + ', ' + _lang_vars.total_msg + ': ' + data.conversations[i].msg_count + '</div></header></div>');
+                        var _timestamp = moment().format('LLL');
+                        if (data.conversations[i].last_tstamp) _timestamp = moment(data.conversations[i].last_tstamp).format('LLL');
+                        $('#conv_list_res').append('<div class="taracot-btn-send-msg taracot-conv-card' + unread_class + '" id="btn_send_msg_' + data.conversations[i].user_id + '"><header class="uk-comment-header"><img class="uk-comment-avatar" src="' + data.conversations[i].avatar + '" alt=""><div class="taracot-social-username">' + _online + '&nbsp;' + data.conversations[i].name + '</div><div class="uk-comment-meta">' + _lang_vars.last_timestamp + ': ' + _timestamp + ', ' + _lang_vars.total_msg + ': ' + data.conversations[i].msg_count + '</div></header></div>');
                     }
                     $('.taracot-btn-send-msg').unbind();
                     $('.taracot-btn-send-msg').click(taracot_btn_send_msg_handler);

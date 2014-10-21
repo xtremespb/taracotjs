@@ -4,19 +4,16 @@ module.exports = function(app) {
 
     var auth = {
         check: function(req, callback) {
-            var _sa = req.session.auth;
-            if (typeof _sa == 'undefined' || !_sa) {
-                callback(false);
-                return;
-            }
-            var collection = app.get('mongodb').collection('users');
+            if (!req.session || !req.session.auth || !req.session.auth._id) return callback(false);
             app.get('mongodb').collection('users').find({
-                _id: new ObjectId(_sa._id)
+                _id: new ObjectId(req.session.auth._id)
             }, {
                 limit: 1
             }).toArray(function(err, items) {
                 if (!err && items && items.length) {
                     delete items[0].password;
+                    items[0]._id = items[0]._id.toHexString();
+                    items[0].avatar = '';
                     if (items[0].groups) {
                         var groups_arr = items[0].groups.split(',');
                         items[0].groups_hash = {};
@@ -24,7 +21,6 @@ module.exports = function(app) {
                     }
                     return callback(items[0]);
                 }
-                req.session.auth = false;
                 return callback(false);
             });
         }

@@ -279,12 +279,7 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next) {
     app.get('auth-core').check(req, function(auth) {
-        if (!auth) {
-            req.session.auth = false;
-        } else {
-            req.session.auth = auth;
-            if (!auth.username) delete req.session.auth;
-        }
+        req.session.auth = auth;
         return next();
     });
 });
