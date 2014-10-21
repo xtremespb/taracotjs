@@ -138,6 +138,26 @@ module.exports = function(grunt) {
                 files: {
                     'modules/textedit/public/modules/textedit/js/textedit.min.js': 'modules/textedit/public/modules/textedit/js/main.js'
                 }
+            },
+            module_blog_post: {
+                files: {
+                    'modules/blog/public/modules/blog/js/blog_post.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/wysibb/jquery.wysibb.min.js', 'public/js/helper.js', 'modules/blog/public/modules/blog/js/blog_post.js' ]
+                }
+            },
+            module_blog_cp: {
+                files: {
+                    'modules/blog/public/modules/blog/js/blog_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/blog_cp.js' ]
+                }
+            },
+            module_blog_view: {
+                files: {
+                    'modules/blog/public/modules/blog/js/blog_view.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/blog_comment.js' ]
+                }
+            },
+            module_social: {
+                files: {
+                    'modules/social/public/modules/social/js/social.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/jquery.history.min.js', 'public/js/moment.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/social/public/modules/social/js/jquery.typing.min.js', 'modules/social/public/modules/social/js/social.js' ]
+                }
             }
         }
     });

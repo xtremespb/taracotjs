@@ -382,6 +382,82 @@ module.exports = function(app) {
         });
     });
 
+    router.post('/user/friendship/remove', function(req, res, next) {
+        var _locale = req.i18n.getLocale();
+        var rep = {
+            status: 1
+        };
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var fid = req.body.id;
+        if (!fid.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_user_id");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('users').find({
+            _id: new ObjectId(fid)
+        }, {
+            limit: 1
+        }).toArray(function(err, items) {
+            if (err || !items) {
+                rep.status = 0;
+                rep.error = i18nm.__("user_not_found");
+                return res.send(JSON.stringify(rep));
+            }
+            if (items[0]._id.toHexString() == req.session.auth._id) {
+                rep.status = 0;
+                rep.error = i18nm.__("user_not_found");
+                return res.send(JSON.stringify(rep));
+            }
+            app.get('mongodb').collection('social_friends').find({
+                $or: [{
+                    $and: [{
+                        u1: req.session.auth._id
+                    }, {
+                        u2: items[0]._id.toHexString()
+                    }, {
+                        friends: '1'
+                    }]
+                }, {
+                    $and: [{
+                        u1: items[0]._id.toHexString()
+                    }, {
+                        u2: req.session.auth._id
+                    }, {
+                        friends: '1'
+                    }]
+                }]
+            }, {
+                limit: 1
+            }).toArray(function(err, items) {
+                if (err || !items || !items.length) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("not_friends");
+                    return res.send(JSON.stringify(rep));
+                }
+                app.get('mongodb').collection('social_friends').remove({
+                    _id: items[0]._id
+                }, function(err, items) {
+                    if (err) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("friendship_remove_error");
+                        return res.send(JSON.stringify(rep));
+                    }
+                    var _sm = {
+                        friend_id: fid
+                    };
+                    socketsender.emit(fid, 'social_unfriend', _sm);
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
     router.post('/user/friends/inv', function(req, res, next) {
         var _locale = req.i18n.getLocale();
         var rep = {

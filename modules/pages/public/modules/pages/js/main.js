@@ -569,7 +569,8 @@ $(document).ready(function() {
         sort_mode: 1,
         sort_cell: 'pfolder',
         taracot_table_url: '/cp/pages/data/list',
-        process_rows: process_rows
+        process_rows: process_rows,
+        error_message: _lang_vars.ajax_failed
     });
     $('#pfolder').attr('readonly', true);
     folders_data = folders_preload;

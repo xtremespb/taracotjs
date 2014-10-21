@@ -237,7 +237,7 @@ var taracot_user_search_card_handler = function(_par, _uid) {
                 if (current_user.id != data.user._id) {
                     buttons += '<button class="uk-button uk-button-small taracot-btn-send-msg" id="btn_send_msg_' + data.user._id + '"><i class="uk-icon-envelope"></i>&nbsp;' + _lang_vars.send_msg + '</button>&nbsp;';
                     if (data.friendship && data.friendship == '0') buttons += '<button class="uk-button uk-button-small taracot-btn-add-friend" id="btn_add_friend_' + data.user._id + '"><i class="uk-icon-plus"></i>&nbsp;' + _lang_vars.add_friend + '</button>';
-                    if (data.friendship && data.friendship == '1') buttons += '<div class="uk-badge uk-badge-success uk-badge-notification">' + _lang_vars.friendship_estb + '</div>';
+                    if (data.friendship && data.friendship == '1') buttons += '<div class="uk-button-dropdown taracot-social-unfriend-wrap" data-uk-dropdown><button class="uk-button uk-button-success uk-button-small">' + _lang_vars.friendship_estb + '&nbsp;<i class="uk-icon-caret-down"></i></button><div class="uk-dropdown uk-dropdown-small"><ul class="uk-nav uk-nav-dropdown"><li><a href="" class="taracot-social-unfriend" id="taracot_social_unfriend_' + data.user._id + '"><i class="uk-icon-times-circle"></i>&nbsp;&nbsp;' + _lang_vars.unfriend_user + '</a></li></ul></div></div>';
                     if (data.friendship && data.friendship == '2') buttons += '<button class="uk-button uk-button-small" disabled="true"><i class="uk-icon-plus"></i>&nbsp;' + _lang_vars.friendship_request_sent + '</button>';
                     if (data.friendship && data.friendship == '3') buttons += '<button class="uk-button uk-button-small uk-button-success taracot-btn-accept-friend" id="btn_accept_friend_' + data.user._id + '"><i class="uk-icon-plus"></i>&nbsp;' + _lang_vars.friendship_request_recv + '</button>';
                 }
@@ -250,6 +250,8 @@ var taracot_user_search_card_handler = function(_par, _uid) {
                 $('.taracot-btn-accept-friend').click(taracot_btn_accept_friend_handler);
                 $('.taracot-btn-send-msg').unbind();
                 $('.taracot-btn-send-msg').click(taracot_btn_send_msg_handler);
+                $('.taracot-social-unfriend').unbind();
+                $('.taracot-social-unfriend').click(taracot_social_unfriend_handler);
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
@@ -325,9 +327,11 @@ var taracot_btn_accept_friend_handler = function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status == 1 && data.friend_id) {
-                $('.taracot-btn-accept-friend').replaceWith('<div class="uk-badge uk-badge-success uk-badge-notification">' + _lang_vars.friendship_estb + '</div>');
+                $('.taracot-btn-accept-friend').replaceWith('<div class="uk-button-dropdown taracot-social-unfriend-wrap" data-uk-dropdown><button class="uk-button uk-button-success uk-button-small">' + _lang_vars.friendship_estb + '&nbsp;<i class="uk-icon-caret-down"></i></button><div class="uk-dropdown uk-dropdown-small"><ul class="uk-nav uk-nav-dropdown"><li><a href="" class="taracot-social-unfriend" id="taracot_social_unfriend_' + id + '"><i class="uk-icon-times-circle"></i>&nbsp;&nbsp;' + _lang_vars.unfriend_user + '</a></li></ul></div></div>');
                 _counter_inv--;
                 _update_nav_counters();
+                $('.taracot-social-unfriend').unbind();
+                $('.taracot-social-unfriend').click(taracot_social_unfriend_handler);
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
@@ -459,6 +463,47 @@ var taracot_btn_post_msg_handler = function() {
                 pos: 'top-center'
             });
             $('#social_message_text').focus();
+        }
+    });
+};
+
+var taracot_social_unfriend_handler = function(e) {
+    e.preventDefault();
+    if (!confirm(_lang_vars.unfriend_user_confirm)) return false;
+    var id = $(this).attr('id').replace('taracot_social_unfriend_', '');
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/social/user/friendship/remove',
+        dataType: "json",
+        data: {
+            id: id
+        },
+        success: function(data) {
+            $.loadingIndicator('hide');
+            if (data.status != 1) {
+                var _msg = _lang_vars.ajax_failed;
+                if (data.error) _msg = data.error;
+                $.UIkit.notify({
+                    message: _msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                $('.taracot-social-unfriend-wrap').remove();
+                _counter_friends--;
+                _update_nav_counters();
+            }
+        },
+        error: function() {
+            $.loadingIndicator('hide');
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
         }
     });
 };
@@ -689,6 +734,12 @@ $(document).ready(function() {
         _counter_friends++;
         _update_nav_counters();
         if (_nav_current_page == 'friends' && $('#friends_list_res').is(':visible')) $('#switcher_area_friends').click();
+    });
+    socket.on('social_unfriend', function(msg) {
+        _counter_friends--;
+        _update_nav_counters();
+        if (_nav_current_page == 'friends' && $('#friends_list_res').is(':visible')) $('#switcher_area_friends').click();
+        if ($('#taracot_social_unfriend_' + msg.friend_id).is(':visible')) $('.taracot-social-unfriend-wrap').remove();
     });
     socket.on('social_new_inv', function(msg) {
         _counter_inv++;

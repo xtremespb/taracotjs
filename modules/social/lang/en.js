@@ -32,5 +32,9 @@
 	"unauth": "Unauthorized",
 	"typing_a_message": "typing a message",
 	"no_conversations": "Currently you don't have any conversations.",
-	"no_friends_found": "You don't have any friends on this website yet."
+	"no_friends_found": "You don't have any friends on this website yet.",
+	"unfriend_user": "Un-friend user",
+	"unfriend_user_confirm": "Are you sure you wish to remove this user from your friends list?",
+	"not_friends": "You and requested user are not friends",
+	"friendship_remove_error": "Unable to process your friendship removal request"
 }

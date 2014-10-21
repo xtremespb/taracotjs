@@ -17,7 +17,7 @@ var process_rows = [ // Handlers for each column
 		return val;
 	},
 	function(val, id) {
-		if (val === 0) {
+		if (val && parseInt(val) === 0) {
 			val = _lang_vars.status_0;
 		}
 		if (val == 1) {
@@ -279,6 +279,7 @@ $(document).ready(function() {
 		sort_mode: 1,
 		sort_cell: 'username',
 		taracot_table_url: '/cp/users/data/list',
-		process_rows: process_rows
+		process_rows: process_rows,
+		error_message: _lang_vars.ajax_failed
 	});
 });

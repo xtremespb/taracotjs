@@ -242,7 +242,8 @@ $(document).ready(function() {
 		sort_mode: 1,
 		sort_cell: 'pname',
 		taracot_table_url: '/cp/parts/data/list',
-		process_rows: process_rows
+		process_rows: process_rows,
+		error_message: _lang_vars.ajax_failed
 	});
 	init_ckeditor();
 });
