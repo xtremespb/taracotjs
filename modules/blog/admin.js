@@ -18,7 +18,7 @@ module.exports = function(app) {
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        var data = app.get('mongodb').collection('settings').find({
+        app.get('mongodb').collection('settings').find({
             $or: [{
                 oname: 'blog_mode'
             }, {
@@ -69,7 +69,7 @@ module.exports = function(app) {
             rep.status = 0;
             return res.send(JSON.stringify(rep));
         }
-        var data = app.get('mongodb').collection('settings').find({
+        app.get('mongodb').collection('settings').find({
             $or: [{
                 oname: 'blog_mode'
             }, {

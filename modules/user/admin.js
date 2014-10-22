@@ -94,10 +94,10 @@ module.exports = function(app) {
                 }]
             };
         }
-        var data = app.get('mongodb').collection('users').find(find_query).count(function(err, items_count) {
+        app.get('mongodb').collection('users').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
                 rep.total = items_count;
-                var data = app.get('mongodb').collection('users').find(find_query, {
+                app.get('mongodb').collection('users').find(find_query, {
                     skip: skip,
                     limit: items_per_page
                 }).sort(sort).toArray(function(err, items) {
@@ -143,7 +143,7 @@ module.exports = function(app) {
         }
         // Get users from MongoDB
         rep.user = {};
-        var data = app.get('mongodb').collection('users').find({
+        app.get('mongodb').collection('users').find({
             _id: new ObjectId(user_id)
         }, {
             limit: 1
@@ -224,7 +224,7 @@ module.exports = function(app) {
             return;
         }
         if (id) {
-            var data = app.get('mongodb').collection('users').find({
+            app.get('mongodb').collection('users').find({
                 $or: [{
                     username_auth: username_auth
                 }, {
@@ -252,7 +252,7 @@ module.exports = function(app) {
                     res.send(JSON.stringify(rep));
                     return;
                 }
-                var data = app.get('mongodb').collection('users').find({
+                app.get('mongodb').collection('users').find({
                     _id: new ObjectId(id)
                 }, {
                     limit: 1

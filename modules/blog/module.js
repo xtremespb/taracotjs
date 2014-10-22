@@ -99,7 +99,7 @@ module.exports = function(app) {
             }).count(function(modreq_err, modreq_count) {
                 app.get('mongodb').collection('blog').find(query).count(function(err, items_count) {
                     if (!err && items_count > 0) {
-                        var data = app.get('mongodb').collection('blog').find(query, {
+                        app.get('mongodb').collection('blog').find(query, {
                             skip: skip,
                             limit: items_per_page
                         }).sort({

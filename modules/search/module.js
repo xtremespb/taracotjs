@@ -67,7 +67,7 @@ module.exports = function(app) {
         app.get('mongodb').collection('search_index').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
                 rep.total = items_count;
-                var data = app.get('mongodb').collection('search_index').find(find_query, {
+                app.get('mongodb').collection('search_index').find(find_query, {
                     skip: skip,
                     limit: items_per_page
                 }).toArray(function(err, items) {

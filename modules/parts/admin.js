@@ -85,10 +85,10 @@ module.exports = function(app) {
 				pname: new RegExp(query, 'i')
 			};
 		}
-		var data = app.get('mongodb').collection('parts').find(find_query).count(function(err, items_count) {
+		app.get('mongodb').collection('parts').find(find_query).count(function(err, items_count) {
 			if (!err && items_count > 0) {
 				rep.total = items_count;
-				var data = app.get('mongodb').collection('parts').find(find_query, {
+				app.get('mongodb').collection('parts').find(find_query, {
 					skip: skip,
 					limit: items_per_page
 				}).sort(sort).toArray(function(err, items) {
@@ -132,7 +132,7 @@ module.exports = function(app) {
 		}
 		// Get parts from MongoDB
 		rep.data = {};
-		var data = app.get('mongodb').collection('parts').find({
+		app.get('mongodb').collection('parts').find({
 			_id: new ObjectId(user_id)
 		}, {
 			limit: 1
@@ -193,7 +193,7 @@ module.exports = function(app) {
 			return;
 		}
 		if (id) {
-			var data = app.get('mongodb').collection('parts').find({
+			app.get('mongodb').collection('parts').find({
 				pname: pname,
 				plang: plang,
 				_id: {
@@ -209,7 +209,7 @@ module.exports = function(app) {
 					res.send(JSON.stringify(rep));
 					return;
 				}
-				var data = app.get('mongodb').collection('parts').find({
+				app.get('mongodb').collection('parts').find({
 					_id: new ObjectId(id)
 				}, {
 					limit: 1

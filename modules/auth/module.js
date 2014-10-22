@@ -191,7 +191,7 @@ module.exports = function(app) {
         email = email.toLowerCase();
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-        var data = app.get('mongodb').collection('users').find({
+        app.get('mongodb').collection('users').find({
             $or: [{
                 username_auth: username_auth
             }, {
@@ -404,7 +404,7 @@ module.exports = function(app) {
             return;
         }
         email = email.toLowerCase();
-        var data = app.get('mongodb').collection('users').find({
+        app.get('mongodb').collection('users').find({
             email: email
         }, {
             limit: 1
@@ -557,7 +557,7 @@ module.exports = function(app) {
         }
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-        var data = app.get('mongodb').collection('users').find({
+        app.get('mongodb').collection('users').find({
             _id: new ObjectId(user),
             res_code: code
         }, {
@@ -674,7 +674,7 @@ module.exports = function(app) {
         username = username.toLowerCase();
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-        var data = app.get('mongodb').collection('users').find({
+        app.get('mongodb').collection('users').find({
             username_auth: username,
             password: password_hex
         }, {

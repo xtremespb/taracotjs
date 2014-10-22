@@ -32,7 +32,7 @@ module.exports = function(app) {
             return;
         }
 
-        var data = app.get('mongodb').collection('pages_folders').find({
+        app.get('mongodb').collection('pages_folders').find({
             oname: 'folders_json'
         }, {
             limit: 1
@@ -120,10 +120,10 @@ module.exports = function(app) {
                 }]
             };
         }
-        var data = app.get('mongodb').collection('pages').find(find_query).count(function(err, items_count) {
+        app.get('mongodb').collection('pages').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
                 rep.total = items_count;
-                var data = app.get('mongodb').collection('pages').find(find_query, {
+                app.get('mongodb').collection('pages').find(find_query, {
                     skip: skip,
                     limit: items_per_page
                 }).sort(sort).toArray(function(err, items) {
@@ -362,7 +362,7 @@ module.exports = function(app) {
                         menu_uikit = items[0].menu_uikit;
                         menu_uikit_offcanvas = items[0].menu_uikit_offcanvas;
                     }
-                    var data = app.get('mongodb').collection('pages').find({
+                    app.get('mongodb').collection('pages').find({
                         pfilename: pfilename,
                         pfolder: pfolder,
                         plang: plang,
@@ -589,7 +589,7 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
-        var data = app.get('mongodb').collection('pages_folders').find({
+        app.get('mongodb').collection('pages_folders').find({
             oname: 'folders_json'
         }, {
             limit: 1

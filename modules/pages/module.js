@@ -29,7 +29,7 @@ module.exports = function(app) {
 				pfilename: fn2
 			}]
 		};
-		var data = app.get('mongodb').collection('pages_folders').find({
+		app.get('mongodb').collection('pages_folders').find({
 			oname: 'folders_json'
 		}, {
 			limit: 1
