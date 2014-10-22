@@ -15,15 +15,15 @@ var load_modules = {
 		prefix: '/cp/',
 		cp_prefix: ''
 	}, {
+		name: 'siteconf',
+		prefix: '',
+		cp_id: 'siteconf',
+		cp_prefix: '/cp/siteconf/'
+	}, {
 		name: 'user',
 		prefix: '',
 		cp_id: 'users',
 		cp_prefix: '/cp/users/'
-	}, {
-		name: 'settings',
-		prefix: '',
-		cp_id: 'settings',
-		cp_prefix: '/cp/settings/'
 	}, {
 		name: 'files',
 		prefix: '/files/',
@@ -64,6 +64,11 @@ var load_modules = {
 		name: 'social',
 		prefix: '/social/',
 		cp_prefix: ''
+	}, {
+		name: 'settings',
+		prefix: '',
+		cp_id: 'settings',
+		cp_prefix: '/cp/settings/'
 	}, {
 		name: 'pages',
 		prefix: '',

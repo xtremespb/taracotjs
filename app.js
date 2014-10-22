@@ -280,6 +280,17 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
     app.get('auth-core').check(req, function(auth) {
         req.session.auth = auth;
+        if (app.get('settings') && app.get('settings').site_auth && app.get('settings').site_auth == 'mnd') {
+            if (req.method == 'GET' && (!auth || (auth.status && auth.status < 1))) {
+                var __local = false;
+                if (req.url.match(/^\/auth/)) __local = true;
+                for (var r = 0; r < public_folder_dirs.length; r++) {
+                    var _rx = new RegExp('^' + public_folder_dirs[r].replace(/\/$/, ''));
+                    if (req.url.match(_rx)) __local = true;
+                }
+                if (!__local) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            }
+        }
         return next();
     });
 });

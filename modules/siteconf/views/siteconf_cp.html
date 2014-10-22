@@ -1,0 +1,100 @@
+<h1>!{root.lang.__('module_name_cp')}</h1>
+<ul class="uk-tab" data-uk-tab="{connect:'#siteconf_tabs'}">
+    <li class="uk-active"><a href="">!{root.lang.__('mode')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_metadata')}</a>
+    </li>
+</ul>
+<ul id="siteconf_tabs" class="uk-panel uk-panel-box uk-switcher taracot-siteconf-panel">
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('siteconf_mode_hint')}</div>
+        <ul class="uk-subnav uk-subnav-pill uk-alert taracot-siteconf-mode-select" data-uk-switcher="{connect:'#siteconf_mode'}">
+            <li id="siteconf_mode_public" class="taracot-siteconf-mode"><a href="">!{root.lang.__('siteconf_public')}</a>
+            </li>
+            <li id="siteconf_mode_invites" class="taracot-siteconf-mode"><a href="">!{root.lang.__('siteconf_invite')}</a>
+            </li>
+            <li id="siteconf_mode_private" class="taracot-siteconf-mode"><a href="">!{root.lang.__('siteconf_private')}</a>
+            </li>
+            <li id="siteconf_mode_maintenance" class="taracot-siteconf-mode"><a href="">!{root.lang.__('siteconf_maintenance')}</a>
+            </li>
+        </ul>
+        <ul id="siteconf_mode" class="uk-switcher uk-margin-top">
+            <li>!{root.lang.__('siteconf_public_desc')}</li>
+            <li>!{root.lang.__('siteconf_invite_desc')}</li>
+            <li>!{root.lang.__('siteconf_private_desc')}</li>
+            <li>!{root.lang.__('siteconf_maintenance_desc')}</li>
+        </ul>
+        <ul class="uk-subnav uk-subnav-pill uk-alert taracot-siteconf-authn-select" data-uk-switcher="{connect:'#siteconf_authn'}">
+            <li id="siteconf_authn_opt" class="taracot-siteconf-authn"><a href="">!{root.lang.__('siteconf_authn_opt')}</a>
+            </li>
+            <li id="siteconf_authn_mnd" class="taracot-siteconf-authn"><a href="">!{root.lang.__('siteconf_authn_mnd')}</a>
+            </li>
+        </ul>
+        <ul id="siteconf_authn" class="uk-switcher uk-margin-top">
+            <li>!{root.lang.__('siteconf_authn_opt_desc')}</li>
+            <li>!{root.lang.__('siteconf_authn_mnd_desc')}</li>
+        </ul>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('siteconf_metadata_hint')}</div>
+        <table class="uk-table uk-margin-top" id="siteconf_metadata">
+            <thead>
+                <tr id="siteconf_metadata_th">
+                    <th style="width:150px">!{root.lang.__('meta_id')}</th>
+                </tr>
+            </thead>
+            <tbody id="siteconf_metadata_tb">
+                <tr class="uk-form">
+                    <td>!{root.lang.__('site_title')}</td>
+                </tr>
+                <tr class="uk-form">
+                    <td>!{root.lang.__('site_keywords')}</td>
+                </tr>
+                <tr class="uk-form">
+                    <td>!{root.lang.__('site_description')}</td>
+                </tr>
+            </tbody>
+        </table>
+    </li>
+</ul>
+<div class="uk-margin-top">
+    <button class="uk-button" id="btn_save"><i class="uk-icon-save"></i>&nbsp;!{root.lang.__('save_all_changes')}</button>
+    <div class="uk-float-right uk-margin-top taracot_changes_hint">
+        <i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('changes_are_not_saved_immediately')}
+    </div>
+</div>
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    save_success: "!{root.lang.__('save_success')}",
+    confirm_delete_area: "!{root.lang.__('confirm_delete_area')}"
+};
+var locales = !{
+    root.locales
+};
+var init_mode = "!{root.init_mode}";
+var init_authn = "!{root.init_authn}";
+var init_meta = !{
+    root.init_meta
+};
+if (init_meta)
+    for (var i = 0; i < locales.length; i++) {
+        $('#siteconf_metadata_th').append('<th>' + locales[i] + '</th>');
+        var __cnt = 0;
+        $('#siteconf_metadata_tb > tr').each(function() {
+            var __sm = '',
+                __val = '';
+            if (__cnt == 0) __sm = 'site_title';
+            if (__cnt == 1) __sm = 'site_keywords';
+            if (__cnt == 2) __sm = 'site_description';
+            for (var m = 0; m < init_meta.length; m++)
+                if (init_meta[m].id == __sm && init_meta[m].lang == locales[i]) __val = init_meta[m].val;
+            $(this).append('<td><input type="text" class="uk-width-1-1" value="' + __val + '"></td>');
+            __cnt++;
+            if (__cnt > 2) __cnt = 0;
+
+        });
+    }
+</script>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/modules/siteconf/js/siteconf_cp.js"></script>
