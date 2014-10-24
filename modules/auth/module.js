@@ -9,7 +9,7 @@ module.exports = function(app) {
         locales: config.locales,
         directory: path.join(__dirname, 'lang'),
         extension: '.js',
-        devMode: false
+        devMode: true
     });
     // Social Auth: begin
     var config_auth = app.get('config_auth');
@@ -105,6 +105,7 @@ module.exports = function(app) {
     });
     router.get('/register', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
+        if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'private') return render_error_page(req, res, i18nm.__('register_not_allowed'));
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -134,6 +135,11 @@ module.exports = function(app) {
     router.post('/register/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
         i18nm.setLocale(req.i18n.getLocale());
+        if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'private')
+            return res.send(JSON.stringify({
+                result: 0,
+                error: i18nm.__("register_not_allowed")
+            }));
         var username = req.body.username;
         var password = req.body.password;
         var email = req.body.email;
@@ -1047,5 +1053,23 @@ module.exports = function(app) {
             });
         });
     });
+
+    var render_error_page = function(req, res, error_text) {
+        var data = {
+            title: i18nm.__('error'),
+            page_title: i18nm.__('error'),
+            keywords: '',
+            description: '',
+            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
+        };
+        var render = renderer.render_file(path.join(__dirname, 'views'), 'error', {
+            lang: i18nm,
+            data: data,
+            error_text: error_text
+        }, req);
+        data.content = render;
+        app.get('renderer').render(res, undefined, data, req);
+    };
+
     return router;
 };

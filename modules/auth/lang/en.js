@@ -120,5 +120,7 @@
 	"set_username_password": "Set username and password",
 	"set_username_password_hint": "Please enter the username and password you will use on the website. Please note that you can set your username just once.",
 	"username_password_saved": "Username and password are set",
-	"unauth": "You are not auhorized to perform the requested operation"
+	"unauth": "You are not auhorized to perform the requested operation",
+	"register_not_allowed": "New user registration is not allowed on this website.",
+	"error": "Error"
 }
