@@ -504,6 +504,25 @@ async.series([
             });
         },
         function(callback) {
+            console.log("\nCreating collection: invites\n");
+            db.createCollection('invites', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: invites\n");
+            ensure_indexes('invites', ['invdate', 'invcode', 'invused'], null, null, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
             console.log("\nCreating collection: social_friends\n");
             db.createCollection('social_friends', function(err, collection) {
                 if (err) {

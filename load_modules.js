@@ -25,6 +25,11 @@ var load_modules = {
 		cp_id: 'users',
 		cp_prefix: '/cp/users/'
 	}, {
+		name: 'invites',
+		prefix: '',
+		cp_id: 'invites',
+		cp_prefix: '/cp/invites/'
+	}, {
 		name: 'files',
 		prefix: '/files/',
 		cp_id: 'files',
