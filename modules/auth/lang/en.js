@@ -35,6 +35,7 @@
 	"important": "Important",
 	"reg_success_email_hint": "Check your mailbox for confirmation and account activation instructions.",
 	"mail_register_on": "User registration on",
+	"mail_register": "User registration",
 	"mail_register_msg1": "Thank you for registering your user account on our website.",
 	"mail_register_msg2": "The next step is to activate it.",
 	"mail_register_followlink": "Please follow this link to activate your account",
@@ -54,6 +55,7 @@
 	"btn_reset": "Reset password",
 	"email_not_registered": "E-mail is not registered",
 	"mail_reset_on": "Reset password on",
+	"mail_reset": "Reset password",
 	"mail_reset_msg1": "The first step of password change is complete.",
 	"mail_reset_msg2": "Now the system is ready to change your old password to a new one.",
 	"mail_reset_followlink": "Please follow this link to set new password",
@@ -92,6 +94,7 @@
 	"invalid_email_syntax_or_not_match": "Invalid email syntax",
 	"email_saved": "New e-mail address has been saved. Now you need to check your mailbox for account activation instructions.<br><br>You will be redirected to the login page in a few moments.",
 	"mail_change_email_on": "Change e-mail address on",
+	"mail_change_email": "Change e-mail address",
 	"mail_change_email_msg1": "You have changed your e-mail address to the current one.",
 	"mail_change_email_msg2": "To re-activate your account, you will need to follow the link provided.",
 	"mail_change_email_followlink": "Activation URL",
@@ -122,5 +125,8 @@
 	"username_password_saved": "Username and password are set",
 	"unauth": "You are not auhorized to perform the requested operation",
 	"register_not_allowed": "New user registration is not allowed on this website.",
-	"error": "Error"
+	"error": "Error",
+	"invite_required_to_register": "You need an invite to register on this website. Please obtain an invite and try again.",
+	"invalid_invcode": "Invite code is invalid",
+	"invite_already_used": "Invite code is already used by another user. You will need to get another invite code to register."
 }

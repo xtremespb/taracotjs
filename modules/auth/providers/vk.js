@@ -9,6 +9,7 @@ module.exports = function(app) {
         gm = require('gm');
     }
     router.get('/vk', function(req, res) {
+        if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
         var config_auth = app.get('config_auth');
         var code = req.query.code;
         if (!code) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));

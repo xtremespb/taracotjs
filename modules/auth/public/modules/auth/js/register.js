@@ -77,7 +77,8 @@ $('#btn_register').click(function() {
 			username: $('#reg_username').val(),
 			email: $('#reg_email').val(),
 			password: $('#reg_password').val(),
-			captcha: $('#reg_captcha').val()
+			captcha: $('#reg_captcha').val(),
+			invcode: invcode
 		},
 		dataType: "json",
 		success: function(data) {

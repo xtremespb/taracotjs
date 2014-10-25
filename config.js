@@ -37,7 +37,7 @@ var config = {
 		    service: 'Gmail',
 		    auth: {
 		        user: 'gmail.user@gmail.com',
-		        pass: 'userpass'
+		        pass: 'password'
 		    }
 		}
 	},

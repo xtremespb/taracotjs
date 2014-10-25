@@ -11,6 +11,7 @@ module.exports = function(app) {
         extension: '.js',
         devMode: true
     });
+    var async = require('async');
     // Social Auth: begin
     var config_auth = app.get('config_auth');
     for (var key in config_auth) app.use('/auth/', require('./providers/' + key)(app));
@@ -71,6 +72,7 @@ module.exports = function(app) {
         for (var key in _config_auth) {
             if (_config_auth[key].clientSecret) delete _config_auth[key].clientSecret;
         }
+        if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) _config_auth = [];
         var render = renderer.render_file(path.join(__dirname, 'views'), 'login_user', {
             lang: i18nm,
             captcha: _cap,
@@ -105,32 +107,69 @@ module.exports = function(app) {
     });
     router.get('/register', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
-        if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'private') return render_error_page(req, res, i18nm.__('register_not_allowed'));
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        var c = parseInt(Math.random() * 9000 + 1000);
-        var _cap = 'b64';
-        if (app.get('config').captcha == 'captcha_gm') {
-            _cap = 'png';
-        }
-        var data = {
-            title: i18nm.__('register'),
-            page_title: i18nm.__('register'),
-            keywords: '',
-            description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/register.css" type="text/css">'
-        };
-        var render = renderer.render_file(path.join(__dirname, 'views'), 'register', {
-            lang: i18nm,
-            captcha: _cap,
-            captcha_req: true,
-            data: data,
-            redirect: req.session.auth_redirect
-        }, req);
-        data.content = render;
-        app.get('renderer').render(res, undefined, data, req);
+        async.series([
+            function(callback) {
+                if (app.get('settings') && app.get('settings').site_mode) {
+                    if (app.get('settings').site_mode == 'private') {
+                        render_error_page(req, res, i18nm.__('register_not_allowed'));
+                        return callback(true);
+                    }
+                    if (app.get('settings').site_mode == 'invites') {
+                        var invcode = req.query.inv;
+                        if (!invcode || !invcode.match(/^[a-f0-9]{64}$/)) {
+                            render_error_page(req, res, i18nm.__('invite_required_to_register'));
+                            return callback(true);
+                        }
+                        app.get('mongodb').collection('invites').find({
+                            invcode: invcode
+                        }, {
+                            limit: 1
+                        }).toArray(function(err, items) {
+                            if (err || !items || !items.length) {
+                                render_error_page(req, res, i18nm.__('invite_required_to_register'));
+                                return callback(true);
+                            }
+                            if (items[0].invused != '0') {
+                                render_error_page(req, res, i18nm.__('invite_already_used'));
+                                return callback(true);
+                            }
+                        });
+                    }
+                }
+                callback();
+            },
+            function(callback) {
+                var invcode = req.query.inv;
+                if (!invcode || !invcode.match(/^[a-f0-9]{64}$/)) invcode = '';
+                var c = parseInt(Math.random() * 9000 + 1000);
+                var _cap = 'b64';
+                if (app.get('config').captcha == 'captcha_gm') {
+                    _cap = 'png';
+                }
+                var data = {
+                    title: i18nm.__('register'),
+                    page_title: i18nm.__('register'),
+                    keywords: '',
+                    description: '',
+                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/register.css" type="text/css">'
+                };
+                var render = renderer.render_file(path.join(__dirname, 'views'), 'register', {
+                    lang: i18nm,
+                    captcha: _cap,
+                    captcha_req: true,
+                    data: data,
+                    invcode: invcode,
+                    redirect: req.session.auth_redirect
+                }, req);
+                data.content = render;
+                app.get('renderer').render(res, undefined, data, req);
+                return callback();
+            }
+        ]);
     });
     router.post('/register/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
@@ -197,64 +236,117 @@ module.exports = function(app) {
         email = email.toLowerCase();
         var md5 = crypto.createHash('md5');
         var password_hex = md5.update(config.salt + '.' + password).digest('hex');
-        app.get('mongodb').collection('users').find({
-            $or: [{
-                username_auth: username_auth
-            }, {
-                email: email
-            }]
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            if (err) {
-                res.send(JSON.stringify({
-                    result: 0,
-                    error: i18nm.__("reg_failed")
-                }));
-                return;
-            }
-            if (typeof items != 'undefined') {
-                if (items.length > 0) {
+        async.series([function(callback) {
+            if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'invites') {
+                var invcode = req.body.invcode;
+                if (!invcode || !invcode.match(/^[a-f0-9]{64}$/)) {
                     res.send(JSON.stringify({
                         result: 0,
-                        field: "reg_username",
-                        error: i18nm.__("username_or_email_already_registered")
+                        field: "reg_captcha",
+                        error: i18nm.__("invalid_invcode")
                     }));
-                    return;
+                    return callback(true);
                 }
+                app.get('mongodb').collection('invites').find({
+                    invcode: invcode
+                }, {
+                    limit: 1
+                }).toArray(function(err, items) {
+                    if (err || !items || !items.length) {
+                        res.send(JSON.stringify({
+                            result: 0,
+                            field: "reg_captcha",
+                            error: i18nm.__("invite_required_to_register")
+                        }));
+                        return callback(true);
+                    }
+                    if (items[0].invused != '0') {
+                        res.send(JSON.stringify({
+                            result: 0,
+                            field: "reg_captcha",
+                            error: i18nm.__("invite_already_used")
+                        }));
+                        return callback(true);
+                    }
+                    app.get('mongodb').collection('invites').update({
+                        _id: items[0]._id
+                    }, {
+                        $set: {
+                            invused: username
+                        }
+                    }, function(err) {
+                        if (err) {
+                            res.send(JSON.stringify({
+                                result: 0,
+                                field: "reg_captcha",
+                                error: i18nm.__("invite_already_used")
+                            }));
+                            return callback(true);
+                        }
+                    });
+                });
             }
-            var md5 = crypto.createHash('md5');
-            var act_code = md5.update(config.salt + '.' + Date.now()).digest('hex');
-            app.get('mongodb').collection('users').insert({
-                username: username,
-                username_auth: username_auth,
-                password: password_hex,
-                email: email,
-                act_code: act_code,
-                regdate: Date.now(),
-                status: 0
-            }, function(err, items) {
+            callback();
+        }, function(callback) {
+            app.get('mongodb').collection('users').find({
+                $or: [{
+                    username_auth: username_auth
+                }, {
+                    email: email
+                }]
+            }, {
+                limit: 1
+            }).toArray(function(err, items) {
                 if (err) {
                     res.send(JSON.stringify({
                         result: 0,
                         error: i18nm.__("reg_failed")
                     }));
-                    return;
+                    return callback();
                 }
-                var user_id = items[0]._id.toHexString();
-                var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
-                mailer.send(email, i18nm.__('mail_register_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', {
-                    lang: i18nm,
-                    site_title: app.get('settings').site_title,
-                    register_url: register_url
+                if (typeof items != 'undefined') {
+                    if (items.length > 0) {
+                        res.send(JSON.stringify({
+                            result: 0,
+                            field: "reg_username",
+                            error: i18nm.__("username_or_email_already_registered")
+                        }));
+                        return callback();
+                    }
+                }
+                var md5 = crypto.createHash('md5');
+                var act_code = md5.update(config.salt + '.' + Date.now()).digest('hex');
+                app.get('mongodb').collection('users').insert({
+                    username: username,
+                    username_auth: username_auth,
+                    password: password_hex,
+                    email: email,
+                    act_code: act_code,
+                    regdate: Date.now(),
+                    status: 0
+                }, function(err, items) {
+                    if (err) {
+                        res.send(JSON.stringify({
+                            result: 0,
+                            error: i18nm.__("reg_failed")
+                        }));
+                        return callback();
+                    }
+                    var user_id = items[0]._id.toHexString();
+                    var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
+                    mailer.send(email, i18nm.__('mail_register_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', {
+                        lang: i18nm,
+                        site_title: app.get('settings').site_title,
+                        register_url: register_url
+                    }, req);
+                    // Success
+                    req.session.captcha_req = false;
+                    res.send(JSON.stringify({
+                        result: 1
+                    }));
                 });
-                // Success
-                req.session.captcha_req = false;
-                res.send(JSON.stringify({
-                    result: 1
-                }));
             });
-        });
+        }]);
     });
     router.get('/activate', function(req, res) {
         i18nm.setLocale(req.i18n.getLocale());
@@ -453,7 +545,7 @@ module.exports = function(app) {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
                         reset_url: reset_url
-                    });
+                    }, req);
                     // Success
                     req.session.captcha_req = false;
                     res.send(JSON.stringify({
@@ -938,7 +1030,7 @@ module.exports = function(app) {
                                     lang: i18nm,
                                     site_title: app.get('settings').site_title,
                                     register_url: register_url
-                                });
+                                }, req);
                             }
                             var rr = {
                                 result: 1
