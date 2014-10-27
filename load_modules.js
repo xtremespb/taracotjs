@@ -5,6 +5,8 @@ var load_modules = {
 		name: 'auth'
 	}, {
 		name: 'parts'
+	}, {
+		name: 'feedback'
 	}],
 	modules: [{
 		name: 'auth',
@@ -75,6 +77,12 @@ var load_modules = {
 		cp_id: 'settings',
 		cp_prefix: '/cp/settings/'
 	}, {
+		name: 'maintenance',
+		prefix: '/maintenance/',
+		cp_id: '',
+		cp_prefix: ''
+	},
+	{
 		name: 'pages',
 		prefix: '',
 		cp_id: 'pages',

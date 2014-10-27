@@ -1,0 +1,22 @@
+<style type="text/css">
+.taracot-feedback-asterisk {
+    font-weight: bold;
+    color: red;
+}
+</style>
+<div class="uk-form">
+    !{root.fields}
+    <div class="uk-form-row" id="captcha_div">
+        <label class="uk-form-label" for="taracot-feedback-captcha">!{root.lang.__('captcha')}&nbsp;
+            <span class="taracot-feedback-asterisk">*</span>:</label>
+        <div class="uk-form-controls">
+            <input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="taracot-feedback-captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
+            <img src="/images/blank.gif" id="taracot-feedback-captcha" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
+        </div>
+    </div>
+    <div class="uk-form-row">
+        <div class="uk-form-controls tc-margin-15 data-uk-margin">
+            <button class="uk-button" id="btn_send_message">!{root.lang.__('btn_send_message')}</button>
+        </div>
+    </div>
+</div>
