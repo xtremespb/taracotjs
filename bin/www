@@ -30,6 +30,12 @@ if (config.redis.active) {
                 if (io && io.sockets.connected[key]) io.sockets.connected[key].emit(bmsg.msgtype, bmsg.msg);
         }
     });
+    redis_subscriber.on("connect", function(err) {
+        app.set('redis_connected', true);
+    });
+    redis_subscriber.on("error", function(err) {
+        app.set('redis_connected', false);
+    });
 }
 
 var server = http.listen(port, function() {

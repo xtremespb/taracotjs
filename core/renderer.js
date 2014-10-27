@@ -15,6 +15,7 @@ module.exports = function(app) {
 				realname: ''
 			};
 			data.blocks = {};
+			data.blocks_sync = {};
 			var fa = [];
 			if (req && req.session && req.session.auth) data.auth = req.session.auth;
 			Object.keys(app.get('blocks')).forEach(function (key) {
@@ -26,6 +27,10 @@ module.exports = function(app) {
 	    			});
     			};
     			fa.push(fp);
+			});
+			Object.keys(app.get('blocks_sync')).forEach(function (key) {
+				var fn = app.get('blocks_sync')[key];
+				if (fn) data.blocks_sync[key] = fn;
 			});
 			var global_description = app.get('settings').site_description || '',
 				global_keywords = app.get('settings').site_keywords || '';
@@ -39,6 +44,7 @@ module.exports = function(app) {
 			} else {
 				data.description = global_description;
 			}
+			if (app.get('settings') && app.get('settings').site_title) data.site_title = app.get('settings').site_title;
 			async.waterfall(fa, function() {
 				res.render(_layout, data);
 			});

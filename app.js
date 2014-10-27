@@ -64,7 +64,6 @@ if (redis_client) {
     });
     redis_client.on("error", function(err) {
         app.set('redis_connected', false);
-        console.log("Redis error: " + err);
     });
 }
 
@@ -280,15 +279,27 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
     app.get('auth-core').check(req, function(auth) {
         req.session.auth = auth;
+        var __local = false;
         if (app.get('settings') && app.get('settings').site_auth && app.get('settings').site_auth == 'mnd') {
             if (req.method == 'GET' && (!auth || (auth.status && auth.status < 1))) {
-                var __local = false;
                 if (req.url.match(/^\/auth/)) __local = true;
                 for (var r = 0; r < public_folder_dirs.length; r++) {
                     var _rx = new RegExp('^' + public_folder_dirs[r].replace(/\/$/, ''));
                     if (req.url.match(_rx)) __local = true;
                 }
                 if (!__local) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            }
+        }
+        __local = false;
+        if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'maintenance') {
+            if (req.method == 'GET' && (!auth || (auth.status && auth.status < 2))) {
+                if (req.url.match(/^\/auth\/cp/)) __local = true;
+                if (req.url.match(/^\/maintenance/)) __local = true;
+                for (var j = 0; j < public_folder_dirs.length; j++) {
+                    var _rx2 = new RegExp('^' + public_folder_dirs[j].replace(/\/$/, ''));
+                    if (req.url.match(_rx2)) __local = true;
+                }
+                if (!__local) return res.redirect(303, "/maintenance");
             }
         }
         return next();
@@ -309,12 +320,14 @@ app.use(function(req, res, next) {
 // Load blocks
 
 if (!app.get('blocks')) {
-    var blocks = {};
-    app.set('blocks', blocks);
+    app.set('blocks', {});
+    app.set('blocks_sync', {});
 }
 
 config.blocks.forEach(function(_block) {
-    app.get('blocks')[_block.name] = require('./modules/' + _block.name + '/block')(app).data;
+    var _b = require('./modules/' + _block.name + '/block')(app);
+    if (_b.data) app.get('blocks')[_block.name] = _b.data;
+    if (_b.data_sync) app.get('blocks_sync')[_block.name] = _b.data_sync;
 });
 
 // Load modules
@@ -351,11 +364,13 @@ app.use(function(err, req, res, next) {
     }
     logger.error(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url + ' ' + err.message, {});
     if (res.statusCode != 404) console.log("\n" + err.stack + "\n");
+    var site_title = 'TaracotJS';
+    if (app.get('settings') && app.get('settings').site_title) site_title = app.get('settings').site_title;
     res.render('error', {
         message: err.message,
+        site_title: site_title,
         error: err
     });
-    if (res.statusCode == 500 && err.message == 'no open connections') process.exit(1);
 });
 
 module.exports = app;
