@@ -81,8 +81,12 @@ var load_modules = {
 		prefix: '/maintenance/',
 		cp_id: '',
 		cp_prefix: ''
-	},
-	{
+	}, {
+		name: 'feedback',
+		prefix: '/feedback/',
+		cp_id: '',
+		cp_prefix: ''
+	}, {
 		name: 'pages',
 		prefix: '',
 		cp_id: 'pages',

@@ -5,14 +5,14 @@ module.exports = function(app) {
             locales: app.get('config').locales,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: false
+            devMode: app.get('config').locales_dev_mode
         });
     router.get_module_name = function(req) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name_cp");
     };
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 2) {
             req.session.auth_redirect = '/cp/blog';
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
@@ -47,7 +47,7 @@ module.exports = function(app) {
         });
     });
     router.post('/config/save', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };

@@ -12,6 +12,10 @@ var config = {
 		"en",
 		"ru"
 	],
+	"locales_dev_mode": true,
+	"locale_from_subdomain": false,
+	"locale_from_query": false,
+	"locale_from_cookie": false,
 	"dir": {
 		"storage": "../public/files",
 		"avatars": "../public/images/avatars",
@@ -29,6 +33,7 @@ var config = {
 	},
 	"mailer" : {
 		"sender": "TaracotJS <noreply@taracot.org>",
+		"feedback": "TaracotJS <info@taracot.org>",
 		"transport" : "sendmail",
 		"sendmail" : {
     		path: '/usr/sbin/sendmail'

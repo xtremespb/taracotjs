@@ -5,7 +5,7 @@ module.exports = function(app) {
 				locales: app.get('config').locales,
 				directory: app.get('path').join(__dirname, '..', 'cp', 'lang'),
 				extension: '.js',
-    			devMode: false
+    			devMode: app.get('config').locales_dev_mode
 			});
 			var modules = [];
 			app.get('config').modules.forEach(function(module) {

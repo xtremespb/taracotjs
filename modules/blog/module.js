@@ -14,7 +14,7 @@ module.exports = function(app) {
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: false
+        devMode: app.get('config').locales_dev_mode
     });
 
     //
@@ -22,7 +22,7 @@ module.exports = function(app) {
     //
 
     router.get(/^\/blog(\/(keywords|area|user|moderation)\/(.*))?\/?$/, function(req, res) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var moment = require('moment');
         i18nm.setLocale(_locale);
         moment.locale(_locale);
@@ -323,7 +323,7 @@ module.exports = function(app) {
     //
 
     router.get('/blog/post', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         var mode = app.set('settings').blog_mode || 'private',
             areas = app.set('settings').blog_areas || '[]';
@@ -365,7 +365,7 @@ module.exports = function(app) {
     //
 
     router.post('/blog/post/save', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -552,7 +552,7 @@ module.exports = function(app) {
     //
 
     router.get('/blog/post/:id', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         var moment = require('moment');
         moment.locale(_locale);
@@ -813,7 +813,7 @@ module.exports = function(app) {
     //
 
     router.get('/blog/post/edit/:id', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         var id = req.params.id;
         if (!id || !id.match(/^[a-f0-9]{24}$/)) return render_page(i18nm.__('blog_error'), i18nm.__('post_not_found'), req, res, 'error');
@@ -915,7 +915,7 @@ module.exports = function(app) {
     //
 
     router.post('/blog/post/comment', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var moment = require('moment');
         moment.locale(_locale);
         var rep = {
@@ -995,7 +995,7 @@ module.exports = function(app) {
     //
 
     router.post('/blog/post/comment/delete', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -1062,7 +1062,7 @@ module.exports = function(app) {
             lang: i18nm,
             title: title,
             content: body,
-            current_locale: req.i18n.getLocale()
+            current_locale: req.session.current_locale
         }, req);
         page_data.content = render;
         app.get('renderer').render(res, undefined, page_data, req);

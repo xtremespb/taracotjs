@@ -3,7 +3,7 @@ var parts_cache = {};
 module.exports = function(app) {
 	var block = {
 		data: function(req, res, callback) {
-			var lng = req.i18n.getLocale();
+			var lng = req.session.current_locale;
 			if (_timestamp_settings_query[lng] && (Date.now() - _timestamp_settings_query[lng] <= 60000) && Object.keys(parts_cache).length) {
 				return callback(parts_cache);
 			}

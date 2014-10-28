@@ -5,7 +5,7 @@ module.exports = function(app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: false
+    	devMode: app.get('config').locales_dev_mode
 	});
 	router.get('/', function(req, res) {
 		if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2) {
@@ -13,7 +13,7 @@ module.exports = function(app) {
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
 		}
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var loadavg = os.loadavg();
 		if (loadavg[0] === 0 && loadavg[1] === 0 && loadavg[2] === 0) {
 			loadavg = i18nm.__("not_available");

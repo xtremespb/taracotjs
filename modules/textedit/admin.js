@@ -4,7 +4,7 @@ module.exports = function(app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: false
+    	devMode: app.get('config').locales_dev_mode
 	});
 	var fs = require('fs-extra');
 	var itob = require('./itob');
@@ -12,11 +12,11 @@ module.exports = function(app) {
 	var router = app.get('express').Router();
 	var path = app.get('path');
 	router.get_module_name = function(req) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		return i18nm.__("module_name");
 	};
 	router.get('/', function(req, res, next) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/textedit';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
@@ -64,7 +64,7 @@ module.exports = function(app) {
 		res.send(body);
 	});
 	router.post('/data/save', function(req, res, next) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/textedit';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));

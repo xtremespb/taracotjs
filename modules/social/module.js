@@ -15,11 +15,11 @@ module.exports = function(app) {
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: true
+        devMode: app.get('config').locales_dev_mode
     });
 
     router.get('/', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         var moment = require('moment');
         moment.locale(_locale);
@@ -81,7 +81,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friends/search', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1,
             items_per_page: 30
@@ -162,7 +162,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friends/data', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1,
             items_per_page: 10
@@ -230,7 +230,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friendship/request', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -310,7 +310,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friendship/accept', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -383,7 +383,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friendship/remove', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -459,7 +459,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friends/inv', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1,
             items_per_page: 10
@@ -540,7 +540,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/friends/list', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1,
             items_per_page: 10
@@ -625,7 +625,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/load', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -774,7 +774,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/save', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -863,7 +863,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/conversations', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -951,7 +951,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/markread', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };
@@ -995,7 +995,7 @@ module.exports = function(app) {
     });
 
     router.post('/user/messages/typing', function(req, res, next) {
-        var _locale = req.i18n.getLocale();
+        var _locale = req.session.current_locale;
         var rep = {
             status: 1
         };

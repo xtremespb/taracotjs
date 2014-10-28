@@ -1,1 +1,3 @@
-{}
+{
+	"pagenotfound": "pagenotfound"
+}

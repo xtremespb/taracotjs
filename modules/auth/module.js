@@ -9,7 +9,7 @@ module.exports = function(app) {
         locales: config.locales,
         directory: path.join(__dirname, 'lang'),
         extension: '.js',
-        devMode: true
+        devMode: app.get('config').locales_dev_mode
     });
     var async = require('async');
     // Social Auth: begin
@@ -49,7 +49,7 @@ module.exports = function(app) {
         }
     });
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -85,7 +85,7 @@ module.exports = function(app) {
         app.get('renderer').render(res, undefined, data, req);
     });
     router.get('/cp', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -106,7 +106,7 @@ module.exports = function(app) {
         res.send(render);
     });
     router.get('/register', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -173,7 +173,7 @@ module.exports = function(app) {
     });
     router.post('/register/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode == 'private')
             return res.send(JSON.stringify({
                 result: 0,
@@ -349,7 +349,7 @@ module.exports = function(app) {
         }]);
     });
     router.get('/activate', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var user = req.query.user;
         var code = req.query.code;
         var act_res;
@@ -443,7 +443,7 @@ module.exports = function(app) {
         });
     });
     router.get('/reset', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (typeof req.session != 'undefined' && typeof req.session.auth != 'undefined' && req.session.auth !== false) {
             res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -472,7 +472,7 @@ module.exports = function(app) {
     });
     router.post('/reset/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var email = req.body.email;
         var captcha = req.body.captcha;
         if (!captcha.match(/^[0-9]{4}$/)) {
@@ -555,7 +555,7 @@ module.exports = function(app) {
         });
     });
     router.get('/password', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var user = req.query.user;
         var code = req.query.code;
         var reset_res;
@@ -620,7 +620,7 @@ module.exports = function(app) {
     });
     router.post('/password/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var password = req.body.password;
         var user = req.body.user;
         var code = req.body.code;
@@ -699,7 +699,7 @@ module.exports = function(app) {
         });
     });
     router.get('/logout', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect = '/auth/profile';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
@@ -722,7 +722,7 @@ module.exports = function(app) {
     });
     router.post('/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var username = req.body.username;
         var password = req.body.password;
         var captcha = req.body.captcha;
@@ -799,7 +799,7 @@ module.exports = function(app) {
         });
     });
     router.get('/profile', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect = '/auth/profile';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
@@ -822,7 +822,7 @@ module.exports = function(app) {
     });
     router.post('/profile/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             res.send(JSON.stringify({
                 result: 0,
@@ -1052,7 +1052,7 @@ module.exports = function(app) {
     });
     router.post('/oauth/process', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             res.send(JSON.stringify({
                 result: 0,

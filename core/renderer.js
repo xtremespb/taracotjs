@@ -46,12 +46,16 @@ module.exports = function(app) {
 			}
 			if (app.get('settings') && app.get('settings').site_title) data.site_title = app.get('settings').site_title;
 			async.waterfall(fa, function() {
-				res.render(_layout, data);
+				try {
+					res.render(_layout, data);
+				} catch(ex) {
+					res.send('Cannot render layout: ' + ex);
+				}
 			});
 		},
 		render_file: function(dir, filename, data, req) {
-			var render = gaikan.compileFromFile(dir + '/' + filename + '.html');
-			data.auth = {
+			var render = gaikan.compileFromFile(dir + '/' + filename + '.html');data.auth = {
+
 				username: '',
 				email: '',
 				status: 0,

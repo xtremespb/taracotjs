@@ -5,13 +5,13 @@ module.exports = function(app) {
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: false
+        devMode: app.get('config').locales_dev_mode
     });
     var renderer = app.get('renderer'),
         path = app.get('path'),
         parser = app.get('parser');
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var data = {
             title: i18nm.__('module_name'),
             page_title: i18nm.__('module_name'),
@@ -27,7 +27,7 @@ module.exports = function(app) {
         app.get('renderer').render(res, undefined, data, req);
     });
     router.post('/data', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             ipp: items_per_page
         };
@@ -61,7 +61,7 @@ module.exports = function(app) {
         }
         rep.items = [];
         var find_query = {
-        	slang: req.i18n.getLocale(),
+        	slang: req.session.current_locale,
             $and: query_arr
         };
         app.get('mongodb').collection('search_index').find(find_query).count(function(err, items_count) {

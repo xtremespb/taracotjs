@@ -17,15 +17,15 @@ module.exports = function(app) {
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: false
+        devMode: app.get('config').locales_dev_mode
     });
     var parser = app.get('parser');
     router.get_module_name = function(req) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
     };
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 2) {
             req.session.auth_redirect = '/cp/pages';
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
@@ -64,7 +64,7 @@ module.exports = function(app) {
     */
 
     router.post('/data/list', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             ipp: items_per_page
         };
@@ -155,7 +155,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/rootpages', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {};
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
@@ -180,7 +180,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/load', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {};
         var id = req.body.pid;
         if (id && !id.match(/^[a-f0-9]{24}$/)) {
@@ -238,7 +238,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/lock', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
@@ -276,7 +276,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/save', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             err_fields: [],
             status: 1
@@ -538,7 +538,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/delete', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
@@ -578,7 +578,7 @@ module.exports = function(app) {
     */
 
     router.post('/data/folders/load', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
@@ -611,7 +611,7 @@ module.exports = function(app) {
     });
 
     router.post('/data/folders/save', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };

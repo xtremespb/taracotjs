@@ -3,7 +3,7 @@ module.exports = function(app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: false
+    	devMode: app.get('config').locales_dev_mode
 	});
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
@@ -16,11 +16,11 @@ module.exports = function(app) {
 	}
 	var crypto = require('crypto');
 	router.get_module_name = function(req) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		return i18nm.__("module_name");
 	};
 	router.get('/', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
 			req.session.auth_redirect = '/cp/files';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
@@ -39,7 +39,7 @@ module.exports = function(app) {
 		}, i18nm, 'files', req.session.auth);
 	});
 	router.post('/data/load', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -109,7 +109,7 @@ module.exports = function(app) {
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/newdir', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -162,7 +162,7 @@ module.exports = function(app) {
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/del', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -231,7 +231,7 @@ module.exports = function(app) {
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/rename', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -301,7 +301,7 @@ module.exports = function(app) {
 		res.send(JSON.stringify(rep));
 	});
 	router.post('/data/paste', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -433,7 +433,7 @@ module.exports = function(app) {
 		return;
 	});
 	router.post('/data/upload', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -514,7 +514,7 @@ module.exports = function(app) {
 		return;
 	});
 	router.post('/data/download', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -603,7 +603,7 @@ module.exports = function(app) {
 		archive.finalize();
 	});
 	router.post('/data/unzip', function(req, res) {
-		i18nm.setLocale(req.i18n.getLocale());
+		i18nm.setLocale(req.session.current_locale);
 		var rep = {};
 		// Check authorization
 		if (!req.session.auth || req.session.auth.status < 2) {

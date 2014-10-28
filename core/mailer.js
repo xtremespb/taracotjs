@@ -3,8 +3,10 @@ var nodemailer = require('nodemailer');
 var sendmailTransport = require('nodemailer-sendmail-transport');
 
 module.exports = function(app) {
-    var transporter;
-    var renderer = require('../core/renderer')(app);
+    var transporter,
+        renderer = require('../core/renderer')(app),
+        Entities = require('html-entities').AllHtmlEntities,
+        entities = new Entities();
     if (config.mailer.transport == 'smtp') transporter = nodemailer.createTransport(config.mailer.smtp);
     if (config.mailer.transport == 'sendmail') transporter = nodemailer.createTransport(sendmailTransport(config.mailer.sendmail));
 
@@ -25,7 +27,7 @@ module.exports = function(app) {
                 to: to,
                 subject: subject,
                 text: data_txt,
-                html: mail_template
+                html: entities.encodeNonASCII(mail_template)
             };
             if (transporter) {
                 transporter.sendMail(mailOptions, function(error, info) {

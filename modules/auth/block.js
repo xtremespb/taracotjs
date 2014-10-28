@@ -4,11 +4,11 @@ module.exports = function(app) {
 		locales: app.get('config').locales,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: false
+    	devMode: app.get('config').locales_dev_mode
 	});
 	var block = {
 		data: function(req, res, callback) {
-			var lng = req.i18n.getLocale();
+			var lng = req.session.current_locale;
 			var data = '';
 			if (req.session.auth) {
 				if (req.session && req.session.auth && auth_cache.lng && auth_cache.lng.user === req.session.auth.username) return callback(auth_cache.lng.user);

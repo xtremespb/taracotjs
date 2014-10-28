@@ -111,7 +111,7 @@ I18n.expressBind(app, {
     cookieName: 'taracotjs-locale',
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js',
-    devMode: false
+    devMode: app.get('config').locales_dev_mode
 });
 
 // Connect Redis or fallback to Mongo
@@ -171,9 +171,9 @@ app.use(function(req, res, next) {
         return;
     }
     // Set locales from query and from cookie
-    req.i18n.setLocaleFromCookie();
-    req.i18n.setLocaleFromSubdomain();
-    req.i18n.setLocaleFromQuery();
+    if (app.get('config').locale_from_cookie) req.i18n.setLocaleFromCookie();
+    if (app.get('config').locale_from_subdomain) req.i18n.setLocaleFromSubdomain();
+    if (app.get('config').locale_from_query) req.i18n.setLocaleFromQuery();
     // Logging
     logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
     // Clear auth_redirect if already authorized
@@ -189,6 +189,7 @@ var _timestamp_settings_query = {};
 
 app.use(function(req, res, next) {
     var _lng = req.i18n.getLocale();
+    req.session.current_locale = _lng;
     if (_timestamp_settings_query._lng && Date.now() - _timestamp_settings_query._lng <= 60000) {
         next();
         return;
@@ -326,6 +327,7 @@ if (!app.get('blocks')) {
 
 config.blocks.forEach(function(_block) {
     var _b = require('./modules/' + _block.name + '/block')(app);
+    app.use(express.static(path.join(__dirname, 'modules/' + _block.name + '/public')));
     if (_b.data) app.get('blocks')[_block.name] = _b.data;
     if (_b.data_sync) app.get('blocks_sync')[_block.name] = _b.data_sync;
 });

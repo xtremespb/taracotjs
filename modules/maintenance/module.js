@@ -4,11 +4,11 @@ module.exports = function(app) {
             locales: app.get('config').locales,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: true
+            devMode: app.get('config').locales_dev_mode
         }),
         renderer = app.get('renderer');
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.i18n.getLocale());
+        i18nm.setLocale(req.session.current_locale);
         if (app.get('settings') && app.get('settings').site_mode && app.get('settings').site_mode != 'maintenance') return res.redirect(303, "/?rnd=" + Math.random().toString().replace('.', ''));
         var render = renderer.render_file(app.get('path').join(__dirname, 'views'), 'maint', {
             lang: i18nm,
