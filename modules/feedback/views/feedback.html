@@ -3,20 +3,40 @@
     font-weight: bold;
     color: red;
 }
+#taracot-feedback-captcha {
+    cursor: pointer;
+}
 </style>
-<div class="uk-form">
+<div class="uk-alert uk-alert-danger" id="taracot-feedback-error" style="display:none"></div>
+<div class="uk-alert uk-alert-success" id="taracot-feedback-success" style="display:none">!{root.lang.__('message_has_been_sent')}</div>
+<div class="uk-form" id="taracot_feedback_form">
     !{root.fields}
     <div class="uk-form-row" id="captcha_div">
         <label class="uk-form-label" for="taracot-feedback-captcha">!{root.lang.__('captcha')}&nbsp;
-            <span class="taracot-feedback-asterisk">*</span>:</label>
+            <span class="taracot-feedback-asterisk">*</span></label>
         <div class="uk-form-controls">
-            <input class="uk-form-large uk-form-width-small taracot-auth-field" type="text" id="taracot-feedback-captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
+            <input class="uk-form-large uk-form-width-small taracot-feedback-field" type="text" id="taracot_feedback_captcha" placeholder="" style="text-align:center">&nbsp;&nbsp;
             <img src="/images/blank.gif" id="taracot-feedback-captcha" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
         </div>
     </div>
     <div class="uk-form-row">
         <div class="uk-form-controls tc-margin-15 data-uk-margin">
-            <button class="uk-button" id="btn_send_message">!{root.lang.__('btn_send_message')}</button>
+            <button class="uk-button" id="feedback_btn_send_message"><span id="feedback_btn_send_message_normal">!{root.lang.__('feedback_btn_send_message')}</span><span id="feedback_btn_send_message_loading" style="display:none"><img src="/modules/feedback/images/loading_16x16.gif" width="16" height="16">&nbsp;!{root.lang.__('loading')}</span></button>
         </div>
     </div>
 </div>
+<script>
+var feedback_form_data = !{
+        root.form_data
+    },
+    feedback_form_checksum = '!{root.form_checksum}',
+    feedback_current_lang = '!{root.current_lang}',
+    feedback_lang_vars = {
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        mandatory_field_empty: "!{root.lang.__('mandatory_field_empty')}",
+        invalid_email: "!{root.lang.__('invalid_email')}",
+        invalid_captcha: "!{root.lang.__('invalid_captcha')}"
+    };
+</script>
+<script src="/js/helper.js"></script>
+<script src="/modules/feedback/js/main.js"></script>

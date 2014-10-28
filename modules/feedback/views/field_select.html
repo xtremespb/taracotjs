@@ -1,6 +1,8 @@
 <div class="uk-form-row">
     <label class="uk-form-label" for="taracot_feedback_!{root.id}">!{root.label}&nbsp;!{root.asterisk}</label>
     <div class="uk-form-controls">
-    	<input type="text" id="taracot_feedback_!{root.id}" class="taracot-feedback-field!{root.class}">
+    	<select id="taracot_feedback_!{root.id}" class="taracot-feedback-field!{root.class}">
+    		!{root.options}
+    	</select>
     </div>
 </div>
