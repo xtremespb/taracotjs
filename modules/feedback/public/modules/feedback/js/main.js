@@ -3,14 +3,14 @@ var captcha_loading = false;
 var feedback_load_captcha = function() {
     $('#taracot_feedback_captcha').val('');
     if (typeof captcha_type != 'undefined' && captcha_type == 'png') {
-        $('#taracot-feedback-captcha').attr('src', '/auth/captcha?rnd=' + Math.random().toString().replace('.', ''));
+        $('#taracot-feedback-captcha').attr('src', '/feedback/captcha?rnd=' + Math.random().toString().replace('.', ''));
         return;
     }
     if (captcha_loading) return;
     captcha_loading = true;
     $.ajax({
         type: 'POST',
-        url: '/auth/captcha',
+        url: '/feedback/captcha',
         data: {},
         dataType: "json",
         success: function(data) {

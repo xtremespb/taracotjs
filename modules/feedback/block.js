@@ -34,6 +34,10 @@ module.exports = function(app) {
                 field_select_option = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select_option.html'),
                 field_asterisk = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html'),
                 fields_html = '';
+            var _cap = 'b64';
+            if (app.get('config').captcha == 'captcha_gm') {
+                _cap = 'png';
+            }
             for (var i = 0; i < par.length; i++) {
                 if (par[i].type) {
                     var data = {};
@@ -65,6 +69,7 @@ module.exports = function(app) {
                 form_data: form_data,
                 current_lang: lng,
                 form_checksum: form_checksum,
+                captcha: _cap,
                 lang: i18nm
             }, undefined);
             feedback_cache[lng + form_checksum] = res;

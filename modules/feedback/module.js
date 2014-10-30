@@ -11,6 +11,32 @@ module.exports = function(app) {
             extension: '.js',
             devMode: app.get('config').locales_dev_mode
         });
+    router.get('/captcha', function(req, res, next) {
+        var c = parseInt(Math.random() * 9000 + 1000);
+        req.session.captcha = c;
+        var cpth = app.get('captcha').generate(c);
+        if (cpth.png) {
+            res.set('Content-Type', 'image/png');
+            cpth.png.stream(function streamOut(err, stdout, stderr) {
+                if (err) return next(err);
+                stdout.pipe(res);
+            });
+        } else {
+            if (next) next();
+        }
+    });
+    router.post('/captcha', function(req, res, next) {
+        var c = parseInt(Math.random() * 9000 + 1000);
+        req.session.captcha = c;
+        var cpth = app.get('captcha').generate(c);
+        if (cpth.b64) {
+            res.send(JSON.stringify({
+                img: cpth.b64
+            }));
+        } else {
+            if (next) next();
+        }
+    });
     router.post('/send', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
         var lng = req.session.current_locale;
