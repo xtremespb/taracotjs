@@ -26,7 +26,6 @@ module.exports = function(app) {
             var form_data = JSON.stringify(par),
                 form_checksum = crypto.createHash('md5').update(app.get('config').salt + form_data).digest('hex');
             if (_timestamp_settings_query[lng + form_checksum] && (Date.now() - _timestamp_settings_query[lng + form_checksum] <= 60000) && feedback_cache[lng + form_checksum]) return feedback_cache[lng + form_checksum];
-            console.log("Generating feedback form...");
             var feedback = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/feedback.html'),
                 field_text = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_text.html'),
                 field_textarea = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_textarea.html'),
@@ -34,10 +33,6 @@ module.exports = function(app) {
                 field_select_option = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select_option.html'),
                 field_asterisk = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html'),
                 fields_html = '';
-            var _cap = 'b64';
-            if (app.get('config').captcha == 'captcha_gm') {
-                _cap = 'png';
-            }
             for (var i = 0; i < par.length; i++) {
                 if (par[i].type) {
                     var data = {};
@@ -63,6 +58,10 @@ module.exports = function(app) {
                         fields_html += field_select(gaikan, data, undefined);
                     }
                 }
+            }
+            var _cap = 'b64';
+            if (app.get('config').captcha == 'captcha_gm') {
+                _cap = 'png';
             }
             var res = feedback(gaikan, {
                 fields: fields_html,
