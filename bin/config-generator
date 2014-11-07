@@ -79,7 +79,7 @@ async.series([
 			console.log("\nGenerating init.d script...");
 			var initd_render = gaikan.compileFromFile('.initd.template');
 			var initd = initd_render(gaikan, data, undefined);
-			fs.writeFile("./init.d/" + data.pname, initd, function(err) {
+			fs.writeFile("./init.d/taracot-" + data.pname, initd, function(err) {
 			    if(err) {
 			        return callback(err);
 			    } else {
