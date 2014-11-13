@@ -100,7 +100,7 @@ async.series([
             if (program.silent) return callback();
             program.confirm('Installation script can update secrets and salt. Continue? ', function(ok) {
                 if (ok) {
-                    config.cookie_secret = generateId(32);
+                    config.cookie.secret = generateId(32);
                     config.session_secret = generateId(32);
                     config.salt = generateId(64);
                     fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function(err) {
@@ -184,7 +184,7 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default setting (site_title)...\n");
+            console.log("\nAdding default setting (site_title, en)...\n");
             db.collection('settings').insert({
                 oname: 'site_title',
                 ovalue: 'Taracot JS',
@@ -201,7 +201,24 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default setting (site_keywords)...\n");
+            console.log("\nAdding default setting (site_title, ru)...\n");
+            db.collection('settings').insert({
+                oname: 'site_title',
+                ovalue: 'Taracot JS',
+                olang: 'ru'
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default setting (site_keywords, en)...\n");
             db.collection('settings').insert({
                 oname: 'site_keywords',
                 ovalue: 'taracot, taracotjs, node.js, mongodb, redis, cms, content management system',
@@ -218,11 +235,45 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default setting (site_description)...\n");
+            console.log("\nAdding default setting (site_keywords, ru)...\n");
+            db.collection('settings').insert({
+                oname: 'site_keywords',
+                ovalue: 'taracot, taracotjs, node.js, mongodb, redis, cms, система управления сайтами',
+                olang: 'ru'
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default setting (site_description, en)...\n");
             db.collection('settings').insert({
                 oname: 'site_description',
                 ovalue: 'TaracotJS is a simple content management system (CMS) written in JavaScript on both client and server sides (using Node). It\'s free, open source and is running on multiple platrforms including Linux, MacOS and Windows. All modern browsers are supported.',
                 olang: 'en'
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default setting (site_description, ru)...\n");
+            db.collection('settings').insert({
+                oname: 'site_description',
+                ovalue: 'TaracotJS - простая система управления сайтами (CMS), написанная на JavaScript и построенная на технологиях Node.JS, MongoDB и Redis.',
+                olang: 'ru'
             }, function(err) {
                 if (err) {
                     console.log("... failed");
@@ -288,7 +339,7 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default page...\n");
+            console.log("\nAdding default page (en)...\n");
             db.collection('pages').insert({
                 ptitle: 'Default page',
                 pfolder: '/',
@@ -311,7 +362,30 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding feedback page...\n");
+            console.log("\nAdding default page (ru)...\n");
+            db.collection('pages').insert({
+                ptitle: 'Главная страница',
+                pfolder: '/',
+                pfilename: '',
+                plang: 'ru',
+                playout: config.layouts.default,
+                pfolder_id: 'j1_1',
+                pkeywords: 'образец, ключевых, слов',
+                pdesc: 'Тестовая страница',
+                pcontent: 'Инсталляция успешно выполнена ;-)'
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding feedback page (en)...\n");
             db.collection('pages').insert({
                 "ptitle": "Feedback",
                 "pfilename": "feedback",
@@ -322,6 +396,29 @@ async.series([
                 "pkeywords": "",
                 "pdesc": "",
                 "pcontent": "<h1>Feedback</h1>\n\n<p>Please fill the following form to leave your feedback.</p>\n\n<p>!{root.blocks_sync.feedback(&#39;[&quot;id&quot;:&quot;name&quot;#&quot;label_en&quot;:&quot;Your name&quot;#&quot;label_ru&quot;:&quot;Ваше имя&quot;#&quot;type&quot;:&quot;text&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]#[&quot;id&quot;:&quot;email&quot;#&quot;label_en&quot;:&quot;Your e-mail&quot;#&quot;label_ru&quot;:&quot;Ваш e-mail&quot;#&quot;type&quot;:&quot;email&quot;#&quot;class&quot;:&quot;uk-form-width-medium&quot;]#[&quot;id&quot;:&quot;reason&quot;#&quot;label_en&quot;:&quot;Do you like TaracotJS?&quot;#&quot;label_ru&quot;:&quot;Вам нравится система?&quot;#&quot;type&quot;:&quot;select&quot;#&quot;class&quot;:&quot;uk-form-width-small&quot;#&quot;values&quot;:(([&quot;value_en&quot;:&quot;Yes&quot;#&quot;value_ru&quot;:&quot;Да&quot;]#[&quot;value_en&quot;:&quot;No&quot;#&quot;value_ru&quot;:&quot;Нет&quot;]))]#[&quot;id&quot;:&quot;message&quot;#&quot;label_en&quot;:&quot;Message&quot;#&quot;label_ru&quot;:&quot;Сообщение&quot;#&quot;type&quot;:&quot;textarea&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]&#39;)}</p>\n"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding feedback page (ru)...\n");
+            db.collection('pages').insert({
+                "ptitle": "Feedback",
+                "pfilename": "feedback",
+                "pfolder": "/",
+                "pfolder_id": "j1_1",
+                "plang": "en",
+                "playout": "index",
+                "pkeywords": "",
+                "pdesc": "",
+                "pcontent": "<h1>Обратная связь</h1>\n\n<p>Пожалуйста, используйте форму, расположенную ниже, для обратной связи.</p>\n\n<p>!{root.blocks_sync.feedback(&#39;[&quot;id&quot;:&quot;name&quot;#&quot;label_en&quot;:&quot;Your name&quot;#&quot;label_ru&quot;:&quot;Ваше имя&quot;#&quot;type&quot;:&quot;text&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]#[&quot;id&quot;:&quot;email&quot;#&quot;label_en&quot;:&quot;Your e-mail&quot;#&quot;label_ru&quot;:&quot;Ваш e-mail&quot;#&quot;type&quot;:&quot;email&quot;#&quot;class&quot;:&quot;uk-form-width-medium&quot;]#[&quot;id&quot;:&quot;reason&quot;#&quot;label_en&quot;:&quot;Do you like TaracotJS?&quot;#&quot;label_ru&quot;:&quot;Вам нравится система?&quot;#&quot;type&quot;:&quot;select&quot;#&quot;class&quot;:&quot;uk-form-width-small&quot;#&quot;values&quot;:(([&quot;value_en&quot;:&quot;Yes&quot;#&quot;value_ru&quot;:&quot;Да&quot;]#[&quot;value_en&quot;:&quot;No&quot;#&quot;value_ru&quot;:&quot;Нет&quot;]))]#[&quot;id&quot;:&quot;message&quot;#&quot;label_en&quot;:&quot;Message&quot;#&quot;label_ru&quot;:&quot;Сообщение&quot;#&quot;type&quot;:&quot;textarea&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]&#39;)}</p>\n"
             }, function(err) {
                 if (err) {
                     console.log("... failed");
@@ -388,11 +485,28 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default item to parts collection...\n");
+            console.log("\nAdding default item to parts collection (en)...\n");
             db.collection('parts').insert({
                 pname: 'test',
                 plang: 'en',
                 pvalue: 'Just a test example'
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to parts collection (ru)...\n");
+            db.collection('parts').insert({
+                pname: 'test',
+                plang: 'ru',
+                pvalue: 'Тестовый элемент'
             }, function(err) {
                 if (err) {
                     console.log("... failed");
@@ -424,13 +538,32 @@ async.series([
         },
         function(callback) {
             if (program.update) return callback();
-            console.log("\nAdding default item to menu collection...\n");
+            console.log("\nAdding default item to menu collection (en)...\n");
             db.collection('menu').insert({
                 "lang": "en",
                 "menu_source": "<li id=\"taracot_menu_1408371943280\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Home</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378176219\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Blog feed</span>&nbsp;(<a href=\"/blog\" class=\"uk-nestable-item-url\">/blog</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378845428\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">New post</span>&nbsp;(<a href=\"/blog/post\" class=\"uk-nestable-item-url\">/blog/post</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378186758\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Social</span>&nbsp;(<a href=\"/social\" class=\"uk-nestable-item-url\">/social</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1414680280546\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Feedback</span>&nbsp;(<a href=\"/feedback\" class=\"uk-nestable-item-url\">/feedback</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>",
                 "menu_raw": "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul>",
                 "menu_uikit": "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul></nav>",
                 "menu_uikit_offcanvas": "<li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li>"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to menu collection (ru)...\n");
+            db.collection('menu').insert({
+                "lang": "ru",
+                "menu_source": "<li id=\"taracot_menu_1415889121113\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Главная</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1415889130223\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Блог</span>&nbsp;(<a href=\"/blog\" class=\"uk-nestable-item-url\">/blog</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1415889142706\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Новый пост</span>&nbsp;(<a href=\"/blog/post\" class=\"uk-nestable-item-url\">/blog/post</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1415889169227\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Обратная связь</span>&nbsp;(<a href=\"/feedback\" class=\"uk-nestable-item-url\">/feedback</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>",
+                "menu_raw": "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Главная</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Блог</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">Новый пост</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Обратная связь</a></li></ul>",
+                "menu_uikit": "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Главная</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Блог</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">Новый пост</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Обратная связь</a></li></ul></nav>",
+                "menu_uikit_offcanvas": "<li class=\"taracot_menu_item_\"><a href=\"/\">Главная</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Блог</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">Новый пост</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Обратная связь</a></li>"
             }, function(err) {
                 if (err) {
                     console.log("... failed");

@@ -12,8 +12,8 @@ var config = {
 		"en",
 		"ru"
 	],
-	"locales_dev_mode": true,
-	"locale_from_subdomain": false,
+	"locales_dev_mode": false,
+	"locale_from_subdomain": true,
 	"locale_from_query": false,
 	"locale_from_cookie": false,
 	"dir": {
@@ -21,7 +21,11 @@ var config = {
 		"avatars": "../public/images/avatars",
 		"tmp": "../tmp"
 	},
-	"cookie_secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
+	"cookie": {
+		"secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
+		"domain": ".demo.taracot.org",
+		"prefix": "taracotjs_locale_"
+	},
 	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"redis": {

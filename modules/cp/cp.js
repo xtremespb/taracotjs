@@ -7,6 +7,7 @@ module.exports = function(app) {
 				extension: '.js',
     			devMode: app.get('config').locales_dev_mode
 			});
+			i18ncp.setLocale(req.session.current_locale);
 			var modules = [];
 			app.get('config').modules.forEach(function(module) {
 				if (module.cp_prefix.length > 0) {

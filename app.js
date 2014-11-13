@@ -99,7 +99,7 @@ app.use(multer({
     }
 }));
 
-app.use(cookieParser(config.cookie_secret));
+app.use(cookieParser(config.cookie.secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -108,7 +108,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 I18n.expressBind(app, {
     locales: config.locales,
-    cookieName: 'taracotjs-locale',
+    cookieName: config.cookie.prefix,
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js',
     devMode: app.get('config').locales_dev_mode
@@ -122,7 +122,8 @@ if (redis) {
             client: redis_client,
             prefix: config.redis.prefix
         }),
-        secret: config.session_secret
+        secret: config.session_secret,
+        domain: config.cookie.domain
     }));
 } else {
     app.use(session({
@@ -130,7 +131,8 @@ if (redis) {
             url: config.mongo.url,
             auto_reconnect: false
         }),
-        secret: config.session_secret
+        secret: config.session_secret,
+        domain: config.cookie.domain
     }));
 }
 
