@@ -306,7 +306,7 @@ async.series([
             console.log("\nAdding default setting (blog_areas)...\n");
             db.collection('settings').insert({
                 oname: 'blog_areas',
-                ovalue: '[{"id":"test","en":"Test blog area","ru":""}]',
+                ovalue: '[{"id":"test","en":"Test blog area","ru":"Тестовый раздел"}]',
                 olang: ''
             }, function(err) {
                 if (err) {
@@ -414,7 +414,7 @@ async.series([
                 "pfilename": "feedback",
                 "pfolder": "/",
                 "pfolder_id": "j1_1",
-                "plang": "en",
+                "plang": "ru",
                 "playout": "index",
                 "pkeywords": "",
                 "pdesc": "",
