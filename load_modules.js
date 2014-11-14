@@ -7,6 +7,8 @@ var load_modules = {
 		name: 'parts'
 	}, {
 		name: 'feedback'
+	}, {
+		name: 'lang'
 	}],
 	modules: [{
 		name: 'auth',

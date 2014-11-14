@@ -13,6 +13,7 @@ module.exports = function(app) {
     var block = {
         data_sync: function(par) {
             var lng = i18nm.getLocale();
+            console.log(lng);
             if (par) {
                 par = par.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\[/g, '{').replace(/\]/g, '}').replace(/#/g, ',').replace(/\(\(/g, "[").replace(/\)\)/g, "]");
                 par = '[' + par + ']';

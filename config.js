@@ -2,6 +2,7 @@ var config = {
 	"port": "3000",
 	"gid": "",
 	"uid": "",
+	"protocol": "http",
 	"layouts": {
 		"default": "index",
 		"avail": [
