@@ -8,20 +8,21 @@ module.exports = function(app) {
         devMode: app.get('config').locales_dev_mode
     });
     var Entities = require('html-entities').AllHtmlEntities;
-	entities = new Entities();
+    entities = new Entities();
     router.get(/(.*)/, function(req, res, next) {
-        i18nm.setLocale(req.session.current_locale);
-        var param = req.params[0];
-        var url_parts = param.split('/');
+    	var lng = req.session.current_locale;
+        i18nm.setLocale(lng);
+        var param = req.params[0],
+        	url_parts = param.split('/');
         url_parts.forEach(function(fn) {
             if (fn.match(/ /)) return next(); // whitespace
             if (fn.match(/^[\^<>\/\:\"\\\|\?\*\x00-\x1f]+$/)) return next(); // invalid characters
         });
-        var fd1 = url_parts.join('/');
-        var fn1 = '';
-        var fd2 = param.split('/').slice(0, -1).join('/') || '/';
-        var fn2 = url_parts[url_parts.length - 1];
-        var find_query = {
+        var fd1 = url_parts.join('/'),
+        	fn1 = '',
+        	fd2 = param.split('/').slice(0, -1).join('/') || '/',
+        	fn2 = url_parts[url_parts.length - 1],
+        	find_query = {
             plang: req.session.current_locale,
             $or: [{
                 pfolder: fd1,
@@ -74,7 +75,8 @@ module.exports = function(app) {
                         bread: bread,
                         bread_html: bread_html,
                         bread_html_uikit: bread_html_uikit,
-                        bread_html_bootstrap: bread_html_bootstrap
+                        bread_html_bootstrap: bread_html_bootstrap,
+                        current_lang: lng
                     };
                     var html_render = '';
                     page_data.blocks_sync = {};
@@ -86,7 +88,8 @@ module.exports = function(app) {
                         var renderer = gaikan.compileFromString(entities.decode(items[0].pcontent));
                         html_render = renderer(gaikan, page_data, undefined);
                     } catch (ex) {
-                        html_render = ex;
+                    	console.log(entities.decode(items[0].pcontent));
+                    	console.log(ex);
                     }
                     var full_title = items[0].ptitle;
                     if (title_arr.length) {
@@ -94,6 +97,7 @@ module.exports = function(app) {
                     }
                     var data = {
                         title: full_title,
+                        current_lang: lng,
                         page_title: items[0].ptitle,
                         content: html_render,
                         keywords: items[0].pkeywords,

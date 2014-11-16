@@ -16,8 +16,8 @@ module.exports = function(app) {
 			};
 			data.blocks = {};
 			data.blocks_sync = {};
-			var fa = [];
 			if (req && req.session && req.session.auth) data.auth = req.session.auth;
+			var fa = [];
 			Object.keys(app.get('blocks')).forEach(function (key) {
     			var fn = app.get('blocks')[key];
     			var fp = function(callback) {

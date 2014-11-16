@@ -11,18 +11,19 @@ module.exports = function(app) {
         devMode: app.get('config').locales_dev_mode
     });
     var block = {
-        data_sync: function(par) {
-            var lng = i18nm.getLocale();
-            console.log(lng);
-            if (par) {
-                par = par.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\[/g, '{').replace(/\]/g, '}').replace(/#/g, ',').replace(/\(\(/g, "[").replace(/\)\)/g, "]");
-                par = '[' + par + ']';
+        data_sync: function(_par) {
+            if (_par) {
+                _par = _par.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\[/g, '{').replace(/\]/g, '}').replace(/#/g, ',').replace(/\(\(/g, "[").replace(/\)\)/g, "]");
+                _par = '{' + _par + '}';
             }
             try {
-                par = JSON.parse(par);
+                _par = JSON.parse(_par);
             } catch (ex) {
                 return "Feedback module error: " + ex;
             }
+            var lng = _par.lang || locales[0],
+                par = _par.data;
+            i18nm.setLocale(lng);
             if (!(par instanceof Array)) return "Invalid form data";
             var form_data = JSON.stringify(par),
                 form_checksum = crypto.createHash('md5').update(app.get('config').salt + form_data).digest('hex');
@@ -34,6 +35,7 @@ module.exports = function(app) {
                 field_select_option = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select_option.html'),
                 field_asterisk = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html'),
                 fields_html = '';
+
             for (var i = 0; i < par.length; i++) {
                 if (par[i].type) {
                     var data = {};
