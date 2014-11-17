@@ -123,7 +123,9 @@ if (redis) {
             prefix: config.redis.prefix
         }),
         secret: config.session_secret,
-        domain: config.cookie.domain
+        cookie: {
+            domain: config.cookie.domain
+        }
     }));
 } else {
     app.use(session({
@@ -132,7 +134,9 @@ if (redis) {
             auto_reconnect: false
         }),
         secret: config.session_secret,
-        domain: config.cookie.domain
+        cookie: {
+            domain: config.cookie.domain
+        }
     }));
 }
 
