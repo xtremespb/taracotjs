@@ -24,7 +24,7 @@ var config = {
 	},
 	"cookie": {
 		"secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
-		"domain": undefined,
+		"domain": "",
 		"prefix": "taracotjs_locale_"
 	},
 	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
