@@ -79,11 +79,12 @@ async.series([
 			console.log("\nGenerating init.d script...");
 			var initd_render = gaikan.compileFromFile('.initd.template');
 			var initd = initd_render(gaikan, data, undefined);
-			fs.writeFile("./init.d/taracot-" + data.pname, initd, function(err) {
+			var filename = data.pname.replace(/\./g, '_');
+			fs.writeFile("./init.d/taracot-" + filename, initd, function(err) {
 			    if(err) {
 			        return callback(err);
 			    } else {
-			        console.log("\nThe file " + data.pname + " was saved!");
+			        console.log("\nThe file " + filename + " was saved!");
 			        callback();
 			    }
 			});
@@ -92,11 +93,12 @@ async.series([
 			console.log("\nGenerating monit script...");
 			var monit_render = gaikan.compileFromFile('.monit.template');
 			var monit = monit_render(gaikan, data, undefined);
-			fs.writeFile("./init.d/" + data.pname + '.monit', monit, function(err) {
+			var filename = data.pname.replace(/\./g, '_');
+			fs.writeFile("./monit/" + filename + '.monit', monit, function(err) {
 			    if(err) {
 			        return callback(err);
 			    } else {
-			        console.log("\nThe file " + data.pname + ".monit was saved!");
+			        console.log("\nThe file " + filename + ".monit was saved!");
 			        callback();
 			    }
 			});
