@@ -53,5 +53,6 @@
 	"newfile": "New text file",
 	"new_filename": "New file name",
 	"editfile": "Edit text file",
-	"upload_auto_start": "Auto start upload when files added"
+	"upload_auto_start": "Auto start upload when files added",
+	"link": "URL of selected file"
 }

@@ -31,6 +31,7 @@ module.exports = function(app) {
 		var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'files', {
 			lang: i18nm,
 			textedit: textedit,
+			files_url: app.get('config').dir.storage_url,
 			locales: JSON.stringify(app.get('config').locales)
 		}, req);
 		app.get('cp').render(req, res, {

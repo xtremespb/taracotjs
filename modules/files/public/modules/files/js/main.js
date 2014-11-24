@@ -9,6 +9,7 @@ var clpbrd = {
 	files: []
 };
 var taracot_dlg_edit = new $.UIkit.modal("#taracot_dlg_edit");
+var taracot_dlg_link = new $.UIkit.modal("#taracot_dlg_link");
 var taracot_dlg_upload = new $.UIkit.modal("#taracot_dlg_upload", {
 	bgclose: false,
 	keyboard: false
@@ -46,8 +47,10 @@ var shifty_select_handler = function() {
 		$('#btn_download').attr('disabled', false);
 		if (ns.length == 1) {
 			$('#btn_rename').attr('disabled', false);
+			$('#btn_link').attr('disabled', false);
 		} else {
 			$('#btn_rename').attr('disabled', true);
+			$('#btn_link').attr('disabled', true);
 		}
 	} else {
 		$('#btn_delete').attr('disabled', true);
@@ -56,6 +59,7 @@ var shifty_select_handler = function() {
 		$('#btn_rename').attr('disabled', true);
 		$('#btn_download').attr('disabled', true);
 		$('#btn_editfile').attr('disabled', true);
+		$('#btn_link').attr('disabled', true);
 	}
 };
 
@@ -842,6 +846,16 @@ var dlguploadbtnupload_handler = function() {
 	uploader.start();
 };
 
+var btnlink_handler = function() {
+	var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
+	if (!ns || !ns.length || ns.length > 1) return;
+	var url = location.protocol + '//' + location.host + '/' + $('#taracot-files-current-dir').html() + '/' + files_url + '/' + file_ids[ns[0].replace('taracot_file_', '')];
+	$('#taracot_dlg_link_value').val(url.replace(/([^:]\/)\/+/g, '$1'));
+	taracot_dlg_link.show();
+	$('#taracot_dlg_link_value').focus();
+	$('#taracot_dlg_link_value').select();
+};
+
 var save_buttons_state = function() {
 	buttons_state = [];
 	$('.taracot-files-button').each(function() {
@@ -873,6 +887,7 @@ var init_buttons_state = function() {
 	$('#btn_upload').attr('disabled', false);
 	$('#btn_download').attr('disabled', true);
 	$('#btn_unzip').attr('disabled', true);
+	$('#btn_link').attr('disabled', false);
 	if (textedit) {
 		$('#btn_newfile').attr('disabled', false);
 	} else {
@@ -895,6 +910,7 @@ $('#btn_download').click(btndownload_handler);
 $('#btn_unzip').click(btnunzip_handler);
 $('#btn_newfile').click(btnnewfile_handler);
 $('#btn_editfile').click(btneditfile_hanlder);
+$('#btn_link').click(btnlink_handler);
 $('#taracot_dlg_upload_btn_clear').click(dlguploadbtnclear_handler);
 $('#taracot_dlg_upload_btn_upload').click(dlguploadbtnupload_handler);
 
