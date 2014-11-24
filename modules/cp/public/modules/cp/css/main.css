@@ -101,3 +101,6 @@ input:focus,textarea:focus,select:focus{
  -moz-box-shadow:0 0 5px #ccc;
  box-shadow:0 0 5px #ccc;
 }
+fieldset {
+	border: 0;
+}
