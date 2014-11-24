@@ -3,3 +3,4 @@ logs/*.log
 tmp/*.zip
 modules/bastra/*
 npm-debug.log
+grunt_process.cmd
