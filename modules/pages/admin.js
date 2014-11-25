@@ -154,6 +154,47 @@ module.exports = function(app) {
         }); // count
     });
 
+    router.post('/data/list/all', function(req, res) {
+        var lng = req.session.current_locale;
+        i18nm.setLocale(lng);
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var rep = {
+            items: []
+        }
+        // Get pages from MongoDB
+        app.get('mongodb').collection('pages').find({
+            "plang": lng
+        }, {
+            limit: 1000
+        }).sort({
+            "ptitle": 1
+        }).toArray(function(err, items) {
+            if (typeof items != 'undefined' && !err) {
+                // Generate array
+                for (var i = 0; i < items.length; i++) {
+                    var arr = [];
+                    if (items[i].pfolder != '/') {
+                        items[i].pfilename = '/' + items[i].pfilename;
+                        items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
+                    }
+                    arr.push(items[i].pfolder + items[i].pfilename);
+                    arr.push(items[i].ptitle);
+                    rep.items.push(arr);
+                }
+            }
+            // Return results
+            rep.status = 1;
+            res.send(JSON.stringify(rep));
+        }); // data
+
+    });
+
     router.post('/data/rootpages', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         var rep = {};
