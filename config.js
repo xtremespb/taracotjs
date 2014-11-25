@@ -19,6 +19,7 @@ var config = {
 	"locale_from_cookie": false,
 	"dir": {
 		"storage": "../public/files",
+		"storage_url": "/files",
 		"avatars": "../public/images/avatars",
 		"tmp": "../tmp"
 	},
