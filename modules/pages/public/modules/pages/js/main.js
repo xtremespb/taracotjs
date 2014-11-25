@@ -662,7 +662,7 @@ var taracot_ajax_progress_indicator = function(sel, show) {
 
 var open_parts_window = function(fn) {
     var w = parseInt(screen.width / 1.5);
-    var h = 500;
+    var h = 800;
     var left = parseInt((screen.width / 2) - (w / 2));
     var top = parseInt((screen.height / 2) - (h / 2));
     window.open('/cp/parts', '', 'toolbar=no, location=0, status=no, titlebar=no, menubar=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
