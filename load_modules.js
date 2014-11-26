@@ -24,6 +24,11 @@ var load_modules = {
 		cp_id: 'siteconf',
 		cp_prefix: '/cp/siteconf/'
 	}, {
+		name: 'templates',
+		prefix: '',
+		cp_id: 'templates',
+		cp_prefix: '/cp/templates/'
+	}, {
 		name: 'user',
 		prefix: '',
 		cp_id: 'users',
