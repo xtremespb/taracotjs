@@ -17,6 +17,7 @@
     "express-session": "~1.0.4",
     "fs-extra": "~0.9.1",
     "gaikan": "~2.0.0",
+    "glob": "^4.2.1",
     "gm": "~1.16.0",
     "html-entities": "^1.1.1",
     "html-to-text": "~0.1.0",
