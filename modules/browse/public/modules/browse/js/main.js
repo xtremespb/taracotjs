@@ -180,10 +180,8 @@ var btnselect_hander = function() {
 	if (CKEditorFuncNum) {
 		var ns = $('.taracot-files-item').getSelected('taracot-files-item-selected');
 		if (!ns.length || ns.length > 1) return;
-		var url = '/files/' + $('#taracot-files-current-dir').html();
-		if (url != '/') url += '/';
-		url += file_ids[ns[0].replace('taracot_file_', '')];
-		window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url);
+		var url = '/files/' + $('#taracot-files-current-dir').html() + '/' + file_ids[ns[0].replace('taracot_file_', '')];
+		window.opener.CKEDITOR.tools.callFunction(CKEditorFuncNum, url.replace(/([^:]\/)\/+/g, "$1"));
 		close();
 	}
 };
