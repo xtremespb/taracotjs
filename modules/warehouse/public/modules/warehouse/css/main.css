@@ -1,0 +1,46 @@
+.taracot-loading,
+.taracot-progress {
+	position: absolute;
+	background: #fff;
+	filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
+	-moz-opacity: 0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;
+	z-index: 1000;
+}
+.taracot-buttons-area {
+	padding: 10px;
+	margin-top: 30px;
+	border-top: 1px solid #ddd;
+	text-align: right;
+}
+th.taracot_table_sortable {
+	cursor: pointer;
+}
+.taracot-field-req {
+	color: red;
+	font-size: 80%;
+}
+.taracot-h3-underilne {
+	border-bottom: 1px solid #f1f1f1;
+}
+.taracot-margin-medium {
+	margin-bottom: 30px;
+}
+.uk-form-help-block {
+	font-size: 90%;
+	color: #666;
+}
+#files_grid {
+	margin: 10px 0 0 0;
+	padding: 0;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	min-height: 50px;
+}

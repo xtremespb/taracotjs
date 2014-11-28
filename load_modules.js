@@ -94,6 +94,11 @@ var load_modules = {
 		cp_id: '',
 		cp_prefix: ''
 	}, {
+		name: 'warehouse',
+		prefix: '',
+		cp_id: 'warehouse',
+		cp_prefix: '/cp/warehouse/'
+	}, {
 		name: 'pages',
 		prefix: '',
 		cp_id: 'pages',

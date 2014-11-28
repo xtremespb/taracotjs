@@ -24,5 +24,6 @@
 	"module_metadata": "Metadata",
 	"site_title": "Site title",
 	"site_keywords": "Site keywords",
-	"site_description": "Site description"
+	"site_description": "Site description",
+	"confirm_delete_area": "confirm_delete_area"
 }
