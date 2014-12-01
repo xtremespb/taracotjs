@@ -93,5 +93,7 @@
 	"pamount_hint": "Positive integer = item available, 0 = item unavailable, -1 = unlimited",
 	"price": "Price",
 	"pprice_hint": "Float number, example: 34.95",
-	"images": "Images"
+	"images": "Images",
+	"not_images": "Unable to process uploaded files (not images?) or images uploading is disabled by server configuration",
+	"upload_failed": "upload_failed"
 }

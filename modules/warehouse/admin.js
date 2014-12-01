@@ -20,6 +20,12 @@ module.exports = function(app) {
         devMode: app.get('config').locales_dev_mode
     });
     var parser = app.get('parser');
+    var crypto = require('crypto');
+    var fs = require("fs-extra");
+    var gm = false;
+    if (app.get('config').graphicsmagick) {
+        gm = require('gm');
+    }
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
@@ -164,9 +170,9 @@ module.exports = function(app) {
             return;
         }
         var rep = {
-            items: []
-        }
-        // Get warehouse from MongoDB
+                items: []
+            }
+            // Get warehouse from MongoDB
         app.get('mongodb').collection('warehouse').find({
             "plang": lng
         }, {
@@ -601,6 +607,85 @@ module.exports = function(app) {
             }
         }
         res.send(JSON.stringify(rep));
+    });
+
+    router.post('/data/upload', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {};
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        if (!req.files || !req.files.file) {
+            rep.status = 0;
+            rep.error = i18nm.__("no_file_sent");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var file = req.files.file;
+        if (!gm || (file.mimetype != 'image/png' && file.mimetype != 'image/jpeg')) {
+            rep.status = 0;
+            rep.error = i18nm.__("not_images");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        if (file.size > app.get('config').max_upload_file_mb * 1048576) {
+            rep.status = 0;
+            rep.error = i18nm.__("file_too_big");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var _filename = crypto.createHash('md5').update(file.originalname + Date.now() + Math.random()).digest('hex');
+        var _extension = file.extension || '';
+        if (_filename) _filename = _filename.toLowerCase();
+        if (_extension) _extension = _extension.toLowerCase();
+        var img = gm(app.get('config').dir.tmp + '/' + file.name);
+        img.autoOrient();
+        img.size(function(err, size) {
+            if (err) {
+                rep.status = 0;
+                rep.error = i18nm.__("upload_failed");
+                fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                return res.send(JSON.stringify(rep));
+            }
+            img.setFormat('jpeg');
+            if (size.width >= size.height) {
+                img.resize(null, 800);
+            } else {
+                img.resize(800, null);
+            }
+            img.write(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg', function(err) {
+                if (err) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("upload_failed");
+                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                    return res.send(JSON.stringify(rep));
+                }
+                if (size.width >= size.height) {
+                    img.resize(null, 70);
+                    img.crop(70, 70, 0, 0);
+                } else {
+                    img.resize(70, null);
+                    img.crop(70, 70, 0, 0);
+                }
+                img.write(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg', function(err) {
+                    if (err) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("upload_failed");
+                        fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                        return res.send(JSON.stringify(rep));
+                    }
+                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
+                    rep.status = 1;
+                    rep.id = _filename;
+                    res.send(JSON.stringify(rep));
+                    return;
+                });
+            });
+        });
     });
 
     var dummy = function() {};

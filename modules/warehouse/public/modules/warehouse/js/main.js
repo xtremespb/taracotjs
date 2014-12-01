@@ -533,6 +533,20 @@ $(document).ready(function() {
     $('#pcategory').attr('readonly', true);
     categories_data = categories_preload;
     init_ckeditor();
+    init_uploader();
+    var _do = new DropTarget(document.getElementById('files_grid'));
+    _do.onLeave = function() {
+        var ns = $('.taracot-warehouse-image-thumbnail').getSelected('taracot-warehouse-image-thumbnail-selected');
+        for (var i = 0; i < ns.length; i++) {
+            $('#files_grid').children().last().after($('#' + ns[i]));
+        }
+    };
+    $('#files_grid').click(function(e) {
+		if (e.target.id === "files_grid") {
+			$('.taracot-warehouse-image-thumbnail').removeClass('taracot-warehouse-image-thumbnail-selected');
+			shifty_handler();
+		}
+	});
     if (autosave) {
         $('#autosave_title').html('&mdash;');
         if (autosave.ptitle) $('#autosave_title').html(autosave.ptitle);
@@ -604,63 +618,93 @@ var init_ckeditor = function() {
 };
 
 var init_uploader = function() {
-	uploader = new plupload.Uploader({
-		runtimes: 'html5,flash,silverlight,html4',
-		browse_button: 'taracot_dlg_upload_btn_add',
-		drop_element: "taracot_upload_box",
-		url: '/cp/warehouse/data/upload',
-		flash_swf_url: '/js/plupload/moxie.swf',
-		silverlight_xap_url: '/js/plupload/moxie.xap',
-		filters: {
-			max_file_size: '100mb',
-		}
-	});
-	uploader.init();
-	uploader.bind('FilesAdded', function(up, files) {
-		if (uploader.files.length) {
-			// Do something here
-		}
-		// dlguploadbtnupload_handler();
-	});
-	uploader.bind('Error', function(up, err) {
-		$.UIkit.notify({
-			message: err.file.name + ': ' + err.message,
-			status: 'danger',
-			timeout: 2000,
-			pos: 'top-center'
-		});
-	});
-	uploader.bind('UploadProgress', function(up, file) {
-		// Prorgess
-	});
-	uploader.bind('FileUploaded', function(upldr, file, object) {
-		var data;
-		try {
-			data = eval(object.response);
-		} catch (err) {
-			data = eval('(' + object.response + ')');
-		}
-		if (data) {
-			if (data.status === 0) {
-				if (data.error) {
-					$.UIkit.notify({
-						message: data.error,
-						status: 'danger',
-						timeout: 2000,
-						pos: 'top-center'
-					});
-				}
-			}
-			if (data.status == 1) {
-				// Success
-			}
-		}
-	});
-	uploader.bind('UploadComplete', function() {
-		$('#taracot_dlg_upload_btn_add').attr('disabled', false);
-		$('#taracot_dlg_upload_btn_clear').attr('disabled', false);
-		$('#taracot_dlg_upload_btn_cancel').attr('disabled', false);
-	});
+    uploader = new plupload.Uploader({
+        runtimes: 'html5,flash,silverlight,html4',
+        browse_button: 'btn_images_upload',
+        url: '/cp/warehouse/data/upload',
+        flash_swf_url: '/js/plupload/moxie.swf',
+        silverlight_xap_url: '/js/plupload/moxie.xap',
+        filters: {
+            max_file_size: '100mb',
+            mime_types: [{
+                title: "Image files",
+                extensions: "jpg,jpeg,png"
+            }]
+        }
+    });
+    uploader.init();
+    uploader.bind('FilesAdded', function(up, files) {
+        if (!uploader.files.length) return;
+        $('#images_upload_progress').show();
+        uploader.start();
+    });
+    uploader.bind('Error', function(up, err) {
+        $.UIkit.notify({
+            message: err.file.name + ': ' + err.message,
+            status: 'danger',
+            timeout: 2000,
+            pos: 'top-center'
+        });
+    });
+    uploader.bind('UploadProgress', function(up, file) {
+        $('#images_upload_progress_bar').css('width', uploader.total.percent + '%');
+        $('#images_upload_progress_bar').html(uploader.total.percent + '%');
+    });
+    uploader.bind('FileUploaded', function(upldr, file, object) {
+        var data;
+        try {
+            data = eval(object.response);
+        } catch (err) {
+            data = eval('(' + object.response + ')');
+        }
+        if (data) {
+            if (data.status === 0) {
+                if (data.error) {
+                    $.UIkit.notify({
+                        message: data.error,
+                        status: 'danger',
+                        timeout: 2000,
+                        pos: 'top-center'
+                    });
+                }
+            }
+            if (data.status == 1 && data.id) {
+                $('#files_grid').append('<img class="uk-thumbnail taracot-warehouse-image-thumbnail" id="_twi_' + data.id + '" src="/files/warehouse/tn_' + data.id + '.jpg">');
+                new DragObject(document.getElementById('_twi_' + data.id));
+                var _do = new DropTarget(document.getElementById('_twi_' + data.id));
+                _do.onLeave = function() {
+                    var ns = $('.taracot-files-item').getSelected('taracot-warehouse-image-thumbnail-selected');
+                    for (var i = 0; i < ns.length; i++) {
+                        $('#' + _do.toString()).before($('#' + ns[i]));
+                    }
+                };
+            }
+        }
+    });
+    uploader.bind('UploadComplete', function() {
+        $('.taracot-warehouse-image-thumbnail').shifty({
+            className: 'taracot-warehouse-image-thumbnail-selected',
+            select: function(el) {
+                shifty_select_handler();
+            },
+            unselect: function(el) {
+                shifty_unselect_handler();
+            }
+        });
+    });
+};
+
+var shifty_select_handler = function() {
+    var ns = $('.taracot-files-item').getSelected('taracot-warehouse-image-thumbnail-selected');
+};
+
+var shifty_unselect_handler = function() {
+    var ns = $('.taracot-files-item').getSelected('taracot-warehouse-image-thumbnail-selected');
+};
+
+var shifty_handler = function() {
+	shifty_select_handler();
+	shifty_unselect_handler();
 };
 
 var taracot_ajax_progress_indicator = function(sel, show) {

@@ -107,8 +107,21 @@
         <div class="uk-form-row">
             <label class="uk-form-label">!{root.lang.__('images')}</label>
             <div class="uk-form-controls">
-            	<div><button class="uk-button uk-button-small"><i class="uk-icon uk-icon-plus"></i></button>&nbsp;<button class="uk-button uk-button-small uk-button-danger"><i class="uk-icon uk-icon-trash-o"></i></button></div>
-            	<ul id="files_grid" class="uk-panel uk-panel-box"></ul>
+                <div>
+                    <button class="uk-button uk-button-small" id="btn_images_upload"><i class="uk-icon uk-icon-plus"></i>
+                    </button>&nbsp;
+                    <button class="uk-button uk-button-small uk-button-danger" id="btn_images_delete"><i class="uk-icon uk-icon-trash-o"></i>
+                    </button>&nbsp;
+                    <div class="uk-progress" id="images_upload_progress" style="display:none">
+                        <div class="uk-progress-bar uk-progress-striped uk-active" id="images_upload_progress_bar" style="width:0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label"></label>
+            <div class="uk-form-controls">
+                <div id="files_grid" class="uk-panel uk-panel-box"></div>
             </div>
         </div>
         <h3 class="taracot-h3-underilne uk-margin-bottom">!{root.lang.__('keywords_and_description')}</h3>
@@ -281,6 +294,9 @@ for (var i = 0; i < locales.length; i++) {
 <script src="/js/jstree/jstree.min.js"></script>
 <script src="/js/plupload/plupload.full.min.js"></script>
 
+<script src="/modules/warehouse/js/dragdrop.js"></script>
+<script src="/modules/warehouse/js/dragdrop.helper.js"></script>
+<script src="/modules/warehouse/js/jquery.shifty.js"></script>
 <script src="/js/jstorage.js"></script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
