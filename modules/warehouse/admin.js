@@ -26,6 +26,7 @@ module.exports = function(app) {
     if (app.get('config').graphicsmagick) {
         gm = require('gm');
     }
+    var util = require('util');
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
@@ -348,13 +349,31 @@ module.exports = function(app) {
             pdesc = req.body.pdesc,
             pcontent = req.body.pcontent,
             id = req.body.pid,
+            pimages = req.body.pimages,
+            pamount = req.body.pamount,
+            pprice = req.body.pprice,
             current_timestamp = req.body.current_timestamp;
+        if (pimages && !util.isArray(pimages)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        if (pimages) {
+            for (var im = 0; im < pimages.length; im++) {
+                if (!pimages[im].match(/^[a-f0-9]{32}$/)) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query");
+                    return res.send(JSON.stringify(rep));
+                }
+            }
+        } else {
+            pimages = [];
+        }
         if (typeof id != 'undefined' && id) {
             if (!id.match(/^[a-f0-9]{24}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
         }
         var _plang = app.get('config').locales[0];
@@ -382,6 +401,16 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_pfilename");
             res.send(JSON.stringify(rep));
             return;
+        }
+        if (!pamount || parseInt(pamount) != pamount || pamount < -1) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_amount");
+            return res.send(JSON.stringify(rep));
+        }
+        if (!pprice || parseFloat(pprice) != pprice || pprice < 0) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_price");
+            return res.send(JSON.stringify(rep));
         }
         // Save
 
@@ -436,7 +465,10 @@ module.exports = function(app) {
                                         plang: plang,
                                         pkeywords: pkeywords,
                                         pdesc: pdesc,
+                                        pimages: pimages,
                                         pcontent: pcontent,
+                                        pamount: pamount,
+                                        pprice: pprice,
                                         lock_username: '',
                                         lock_timestamp: 0,
                                         last_modified: Date.now()
@@ -551,6 +583,9 @@ module.exports = function(app) {
                         plang: plang,
                         pkeywords: pkeywords,
                         pdesc: pdesc,
+                        pimages: pimages,
+                        pamount: pamount,
+                        pprice: pprice,
                         pcontent: pcontent,
                         last_modified: Date.now()
                     }, function(_err, _items) {
@@ -686,6 +721,42 @@ module.exports = function(app) {
                 });
             });
         });
+    });
+
+    router.post('/data/upload/delete', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {};
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        pimages = req.body.pimages;
+        if (pimages && !util.isArray(pimages)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        if (pimages) {
+            for (var im = 0; im < pimages.length; im++) {
+                if (!pimages[im].match(/^[a-f0-9]{32}$/)) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query");
+                    return res.send(JSON.stringify(rep));
+                }
+            }
+        } else {
+            pimages = [];
+        }
+        for (var i = 0; i < pimages.length; i++) {
+            var _filename = pimages[i];
+            if (fs.existsSync(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg')) fs.unlinkSync(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg');
+            if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg')) fs.unlinkSync(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg');
+        }
+        rep.status = 1;
+        res.send(JSON.stringify(rep));
     });
 
     var dummy = function() {};

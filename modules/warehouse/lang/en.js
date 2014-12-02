@@ -95,5 +95,7 @@
 	"pprice_hint": "Float number, example: 34.95",
 	"images": "Images",
 	"not_images": "Unable to process uploaded files (not images?) or images uploading is disabled by server configuration",
-	"upload_failed": "upload_failed"
+	"upload_failed": "Upload failed",
+	"invalid_amount": "Invalid amount",
+	"invalid_price": "Invalid price"
 }

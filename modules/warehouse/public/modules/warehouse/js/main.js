@@ -111,6 +111,12 @@ var auto_save_data = function() {
     }
     var pkeywords = $.trim($('#pkeywords').val());
     var pdesc = $.trim($('#pdesc').val());
+    var pimages = [];
+    var pamount = $.trim($('#pamount').val());
+    var pprice = $.trim($('#pamount').val());
+    $('#files_grid').children().each(function() {
+        pimages.push($(this).attr('id').replace(/^_twi_/, ''));
+    });
     var data = {
         pid: current_id,
         ptitle: ptitle,
@@ -121,6 +127,9 @@ var auto_save_data = function() {
         plangcopy: plangcopy,
         pkeywords: pkeywords,
         pdesc: pdesc,
+        pamount: pamount,
+        pprice: pprice,
+        pimages: pimages,
         current_timestamp: current_timestamp,
         pcontent: $('#pcontent').val()
     };
@@ -167,6 +176,10 @@ var btn_add_item_handler = function() {
     current_id = '';
     root_warehouse = [];
     current_category = '';
+    $('#images_upload_progress_bar').css('width', '0');
+    $('#images_upload_progress_bar').html('');
+    $('#images_upload_progress').hide();
+    $('#files_grid').empty();
     $('#taracot_warehouse_edit_action').html(_lang_vars.action_add);
     $('#taracot_warehouse_list').addClass('uk-hidden');
     $('#taracot_warehouse_edit').removeClass('uk-hidden');
@@ -200,6 +213,7 @@ var btn_add_item_handler = function() {
             $('#ptitle').focus();
         }
     });
+    $('#ptitle').focus();
 };
 
 $('#btn-add-item').click(function() {
@@ -211,12 +225,18 @@ $('#btn-add-item').click(function() {
 
 var edit_item_show = function(data) {
     if (!ckeditor) init_ckeditor();
+    if (!uploader) init_uploader();
+    $('#images_upload_progress_bar').css('width', '0');
+    $('#images_upload_progress_bar').empty();
+    $('#images_upload_progress').hide();
+    $('#files_grid').html('');
     $('#taracot_warehouse_list').addClass('uk-hidden');
     $('#taracot_warehouse_edit').removeClass('uk-hidden');
     $('#taracot_warehouse_edit').show();
     if (data.root_warehouse) root_warehouse = data.root_warehouse;
     if (data.data) data = data.data;
     if (data.ptitle) $('#ptitle').val(data.ptitle);
+    if (data.pfilename) $('#pfilename').val(data.pfilename);
     if (data.pcategory) {
         $('#pcategory').val(data.pcategory);
         current_category = data.pcategory;
@@ -224,15 +244,38 @@ var edit_item_show = function(data) {
     if (data.pcategory_id) $('#pcategory_id').val(data.pcategory_id);
     if (data.plang) $('#plang').val(data.plang);
     if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
+    if (data.pamount) $('#pamount').val(data.pamount);
+    if (data.pprice) $('#pprice').val(data.pprice);
     if (data.pdesc) $('#pdesc').val(data.pdesc);
     if (data.pcontent) {
         $('#pcontent').val(data.pcontent);
     } else {
         $('#pcontent').val('');
     }
+    if (data.pimages) {
+        for (var i = 0; i < data.pimages.length; i++) {
+            $('#files_grid').append('<img class="uk-thumbnail taracot-warehouse-image-thumbnail" id="_twi_' + data.pimages[i] + '" src="/files/warehouse/tn_' + data.pimages[i] + '.jpg">');
+            new DragObject(document.getElementById('_twi_' + data.pimages[i]));
+            var _do = new DropTarget(document.getElementById('_twi_' + data.pimages[i]));
+            _do.onLeave = function() {
+                var ns = $('.taracot-warehouse-image-thumbnail').getSelected('taracot-warehouse-image-thumbnail-selected');
+                for (var i = 0; i < ns.length; i++) $('#' + this.toString()).before($('#' + ns[i]));
+            };
+        }
+        $('.taracot-warehouse-image-thumbnail').shifty({
+            className: 'taracot-warehouse-image-thumbnail-selected',
+            select: function(el) {
+                shifty_select_handler();
+            },
+            unselect: function(el) {
+                shifty_unselect_handler();
+            }
+        });
+    }
     $('#pcategory').change();
     if (data.last_modified) current_timestamp = data.last_modified;
     auto_save_timer = setTimeout(auto_save_data, 5000);
+    $('#ptitle').focus();
 };
 
 var edit_item = function(id) {
@@ -386,6 +429,8 @@ $('#btn_edit_save').click(function() {
     var pfilename = $.trim($('#pfilename').val());
     var pcategory = $.trim($('#pcategory').val());
     var pcategory_id = $('#pcategory_id').val();
+    var pamount = $('#pamount').val();
+    var pprice = $('#pprice').val();
     if (!pcategory_id) {
         pcategory_id = jstree_get_root_id();
     }
@@ -409,6 +454,16 @@ $('#btn_edit_save').click(function() {
         form_errors = true;
         if (!error_focus) error_focus = '#pfilename';
     }
+    if (!pamount || parseInt(pamount) != pamount || pamount < -1) {
+        $('#pamount').addClass('uk-form-danger');
+        form_errors = true;
+        if (!error_focus) error_focus = '#pamount';
+    }
+    if (!pprice || parseFloat(pprice) != pprice || pprice < 0) {
+        $('#pprice').addClass('uk-form-danger');
+        form_errors = true;
+        if (!error_focus) error_focus = '#pprice';
+    }
     if (form_errors) {
         $.UIkit.notify({
             message: _lang_vars.form_contain_errors,
@@ -419,6 +474,10 @@ $('#btn_edit_save').click(function() {
         if (error_focus) $(error_focus).focus();
         return;
     }
+    var pimages = [];
+    $('#files_grid').children().each(function() {
+        pimages.push($(this).attr('id').replace(/^_twi_/, ''));
+    });
     taracot_ajax_progress_indicator('body', true);
     // Save data
     $.ajax({
@@ -435,6 +494,9 @@ $('#btn_edit_save').click(function() {
             plangcopy: plangcopy,
             pkeywords: pkeywords,
             pdesc: pdesc,
+            pamount: pamount,
+            pprice: pprice,
+            pimages: pimages,
             current_timestamp: current_timestamp,
             pcontent: $('#pcontent').val()
         },
@@ -513,6 +575,47 @@ $('#btn_edit_cancel').click(function() {
     }
 });
 
+$('#btn_images_delete').click(function() {
+    var ns = $('.taracot-warehouse-image-thumbnail').getSelected('taracot-warehouse-image-thumbnail-selected');
+    if (!ns.length) return;
+    $('#btn_images_delete').attr('disabled', true);
+    var arr = [];
+    for (var i = 0; i < ns.length; i++) arr.push(ns[i].replace(/^_twi_/, ''));
+    $.ajax({
+        type: 'POST',
+        url: '/cp/warehouse/data/upload/delete',
+        data: {
+            pimages: arr
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == '1') {
+            	for (var i = 0; i<ns.length; i++) $('#' + ns[i]).remove();
+            } else {
+                if (data.error) {
+                    $.UIkit.notify({
+                        message: data.error,
+                        status: 'danger',
+                        timeout: 2000,
+                        pos: 'top-center'
+                    });
+                }
+            }
+        },
+        error: function() {
+            $.UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+        	$('#btn_images_delete').attr('disabled', false);
+        }
+    });
+});
+
 
 /*******************************************************************
 
@@ -537,16 +640,14 @@ $(document).ready(function() {
     var _do = new DropTarget(document.getElementById('files_grid'));
     _do.onLeave = function() {
         var ns = $('.taracot-warehouse-image-thumbnail').getSelected('taracot-warehouse-image-thumbnail-selected');
-        for (var i = 0; i < ns.length; i++) {
-            $('#files_grid').children().last().after($('#' + ns[i]));
-        }
+        for (var i = 0; i < ns.length; i++) $('#files_grid').children().last().after($('#' + ns[i]));
     };
     $('#files_grid').click(function(e) {
-		if (e.target.id === "files_grid") {
-			$('.taracot-warehouse-image-thumbnail').removeClass('taracot-warehouse-image-thumbnail-selected');
-			shifty_handler();
-		}
-	});
+        if (e.target.id === "files_grid") {
+            $('.taracot-warehouse-image-thumbnail').removeClass('taracot-warehouse-image-thumbnail-selected');
+            shifty_handler();
+        }
+    });
     if (autosave) {
         $('#autosave_title').html('&mdash;');
         if (autosave.ptitle) $('#autosave_title').html(autosave.ptitle);
@@ -636,6 +737,7 @@ var init_uploader = function() {
     uploader.bind('FilesAdded', function(up, files) {
         if (!uploader.files.length) return;
         $('#images_upload_progress').show();
+        $('#btn_images_upload').attr('disabled', true);
         uploader.start();
     });
     uploader.bind('Error', function(up, err) {
@@ -673,10 +775,8 @@ var init_uploader = function() {
                 new DragObject(document.getElementById('_twi_' + data.id));
                 var _do = new DropTarget(document.getElementById('_twi_' + data.id));
                 _do.onLeave = function() {
-                    var ns = $('.taracot-files-item').getSelected('taracot-warehouse-image-thumbnail-selected');
-                    for (var i = 0; i < ns.length; i++) {
-                        $('#' + _do.toString()).before($('#' + ns[i]));
-                    }
+                    var ns = $('.taracot-warehouse-image-thumbnail').getSelected('taracot-warehouse-image-thumbnail-selected');
+                    for (var i = 0; i < ns.length; i++) $('#' + _do.toString()).before($('#' + ns[i]));
                 };
             }
         }
@@ -691,6 +791,7 @@ var init_uploader = function() {
                 shifty_unselect_handler();
             }
         });
+        $('#btn_images_upload').attr('disabled', false);
     });
 };
 
@@ -703,8 +804,8 @@ var shifty_unselect_handler = function() {
 };
 
 var shifty_handler = function() {
-	shifty_select_handler();
-	shifty_unselect_handler();
+    shifty_select_handler();
+    shifty_unselect_handler();
 };
 
 var taracot_ajax_progress_indicator = function(sel, show) {
