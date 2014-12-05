@@ -45,10 +45,33 @@ th.taracot_table_sortable {
 .taracot-warehouse-image-thumbnail {
 	margin: 3px;
 	cursor: pointer;
+	width: 70px;
+	height:70px;
 }
 .taracot-warehouse-image-thumbnail-selected {
 	background-color: #ffc54e;
 }
 .uk-panel, .uk-panel-box {
 	position: static;
+}
+.taracot-warehouseconf-panel {
+    border-top: 0;
+    background-color: #fff;
+    padding: 8px;
+}
+.taracot-warehouse-items-panel, .taracot-warehouse-colls-panel {
+    height: 300px;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+.taracot-dlg-item, .taracot-dlg-coll {
+    cursor: pointer;
+    padding: 3px;
+    padding-left: 6px;
+}
+.taracot-dlg-item:hover, .taracot-dlg-coll:hover {
+    background-color: #dedede;
+}
+.taracot-btn-chars-del, .taracot-btn-chars-sort {
+	margin-top: 1px;
 }

@@ -97,5 +97,13 @@
 	"not_images": "Unable to process uploaded files (not images?) or images uploading is disabled by server configuration",
 	"upload_failed": "Upload failed",
 	"invalid_amount": "Invalid amount",
-	"invalid_price": "Invalid price"
+	"invalid_price": "Invalid price",
+	"chars": "Properties",
+	"char_id": "Parameter",
+	"char_value": "Value",
+	"select_item": "Select item",
+	"upload_image": "Upload image",
+	"new_property": "Add property",
+	"new_collection": "Add collection",
+	"select_coll": "Select collection"
 }

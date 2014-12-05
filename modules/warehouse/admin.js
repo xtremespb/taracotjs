@@ -38,28 +38,52 @@ module.exports = function(app) {
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-
-        app.get('mongodb').collection('warehouse_categories').find({
-            oname: 'categories_json'
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            var categories;
-            if (!items || !items.length || !items[0].ovalue) {
-                categories = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
-            } else {
-                categories = items[0].ovalue;
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'items'
+            }, {
+                conf: 'collections'
+            }]
+        }).toArray(function(err, db) {
+            var whitems = [],
+                whcollections = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'items' && db[i].data)
+                        try {
+                            whitems = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'collections' && db[i].data)
+                        try {
+                            whcollections = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
             }
-            var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouse_control', {
-                lang: i18nm,
-                categories: categories,
-                auth: req.session.auth,
-                locales: JSON.stringify(app.get('config').locales)
-            }, req);
-            app.get('cp').render(req, res, {
-                body: body,
-                css: '<link rel="stylesheet" href="/modules/warehouse/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
-            }, i18nm, 'warehouse', req.session.auth);
+            app.get('mongodb').collection('warehouse_categories').find({
+                oname: 'categories_json'
+            }, {
+                limit: 1
+            }).toArray(function(err, items) {
+                var categories;
+                if (!items || !items.length || !items[0].ovalue) {
+                    categories = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
+                } else {
+                    categories = items[0].ovalue;
+                }
+                var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouse_control', {
+                    lang: i18nm,
+                    categories: categories,
+                    whitems: JSON.stringify(whitems),
+                    whcollections: JSON.stringify(whcollections),
+                    auth: req.session.auth,
+                    current_locale: req.session.current_locale,
+                    locales: JSON.stringify(app.get('config').locales)
+                }, req);
+                app.get('cp').render(req, res, {
+                    body: body,
+                    css: '<link rel="stylesheet" href="/modules/warehouse/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
+                }, i18nm, 'warehouse', req.session.auth);
+            });
         });
     });
 
@@ -350,6 +374,7 @@ module.exports = function(app) {
             pcontent = req.body.pcontent,
             id = req.body.pid,
             pimages = req.body.pimages,
+            pchars = req.body.pchars,
             pamount = req.body.pamount,
             pprice = req.body.pprice,
             current_timestamp = req.body.current_timestamp;
@@ -368,6 +393,18 @@ module.exports = function(app) {
             }
         } else {
             pimages = [];
+        }
+        if (pchars) {
+            for (var pc = 0; pc < pchars.length; pc++) {
+                if (!pchars[pc].id || !pchars[pc].id.match(/^[a-z0-9]{1,50}$/i)) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query");
+                    return res.send(JSON.stringify(rep));
+                }
+                if (pchars[pc].val) pchars[pc].val = pchars[pc].val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+            }
+        } else {
+            pchars = [];
         }
         if (typeof id != 'undefined' && id) {
             if (!id.match(/^[a-f0-9]{24}$/)) {
@@ -466,6 +503,7 @@ module.exports = function(app) {
                                         pkeywords: pkeywords,
                                         pdesc: pdesc,
                                         pimages: pimages,
+                                        pchars: pchars,
                                         pcontent: pcontent,
                                         pamount: pamount,
                                         pprice: pprice,
@@ -700,11 +738,11 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
                 if (size.width >= size.height) {
-                    img.resize(null, 70);
-                    img.crop(70, 70, 0, 0);
+                    img.resize(null, 300);
+                    img.crop(300, 300, 0, 0);
                 } else {
-                    img.resize(70, null);
-                    img.crop(70, 70, 0, 0);
+                    img.resize(300, null);
+                    img.crop(300, 300, 0, 0);
                 }
                 img.write(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg', function(err) {
                     if (err) {

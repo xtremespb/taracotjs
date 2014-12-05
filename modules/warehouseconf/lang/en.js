@@ -1,0 +1,21 @@
+{
+	"module_name_cp": "Warehouse Configuration",
+	"module_descitems": "Description items",
+	"warehouseconf_descitems_hint": "You can add warehouse description items here. Item ID should contain latin characters and numbers only, no special characters or spaces, and should be unique for the entrie list.",
+	"btn_descitem_add": "Add item",
+	"descitem_id": "Item ID",
+	"save_all_changes": "Save all changes",
+	"ajax_failed": "Server request failed",
+	"save_success": "Save successful",
+	"confirm_delete_descitem": "Are you sure you wish to delete this item?",
+	"module_collections": "Collections",
+	"warehouseconf_collections_hint": "Create collections of warehouse items here.",
+	"btn_collection_add": "New collection",
+	"collection_id": "Collection name",
+	"select_item": "Select item",
+	"cancel": "Cancel",
+	"module_currencies": "Currencies",
+	"warehouseconf_currencies_hint": "Add currencies in the table below. Item ID should contain latin characters and numbers only, no special characters or spaces, and should be unique for the entrie list.",
+	"btn_currency_add": "Add currency",
+	"currency_id": "Currency ID"
+}

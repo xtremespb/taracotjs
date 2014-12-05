@@ -1,4 +1,24 @@
 <h1>!{root.lang.__('module_name')}</h1>
+<div id="warehouse_item_dlg" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1>!{root.lang.__('select_item')}</h1>
+        <div class="uk-panel taracot-warehouse-items-panel">
+            <ul class="uk-list uk-list-line" id="warehouse_items"></ul>
+        </div>
+        <button class="uk-button uk-modal-close uk-margin-top uk-button-danger">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
+<div id="warehouse_coll_dlg" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1>!{root.lang.__('select_coll')}</h1>
+        <div class="uk-panel taracot-warehouse-colls-panel">
+            <ul class="uk-list uk-list-line" id="warehouse_colls"></ul>
+        </div>
+        <button class="uk-button uk-modal-close uk-margin-top uk-button-danger">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
 <div id="taracot_warehouse_list" class="uk-width-1-1">
     <div class="uk-float-left uk-margin-bottom">
         <button class="uk-button uk-button-success uk-float-left" id="btn-add-item"><i class="uk-icon-plus"></i>
@@ -28,7 +48,7 @@
             <tr>
                 <th class="taracot_table_sortable" rel="taracot_table_sortable_pcategory" style="width:30%">!{root.lang.__('category_and_filename')}
                     <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i>
-					</span>
+                    </span>
                 </th>
                 <th class="taracot_table_sortable" rel="taracot_table_sortable_ptitle" style="width:60%">!{root.lang.__('ptitle')}</th>
                 <th style="width:102px;text-align:center" class="taracot_table_sortable" rel="taracot_table_sortable_lang">!{root.lang.__('lang')}</th>
@@ -108,7 +128,7 @@
             <label class="uk-form-label">!{root.lang.__('images')}</label>
             <div class="uk-form-controls">
                 <div>
-                    <button class="uk-button uk-button-small" id="btn_images_upload"><i class="uk-icon uk-icon-plus"></i>
+                    <button class="uk-button uk-button-small" id="btn_images_upload"><i class="uk-icon uk-icon-plus"></i>&nbsp;!{root.lang.__('upload_image')}
                     </button>&nbsp;
                     <button class="uk-button uk-button-small uk-button-danger" id="btn_images_delete"><i class="uk-icon uk-icon-trash-o"></i>
                     </button>&nbsp;
@@ -122,6 +142,18 @@
             <label class="uk-form-label"></label>
             <div class="uk-form-controls">
                 <div id="files_grid" class="uk-panel uk-panel-box"></div>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label">!{root.lang.__('chars')}</label>
+            <div class="uk-form-controls">
+                <div>
+                    <button class="uk-button uk-button-small" id="btn_add_chars"><i class="uk-icon uk-icon-plus"></i>&nbsp;!{root.lang.__('new_property')}
+                    </button>&nbsp;
+                    <button class="uk-button uk-button-small" id="btn_add_coll"><i class="uk-icon uk-icon-plus"></i>&nbsp;!{root.lang.__('new_collection')}
+                    </button>
+                    <div id="warehouse_chars" class="uk-margin-top"></div>
+                </div>
             </div>
         </div>
         <h3 class="taracot-h3-underilne uk-margin-bottom">!{root.lang.__('keywords_and_description')}</h3>
@@ -279,9 +311,16 @@ var _lang_vars = {
 var locales = !{
     root.locales
 };
+var current_lng = "!{root.current_locale}";
 var current_username = "!{root.auth.username}";
 var categories_preload = !{
     root.categories
+};
+var whitems = !{
+    root.whitems
+};
+var whcollections = !{
+    root.whcollections
 };
 for (var i = 0; i < locales.length; i++) {
     $('#olang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
@@ -301,4 +340,5 @@ for (var i = 0; i < locales.length; i++) {
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/modules/warehouse/js/tree.js"></script>
+<script src="/js/uikit/addons/sortable.min.js"></script>
 <script src="/modules/warehouse/js/main.js"></script>

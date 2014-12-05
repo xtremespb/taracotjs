@@ -3,6 +3,8 @@ var current_id = '',
     current_timestamp_new = 0,
     categories_edit_dlg = $.UIkit.modal("#taracot_warehouse_categories_edit_dlg"),
     categories_select_dlg = $.UIkit.modal("#taracot_warehouse_categories_select_dlg"),
+    warehouse_item_dlg = $.UIkit.modal("#warehouse_item_dlg"),
+    warehouse_coll_dlg = $.UIkit.modal("#warehouse_coll_dlg"),
     outdated_dlg = $.UIkit.modal("#taracot_outdated_dlg"),
     autosave_dlg = $.UIkit.modal("#taracot_autosave_dlg"),
     lock_dlg = $.UIkit.modal("#taracot_lock_dlg"),
@@ -117,6 +119,13 @@ var auto_save_data = function() {
     $('#files_grid').children().each(function() {
         pimages.push($(this).attr('id').replace(/^_twi_/, ''));
     });
+    var pchars = [];
+    $('.taracot-chars-item').each(function() {
+        pchars.push({
+            id: $(this).attr('rel'),
+            val: $(this).val()
+        });
+    });
     var data = {
         pid: current_id,
         ptitle: ptitle,
@@ -130,6 +139,7 @@ var auto_save_data = function() {
         pamount: pamount,
         pprice: pprice,
         pimages: pimages,
+        pchars: pchars,
         current_timestamp: current_timestamp,
         pcontent: $('#pcontent').val()
     };
@@ -180,6 +190,7 @@ var btn_add_item_handler = function() {
     $('#images_upload_progress_bar').html('');
     $('#images_upload_progress').hide();
     $('#files_grid').empty();
+    $('#warehouse_chars').empty();
     $('#taracot_warehouse_edit_action').html(_lang_vars.action_add);
     $('#taracot_warehouse_list').addClass('uk-hidden');
     $('#taracot_warehouse_edit').removeClass('uk-hidden');
@@ -229,7 +240,8 @@ var edit_item_show = function(data) {
     $('#images_upload_progress_bar').css('width', '0');
     $('#images_upload_progress_bar').empty();
     $('#images_upload_progress').hide();
-    $('#files_grid').html('');
+    $('#files_grid').empty();
+    $('#warehouse_chars').empty();
     $('#taracot_warehouse_list').addClass('uk-hidden');
     $('#taracot_warehouse_edit').removeClass('uk-hidden');
     $('#taracot_warehouse_edit').show();
@@ -271,6 +283,19 @@ var edit_item_show = function(data) {
                 shifty_unselect_handler();
             }
         });
+    }
+    if (data.pchars) {
+        var items_lng = {};
+        for (var w = 0; w < whitems.length; w++) items_lng[whitems[w].id] = whitems[w][current_lng];
+        for (var pc = 0; pc < data.pchars.length; pc++) {
+            var item = '<div><table style="width:100%"><tr><td style="width:120px">' + (items_lng[data.pchars[pc].id] || data.pchars[pc].id) + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + data.pchars[pc].id + '" value="' + data.pchars[pc].val + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
+            $('#warehouse_chars').append(item);
+        }
+        $.UIkit.sortable($('#warehouse_chars'), {
+            handleClass: 'taracot-btn-chars-sort'
+        });
+        $('.taracot-btn-chars-del').unbind();
+        $('.taracot-btn-chars-del').click(taracot_btn_chars_del_handler);
     }
     $('#pcategory').change();
     if (data.last_modified) current_timestamp = data.last_modified;
@@ -478,6 +503,13 @@ $('#btn_edit_save').click(function() {
     $('#files_grid').children().each(function() {
         pimages.push($(this).attr('id').replace(/^_twi_/, ''));
     });
+    var pchars = [];
+    $('.taracot-chars-item').each(function() {
+        pchars.push({
+            id: $(this).attr('rel'),
+            val: $(this).val()
+        });
+    });
     taracot_ajax_progress_indicator('body', true);
     // Save data
     $.ajax({
@@ -497,6 +529,7 @@ $('#btn_edit_save').click(function() {
             pamount: pamount,
             pprice: pprice,
             pimages: pimages,
+            pchars: pchars,
             current_timestamp: current_timestamp,
             pcontent: $('#pcontent').val()
         },
@@ -590,7 +623,7 @@ $('#btn_images_delete').click(function() {
         dataType: "json",
         success: function(data) {
             if (data && data.status == '1') {
-            	for (var i = 0; i<ns.length; i++) $('#' + ns[i]).remove();
+                for (var i = 0; i < ns.length; i++) $('#' + ns[i]).remove();
             } else {
                 if (data.error) {
                     $.UIkit.notify({
@@ -611,11 +644,80 @@ $('#btn_images_delete').click(function() {
             });
         },
         complete: function() {
-        	$('#btn_images_delete').attr('disabled', false);
+            $('#btn_images_delete').attr('disabled', false);
         }
     });
 });
 
+$('#btn_add_chars').click(function() {
+    var descitems = whitems,
+        select_html = '';
+
+    var descitems_arr = [];
+    for (var key in descitems) descitems_arr.push([descitems[key].id, descitems[key][current_lng]]);
+    descitems_arr.sort(function(a, b) {
+        a = a[1];
+        b = b[1];
+        return a < b ? -1 : (a > b ? 1 : 0);
+    });
+    for (var i = 0; i < descitems_arr.length; i++) {
+        var k = descitems_arr[i][0],
+            v = descitems_arr[i][1];
+        var label = v || k;
+        select_html += '<div class="taracot-dlg-item" id="_di_' + k + '">' + label + '</div>';
+    }
+    $('#warehouse_items').html(select_html);
+    $('.taracot-dlg-item').unbind();
+    $('.taracot-dlg-item').click(taracot_dlg_item_click_hanlder);
+    warehouse_item_dlg.show();
+});
+
+$('#btn_add_coll').click(function() {
+    var select_html = '';
+    var whcolls_arr = [];
+    for (var key in whcollections) whcolls_arr.push(whcollections[key].id);
+    whcolls_arr.sort();
+    for (var i = 0; i < whcolls_arr.length; i++) {
+        select_html += '<div class="taracot-dlg-coll" id="_dc_' + whcolls_arr[i] + '">' + whcolls_arr[i] + '</div>';
+    }
+    $('#warehouse_colls').html(select_html);
+    $('.taracot-dlg-coll').unbind();
+    $('.taracot-dlg-coll').click(taracot_dlg_coll_click_hanlder);
+    warehouse_coll_dlg.show();
+});
+
+var taracot_btn_chars_del_handler = function() {
+    $(this).parent().parent().remove();
+};
+
+var taracot_dlg_item_click_hanlder = function() {
+    warehouse_item_dlg.hide();
+    var item = '<div><table style="width:100%"><tr><td style="width:120px">' + $(this).html() + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + $(this).attr('id').replace(/^_di_/, '') + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
+    $('#warehouse_chars').append(item);
+    $.UIkit.sortable($('#warehouse_chars'), {
+        handleClass: 'taracot-btn-chars-sort'
+    });
+    $('.taracot-btn-chars-del').unbind();
+    $('.taracot-btn-chars-del').click(taracot_btn_chars_del_handler);
+};
+
+var taracot_dlg_coll_click_hanlder = function() {
+    warehouse_coll_dlg.hide();
+    var coll = $(this).attr('id').replace(/^_dc_/, ''),
+        items = [],
+        items_lng = {},
+        items_html = '';
+    for (var key in whcollections)
+        if (whcollections[key].id == coll) items = whcollections[key].items;
+    for (var i = 0; i < whitems.length; i++) items_lng[whitems[i].id] = whitems[i][current_lng];
+    for (var ci = 0; ci < items.length; ci++) items_html += '<div><table style="width:100%"><tr><td style="width:120px">' + (items_lng[items[ci]] || items[ci]) + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + items[ci] + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
+    $('#warehouse_chars').append(items_html);
+    $.UIkit.sortable($('#warehouse_chars'), {
+        handleClass: 'taracot-btn-chars-sort'
+    });
+    $('.taracot-btn-chars-del').unbind();
+    $('.taracot-btn-chars-del').click(taracot_btn_chars_del_handler);
+};
 
 /*******************************************************************
 
