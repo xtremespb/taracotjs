@@ -43,10 +43,13 @@ module.exports = function(app) {
                 conf: 'items'
             }, {
                 conf: 'collections'
+            }, {
+                conf: 'curs'
             }]
         }).toArray(function(err, db) {
             var whitems = [],
-                whcollections = [];
+                whcollections = [],
+                whcurs = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'items' && db[i].data)
@@ -56,6 +59,10 @@ module.exports = function(app) {
                     if (db[i].conf == 'collections' && db[i].data)
                         try {
                             whcollections = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
                         } catch (ex) {}
                 }
             }
@@ -75,6 +82,7 @@ module.exports = function(app) {
                     categories: categories,
                     whitems: JSON.stringify(whitems),
                     whcollections: JSON.stringify(whcollections),
+                    whcurs: JSON.stringify(whcurs),
                     auth: req.session.auth,
                     current_locale: req.session.current_locale,
                     locales: JSON.stringify(app.get('config').locales)
@@ -377,6 +385,7 @@ module.exports = function(app) {
             pchars = req.body.pchars,
             pamount = req.body.pamount,
             pprice = req.body.pprice,
+            pcurs = req.body.pcurs,
             current_timestamp = req.body.current_timestamp;
         if (pimages && !util.isArray(pimages)) {
             rep.status = 0;
@@ -449,6 +458,11 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
+        if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_price");
+            return res.send(JSON.stringify(rep));
+        }
         // Save
 
         app.get('mongodb').collection('menu').find({
@@ -507,6 +521,7 @@ module.exports = function(app) {
                                         pcontent: pcontent,
                                         pamount: pamount,
                                         pprice: pprice,
+                                        pcurs: pcurs,
                                         lock_username: '',
                                         lock_timestamp: 0,
                                         last_modified: Date.now()
@@ -624,6 +639,7 @@ module.exports = function(app) {
                         pimages: pimages,
                         pamount: pamount,
                         pprice: pprice,
+                        pcurs: pcurs,
                         pcontent: pcontent,
                         last_modified: Date.now()
                     }, function(_err, _items) {

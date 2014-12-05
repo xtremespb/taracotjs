@@ -120,7 +120,8 @@
                 <span class="taracot-field-req">*</span>
             </label>
             <div class="uk-form-controls">
-                <input type="text" id="pprice" class="uk-form-width-small taracot-page-edit-form-control">
+                <input type="text" id="pprice" class="uk-form-width-small taracot-page-edit-form-control">&nbsp;
+                <select id="pcurs" class="uk-form-width-small taracot-page-edit-form-control"></select>
                 <p class="uk-form-help-block">!{root.lang.__('pprice_hint')}</p>
             </div>
         </div>
@@ -322,11 +323,15 @@ var whitems = !{
 var whcollections = !{
     root.whcollections
 };
+var whcurs = !{
+    root.whcurs
+};
 for (var i = 0; i < locales.length; i++) {
     $('#olang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
     $('#plang').append('<option value="' + locales[i] + '">' + locales[i] + '</option>');
     $('#taracot_categories_edit_form').append('<div class="uk-form-row"><div class="uk-form-controls"><label class="uk-form-label" for="flang_' + locales[i] + '">!{root.lang.__("ftitle")} (' + locales[i] + ')</label><input type="text" id="flang_' + locales[i] + '" class="uk-form-width-large taracot-categories-edit-control"></div></div>');
 }
+for (var c = 0; c < whcurs.length; c++) $('#pcurs').append('<option value="' + whcurs[c].id + '">' + (whcurs[c][current_lng] || whcurs[c].id) + '</option>')
 </script>
 <script src="/js/ckeditor/ckeditor.js"></script>
 <script src="/js/ckeditor/adapters/jquery.js"></script>

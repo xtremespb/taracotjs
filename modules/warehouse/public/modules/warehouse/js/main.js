@@ -115,6 +115,7 @@ var auto_save_data = function() {
     var pdesc = $.trim($('#pdesc').val());
     var pimages = [];
     var pamount = $.trim($('#pamount').val());
+    var pcurs = $('#pcurs').val();
     var pprice = $.trim($('#pamount').val());
     $('#files_grid').children().each(function() {
         pimages.push($(this).attr('id').replace(/^_twi_/, ''));
@@ -203,6 +204,7 @@ var btn_add_item_handler = function() {
     $('#pcategory').val('/');
     $('#plangcopy_row').removeClass('uk-hidden');
     $('#plangcopy').attr('checked', false);
+    if (whcurs.length) $('#pcurs').val(whcurs[0].id);
     taracot_ajax_progress_indicator('body', true);
     if (!ckeditor) init_ckeditor();
     auto_save_timer = setTimeout(auto_save_data, 5000);
@@ -253,6 +255,7 @@ var edit_item_show = function(data) {
         $('#pcategory').val(data.pcategory);
         current_category = data.pcategory;
     }
+    if (data.pcurs) $('#pcurs').val(data.pcurs);
     if (data.pcategory_id) $('#pcategory_id').val(data.pcategory_id);
     if (data.plang) $('#plang').val(data.plang);
     if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
@@ -455,6 +458,7 @@ $('#btn_edit_save').click(function() {
     var pcategory = $.trim($('#pcategory').val());
     var pcategory_id = $('#pcategory_id').val();
     var pamount = $('#pamount').val();
+    var pcurs = $('#pcurs').val();
     var pprice = $('#pprice').val();
     if (!pcategory_id) {
         pcategory_id = jstree_get_root_id();
@@ -488,6 +492,11 @@ $('#btn_edit_save').click(function() {
         $('#pprice').addClass('uk-form-danger');
         form_errors = true;
         if (!error_focus) error_focus = '#pprice';
+    }
+    if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
+        $('#pcurs').addClass('uk-form-danger');
+        form_errors = true;
+        if (!error_focus) error_focus = '#pcurs';
     }
     if (form_errors) {
         $.UIkit.notify({
@@ -530,6 +539,7 @@ $('#btn_edit_save').click(function() {
             pprice: pprice,
             pimages: pimages,
             pchars: pchars,
+            pcurs: pcurs,
             current_timestamp: current_timestamp,
             pcontent: $('#pcontent').val()
         },
