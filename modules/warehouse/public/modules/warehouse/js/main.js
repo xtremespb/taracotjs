@@ -116,7 +116,8 @@ var auto_save_data = function() {
     var pimages = [];
     var pamount = $.trim($('#pamount').val());
     var pcurs = $('#pcurs').val();
-    var pprice = $.trim($('#pamount').val());
+    var pprice = $.trim($('#pprice').val());
+    var pweight = $.trim($('#pweight').val());
     $('#files_grid').children().each(function() {
         pimages.push($(this).attr('id').replace(/^_twi_/, ''));
     });
@@ -139,6 +140,7 @@ var auto_save_data = function() {
         pdesc: pdesc,
         pamount: pamount,
         pprice: pprice,
+        pweight: pweight,
         pimages: pimages,
         pchars: pchars,
         current_timestamp: current_timestamp,
@@ -261,6 +263,7 @@ var edit_item_show = function(data) {
     if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
     if (data.pamount) $('#pamount').val(data.pamount);
     if (data.pprice) $('#pprice').val(data.pprice);
+    if (data.pweight) $('#pweight').val(data.pweight);
     if (data.pdesc) $('#pdesc').val(data.pdesc);
     if (data.pcontent) {
         $('#pcontent').val(data.pcontent);
@@ -460,6 +463,7 @@ $('#btn_edit_save').click(function() {
     var pamount = $('#pamount').val();
     var pcurs = $('#pcurs').val();
     var pprice = $('#pprice').val();
+    var pweight = $('#pweight').val();
     if (!pcategory_id) {
         pcategory_id = jstree_get_root_id();
     }
@@ -492,6 +496,11 @@ $('#btn_edit_save').click(function() {
         $('#pprice').addClass('uk-form-danger');
         form_errors = true;
         if (!error_focus) error_focus = '#pprice';
+    }
+    if (!pweight || parseFloat(pweight) != pweight || pweight < 0) {
+        $('#pweight').addClass('uk-form-danger');
+        form_errors = true;
+        if (!error_focus) error_focus = '#pweight';
     }
     if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
         $('#pcurs').addClass('uk-form-danger');
@@ -537,6 +546,7 @@ $('#btn_edit_save').click(function() {
             pdesc: pdesc,
             pamount: pamount,
             pprice: pprice,
+            pweight: pweight,
             pimages: pimages,
             pchars: pchars,
             pcurs: pcurs,

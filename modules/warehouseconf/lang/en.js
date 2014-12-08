@@ -15,7 +15,15 @@
 	"select_item": "Select item",
 	"cancel": "Cancel",
 	"module_currencies": "Currencies",
-	"warehouseconf_currencies_hint": "Add currencies in the table below. Item ID should contain latin characters and numbers only, no special characters or spaces, and should be unique for the entrie list.",
+	"warehouseconf_currencies_hint": "Add currencies in the table below. Item ID should contain latin characters and numbers only, no special characters or spaces, and should be unique for the entrie list. The first currency is the base for the exchange rate and is the primary currency for the whole warehouse.",
 	"btn_currency_add": "Add currency",
-	"currency_id": "Currency ID"
+	"currency_id": "Currency ID",
+	"exchange_rate": "Ex. rate",
+	"warehouseconf_shipment_hint": "Define your shipment methods here. Method ID should contain latin characters and numbers only. Weight is the weight the price is applicable to. Amount is the maximum amount the price is applicable to. Set zero for unlimited weight and/or amount. Price is defined in primary price units (first line on currencies tab).",
+	"btn_shipment_add": "Add shipment method",
+	"shipment_id": "Method ID",
+	"weight": "Weight",
+	"amnt": "Amount",
+	"module_shipment": "Shipment",
+	"price": "Price"
 }

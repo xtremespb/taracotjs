@@ -26,11 +26,14 @@ module.exports = function(app) {
                 conf: 'collections'
             }, {
                 conf: 'curs'
+            }, {
+                conf: 'ship'
             }]
         }).toArray(function(err, db) {
             var items = [],
                 collections = [],
-                curs = [];
+                curs = [],
+                ship = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'items' && db[i].data)
@@ -45,6 +48,10 @@ module.exports = function(app) {
                         try {
                             curs = JSON.parse(db[i].data);
                         } catch (ex) {}
+                    if (db[i].conf == 'ship' && db[i].data)
+                        try {
+                            ship = JSON.parse(db[i].data);
+                        } catch (ex) {}
                 }
             }
             var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouseconf_cp', {
@@ -54,6 +61,7 @@ module.exports = function(app) {
                 items: JSON.stringify(items),
                 collections: JSON.stringify(collections),
                 curs: JSON.stringify(curs),
+                ship: JSON.stringify(ship),
                 current_locale: req.session.current_locale,
                 locales: JSON.stringify(app.get('config').locales)
             }, req);
@@ -79,7 +87,9 @@ module.exports = function(app) {
             descitems_update = [],
             collections = req.body.collections,
             curs = req.body.curs,
-            curs_update = [];
+            curs_update = [],
+            ship = req.body.ship,
+            ship_update = [];
         if (descitems && util.isArray(descitems)) {
             for (var i = 0; i < descitems.length; i++) {
                 var ui = {};
@@ -101,6 +111,9 @@ module.exports = function(app) {
                 var uc = {};
                 if (curs[j].id && curs[j].id.match(/^[a-z0-9]{1,50}$/i)) {
                     uc.id = curs[j].id;
+                    uc.exr = curs[j].exr;
+                    if (uc.exr) uc.exr = parseFloat(uc.exr);
+                    if (isNaN(uc.exr)) uc.exr = '';
                     for (l = 0; l < app.get('config').locales.length; l++) {
                         var lc = curs[j][app.get('config').locales[l]];
                         if (lc) {
@@ -109,6 +122,31 @@ module.exports = function(app) {
                         }
                     }
                     curs_update.push(uc);
+                }
+            }
+        }
+        if (ship && util.isArray(ship)) {
+            for (var s = 0; s < ship.length; s++) {
+                var us = {};
+                if (ship[s].id && ship[s].id.match(/^[a-z0-9]{1,50}$/i)) {
+                    us.id = ship[s].id;
+                    us.weight = ship[s].weight;
+                    if (us.weight) us.weight = parseFloat(us.weight);
+                    if (isNaN(us.weight)) us.weight = '';
+                    us.amnt = ship[s].amnt;
+                    if (us.amnt) us.amnt = parseInt(us.amnt);
+                    if (isNaN(us.amnt)) us.amnt = '';
+                    us.price = ship[s].price;
+                    if (us.price) us.price = parseFloat(us.price);
+                    if (isNaN(us.price)) us.price = '';
+                    for (l = 0; l < app.get('config').locales.length; l++) {
+                        var ls = ship[s][app.get('config').locales[l]];
+                        if (ls) {
+                            ls = ls.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                            us[app.get('config').locales[l]] = ls;
+                        }
+                    }
+                    ship_update.push(us);
                 }
             }
         }
@@ -128,6 +166,9 @@ module.exports = function(app) {
             }, {
                 conf: 'curs',
                 data: JSON.stringify(curs)
+            }, {
+                conf: 'ship',
+                data: JSON.stringify(ship)
             }], function(err) {
                 if (err) {
                     rep.status = 0;

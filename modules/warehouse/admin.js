@@ -385,6 +385,7 @@ module.exports = function(app) {
             pchars = req.body.pchars,
             pamount = req.body.pamount,
             pprice = req.body.pprice,
+            pweight = req.body.pweight,
             pcurs = req.body.pcurs,
             current_timestamp = req.body.current_timestamp;
         if (pimages && !util.isArray(pimages)) {
@@ -458,6 +459,11 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
+        if (!pweight || parseFloat(pweight) != pweight || pweight < 0) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_weight");
+            return res.send(JSON.stringify(rep));
+        }
         if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_price");
@@ -521,6 +527,7 @@ module.exports = function(app) {
                                         pcontent: pcontent,
                                         pamount: pamount,
                                         pprice: pprice,
+                                        pweight: pweight,
                                         pcurs: pcurs,
                                         lock_username: '',
                                         lock_timestamp: 0,
@@ -639,6 +646,7 @@ module.exports = function(app) {
                         pimages: pimages,
                         pamount: pamount,
                         pprice: pprice,
+                        pweight: pweight,
                         pcurs: pcurs,
                         pcontent: pcontent,
                         last_modified: Date.now()

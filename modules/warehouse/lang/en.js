@@ -24,7 +24,7 @@
 	"action_add": "Create new item",
 	"ptitle": "Item title",
 	"taracot_warehouse_edit_hint": "All fileds marked with a red asterisk are required.",
-	"filename": "Item ID",
+	"filename": "Stock number",
 	"category": "Category",
 	"main_info": "Main info",
 	"keywords_and_description": "Metadata",
@@ -105,5 +105,7 @@
 	"upload_image": "Upload image",
 	"new_property": "Add property",
 	"new_collection": "Add collection",
-	"select_coll": "Select collection"
+	"select_coll": "Select collection",
+	"weight": "Weight",
+	"pweight_hint": "Define item weight, zero means not important"
 }

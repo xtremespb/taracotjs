@@ -33,7 +33,10 @@
 .uk-sortable-dragged > span > a {
     display: none;
 }
-.uk-sortable-dragged {
+.uk-sortable-dragged > td > button {
+    display: none;
+}
+.sortable-dragged-coll {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
