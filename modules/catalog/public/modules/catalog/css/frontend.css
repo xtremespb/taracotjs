@@ -1,0 +1,167 @@
+.taracot-catalog-badge {
+    font-size: 85%;
+}
+.uk-pagination {
+    text-align: left;
+}
+.taracot-catalog-post-title {
+    font-size: 32px;
+}
+.taracot-catalog-post-title > a {
+    text-decoration: none;
+    color: #444;
+    outline: 0;
+}
+.taracot-catalog-post-badges {
+    margin-top: 5px;
+    margin-bottom: 25px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    padding: 3px 3px 3px 6px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.taracot-catalog-post-keywords {
+    color: #444;
+    font-size: 90%;
+}
+.taracot-catalog-post-area {
+    margin-top: 6px;
+    margin-bottom: 15px;
+    font-size: 90%;
+}
+.taracot-catalog-post-content {
+    margin-bottom: 10px;
+}
+/* BBCode */
+
+.taracot-bbcode-b {
+    font-weight: bold;
+}
+.taracot-bbcode-blockquote {} .taracot-bbcode-code {
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+.taracot-bbcode-i {
+    font-style: italic;
+}
+.taracot-bbcode-s {
+    text-decoration: line-through;
+}
+.taracot-bbcode-size-50 {
+    font-size: 50%;
+}
+.taracot-bbcode-size-85 {
+    font-size: 85%;
+}
+.taracot-bbcode-size-100 {
+    font-size: 100%;
+}
+.taracot-bbcode-size-150 {
+    font-size: 150%;
+}
+.taracot-bbcode-size-200 {
+    font-size: 200%;
+}
+.taracot-bbcode-u {
+    text-decoration: underline;
+}
+.taracot-bbcode-table {
+    border-collapse: collapse;
+}
+.taracot-bbcode-tr {} .taracot-bbcode-table, .taracot-bbcode-th, .taracot-bbcode-td {
+    border: 1px solid #666;
+}
+.taracot-bbcode-left {
+    text-align: left;
+}
+.taracot-bbcode-right {
+    text-align: right;
+}
+.taracot-bbcode-center {
+    text-align: center;
+}
+.uk-breadcrumb > li > a {
+    font-size: 85%;
+    text-decoration: underline;
+}
+.taracot-moderation-notice-alert {
+    display: inline-block;
+    float: right;
+}
+.taracot-moderation-notice-alert > a, .taracot-moderation-notice-alert > a:hover, .taracot-moderation-notice-alert > a:focus, .taracot-moderation-notice-alert > a:active {
+    color: #fff;
+    text-decoration: none;
+}
+#taracot_comment_form {
+	margin-bottom: 20px;
+}
+#btn_post_comment, #btn_post_comment_loading {
+	margin-top:3px;
+}
+.taracot-post-comment-loading {
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+}
+.taracot-post-comment-error {
+	display: inline-block;
+	color: red;
+	font-size: 90%;
+	padding-left: 15px;
+}
+.taracot-comment-reply-link {
+	color: #2A5DB0;
+	text-decoration: underline;
+	font-size: 80%;
+	cursor: pointer;
+}
+.taracot-comment-new-link {
+	color: #2A5DB0;
+	text-decoration: underline;
+	cursor: pointer;
+	margin-bottom: 20px;
+}
+.taracot-comment-avatar {
+	width:35px;
+	display: inline-block;
+	position: relative;
+	float: left;
+}
+.taracot-comment-avatar-image {
+	width: 35px;
+	height: 35px;
+}
+.taracot-comment-body {
+	margin-left:45px;
+	position: relative;
+}
+.taracot-comment {
+	margin-top: 10px;
+}
+.taracot-comment-username {
+	font-weight: bold;
+}
+.taracot-comment-meta {
+	font-size: 80%;
+	color: #666;
+}
+.taracot-comment-delete {
+	font-weight: normal;
+	font-size: 80%;
+	color: #2A5DB0;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.taracot-comment-deleted {
+	font-size: 85%;
+	color: #666;
+}
+.taracot-catalog-post-badges > span > a {
+	color: #444;
+	text-decoration: none;
+}
+.taracot-catalog-post-badges > span > a:hover {
+	text-decoration: underline;
+}

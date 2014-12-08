@@ -104,6 +104,10 @@ var load_modules = {
 		cp_id: 'warehouseconf',
 		cp_prefix: '/cp/warehouseconf/'
 	}, {
+		name: 'catalog',
+		prefix: '/catalog/',
+		cp_prefix: ''
+	}, {
 		name: 'pages',
 		prefix: '',
 		cp_id: 'pages',
