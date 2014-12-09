@@ -100,6 +100,7 @@ var show_warehouse = function() {
 
 var auto_save_data = function() {
     var ptitle = $.trim($('#ptitle').val());
+    var pshortdesc = $.trim($('#pshortdesc').val());
     var pfilename = $.trim($('#pfilename').val());
     var pcategory = $.trim($('#pcategory').val());
     var pcategory_id = $('#pcategory_id').val();
@@ -131,6 +132,7 @@ var auto_save_data = function() {
     var data = {
         pid: current_id,
         ptitle: ptitle,
+        pshortdesc: pshortdesc,
         pfilename: pfilename,
         pcategory: pcategory,
         pcategory_id: pcategory_id,
@@ -252,6 +254,7 @@ var edit_item_show = function(data) {
     if (data.root_warehouse) root_warehouse = data.root_warehouse;
     if (data.data) data = data.data;
     if (data.ptitle) $('#ptitle').val(data.ptitle);
+    if (data.pshortdesc) $('#pshortdesc').val(data.pshortdesc);
     if (data.pfilename) $('#pfilename').val(data.pfilename);
     if (data.pcategory) {
         $('#pcategory').val(data.pcategory);
@@ -457,6 +460,7 @@ $('#btn_edit_save').click(function() {
     });
     // Get form values
     var ptitle = $.trim($('#ptitle').val());
+    var pshortdesc = $.trim($('#pshortdesc').val());
     var pfilename = $.trim($('#pfilename').val());
     var pcategory = $.trim($('#pcategory').val());
     var pcategory_id = $('#pcategory_id').val();
@@ -481,6 +485,11 @@ $('#btn_edit_save').click(function() {
         $('#ptitle').addClass('uk-form-danger');
         form_errors = true;
         if (!error_focus) error_focus = '#ptitle';
+    }
+    if (pshortdesc && pshortdesc.length > 1024) {
+        $('#pshortdesc').addClass('uk-form-danger');
+        form_errors = true;
+        if (!error_focus) error_focus = '#pshortdesc';
     }
     if (!pfilename.match(/^[A-Za-z0-9_\-\.]{1,80}$/)) {
         $('#pfilename').addClass('uk-form-danger');
@@ -537,6 +546,7 @@ $('#btn_edit_save').click(function() {
         data: {
             pid: current_id,
             ptitle: ptitle,
+            pshortdesc: pshortdesc,
             pfilename: pfilename,
             pcategory: pcategory,
             pcategory_id: pcategory_id,

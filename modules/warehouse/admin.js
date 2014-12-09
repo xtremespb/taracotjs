@@ -372,6 +372,7 @@ module.exports = function(app) {
             return;
         }
         var ptitle = req.body.ptitle,
+            pshortdesc = req.body.pshortdesc,
             pfilename = req.body.pfilename,
             pcategory = req.body.pcategory,
             pcategory_id = req.body.pcategory_id,
@@ -434,6 +435,12 @@ module.exports = function(app) {
         if (!ptitle || !ptitle.length || ptitle.length > 100) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_ptitle");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        if (pshortdesc && pshortdesc.length > 1024) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_pshortdesc");
             res.send(JSON.stringify(rep));
             return;
         }
@@ -516,6 +523,7 @@ module.exports = function(app) {
                                 if (items.length > 0) {
                                     var update = {
                                         ptitle: ptitle,
+                                        pshortdesc: pshortdesc,
                                         pfilename: pfilename,
                                         pcategory: pcategory,
                                         pcategory_id: pcategory_id,
@@ -637,6 +645,7 @@ module.exports = function(app) {
                     }
                     app.get('mongodb').collection('warehouse').insert({
                         ptitle: ptitle,
+                        pshortdesc: pshortdesc,
                         pfilename: pfilename,
                         pcategory: pcategory,
                         pcategory_id: pcategory_id,

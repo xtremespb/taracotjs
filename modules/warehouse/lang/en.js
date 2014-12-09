@@ -107,5 +107,7 @@
 	"new_collection": "Add collection",
 	"select_coll": "Select collection",
 	"weight": "Weight",
-	"pweight_hint": "Define item weight, zero means not important"
+	"pweight_hint": "Define item weight, zero means not important",
+	"pshortdesc": "Short description",
+	"pshortdesc_hint": "Define a short description, up to 1024 characters long, displayed in catalog list"
 }
