@@ -1,12 +1,21 @@
 !{root.current_cat_bread.html_uikit}
-<h1>!{root.current_cat_title}</h1>
+<h1 class="taracot-catalog-h1
+">!{root.current_cat_title}</h1>
 <div class="uk-grid uk-margin-top">
     <div class="uk-width-2-10">
         <div class="uk-panel uk-panel-box">
             <ul class="uk-nav uk-nav-side">
-
+                !{root.current_neighborhood_html}
             </ul>
         </div>
     </div>
-    <div class="uk-width-8-10"></div>
+    <div class="uk-width-8-10">
+        <div class="uk-margin-bottom">
+            <ul class="uk-subnav uk-subnav-pill">
+                !{root.filter_show}
+                !{root.filter_sort}
+            </ul>
+        </div>
+        !{root.catalog_items} !{root.pagination}
+    </div>
 </div>
