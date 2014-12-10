@@ -5,10 +5,8 @@ module.exports = function(app) {
         renderer = app.get('renderer'),
         path = app.get('path'),
         ObjectId = require('mongodb').ObjectID,
-        user_cache = {},
-        xbbcode = require('../../core/xbbcode.js'),
-        crypto = require('crypto'),
-        fs = require('fs');
+        fs = require('fs'),
+        parser = app.get('parser');
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
@@ -57,7 +55,8 @@ module.exports = function(app) {
             items_per_page = 2,
             sort = req.query.sort || 't',
             show_all = req.query.show_all || '1',
-            page_url = '';
+            page_url = '',
+            search_query = req.query.find;
         if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
         if (show_all && show_all != '1' && show_all != '0') show_all = '1';
         if (page && (page == "NaN" || page < 0)) page = 1;
@@ -74,6 +73,24 @@ module.exports = function(app) {
             pprice: -1
         };
         var skip = (page - 1) * items_per_page;
+        if (search_query) search_query = search_query.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (search_query) {
+            var query_words = parser.words(search_query).words.split(/ /);
+            if (query_words && query_words.length) {
+                query_words = parser.stem_all(query_words);
+                var query_arr = [];
+                for (var i = 0; i < query_words.length; i++) {
+                    query_arr.push({
+                        $or: [{
+                            ptitle: new RegExp(query_words[i])
+                        }, {
+                            pshortdesc: new RegExp(query_words[i])
+                        }]
+                    });
+                }
+                find_query.$and = query_arr;
+            }
+        }
         // Load warehouse settings
         app.get('mongodb').collection('warehouse_conf').find({
             conf: 'curs'
@@ -112,7 +129,7 @@ module.exports = function(app) {
                     _current_path = folders_find_path(warehouse_categories, current_cat_id).reverse(),
                     current_path = '';
                 for (var _cp = 0; _cp < _current_path.length; _cp++) current_path += '/' + _current_path[_cp].name;
-                page_url = '/catalog' + current_path + '?&sort=' + sort + '&show_all=' + show_all + '&page=';
+                page_url = _get_url(current_path, show_all, sort, '', search_query);
                 if (current_cat && current_cat != '#' && current_cat != 'j1_1') current_children = folders_find_children(warehouse_categories, current_cat_id);
                 for (var cn = 0; cn < current_neighborhood.length; cn++) {
                     var cn_path = folders_find_path(warehouse_categories, current_neighborhood[cn]).reverse(),
@@ -163,7 +180,6 @@ module.exports = function(app) {
                         pcategory_id: current_cat_id
                     });
                     find_query.$or = children_req;
-                    console.log(find_query);
                 }
                 app.get('mongodb').collection('warehouse').find(find_query).count(function(whc_err, _whcount) {
                     app.get('mongodb').collection('warehouse').find(find_query, {
@@ -179,11 +195,14 @@ module.exports = function(app) {
                                 var title = whitems[wi].ptitle,
                                     thumb = '/modules/catalog/images/placeholder_50.png',
                                     desc = whitems[wi].pshortdesc || '',
-                                    sku = whitems[wi].pfilename || '-',
+                                    sku = whitems[wi].pfilename || '0',
                                     price = whitems[wi].pprice,
                                     amount = parseInt(whitems[wi].pamount),
                                     currency = curs_hash[whitems[wi].pcurs],
                                     btn_buy = '';
+                                if (whitems[wi].pimages && whitems[wi].pimages.length)
+                                    if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg'))
+                                        thumb = app.get('config').dir.storage_url + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg';
                                 if (amount === 0) {
                                     btn_buy = pt_btn_mini_disabled(gaikan, {
                                         lang: i18nm
@@ -201,6 +220,7 @@ module.exports = function(app) {
                                     price: price,
                                     btn_buy: btn_buy,
                                     currency: currency,
+                                    item_url: '/catalog/sku/' + sku + '?page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + search_query,
                                     desc: desc
                                 }, undefined);
                             }
@@ -291,26 +311,26 @@ module.exports = function(app) {
                         var filter_show = '',
                             filter_sort = '';
                         if (show_all == '1') {
-                            filter_show += _get_html_li_a('uk-active', '/catalog' + current_path + '?&sort=' + sort + '&show_all=1&page=' + page, i18nm.__('all'));
-                            filter_show += _get_html_li_a('', '/catalog' + current_path + '?&sort=' + sort + '&show_all=0&page=' + page, i18nm.__('stock_only'));
+                            filter_show += _get_html_li_a('uk-active', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
+                            filter_show += _get_html_li_a('', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
                         } else {
-                            filter_show += _get_html_li_a('', '/catalog' + current_path + '?&sort=' + sort + '&show_all=0&page=' + page, i18nm.__('all'));
-                            filter_show += _get_html_li_a('uk-active', '/catalog' + current_path + '?&sort=' + sort + '&show_all=1&page=' + page, i18nm.__('stock_only'));
+                            filter_show += _get_html_li_a('', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
+                            filter_show += _get_html_li_a('uk-active', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
                         }
                         if (sort == 't') {
-                            filter_sort += _get_html_li_a('uk-active', '/catalog' + current_path + '?&sort=t&show_all=' + show_all + '&page=' + page, i18nm.__('title'));
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=u&show_all=' + show_all + '&page=' + page, i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=d&show_all=' + show_all + '&page=' + page, i18nm.__('price_down'));
+                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
                         }
                         if (sort == 'u') {
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=t&show_all=' + show_all + '&page=' + page, i18nm.__('title'));
-                            filter_sort += _get_html_li_a('uk-active', '/catalog' + current_path + '?&sort=u&show_all=' + show_all + '&page=' + page, i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=d&show_all=' + show_all + '&page=' + page, i18nm.__('price_down'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
                         }
                         if (sort == 'd') {
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=t&show_all=' + show_all + '&page=' + page, i18nm.__('title'));
-                            filter_sort += _get_html_li_a('', '/catalog' + current_path + '?&sort=u&show_all=' + show_all + '&page=' + page, i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('uk-active', '/catalog' + current_path + '?&sort=d&show_all=' + show_all + '&page=' + page, i18nm.__('price_down'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
                         }
                         out_html = catalog(gaikan, {
                             lang: i18nm,
@@ -322,7 +342,12 @@ module.exports = function(app) {
                                 pages: pgnt
                             }, undefined),
                             filter_show: filter_show,
-                            filter_sort: filter_sort
+                            filter_sort: filter_sort,
+                            init_sort: sort,
+                            init_view: show_all,
+                            init_path: current_path,
+                            init_page: page,
+                            init_find: search_query
                         });
                         var data = {
                             title: current_cat_title,
@@ -351,6 +376,14 @@ module.exports = function(app) {
             url: _url || '',
             text: _text || ''
         });
+    };
+
+    var _get_url = function(_path, _all, _sort, _page, _find) {
+        if (!_path) _path = '';
+        if (!_all) _all = '1';
+        if (!_sort) _sort = 't';
+        if (!_find) _find = '';
+        return '/catalog' + _path + '?find=' + _find + '&sort=' + _sort + '&show_all=' + _all + '&page=' + _page;
     };
 
     var folders_make_hash = function(fldrs) {

@@ -10,12 +10,35 @@
         </div>
     </div>
     <div class="uk-width-8-10">
-        <div class="uk-margin-bottom">
-            <ul class="uk-subnav uk-subnav-pill">
-                !{root.filter_show}
-                !{root.filter_sort}
-            </ul>
+        <div class="uk-margin-bottom uk-panel uk-panel-box">
+            <div class="uk-grid">
+                <div class="uk-width-7-10">
+                    <ul class="uk-subnav uk-subnav-pill taracot-catalog-subnav-pill">
+                        <li><span>!{root.lang.__('filter_sort')}:</span>
+                        </li> !{root.filter_sort}
+                    </ul>
+                </div>
+                <div class="uk-width-3-10 taracot-catalog-align-right">
+                    <ul class="uk-subnav uk-subnav-pill taracot-catalog-subnav-pill">
+                        </li> !{root.filter_show}
+                    </ul>
+                </div>
+                <div class="uk-width-1-1 uk-margin-top uk-form">
+                    <button class="uk-button uk-button-primary taracot-catlaog-search-btn">!{root.lang.__('search')}</button>
+                    <div class="taracot-catalog-search-field-wrap">
+                        <input type="text" class="taracot-catalog-search-field" value="#{root.init_find}">
+                    </div>
+                </div>
+            </div>
         </div>
         !{root.catalog_items} !{root.pagination}
     </div>
 </div>
+<script>
+var _taracot_catalog_init_sort = "!{root.init_sort}",
+    _taracot_catalog_init_view = "!{root.init_view}",
+    _taracot_catalog_init_path = "!{root.init_path}",
+    _taracot_catalog_init_page = "!{root.init_page}";
+</script>
+<script src="/js/helper.js"></script>
+<script src="/modules/catalog/js/frontend.js"></script>

@@ -47,3 +47,41 @@
 .taracot-catalog-h1 {
     margin-top: 0;
 }
+.taracot-catalog-subnav-pill > li {
+    margin: 0;
+}
+.taracot-catalog-subnav-pill > li > span {
+    color: #444;
+    padding: 2px 0 0 0;
+    font-weight: bold;
+}
+.taracot-catalog-subnav-pill > li > a {
+    font-size: 90%;
+    padding: 2px 5px 2px 5px;
+}
+.taracot-catalog-subnav-pill > li.uk-active > a {
+    background: #666;
+    box-shadow: none;
+    color: #eee;
+}
+.taracot-catalog-align-right {
+    text-align: right;
+}
+.taracot-catalog-search-field {
+    width: 100%;
+}
+.taracot-catalog-search-field-wrap {
+    overflow: hidden;
+    padding-right: 0;
+}
+.taracot-catlaog-search-btn {
+    float: right;
+    margin-left: -3px;
+}
+.uk-form input[type="text"]:focus {
+    background: #fff;
+}
+.taracot-catalog-thumb {
+    width: 50px;
+    height: 50px;
+}
