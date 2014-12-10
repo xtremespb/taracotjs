@@ -476,6 +476,7 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
+
         // Save
 
         app.get('mongodb').collection('menu').find({
@@ -483,7 +484,7 @@ module.exports = function(app) {
         }, {
             limit: 1
         }).toArray(function(err, items) {
-            var search_data = parser.words(parser.html2text(pcontent), ptitle);
+            var search_data = parser.words(parser.html2text(pshortdesc + "\n\n" + pcontent), ptitle);
             if (id) {
                 app.get('mongodb').collection('menu').find({
                     lang: plang
@@ -499,8 +500,6 @@ module.exports = function(app) {
                     }
                     app.get('mongodb').collection('warehouse').find({
                         pfilename: pfilename,
-                        pcategory: pcategory,
-                        plang: plang,
                         _id: {
                             $ne: new ObjectId(id)
                         }
@@ -565,11 +564,11 @@ module.exports = function(app) {
                                                 item_id: id
                                             }).toArray(function(si_err, si_items) {
                                                 if (err) return;
-                                                var url = pcategory + '/' + pfilename;
+                                                var url = '/catalog/sku/' + pfilename;
                                                 url = url.replace(/(\/+)/, '/');
                                                 var data = {
                                                     swords: search_data.words,
-                                                    sdesc: search_data.desc,
+                                                    sdesc: pshortdesc,
                                                     stitle: ptitle,
                                                     slang: plang,
                                                     surl: url
@@ -630,9 +629,7 @@ module.exports = function(app) {
                 });
             } else {
                 var data1 = app.get('mongodb').collection('warehouse').find({
-                    pfilename: pfilename,
-                    pcategory: pcategory,
-                    plang: plang,
+                    pfilename: pfilename
                 }, {
                     limit: 1
                 }).toArray(function(err, items) {
