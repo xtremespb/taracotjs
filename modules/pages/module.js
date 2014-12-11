@@ -15,8 +15,7 @@ module.exports = function(app) {
         var param = req.params[0],
         	url_parts = param.split('/');
         url_parts.forEach(function(fn) {
-            if (fn.match(/ /)) return next(); // whitespace
-            if (fn.match(/^[\^<>\/\:\"\\\|\?\*\x00-\x1f]+$/)) return next(); // invalid characters
+            if (fn.match(/ /) || fn.match(/^[\^<>\/\:\"\\\|\?\*\x00-\x1f]+$/)) return res.status(404); // whitespace
         });
         var fd1 = url_parts.join('/'),
         	fn1 = '',
@@ -108,7 +107,7 @@ module.exports = function(app) {
                         bread_html_bootstrap: bread_html_bootstrap
                     };
                     var layout = items[0].playout || undefined;
-                    app.get('renderer').render(res, layout, data, req);
+                    return app.get('renderer').render(res, layout, data, req);
                 } else {
                     return next();
                 }

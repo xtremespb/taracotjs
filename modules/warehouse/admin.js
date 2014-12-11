@@ -564,7 +564,7 @@ module.exports = function(app) {
                                                 item_id: id
                                             }).toArray(function(si_err, si_items) {
                                                 if (err) return;
-                                                var url = '/catalog/sku/' + pfilename;
+                                                var url = '/catalog/item/' + pfilename;
                                                 url = url.replace(/(\/+)/, '/');
                                                 var data = {
                                                     swords: search_data.words,
