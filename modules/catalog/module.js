@@ -10,13 +10,17 @@ module.exports = function(app) {
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
+        catalog_item_view = gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
         pt_li_a = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
         pt_nav_sub = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_nav_sub.html'),
         pt_btn_mini = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini.html'),
         pt_btn_mini_disabled = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini_disabled.html'),
+        pt_btn = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn.html'),
+        pt_btn_disabled = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_disabled.html'),
         pt_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html'),
         pt_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html'),
-        pt_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html');
+        pt_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
+        pt_tn_img = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -33,6 +37,110 @@ module.exports = function(app) {
         "type": "root"
     }];
 
+    router.get('/item/:sku', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        var sku = req.params.sku;
+        if (!sku || !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) return next();
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'items'
+            }, {
+                conf: 'collections'
+            }, {
+                conf: 'curs'
+            }]
+        }).toArray(function(err, db) {
+            var whitems = [],
+                whcurs = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'items' && db[i].data)
+                        try {
+                            whitems = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            }
+            var curs_hash = {};
+            for (var cs = 0; cs < whcurs.length; cs++)
+                curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+            // Load warehouse categories
+            app.get('mongodb').collection('warehouse_categories').find({
+                oname: 'categories_json'
+            }, {
+                limit: 1
+            }).toArray(function(err, items) {
+                var warehouse_categories;
+                if (!items || !items.length || !items[0].ovalue) {
+                    warehouse_categories = _default_folders_hash;
+                } else {
+                    warehouse_categories = JSON.parse(items[0].ovalue);
+                }
+                warehouse_categories = folders_make_hash(warehouse_categories);
+                // Rock and roll
+                app.get('mongodb').collection('warehouse').find({
+                    pfilename: sku
+                }, {
+                    limit: 1
+                }).toArray(function(wh_err, whitems) {
+                    if (wh_err || !whitems || !whitems.length) return next();
+                    var whitem = whitems[0];
+                    var current_cat_title = folders_find_title_by_path(warehouse_categories, '/' + whitem.pcategory, req) || i18nm.__('module_name'),
+                        _current_path = folders_find_path(warehouse_categories, whitem.pcategory_id).reverse(),
+                        current_path = '',
+                        bread = get_bread(warehouse_categories, whitem.pcategory_id, req, true),
+                        btn_buy = '';
+                    for (var _cp = 0; _cp < _current_path.length; _cp++) current_path += '/' + _current_path[_cp].name;
+                    var primary_img = '/modules/catalog/images/placeholder_300.png',
+                        thumb_img = '';
+                    if (whitem.pimages && whitem.pimages.length) {
+                        if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg'))
+                            primary_img = app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[0] + '.jpg';
+                        if (whitem.pimages.length > 1)
+                            for (var pi = 1; pi < whitem.pimages.length; pi++)
+                                if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg'))
+                                    thumb_img += pt_tn_img(gaikan, {
+                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg'
+                                    });
+                    }
+                    if (whitem.amount === 0) {
+                        btn_buy = pt_btn_disabled(gaikan, {
+                            lang: i18nm
+                        }, undefined);
+                    } else {
+                        btn_buy = pt_btn(gaikan, {
+                            lang: i18nm
+                        }, undefined);
+                    }
+                    whitem.pcurs = curs_hash[whitem.pcurs] || whitem.pcurs;
+                    var out_html = catalog_item_view(gaikan, {
+                        lang: i18nm,
+                        whitem: whitem,
+                        bread: bread,
+                        primary_img: primary_img,
+                        thumb_img: thumb_img,
+                        btn_buy: btn_buy
+                    });
+                    var data = {
+                        title: whitem.ptitle,
+                        current_lang: _locale,
+                        page_title: whitem.ptitle,
+                        content: out_html,
+                        keywords: whitem.pkeywords,
+                        description: whitem.pdesc,
+                        extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                    };
+                    var layout = whitem.playout || undefined;
+                    return app.get('renderer').render(res, layout, data, req);
+                });
+            }); // Load warehouse categories
+        }); // Load warehouse configuration
+    });
+
     //
     // Load catalog feed based on user query
     //
@@ -42,6 +150,10 @@ module.exports = function(app) {
         i18nm.setLocale(_locale);
         var param = req.params[0],
             url_parts = param.split('/');
+        url_parts.forEach(function(fn) {
+            if (fn.match(/ /)) return next(); // whitespace
+            if (fn.match(/^[\^<>\/\:\"\\\|\?\*\x00-\x1f]+$/)) return next(); // invalid characters
+        });
         if (!param.match(/^[a-zA-Z_0-9\-\/]+$/)) return next(); // invalid characters
         var current_cat = url_parts.join('/');
         if (current_cat) current_cat = current_cat.replace(/\/$/, '');
@@ -128,6 +240,7 @@ module.exports = function(app) {
                     current_children_html = '',
                     _current_path = folders_find_path(warehouse_categories, current_cat_id).reverse(),
                     current_path = '';
+                if (current_cat && current_cat_id == '#') return next();
                 for (var _cp = 0; _cp < _current_path.length; _cp++) current_path += '/' + _current_path[_cp].name;
                 page_url = _get_url(current_path, show_all, sort, '', search_query);
                 if (current_cat && current_cat != '#' && current_cat != 'j1_1') current_children = folders_find_children(warehouse_categories, current_cat_id);
@@ -220,7 +333,7 @@ module.exports = function(app) {
                                     price: price,
                                     btn_buy: btn_buy,
                                     currency: currency,
-                                    item_url: '/catalog/sku/' + sku + '?page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + search_query,
+                                    item_url: '/catalog/item/' + sku + '?page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + (search_query || '') + '&cat=' + (current_path || '/'),
                                     desc: desc
                                 }, undefined);
                             }
@@ -358,8 +471,7 @@ module.exports = function(app) {
                             description: '',
                             extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                         };
-                        var layout = items[0].playout || undefined;
-                        return app.get('renderer').render(res, layout, data, req);
+                        return app.get('renderer').render(res, undefined, data, req);
                     });
                 });
             });
@@ -473,7 +585,7 @@ module.exports = function(app) {
         return children;
     };
 
-    var get_bread = function(folders, folder_id, req) {
+    var get_bread = function(folders, folder_id, req, lsa) {
         var bread = folders_find_path(folders, folder_id).reverse();
         var bread_html = '';
         var bread_path = '';
@@ -482,7 +594,7 @@ module.exports = function(app) {
         for (var i = 0; i < bread.length; i++) {
             bread_path += '/' + bread[i].name;
             var ln = bread[i][req.session.current_locale] || bread[i].name;
-            if (bread.length - 1 == i) {
+            if (bread.length - 1 == i && !lsa) {
                 bread_html += '<li>' + ln + '</li>';
             } else {
                 bread_html += '<li><a href="/catalog' + bread_path + '">' + ln + '</a></li>';

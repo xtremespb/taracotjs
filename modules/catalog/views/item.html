@@ -1,0 +1,19 @@
+!{root.bread.html_uikit}
+<h1 class="taracot-catalog-h1">!{root.whitem.ptitle}</h1>
+<div class="taracot-catalog-item-shortdesc">!{root.whitem.pshortdesc}</div>
+<div class="uk-grid uk-grid-small taracot-catalog-item-grid">
+    <div class="uk-width-3-10">
+        <img src="!{root.primary_img}" class="taracot-catalog-item-primary-img uk-border-rounded uk-thumbnail" alt="#{root.whitem.ptitle}">
+        <div class="uk-margin-top">!{root.thumb_img}</div>
+    </div>
+    <div class="uk-width-5-10 taracot-catalog-item-content">!{root.whitem.pcontent}</div>
+    <div class="uk-width-2-10">
+        <div class="taracot-catalog-item-area-price">
+            <span class="taracot-catalog-item-price">!{root.whitem.pprice}</span>&nbsp;<span class="taracot-catalog-item-currency">!{root.whitem.pcurs}</span>
+            <div class="uk-margin-top">
+                !{root.btn_buy}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/modules/catalog/js/frontend_item.js"></script>
