@@ -120,10 +120,10 @@ var pagination_handler = function() {
 
 var taracot_search_loading_indicator = function(show) {
     if (show) {
-        var destination = $('#search_results').offset();
         $('.taracot-loading').css({
-            top: destination.top,
-            left: destination.left,
+            position: 'absolute',
+            top: $('#search_results').position().top + 25,
+            left: $('#search_results').position().left,
             width: $('#search_results').width(),
             height: $('#search_results').height()
         });
