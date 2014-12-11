@@ -17,6 +17,24 @@ module.exports = function(app) {
         devMode: app.get('config').locales_dev_mode
     });
 
+    var parts_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_post.html'),
+        parts_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html'),
+        parts_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html'),
+        parts_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
+        parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html'),
+        parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html'),
+        parts_keyword = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_keyword.html'),
+        parts_button = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button.html'),
+        parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html'),
+        parts_moderation_alert = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_alert.html'),
+        parts_button_class = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_class.html');
+        parts_button_delete_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_delete_post.html');
+        parts_moderation_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_badge.html');
+        parts_comments_form = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comments_form.html');
+        parts_comment = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment.html');
+        parts_comment_delete = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_delete.html');
+        parts_comment_deleted = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_deleted.html');
+
     //
     // Load blog feed based on user query
     //
@@ -126,16 +144,6 @@ module.exports = function(app) {
                                         for (var k = 0; k < users_db.length; k++) usernames[users_db[k]._id] = users_db[k].username;
                                     }
                                     var blog_feed = '';
-                                    var parts_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_post.html');
-                                    var parts_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html');
-                                    var parts_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html');
-                                    var parts_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html');
-                                    var parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html');
-                                    var parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html');
-                                    var parts_keyword = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_keyword.html');
-                                    var parts_button = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button.html');
-                                    var parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html');
-                                    var parts_moderation_alert = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_alert.html');
                                     var blog_areas;
                                     try {
                                         blog_areas = JSON.parse(app.set('settings').blog_areas);
@@ -604,18 +612,6 @@ module.exports = function(app) {
                         var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + key).digest('hex');
                         if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) avatars_hash[key] = '/images/avatars/' + afn + '.jpg';
                     }
-                    var parts_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge.html');
-                    var parts_badge_link = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_badge_link.html');
-                    var parts_keyword = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_keyword.html');
-                    var parts_button_class = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_class.html');
-                    var parts_button_delete_post = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_button_delete_post.html');
-                    var parts_buttons_wrap = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_buttons_wrap.html');
-                    var parts_moderation_badge = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_moderation_badge.html');
-                    var parts_comments_form = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comments_form.html');
-                    var parts_comment = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment.html');
-                    var parts_comment_delete = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_delete.html');
-                    var parts_comment_deleted = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment_deleted.html');
-
                     try {
                         blog_areas = JSON.parse(app.set('settings').blog_areas);
                     } catch (ex) {
@@ -959,8 +955,7 @@ module.exports = function(app) {
                 rep.error = i18nm.__("comments_disallowed");
                 return res.send(JSON.stringify(rep));
             }
-            var parts_comment = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_comment.html'),
-                timestamp = Date.now();
+            var timestamp = Date.now();
             var comment = {
                 comment_parent: comment_parent,
                 post_id: post_id,
