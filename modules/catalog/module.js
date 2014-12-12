@@ -20,7 +20,9 @@ module.exports = function(app) {
         pt_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html'),
         pt_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html'),
         pt_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
-        pt_tn_img = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html');
+        pt_tn_img = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html'),
+        pt_desc_list = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list.html'),
+        pt_desc_list_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -65,9 +67,12 @@ module.exports = function(app) {
                         } catch (ex) {}
                 }
             }
-            var curs_hash = {};
+            var curs_hash = {},
+                items_hash = {};
             for (var cs = 0; cs < whcurs.length; cs++)
                 curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+            for (var cit = 0; cit < whitems.length; cit++)
+                items_hash[whitems[cit].id] = whitems[cit][_locale] || whitems[cit].id;
             // Load warehouse categories
             app.get('mongodb').collection('warehouse_categories').find({
                 oname: 'categories_json'
@@ -96,16 +101,33 @@ module.exports = function(app) {
                         btn_buy = '';
                     for (var _cp = 0; _cp < _current_path.length; _cp++) current_path += '/' + _current_path[_cp].name;
                     var primary_img = '/modules/catalog/images/placeholder_300.png',
+                		primary_img_full = '#',
                         thumb_img = '';
                     if (whitem.pimages && whitem.pimages.length) {
                         if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg'))
                             primary_img = app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[0] + '.jpg';
+                        if (fs.existsSync(app.get('config').dir.storage + '/warehouse/' + whitem.pimages[0] + '.jpg'))
+                            primary_img_full = app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[0] + '.jpg';
                         if (whitem.pimages.length > 1)
                             for (var pi = 1; pi < whitem.pimages.length; pi++)
                                 if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg'))
                                     thumb_img += pt_tn_img(gaikan, {
-                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg'
+                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg',
+                                        url: app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[pi] + '.jpg'
                                     });
+                    }
+                    var pchars = '';
+                    if (whitem.pchars && whitem.pchars.length) {
+                        var pci = '';
+                        for (var wip = 0; wip < whitem.pchars.length; wip++) {
+                            pci += pt_desc_list_item(gaikan, {
+                                par: items_hash[whitem.pchars[wip].id] || whitem.pchars[wip].id,
+                                val: whitem.pchars[wip].val || '&nbsp;'
+                            }, undefined);
+                        }
+                        pchars = pt_desc_list(gaikan, {
+                            items: pci
+                        }, undefined);
                     }
                     if (whitem.amount === 0) {
                         btn_buy = pt_btn_disabled(gaikan, {
@@ -122,8 +144,10 @@ module.exports = function(app) {
                         whitem: whitem,
                         bread: bread,
                         primary_img: primary_img,
+                        primary_img_full: primary_img_full,
                         thumb_img: thumb_img,
-                        btn_buy: btn_buy
+                        btn_buy: btn_buy,
+                        pchars: pchars
                     });
                     var data = {
                         title: whitem.ptitle,

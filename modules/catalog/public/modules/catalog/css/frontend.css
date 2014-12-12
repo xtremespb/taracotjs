@@ -113,3 +113,15 @@
     width: 60px;
     margin-right: 3px;
 }
+.taracot-catalog-item-pchars > dt {
+    padding-bottom: 3px;
+    background: url(/modules/catalog/images/dots.gif);
+}
+.taracot-catalog-item-pchars > dd {
+    padding-bottom: 3px;
+}
+.taracot-catalog-item-desc-dt {
+    display: inline-block;
+    background: #fff;
+    padding-right: 5px;
+}
