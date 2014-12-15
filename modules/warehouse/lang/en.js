@@ -64,7 +64,7 @@
 	"ptitle_hint": "Appears in browser window title, should be up to 80 characters long",
 	"pfilename_hint": "Latin characters, numbers, dot, underscore and minus characters only.",
 	"invalid_query": "Invalid query",
-	"page_exists": "Item with such item ID (SKU) already exists",
+	"page_exists": "Item with such item ID (SKU) and language already exists",
 	"page_save_success": "Item saved successfully",
 	"category_and_filename": "Category/Item ID",
 	"unauth": "unauth",

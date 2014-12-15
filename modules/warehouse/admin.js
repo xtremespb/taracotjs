@@ -500,6 +500,7 @@ module.exports = function(app) {
                     }
                     app.get('mongodb').collection('warehouse').find({
                         pfilename: pfilename,
+                        plang: plang,
                         _id: {
                             $ne: new ObjectId(id)
                         }
