@@ -125,3 +125,9 @@
     background: #fff;
     padding-right: 5px;
 }
+.taracot-catalog-cart-th-price, .taracot-catalog-cart-td-price, .taracot-catalog-cart-th-sum, .taracot-catalog-cart-td-sum {
+    width: 100px;
+}
+.taracot-catalog-cart-th-amount, .taracot-catalog-cart-td-amount, .taracot-catalog-cart-input-amount {
+    width: 70px;
+}

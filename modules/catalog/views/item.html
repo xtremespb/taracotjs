@@ -7,8 +7,13 @@
         </a>
         <div class="uk-margin-top">!{root.thumb_img}</div>
     </div>
-    <div class="uk-width-5-10 taracot-catalog-item-content">!{root.whitem.pcontent}
-        <h4>!{root.lang.__('chars')}</h4>!{root.pchars}</div>
+    <div class="uk-width-5-10 taracot-catalog-item-content">
+        <h4>!{root.lang.__('general_info')}</h4>
+        <div>!{root.pgeninfo}</div>
+        <div>!{root.whitem.pcontent}</div>
+        <h4>!{root.lang.__('chars')}</h4>
+        <div>!{root.pchars}</div>
+    </div>
     <div class="uk-width-2-10">
         <div class="taracot-catalog-item-area-price">
             <span class="taracot-catalog-item-price">!{root.whitem.pprice}</span>&nbsp;<span class="taracot-catalog-item-currency">!{root.whitem.pcurs}</span>
@@ -21,17 +26,22 @@
 <link rel="stylesheet" href="/js/magnific/magnific.css">
 <script>
 var _taracot_catalog_gallery_magnific_int = {
-    tClose: "!{root.lang.__('close_esc')}",
-    tLoading: "!{root.lang.__('loading')}",
-    gallery: {
-        tPrev: "!{root.lang.__('prev_left_arrow_key')}",
-        tNext: "!{root.lang.__('next_right_arrow_key')}",
-        tCounter: "!{root.lang.__('curr_of_total')}"
+        tClose: "!{root.lang.__('close_esc')}",
+        tLoading: "!{root.lang.__('loading')}",
+        gallery: {
+            tPrev: "!{root.lang.__('prev_left_arrow_key')}",
+            tNext: "!{root.lang.__('next_right_arrow_key')}",
+            tCounter: "!{root.lang.__('curr_of_total')}"
+        },
+        image: {
+            tError: "!{root.lang.__('image_cannot_be_loaded')}"
+        }
     },
-    image: {
-        tError: "!{root.lang.__('image_cannot_be_loaded')}"
-    }
-};
+    _taracot_catalog_init_sort = "!{root.init_sort}",
+    _taracot_catalog_init_view = "!{root.init_view}",
+    _taracot_catalog_init_path = "!{root.init_path}",
+    _taracot_catalog_init_page = "!{root.init_page}",
+    _taracot_catalog_init_sku = "!{root.whitem.pfilename}";
 </script>
 <script src="/js/magnific/magnific.min.js"></script>
 <script src="/modules/catalog/js/frontend_item.js"></script>

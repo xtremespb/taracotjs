@@ -9,6 +9,7 @@ module.exports = function(app) {
         parser = app.get('parser');
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
+        cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
         catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
         catalog_item_view = gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
         pt_li_a = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
@@ -22,7 +23,10 @@ module.exports = function(app) {
         pt_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
         pt_tn_img = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html'),
         pt_desc_list = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list.html'),
-        pt_desc_list_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html');
+        pt_desc_list_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html'),
+        pt_cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart.html'),
+        pt_cart_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html');
+
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -39,11 +43,21 @@ module.exports = function(app) {
         "type": "root"
     }];
 
-    router.get('/item/:sku', function(req, res, next) {
+    router.get('/cart', function(req, res, next) {
         var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
-        var sku = req.params.sku;
-        if (!sku || !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) return next();
+        var page = parseInt(req.query.page) || 1,
+            sort = req.query.sort || 't',
+            show_all = req.query.show_all || '1',
+            init_find = req.query.find,
+            init_cat = req.query.cat,
+            sku = req.query.sku;
+        if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
+        if (show_all && show_all != '1' && show_all != '0') show_all = '1';
+        if (page && (page == "NaN" || page < 0)) page = 1;
+        if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_cat) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (sku && !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) sku = '';
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'items'
@@ -51,10 +65,13 @@ module.exports = function(app) {
                 conf: 'collections'
             }, {
                 conf: 'curs'
+            }, {
+                conf: 'misc'
             }]
         }).toArray(function(err, db) {
             var whitems = [],
-                whcurs = [];
+                whcurs = [],
+                whmisc = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'items' && db[i].data)
@@ -65,10 +82,127 @@ module.exports = function(app) {
                         try {
                             whcurs = JSON.parse(db[i].data);
                         } catch (ex) {}
+                    if (db[i].conf == 'misc' && db[i].data)
+                        try {
+                            whmisc = JSON.parse(db[i].data);
+                        } catch (ex) {}
                 }
             }
             var curs_hash = {},
-                items_hash = {};
+                items_hash = {},
+                misc_hash = {};
+            for (var ms = 0; ms < whmisc.length; ms++) misc_hash[whmisc[ms].id] = whmisc[ms][_locale];
+            for (var cs = 0; cs < whcurs.length; cs++)
+                curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+            for (var cit = 0; cit < whitems.length; cit++)
+                items_hash[whitems[cit].id] = whitems[cit][_locale] || whitems[cit].id;
+            var catalog_cart = req.session.catalog_cart || [];
+            if (sku) {
+                var _sku_found;
+                for (var cc = 0; cc < catalog_cart.length; cc++)
+                    if (catalog_cart[cc].sku == sku) _sku_found = true;
+                if (!_sku_found)
+                    catalog_cart.push({
+                        sku: sku,
+                        amount: 1
+                    });
+                req.session.catalog_cart = catalog_cart;
+            }
+            var warehouse_query = [];
+            for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
+                pfilename: catalog_cart[ca].sku
+            });
+            app.get('mongodb').collection('warehouse').find({
+                $or: warehouse_query
+            }).toArray(function(wh_err, whitems) {
+                var cart_html = '';
+                if (whitems) {
+                    for (var wi = 0; wi < whitems.length; wi++) {
+                        var amount = 0;
+                        for (var cc = 0; cc < catalog_cart.length; cc++)
+                            if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
+                        cart_html += pt_cart_item(gaikan, {
+                            lang: i18nm,
+                            title: whitems[wi].ptitle,
+                            price: whitems[wi].pprice,
+                            sku: whitems[wi].sku,
+                            amount: amount
+                        }, undefined);
+                    }
+                    cart_html = pt_cart(gaikan, {
+                        body: cart_html,
+                        lang: i18nm
+                    }, undefined);
+                } else {
+                    cart_html = i18nm.__('no_items_in_cart');
+                }
+                var out_html = cart(gaikan, {
+                    lang: i18nm,
+                    cart_html: cart_html
+                }, undefined);
+                var data = {
+                    title: i18nm.__('cart'),
+                    current_lang: _locale,
+                    page_title: i18nm.__('cart'),
+                    content: out_html,
+                    keywords: '',
+                    description: '',
+                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                };
+                return app.get('renderer').render(res, undefined, data, req);
+            });
+        });
+    });
+
+    router.get('/item/:sku', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        var sku = req.params.sku;
+        if (!sku || !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) return next();
+        var page = parseInt(req.query.page) || 1,
+            sort = req.query.sort || 't',
+            show_all = req.query.show_all || '1',
+            init_find = req.query.find,
+            init_cat = req.query.cat;
+        if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
+        if (show_all && show_all != '1' && show_all != '0') show_all = '1';
+        if (page && (page == "NaN" || page < 0)) page = 1;
+        if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_cat) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'items'
+            }, {
+                conf: 'collections'
+            }, {
+                conf: 'curs'
+            }, {
+                conf: 'misc'
+            }]
+        }).toArray(function(err, db) {
+            var whitems = [],
+                whcurs = [],
+                whmisc = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'items' && db[i].data)
+                        try {
+                            whitems = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'misc' && db[i].data)
+                        try {
+                            whmisc = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            }
+            var curs_hash = {},
+                items_hash = {},
+                misc_hash = {};
+            for (var ms = 0; ms < whmisc.length; ms++) misc_hash[whmisc[ms].id] = whmisc[ms][_locale];
             for (var cs = 0; cs < whcurs.length; cs++)
                 curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
             for (var cit = 0; cit < whitems.length; cit++)
@@ -88,7 +222,8 @@ module.exports = function(app) {
                 warehouse_categories = folders_make_hash(warehouse_categories);
                 // Rock and roll
                 app.get('mongodb').collection('warehouse').find({
-                    pfilename: sku
+                    pfilename: sku,
+                    plang: _locale
                 }, {
                     limit: 1
                 }).toArray(function(wh_err, whitems) {
@@ -101,7 +236,7 @@ module.exports = function(app) {
                         btn_buy = '';
                     for (var _cp = 0; _cp < _current_path.length; _cp++) current_path += '/' + _current_path[_cp].name;
                     var primary_img = '/modules/catalog/images/placeholder_300.png',
-                		primary_img_full = '#',
+                        primary_img_full = '#',
                         thumb_img = '';
                     if (whitem.pimages && whitem.pimages.length) {
                         if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg'))
@@ -116,7 +251,8 @@ module.exports = function(app) {
                                         url: app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[pi] + '.jpg'
                                     });
                     }
-                    var pchars = '';
+                    var pchars = '',
+                        pgeninfo = '';
                     if (whitem.pchars && whitem.pchars.length) {
                         var pci = '';
                         for (var wip = 0; wip < whitem.pchars.length; wip++) {
@@ -129,6 +265,24 @@ module.exports = function(app) {
                             items: pci
                         }, undefined);
                     }
+                    // Generate general (item) info
+                    pgeninfo += pt_desc_list_item(gaikan, {
+                        par: i18nm.__('sku'),
+                        val: whitem.pfilename
+                    }, undefined);
+                    var item_avail = i18nm.__('item_avail');
+                    if (whitem.pamount === 0) item_avail = i18nm.__('item_not_avail');
+                    pgeninfo += pt_desc_list_item(gaikan, {
+                        par: i18nm.__('avail'),
+                        val: item_avail
+                    }, undefined);
+                    pgeninfo += pt_desc_list_item(gaikan, {
+                        par: i18nm.__('item_weight'),
+                        val: whitem.pweight + ' ' + misc_hash.weight_units
+                    }, undefined);
+                    pgeninfo = pt_desc_list(gaikan, {
+                        items: pgeninfo
+                    }, undefined);
                     if (whitem.amount === 0) {
                         btn_buy = pt_btn_disabled(gaikan, {
                             lang: i18nm
@@ -147,7 +301,13 @@ module.exports = function(app) {
                         primary_img_full: primary_img_full,
                         thumb_img: thumb_img,
                         btn_buy: btn_buy,
-                        pchars: pchars
+                        pchars: pchars,
+                        pgeninfo: pgeninfo,
+                        init_sort: sort,
+                        init_view: show_all,
+                        init_path: init_cat,
+                        init_page: page,
+                        init_find: init_find
                     });
                     var data = {
                         title: whitem.ptitle,
