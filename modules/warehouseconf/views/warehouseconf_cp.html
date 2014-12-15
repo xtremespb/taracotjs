@@ -19,6 +19,8 @@
     </li>
     <li><a href="">!{root.lang.__('module_shipment')}</a>
     </li>
+    <li><a href="">!{root.lang.__('module_misc')}</a>
+    </li>
 </ul>
 <ul id="warehouseconf_tabs" class="uk-panel uk-panel-box uk-switcher taracot-warehouseconf-panel">
     <li>
@@ -86,6 +88,18 @@
             </tbody>
         </table>
     </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouseconf_misc_hint')}</div>
+        <table class="uk-table uk-margin-top" id="warehouseconf_misc">
+            <thead>
+                <tr id="warehouseconf_misc_th">
+                    <th style="width:150px">!{root.lang.__('par')}</th>
+                </tr>
+            </thead>
+            <tbody id="warehouseconf_misc_tb" class="uk-form">
+            </tbody>
+        </table>
+    </li>
 </ul>
 <div class="uk-margin-top">
     <button class="uk-button" id="btn_save"><i class="uk-icon-save"></i>&nbsp;!{root.lang.__('save_all_changes')}</button>
@@ -111,34 +125,29 @@ var init_curs = !{
 var init_ship = !{
     root.ship
 };
+var init_misc = !{
+    root.misc
+};
 var current_locale = "!{root.current_locale}";
 for (var i = 0; i < locales.length; i++) {
     $('#warehouseconf_descitems_th').append('<th>' + locales[i] + '</th>');
     $('#warehouseconf_curs_th').append('<th>' + locales[i] + '</th>');
     $('#warehouseconf_ship_th').append('<th>' + locales[i] + '</th>');
+    $('#warehouseconf_misc_th').append('<th>' + locales[i] + '</th>');
+}
+var misc_pars = ["!{root.lang.__('weight_units')}"];
+for (var mp = 0; mp < misc_pars.length; mp++) {
+    var _app = '';
+    _app += '<td>' + misc_pars[mp] + '</td>';
+    for (var ml = 0; ml < locales.length; ml++) _app += '<td><input type="text" class="uk-width-1-1"></td>';
+    $('#warehouseconf_misc_tb').append('<tr>' + _app + '</tr>');
 }
 $('#warehouseconf_descitems_th').append('<th style="width:30px"></th>');
 $('#warehouseconf_curs_th').append('<th style="width:100px"></th>');
-if ($('#warehouseconf_descitems tr').length > 1) {
-    $('#warehouseconf_descitems').show();
-} else {
-    $('#warehouseconf_descitems').hide();
-}
-if ($('#warehouseconf_collections tr').length > 1) {
-    $('#warehouseconf_collections').show();
-} else {
-    $('#warehouseconf_collections').hide();
-}
-if ($('#warehouseconf_curs tr').length > 1) {
-    $('#warehouseconf_curs').show();
-} else {
-    $('#warehouseconf_curs').hide();
-}
-if ($('#warehouseconf_ship tr').length > 1) {
-    $('#warehouseconf_ship').show();
-} else {
-    $('#warehouseconf_ship').hide();
-}
+$('#warehouseconf_descitems').hide();
+$('#warehouseconf_collections').hide();
+$('#warehouseconf_curs').hide();
+$('#warehouseconf_ship').hide();
 </script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/js/uikit/addons/sortable.min.js"></script>

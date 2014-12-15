@@ -28,12 +28,15 @@ module.exports = function(app) {
                 conf: 'curs'
             }, {
                 conf: 'ship'
+            }, {
+                conf: 'misc'
             }]
         }).toArray(function(err, db) {
             var items = [],
                 collections = [],
                 curs = [],
-                ship = [];
+                ship = [],
+                misc = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'items' && db[i].data)
@@ -52,6 +55,10 @@ module.exports = function(app) {
                         try {
                             ship = JSON.parse(db[i].data);
                         } catch (ex) {}
+                    if (db[i].conf == 'misc' && db[i].data)
+                        try {
+                            misc = JSON.parse(db[i].data);
+                        } catch (ex) {}
                 }
             }
             var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouseconf_cp', {
@@ -62,6 +69,7 @@ module.exports = function(app) {
                 collections: JSON.stringify(collections),
                 curs: JSON.stringify(curs),
                 ship: JSON.stringify(ship),
+                misc: JSON.stringify(misc),
                 current_locale: req.session.current_locale,
                 locales: JSON.stringify(app.get('config').locales)
             }, req);
@@ -89,7 +97,9 @@ module.exports = function(app) {
             curs = req.body.curs,
             curs_update = [],
             ship = req.body.ship,
-            ship_update = [];
+            ship_update = [],
+            misc = req.body.misc,
+            misc_update = [];
         if (descitems && util.isArray(descitems)) {
             for (var i = 0; i < descitems.length; i++) {
                 var ui = {};
@@ -150,10 +160,27 @@ module.exports = function(app) {
                 }
             }
         }
+        if (misc && util.isArray(misc)) {
+            for (var mi = 0; mi < misc.length; mi++) {
+                var uim = {};
+                if (misc[mi].id && (misc[mi].id == 'weight_units')) {
+                    uim.id = misc[mi].id;
+                    for (l = 0; l < app.get('config').locales.length; l++) {
+                        var lim = misc[mi][app.get('config').locales[l]];
+                        if (lim) {
+                            lim = lim.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                            uim[app.get('config').locales[l]] = lim;
+                        }
+                    }
+                    misc_update.push(uim);
+                }
+            }
+        }
         if (collections && util.isArray(collections)) {
             for (var c = 0; c < collections.length; c++) {
                 if (collections[c].id) collections[c].id = collections[c].id.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                if (collections[c].items) for (ci = 0; ci < collections[c].items; ci++) collections[c].items[ci] = collections[c].items[ci].replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                if (collections[c].items)
+                    for (ci = 0; ci < collections[c].items; ci++) collections[c].items[ci] = collections[c].items[ci].replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
             }
         }
         app.get('mongodb').collection('warehouse_conf').remove({}, function() {
@@ -169,6 +196,9 @@ module.exports = function(app) {
             }, {
                 conf: 'ship',
                 data: JSON.stringify(ship)
+            }, {
+                conf: 'misc',
+                data: JSON.stringify(misc_update)
             }], function(err) {
                 if (err) {
                     rep.status = 0;

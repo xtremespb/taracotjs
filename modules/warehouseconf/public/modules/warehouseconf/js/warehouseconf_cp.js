@@ -135,7 +135,8 @@ $('#btn_save').click(function() {
     var descitems = _get_items_array(),
         collections = _get_collections_array(),
         curs = _get_curs_array(),
-        ship = _get_ship_array();
+        ship = _get_ship_array(),
+        misc = _get_misc_array();
     $.ajax({
         type: 'POST',
         url: '/cp/warehouseconf/config/save',
@@ -143,7 +144,8 @@ $('#btn_save').click(function() {
             descitems: descitems,
             collections: collections,
             curs: curs,
-            ship: ship
+            ship: ship,
+            misc: misc
         },
         dataType: "json",
         success: function(data) {
@@ -257,6 +259,28 @@ var _get_ship_array = function() {
     return ship;
 };
 
+var _get_misc_array = function() {
+    var misc = [],
+        _cnt = 0,
+        _ai = {},
+        _gc = 0;
+    $('#warehouseconf_misc_tb  > tr > td').each(function() {
+        if (_cnt === 0) {
+            if (_gc === 0) _ai.id = 'weight_units';
+        }
+        if (_cnt > 0 && _cnt <= locales.length) _ai[locales[_cnt - 1]] = $(this).children().first().val();
+        if (_cnt >= locales.length) {
+            misc.push(_ai);
+            _cnt = 0;
+            _ai = {};
+            _gc++;
+            return;
+        }
+        _cnt++;
+    });
+    return misc;
+};
+
 $(document).ready(function() {
     $('#warehouseconf_descitems_tb  > tr').each(function() {
         $(this).remove();
@@ -340,6 +364,18 @@ $(document).ready(function() {
             if (_cnt > 3 && _cnt <= locales.length + 3) $(this).children().first().val(_ai[locales[_cnt - 4]]);
         }
         if (_cnt > locales.length + 3) {
+            _cnt = 0;
+            _gc++;
+            return;
+        }
+        _cnt++;
+    });
+    _cnt = 0;
+    _gc = 0;
+    $('#warehouseconf_misc_tb  > tr > td').each(function() {
+        var _ai = init_misc[_gc];
+        if (_ai) if (_cnt > 0 && _cnt <= locales.length) $(this).children().first().val(_ai[locales[_cnt - 1]]);
+        if (_cnt > locales.length) {
             _cnt = 0;
             _gc++;
             return;

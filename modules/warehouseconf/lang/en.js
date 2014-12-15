@@ -25,5 +25,9 @@
 	"weight": "Weight",
 	"amnt": "Amount",
 	"module_shipment": "Shipment",
-	"price": "Price"
+	"price": "Price",
+	"module_misc": "Miscellaneous",
+	"warehouseconf_misc_hint": "Set miscellaneous warehouse variables here.",
+	"par": "Parameter",
+	"weight_units": "Weight units"
 }
