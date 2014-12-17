@@ -13,7 +13,7 @@ var config = {
 		"en",
 		"ru"
 	],
-	"locales_dev_mode": false,
+	"locales_dev_mode": true,
 	"locale_from_subdomain": true,
 	"locale_from_query": false,
 	"locale_from_cookie": false,
@@ -26,9 +26,20 @@ var config = {
 	"cookie": {
 		"secret": "RyPuUGSsPulhvQnNL0lLOJCQjjVM0xHw",
 		"domain": "",
-		"prefix": "taracotjs_locale_"
+		"prefix": "taracotjs_locale_",
+		"httpOnly": false,
+		"secure": false,
+		"maxAge": null
 	},
-	"session_secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
+	"session": {
+		"secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
+		"name": "taracotjs_session",
+		"rolling": false,
+		"resave": false,
+		"proxy": true,
+		"saveUninitialized": true,
+		"unset": "delete"
+	},
 	"salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
 	"redis": {
 		"active": true,
@@ -69,7 +80,7 @@ var config = {
 		}
 	},
 	"captcha": "captcha_native",
-	"graphicsmagick": false,
+	"graphicsmagick": true,
 	"max_upload_file_mb": 100,
 	"max_upload_image_mb": 5,
 	"max_edit_file_kb": 1024,
