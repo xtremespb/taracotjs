@@ -131,3 +131,10 @@
 .taracot-catalog-cart-th-amount, .taracot-catalog-cart-td-amount, .taracot-catalog-cart-input-amount {
     width: 70px;
 }
+.taracot-catalog-cart-table-lastrow > td {
+    border-top: 2px solid #aaa;
+    border-bottom: 0;
+}
+.taracot-catalog-cart-td-actions {
+    width: 30px;
+}

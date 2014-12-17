@@ -1,8 +1,9 @@
 		<tr>
 		    <td>!{root.title}</td>
-		    <td class="taracot-catalog-cart-td-price" id="cart_price_!{root.sku}">!{root.price}</td>
+		    <td class="taracot-catalog-cart-td-price"><span id="cart_price_!{root.sku}">!{root.price}</span>&nbsp;!{root.currency}</td>
 		    <td class="taracot-catalog-cart-td-amount">
-		        <input type="text" class="taracot-catalog-cart-input-amount" value="!{root.amount}" id="cart_amount_!{root.sku}">
+		        <input type="text" class="taracot-catalog-cart-input-amount uk-form-small" value="!{root.amount}" id="cart_amount_!{root.sku}">
 		    </td>
-		    <td class="taracot-catalog-cart-td-sum" id="cart_sum_!{root.sku}"></td>
+		    <td class="taracot-catalog-cart-td-sum"><span id="cart_sum_!{root.sku}">!{root.sum}</span>&nbsp;!{root.currency}</td>
+		    <td class="taracot-catalog-cart-td-actions"><button class="uk-button uk-button-mini uk-button-danger taracot-cart-item-del" id="cart_del_!{root.sku}"><i class="uk-icon-trash-o"></i></button></td>
 		</tr>

@@ -5,9 +5,17 @@
             <th class="taracot-catalog-cart-th-price">!{root.lang.__('item_price')}</th>
             <th class="taracot-catalog-cart-th-amount">!{root.lang.__('item_amount')}</th>
             <th class="taracot-catalog-cart-th-sum">!{root.lang.__('item_sum')}</th>
+            <th class="taracot-catalog-cart-td-actions"></th>
         </tr>
     </thead>
     <tbody class="uk-form">
     	!{root.body}
+    	<tr class="taracot-catalog-cart-table-lastrow">
+		    <td><i>!{root.lang.__('subtotal')}:</i></td>
+		    <td class="taracot-catalog-cart-td-price"></td>
+		    <td class="taracot-catalog-cart-td-amount"><button id="taracot_catalog_cart_btn_recalc" class="uk-button uk-button-mini">!{root.lang.__('card_recalc')}</button></td>
+		    <td class="taracot-catalog-cart-td-sum"><span id="taracot_catalog_cart_subtotal">!{root.subtotal}</span>&nbsp;!{root.subtotal_currency}</td>
+		    <td class="taracot-catalog-cart-td-actions"></td>
+		</tr>
     </tbody>
 </table>

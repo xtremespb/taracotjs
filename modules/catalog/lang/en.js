@@ -25,5 +25,11 @@
 	"item_title": "Title",
 	"item_price": "Price",
 	"item_amount": "Amount",
-	"item_sum": "Sum"
+	"item_sum": "Sum",
+	"card_recalc": "Re-calc",
+	"total": "Total",
+	"subtotal": "Subtotal",
+	"ajax_failed": "Server request failed",
+	"form_contain_errors": "Form contains errors",
+	"no_items_in_cart": "Currently there are no items in cart. You may add something by clicking the &quot;Buy item&quot; button."
 }

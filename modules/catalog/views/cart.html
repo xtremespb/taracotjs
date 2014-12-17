@@ -1,2 +1,10 @@
 <h1>!{root.lang.__('cart')}</h1>
+<div class="uk-alert uk-alert-danger" style="display:none" id="taracot_catalog_cart_error"></div>
 !{root.cart_html}
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    form_errors: "!{root.lang.__('form_contain_errors')}"
+};
+</script>
+<script src="/modules/catalog/js/frontend_cart.js"></script>

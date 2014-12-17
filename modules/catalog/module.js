@@ -43,6 +43,99 @@ module.exports = function(app) {
         "type": "root"
     }];
 
+    router.post('/ajax/cart', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        // Get and validate cart values
+        var cart_values = req.body.values;
+        if (!cart_values || !cart_values.length) return res.send(JSON.stringify({
+            status: 0
+        }));
+        for (var i = 0; i < cart_values.length; i++)
+            if (!cart_values[i].id || !cart_values[i].id.match(/^[A-Za-z0-9_\-\.]{0,80}$/) || isNaN(parseInt(cart_values[i].val)) || parseInt(cart_values[i].val) < 0) return res.send(JSON.stringify({
+                status: 0
+            }));
+        // Generate hash pairs: sku -> amount
+        var cart_values_hash = {};
+        for (var cv = 0; cv < cart_values.length; cv++) cart_values_hash[cart_values[cv].id] = cart_values[cv].val;
+        // Get cart from session
+        var catalog_cart = req.session.catalog_cart || [],
+            subtotal = 0;
+        // Get currency data
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'curs'
+            }]
+        }).toArray(function(err, db) {
+            var whcurs = [];
+            // Parse currency data if available
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            }
+            // Generate currency and exchange rate hashes
+            var curs_hash = {},
+                rate_hash = {};
+            for (var cs = 0; cs < whcurs.length; cs++) {
+                curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+                rate_hash[whcurs[cs].id] = whcurs[cs].exr || 1;
+            }
+            // Generate new catalog cart
+            var _catalog_cart = [];
+            for (var cc = 0; cc < catalog_cart.length; cc++) {
+                var ncv = cart_values_hash[catalog_cart[cc].sku];
+                if (ncv !== undefined) {
+                    catalog_cart[cc].amount = ncv;
+                    if (ncv > 0) {
+                        _catalog_cart.push(catalog_cart[cc]);
+                    }
+                }
+            }
+            var warehouse_query = [];
+            for (var ca = 0; ca < _catalog_cart.length; ca++) warehouse_query.push({
+                pfilename: _catalog_cart[ca].sku
+            });
+            if (!warehouse_query.length) {
+                res.send(JSON.stringify({
+                    status: 1,
+                    subtotal: 0,
+                    cart: []
+                }));
+                req.session.catalog_cart = _catalog_cart;
+                return;
+            }
+            app.get('mongodb').collection('warehouse').find({
+                $or: warehouse_query
+            }).toArray(function(wh_err, whitems) {
+                if (wh_err) return res.send(JSON.stringify({
+                    status: 0
+                }));
+                var cart = [];
+                for (var wi = 0; wi < whitems.length; wi++) {
+                    var amount = cart_values_hash[whitems[wi].pfilename];
+                    sum = amount * whitems[wi].pprice;
+                    cart.push({
+                        id: whitems[wi].pfilename,
+                        sum: sum,
+                        amount: amount
+                    });
+                    subtotal += sum * rate_hash[whitems[wi].pcurs];
+                }
+                req.session.catalog_cart = _catalog_cart;
+                res.send(JSON.stringify({
+                    status: 1,
+                    subtotal: subtotal,
+                    cart: cart
+                }));
+                return;
+            });
+        });
+    });
+
     router.get('/cart', function(req, res, next) {
         var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
@@ -60,53 +153,37 @@ module.exports = function(app) {
         if (sku && !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) sku = '';
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
-                conf: 'items'
-            }, {
-                conf: 'collections'
-            }, {
                 conf: 'curs'
-            }, {
-                conf: 'misc'
             }]
         }).toArray(function(err, db) {
-            var whitems = [],
-                whcurs = [],
-                whmisc = [];
+            var whcurs = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
-                    if (db[i].conf == 'items' && db[i].data)
-                        try {
-                            whitems = JSON.parse(db[i].data);
-                        } catch (ex) {}
                     if (db[i].conf == 'curs' && db[i].data)
                         try {
                             whcurs = JSON.parse(db[i].data);
                         } catch (ex) {}
-                    if (db[i].conf == 'misc' && db[i].data)
-                        try {
-                            whmisc = JSON.parse(db[i].data);
-                        } catch (ex) {}
                 }
             }
             var curs_hash = {},
-                items_hash = {},
-                misc_hash = {};
-            for (var ms = 0; ms < whmisc.length; ms++) misc_hash[whmisc[ms].id] = whmisc[ms][_locale];
-            for (var cs = 0; cs < whcurs.length; cs++)
+                rate_hash = {};
+            for (var cs = 0; cs < whcurs.length; cs++) {
                 curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
-            for (var cit = 0; cit < whitems.length; cit++)
-                items_hash[whitems[cit].id] = whitems[cit][_locale] || whitems[cit].id;
+                rate_hash[whcurs[cs].id] = whcurs[cs].exr || 1;
+            }
             var catalog_cart = req.session.catalog_cart || [];
             if (sku) {
                 var _sku_found;
                 for (var cc = 0; cc < catalog_cart.length; cc++)
                     if (catalog_cart[cc].sku == sku) _sku_found = true;
-                if (!_sku_found)
+                if (!_sku_found) {
                     catalog_cart.push({
                         sku: sku,
                         amount: 1
                     });
-                req.session.catalog_cart = catalog_cart;
+                    req.session.catalog_cart = catalog_cart;
+                }
+                return res.redirect(303, "/catalog/cart?rnd=" + Math.random().toString().replace('.', ''));
             }
             var warehouse_query = [];
             for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
@@ -117,20 +194,28 @@ module.exports = function(app) {
             }).toArray(function(wh_err, whitems) {
                 var cart_html = '';
                 if (whitems) {
+                    var subtotal = 0;
                     for (var wi = 0; wi < whitems.length; wi++) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
+                        var currency = curs_hash[whitems[wi].pcurs] || whitems[wi].pcurs,
+                            sum = whitems[wi].pprice * amount;
+                        subtotal += sum * rate_hash[whitems[wi].pcurs];
                         cart_html += pt_cart_item(gaikan, {
                             lang: i18nm,
                             title: whitems[wi].ptitle,
                             price: whitems[wi].pprice,
-                            sku: whitems[wi].sku,
-                            amount: amount
+                            sku: whitems[wi].pfilename,
+                            amount: amount,
+                            sum: sum,
+                            currency: currency
                         }, undefined);
                     }
                     cart_html = pt_cart(gaikan, {
                         body: cart_html,
+                        subtotal: subtotal,
+                        subtotal_currency: whcurs[0][_locale],
                         lang: i18nm
                     }, undefined);
                 } else {
@@ -149,7 +234,7 @@ module.exports = function(app) {
                     description: '',
                     extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                 };
-                return app.get('renderer').render(res, undefined, data, req);
+                app.get('renderer').render(res, undefined, data, req);
             });
         });
     });
