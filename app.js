@@ -116,29 +116,32 @@ I18n.expressBind(app, {
 
 // Connect Redis or fallback to Mongo
 
-if (redis) {
-    app.use(session({
-        store: new RedisStore({
-            client: redis_client,
-            prefix: config.redis.prefix
-        }),
-        secret: config.session_secret,
-        cookie: {
-            domain: config.cookie.domain
-        }
-    }));
-} else {
-    app.use(session({
-        store: new MongoStore({
-            url: config.mongo.url,
-            auto_reconnect: false
-        }),
-        secret: config.session_secret,
-        cookie: {
-            domain: config.cookie.domain
-        }
-    }));
-}
+var _store = new RedisStore({
+    client: redis_client,
+    prefix: config.redis.prefix
+});
+
+if (!redis) _store = new MongoStore({
+    url: config.mongo.url,
+    auto_reconnect: false
+});
+
+app.use(session({
+    store: _store,
+    httpOnly: false,
+    secret: config.session.secret,
+    cookie: {
+        domain: config.cookie.domain,
+        path: config.cookie.path,
+        secure: config.cookie.secure,
+        maxAge: config.cookie.maxAge
+    },
+    rolling: config.session.rolling,
+    resave: config.session.resave,
+    proxy: config.session.proxy,
+    saveUninitialized: config.session.saveUninitialized,
+    unset: config.session.unset
+}));
 
 // Pre-load functions
 

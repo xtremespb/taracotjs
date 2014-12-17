@@ -101,7 +101,7 @@ async.series([
             program.confirm('Installation script can update secrets and salt. Continue? ', function(ok) {
                 if (ok) {
                     config.cookie.secret = generateId(32);
-                    config.session_secret = generateId(32);
+                    config.session.secret = generateId(32);
                     config.salt = generateId(64);
                     fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function(err) {
                         if (err) {
