@@ -1,10 +1,29 @@
 <h1>!{root.lang.__('cart')}</h1>
-<div class="uk-alert uk-alert-danger" style="display:none" id="taracot_catalog_cart_error"></div>
-!{root.cart_html}
+<div id="taracot_catalog_cart_wrap">
+    <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_catalog_cart_error"></div>
+    !{root.cart_html}
+    <div class="uk-margin-top">
+    	<button class="uk-button uk-button-success taracot-catalog-cart-btn-checkout">!{root.lang.__('checkout')}</button>&nbsp;<button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
+    </div>
+</div>
+<div id="taracot_catalog_cart_empty" style="display:none">
+    !{root.lang.__('no_items_in_cart')}
+    <div class="uk-margin-top">
+    	<button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
+    </div>
+</div>
 <script>
 var _lang_vars = {
-    ajax_failed: "!{root.lang.__('ajax_failed')}",
-    form_errors: "!{root.lang.__('form_contain_errors')}"
-};
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        form_errors: "!{root.lang.__('form_contain_errors')}"
+    },
+    init_cart = !{
+        root.init_cart
+    },
+    _taracot_catalog_init_sort = "!{root.init_sort}",
+    _taracot_catalog_init_view = "!{root.init_view}",
+    _taracot_catalog_init_path = "!{root.init_path}",
+    _taracot_catalog_init_find = "!{root.init_find}",
+    _taracot_catalog_init_page = "!{root.init_page}";
 </script>
 <script src="/modules/catalog/js/frontend_cart.js"></script>

@@ -29,6 +29,10 @@ var _process_cart = function(cart_values) {
                         $('#cart_sum_' + data.cart[c].id).html(data.cart[c].sum);
                         if (data.cart[c].amount == '0') $('#cart_sum_' + data.cart[c].id).parent().parent().remove();
                     }
+                if (parseInt(data.cart_size) < 1) {
+                    $('#taracot_catalog_cart_wrap').hide();
+                    $('#taracot_catalog_cart_empty').show();
+                }
             } else {
                 $('#taracot_catalog_cart_subtotal').html(subtotal_save);
                 $('#taracot_catalog_cart_error').html(_lang_vars.ajax_failed);
@@ -46,6 +50,9 @@ var _process_cart = function(cart_values) {
 };
 
 $(document).ready(function() {
+    $('#taracot_catalog_cart_wrap').show();
+    $('#taracot_catalog_cart_empty').hide();
+    for (var ic = 0; ic < init_cart.length; ic++) $('#cart_amount_' + init_cart[ic].sku).val(init_cart[ic].amount);
     $('.taracot-catalog-cart-input-amount').each(function() {
         var id = $(this).attr('id').replace(/^cart_amount_/, '');
         cart_items.push(id);
@@ -55,7 +62,7 @@ $(document).ready(function() {
         var cart_values = [];
         for (var i = 0; i < cart_items.length; i++) {
             var val = $.trim($('#cart_amount_' + cart_items[i]).val());
-            if (val === '' || isNaN(parseInt(val)) || parseInt(val) < 0) {
+            if (val === '' || isNaN(parseInt(val)) || parseInt(val) < 0 || parseInt(val) > 999) {
                 $('#cart_amount_' + cart_items[i]).addClass('uk-form-danger');
                 $('#cart_amount_' + cart_items[i]).focus();
                 $('#taracot_catalog_cart_error').html(_lang_vars.form_errors);
@@ -71,10 +78,31 @@ $(document).ready(function() {
     });
     // Delete item handler
     $('.taracot-cart-item-del').click(function() {
-        var cart_values = [{
-            id: $(this).attr('id').replace(/^cart_del_/, ''),
-            val: 0
-        }];
+        var cart_values = [];
+        for (var i = 0; i < cart_items.length; i++) {
+            var val = $.trim($('#cart_amount_' + cart_items[i]).val()) || '0';
+            if (cart_items[i] == $(this).attr('id').replace(/^cart_del_/, '')) val = '0';
+            if (val === '' || isNaN(parseInt(val)) || parseInt(val) < 0 || parseInt(val) > 999) {
+                $('#cart_amount_' + cart_items[i]).addClass('uk-form-danger');
+                $('#cart_amount_' + cart_items[i]).focus();
+                $('#taracot_catalog_cart_error').html(_lang_vars.form_errors);
+                $('#taracot_catalog_cart_error').show();
+                return;
+            }
+            cart_values.push({
+                id: cart_items[i],
+                val: val
+            });
+        }
         _process_cart(cart_values);
+    });
+    // Continue shopping handler
+    $('.taracot-catalog-cart-btn-back').click(function() {
+        var _path = _taracot_catalog_init_path || '/';
+        location.href = '/catalog' + _path + '?find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
+    });
+    // Checkout handler
+    $('.taracot-catalog-cart-btn-checkout').click(function() {
+        location.href = '/catalog/checkout?find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
     });
 });

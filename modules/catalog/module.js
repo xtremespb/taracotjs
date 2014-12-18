@@ -43,6 +43,101 @@ module.exports = function(app) {
         "type": "root"
     }];
 
+    router.get('/checkout', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        var page = parseInt(req.query.page) || 1,
+            sort = req.query.sort || 't',
+            show_all = req.query.show_all || '1',
+            init_find = req.query.find || '',
+            init_cat = req.query.cat || '',
+            sku = req.query.sku;
+        if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
+        if (show_all && show_all != '1' && show_all != '0') show_all = '1';
+        if (page && (page == "NaN" || page < 0)) page = 1;
+        if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'curs'
+            }]
+        }).toArray(function(err, db) {
+            var whcurs = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            }
+            var curs_hash = {},
+                rate_hash = {};
+            for (var cs = 0; cs < whcurs.length; cs++) {
+                curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+                rate_hash[whcurs[cs].id] = whcurs[cs].exr || 1;
+            }
+            var catalog_cart = req.session.catalog_cart || [];
+            var warehouse_query = [];
+            for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
+                pfilename: catalog_cart[ca].sku
+            });
+            app.get('mongodb').collection('warehouse').find({
+                $or: warehouse_query
+            }).toArray(function(wh_err, whitems) {
+                var cart_html = '';
+                if (whitems) {
+                    var subtotal = 0;
+                    for (var wi = 0; wi < whitems.length; wi++) {
+                        var amount = 0;
+                        for (var cc = 0; cc < catalog_cart.length; cc++)
+                            if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
+                        var currency = curs_hash[whitems[wi].pcurs] || whitems[wi].pcurs,
+                            sum = whitems[wi].pprice * amount;
+                        subtotal += sum * rate_hash[whitems[wi].pcurs];
+                        cart_html += pt_cart_item(gaikan, {
+                            lang: i18nm,
+                            title: whitems[wi].ptitle,
+                            price: whitems[wi].pprice,
+                            sku: whitems[wi].pfilename,
+                            amount: amount,
+                            sum: sum,
+                            currency: currency
+                        }, undefined);
+                    }
+                    cart_html = pt_cart(gaikan, {
+                        body: cart_html,
+                        subtotal: subtotal,
+                        subtotal_currency: whcurs[0][_locale],
+                        lang: i18nm
+                    }, undefined);
+                } else {
+                    cart_html = i18nm.__('no_items_in_cart');
+                }
+                var out_html = cart(gaikan, {
+                    lang: i18nm,
+                    cart_html: cart_html,
+                    init_cart: JSON.stringify(catalog_cart || []),
+                    init_sort: sort,
+                    init_view: show_all,
+                    init_path: init_cat,
+                    init_page: page,
+                    init_find: init_find
+                }, undefined);
+                var data = {
+                    title: i18nm.__('cart'),
+                    current_lang: _locale,
+                    page_title: i18nm.__('cart'),
+                    content: out_html,
+                    keywords: '',
+                    description: '',
+                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                };
+                app.get('renderer').render(res, undefined, data, req);
+            });
+        });
+    });
+
     router.post('/ajax/cart', function(req, res, next) {
         var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
@@ -55,7 +150,7 @@ module.exports = function(app) {
             if (!cart_values[i].id || !cart_values[i].id.match(/^[A-Za-z0-9_\-\.]{0,80}$/) || isNaN(parseInt(cart_values[i].val)) || parseInt(cart_values[i].val) < 0) return res.send(JSON.stringify({
                 status: 0
             }));
-        // Generate hash pairs: sku -> amount
+            // Generate hash pairs: sku -> amount
         var cart_values_hash = {};
         for (var cv = 0; cv < cart_values.length; cv++) cart_values_hash[cart_values[cv].id] = cart_values[cv].val;
         // Get cart from session
@@ -89,24 +184,34 @@ module.exports = function(app) {
             for (var cc = 0; cc < catalog_cart.length; cc++) {
                 var ncv = cart_values_hash[catalog_cart[cc].sku];
                 if (ncv !== undefined) {
+                    if (parseInt(ncv) > 999) ncv = 999;
                     catalog_cart[cc].amount = ncv;
                     if (ncv > 0) {
                         _catalog_cart.push(catalog_cart[cc]);
                     }
+                } else {
+                    _catalog_cart.push(catalog_cart[cc]);
                 }
             }
             var warehouse_query = [];
-            for (var ca = 0; ca < _catalog_cart.length; ca++) warehouse_query.push({
-                pfilename: _catalog_cart[ca].sku
+            for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
+                pfilename: catalog_cart[ca].sku
             });
             if (!warehouse_query.length) {
-                res.send(JSON.stringify({
+                var cart = [];
+                for (var wi = 0; wi < catalog_cart.length; wi++)
+                    cart.push({
+                        id: catalog_cart[wi].sku,
+                        sum: 0,
+                        amount: 0
+                    });
+                req.session.catalog_cart = _catalog_cart;
+                return res.send(JSON.stringify({
                     status: 1,
                     subtotal: 0,
-                    cart: []
+                    cart: cart,
+                    cart_size: 0
                 }));
-                req.session.catalog_cart = _catalog_cart;
-                return;
             }
             app.get('mongodb').collection('warehouse').find({
                 $or: warehouse_query
@@ -126,12 +231,12 @@ module.exports = function(app) {
                     subtotal += sum * rate_hash[whitems[wi].pcurs];
                 }
                 req.session.catalog_cart = _catalog_cart;
-                res.send(JSON.stringify({
+                return res.send(JSON.stringify({
                     status: 1,
                     subtotal: subtotal,
-                    cart: cart
+                    cart: cart,
+                    cart_size: _catalog_cart.length
                 }));
-                return;
             });
         });
     });
@@ -142,14 +247,14 @@ module.exports = function(app) {
         var page = parseInt(req.query.page) || 1,
             sort = req.query.sort || 't',
             show_all = req.query.show_all || '1',
-            init_find = req.query.find,
-            init_cat = req.query.cat,
+            init_find = req.query.find || '',
+            init_cat = req.query.cat || '',
             sku = req.query.sku;
         if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
         if (show_all && show_all != '1' && show_all != '0') show_all = '1';
         if (page && (page == "NaN" || page < 0)) page = 1;
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
-        if (init_cat) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (sku && !sku.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) sku = '';
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
@@ -183,7 +288,7 @@ module.exports = function(app) {
                     });
                     req.session.catalog_cart = catalog_cart;
                 }
-                return res.redirect(303, "/catalog/cart?rnd=" + Math.random().toString().replace('.', ''));
+                return res.redirect(303, "/catalog/cart?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat);
             }
             var warehouse_query = [];
             for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
@@ -223,7 +328,13 @@ module.exports = function(app) {
                 }
                 var out_html = cart(gaikan, {
                     lang: i18nm,
-                    cart_html: cart_html
+                    cart_html: cart_html,
+                    init_cart: JSON.stringify(catalog_cart || []),
+                    init_sort: sort,
+                    init_view: show_all,
+                    init_path: init_cat,
+                    init_page: page,
+                    init_find: init_find
                 }, undefined);
                 var data = {
                     title: i18nm.__('cart'),
@@ -253,7 +364,7 @@ module.exports = function(app) {
         if (show_all && show_all != '1' && show_all != '0') show_all = '1';
         if (page && (page == "NaN" || page < 0)) page = 1;
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
-        if (init_cat) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'items'
@@ -356,7 +467,7 @@ module.exports = function(app) {
                         val: whitem.pfilename
                     }, undefined);
                     var item_avail = i18nm.__('item_avail');
-                    if (whitem.pamount === 0) item_avail = i18nm.__('item_not_avail');
+                    if (parseInt(whitem.pamount) === 0) item_avail = i18nm.__('item_not_avail');
                     pgeninfo += pt_desc_list_item(gaikan, {
                         par: i18nm.__('avail'),
                         val: item_avail
@@ -368,7 +479,7 @@ module.exports = function(app) {
                     pgeninfo = pt_desc_list(gaikan, {
                         items: pgeninfo
                     }, undefined);
-                    if (whitem.amount === 0) {
+                    if (parseInt(whitem.pamount) === 0) {
                         btn_buy = pt_btn_disabled(gaikan, {
                             lang: i18nm
                         }, undefined);
@@ -591,7 +702,9 @@ module.exports = function(app) {
                                     }, undefined);
                                 } else {
                                     btn_buy = pt_btn_mini(gaikan, {
-                                        lang: i18nm
+                                        lang: i18nm,
+                                        sku: sku,
+                                        cat: (current_path || '/')
                                     }, undefined);
                                 }
                                 catalog_items_html += catalog_item(gaikan, {

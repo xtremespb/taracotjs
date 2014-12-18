@@ -31,5 +31,8 @@
 	"subtotal": "Subtotal",
 	"ajax_failed": "Server request failed",
 	"form_contain_errors": "Form contains errors",
-	"no_items_in_cart": "Currently there are no items in cart. You may add something by clicking the &quot;Buy item&quot; button."
+	"no_items_in_cart": "Currently there are no items in cart. You may add something by clicking the &quot;Buy item&quot; button.",
+	"item_not_avail": "Item is not available for purchase",
+	"checkout": "Checkout",
+	"continue_shopping": "Continue shopping"
 }
