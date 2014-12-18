@@ -102,7 +102,25 @@ app.use(multer({
 app.use(cookieParser(config.cookie.secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+
+// Load static
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+if (!app.get('blocks')) {
+    app.set('blocks', {});
+    app.set('blocks_sync', {});
+}
+
+config.blocks.forEach(function(_block) {
+    app.use(express.static(path.join(__dirname, 'modules/' + _block.name + '/public')));
+});
+
+// Load modules
+
+config.modules.forEach(function(module) {
+    app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
+});
 
 // Locales
 
@@ -328,11 +346,6 @@ app.use(function(req, res, next) {
 });
 
 // Load blocks
-
-if (!app.get('blocks')) {
-    app.set('blocks', {});
-    app.set('blocks_sync', {});
-}
 
 config.blocks.forEach(function(_block) {
     var _b = require('./modules/' + _block.name + '/block')(app);
