@@ -27,6 +27,7 @@ var _process_cart = function(cart_values) {
                 if (data.cart && data.cart.length)
                     for (var c = 0; c < data.cart.length; c++) {
                         $('#cart_sum_' + data.cart[c].id).html(data.cart[c].sum);
+                        $('#cart_amount_' + data.cart[c].id).val(data.cart[c].amount);
                         if (data.cart[c].amount == '0') $('#cart_sum_' + data.cart[c].id).parent().parent().remove();
                     }
                 if (parseInt(data.cart_size) < 1) {

@@ -10,6 +10,7 @@ module.exports = function(app) {
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
+        checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/checkout.html'),
         catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
         catalog_item_view = gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
         pt_li_a = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
@@ -25,8 +26,10 @@ module.exports = function(app) {
         pt_desc_list = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list.html'),
         pt_desc_list_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html'),
         pt_cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart.html'),
-        pt_cart_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html');
-
+        pt_cart_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html'),
+        pt_checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout.html'),
+        pt_checkout_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout_item.html'),
+        pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -50,13 +53,19 @@ module.exports = function(app) {
             sort = req.query.sort || 't',
             show_all = req.query.show_all || '1',
             init_find = req.query.find || '',
-            init_cat = req.query.cat || '',
-            sku = req.query.sku;
+            init_cat = req.query.cat || '';
         if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
         if (show_all && show_all != '1' && show_all != '0') show_all = '1';
         if (page && (page == "NaN" || page < 0)) page = 1;
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+
+        if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect = "/catalog/checkout?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat;
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'curs'
@@ -85,39 +94,48 @@ module.exports = function(app) {
             app.get('mongodb').collection('warehouse').find({
                 $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
-                var cart_html = '';
+                var checkout_html = '';
                 if (whitems) {
-                    var subtotal = 0;
+                    var subtotal = 0,
+                        missing_items = [];
                     for (var wi = 0; wi < whitems.length; wi++) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
                         var currency = curs_hash[whitems[wi].pcurs] || whitems[wi].pcurs,
-                            sum = whitems[wi].pprice * amount;
+                            sum = whitems[wi].pprice * amount,
+                            item_missing = '';
+                        if (parseInt(whitems[wi].pamount) > -1 && parseInt(whitems[wi].pamount) < amount) {
+                            missing_items.push(whitems[wi].pfilename);
+                            item_missing = pt_alert_warning(gaikan, {
+                                msg: i18nm.__('item_missing')
+                            }, undefined);
+                        }
                         subtotal += sum * rate_hash[whitems[wi].pcurs];
-                        cart_html += pt_cart_item(gaikan, {
+                        checkout_html += pt_checkout_item(gaikan, {
                             lang: i18nm,
                             title: whitems[wi].ptitle,
                             price: whitems[wi].pprice,
                             sku: whitems[wi].pfilename,
                             amount: amount,
+                            item_missing: item_missing,
                             sum: sum,
                             currency: currency
                         }, undefined);
                     }
-                    cart_html = pt_cart(gaikan, {
-                        body: cart_html,
+                    checkout_html = pt_checkout(gaikan, {
+                        body: checkout_html,
                         subtotal: subtotal,
                         subtotal_currency: whcurs[0][_locale],
                         lang: i18nm
                     }, undefined);
                 } else {
-                    cart_html = i18nm.__('no_items_in_cart');
+                    checkout_html = i18nm.__('no_items_in_checkout');
                 }
-                var out_html = cart(gaikan, {
+                var out_html = checkout(gaikan, {
                     lang: i18nm,
-                    cart_html: cart_html,
-                    init_cart: JSON.stringify(catalog_cart || []),
+                    checkout_html: checkout_html,
+                    init_checkout: JSON.stringify(catalog_cart || []),
                     init_sort: sort,
                     init_view: show_all,
                     init_path: init_cat,
@@ -125,9 +143,9 @@ module.exports = function(app) {
                     init_find: init_find
                 }, undefined);
                 var data = {
-                    title: i18nm.__('cart'),
+                    title: i18nm.__('checkout'),
                     current_lang: _locale,
-                    page_title: i18nm.__('cart'),
+                    page_title: i18nm.__('checkout'),
                     content: out_html,
                     keywords: '',
                     description: '',
@@ -222,6 +240,15 @@ module.exports = function(app) {
                 var cart = [];
                 for (var wi = 0; wi < whitems.length; wi++) {
                     var amount = cart_values_hash[whitems[wi].pfilename];
+                    if (parseInt(whitems[wi].pamount) != -1 && amount > parseInt(whitems[wi].pamount)) {
+                        amount = parseInt(whitems[wi].pamount);
+                        for (var wit = 0; wit < _catalog_cart.length; wit++) {
+                            if (_catalog_cart[wit].sku == whitems[wi].pfilename) {
+                                _catalog_cart[wit].amount = amount;
+                                if (amount === 0) _catalog_cart.splice(wit, 1);
+                            }
+                        }
+                    }
                     sum = amount * whitems[wi].pprice;
                     cart.push({
                         id: whitems[wi].pfilename,
@@ -304,6 +331,7 @@ module.exports = function(app) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
+                        if (parseInt(whitems[wi].pamount) != -1 && amount > parseInt(whitems[wi].pamount)) amount = parseInt(whitems[wi].pamount);
                         var currency = curs_hash[whitems[wi].pcurs] || whitems[wi].pcurs,
                             sum = whitems[wi].pprice * amount;
                         subtotal += sum * rate_hash[whitems[wi].pcurs];

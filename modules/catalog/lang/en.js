@@ -34,5 +34,16 @@
 	"no_items_in_cart": "Currently there are no items in cart. You may add something by clicking the &quot;Buy item&quot; button.",
 	"item_not_avail": "Item is not available for purchase",
 	"checkout": "Checkout",
-	"continue_shopping": "Continue shopping"
+	"continue_shopping": "Continue shopping",
+	"no_items_in_checkout": "Unable to checkout: no items available",
+	"item_missing": "The requested amount is currently not available",
+	"place_order": "Place order",
+	"back_to_cart": "Back to cart",
+	"order_summary": "Order summary",
+	"checkout_hint": "Please check your order details and click &quot;Place order&quot; button to continue.",
+	"shipment_options": "Shipment",
+	"shipping_method": "Shipping method",
+	"ship_name": "First-, middle- and last names",
+	"street": "Street, house and apt. number",
+	"city": "city"
 }

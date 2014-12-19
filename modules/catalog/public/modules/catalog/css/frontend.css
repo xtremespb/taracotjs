@@ -138,3 +138,9 @@
 .taracot-catalog-cart-td-actions {
     width: 30px;
 }
+.taracot-catalog-checkout-alert-missing {
+    font-size: 90%;
+    margin-top: 10px;
+    padding: 3px 6px 3px 6px;
+    display: inline-block;
+}
