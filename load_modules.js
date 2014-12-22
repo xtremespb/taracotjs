@@ -109,7 +109,7 @@ var load_modules = {
 		cp_prefix: ''
 	}, {
 		name: 'pages',
-		prefix: '/pages/',
+		prefix: '',
 		cp_id: 'pages',
 		cp_prefix: '/cp/pages'
 	}]
