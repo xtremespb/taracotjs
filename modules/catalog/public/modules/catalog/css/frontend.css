@@ -144,3 +144,18 @@
     padding: 3px 6px 3px 6px;
     display: inline-block;
 }
+.taracot-form-help-block {
+    color: #666;
+    font-size: 80%;
+}
+.red-asterisk {
+    color: red;
+    font-weight: bold;
+}
+#taracot_catalog_cart_total_sum {
+    font-size: 120%;
+    font-weight: bold;
+}
+.taracot-catalog-checkout-ajax {
+    padding-right: 7px;
+}

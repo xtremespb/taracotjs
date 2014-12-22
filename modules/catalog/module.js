@@ -29,7 +29,8 @@ module.exports = function(app) {
         pt_cart_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html'),
         pt_checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout.html'),
         pt_checkout_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout_item.html'),
-        pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html');
+        pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html'),
+        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -45,6 +46,140 @@ module.exports = function(app) {
         "parent": "#",
         "type": "root"
     }];
+
+    var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"];
+
+    router.post('/ajax/checkout', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1)
+            return res.send(JSON.stringify({
+                status: 0,
+                error: i18nm.__('unauth'),
+                stop: 1
+            }));
+        var ship_method = (req.body.ship_method || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, ''),
+            ship_name = (req.body.ship_name || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_street = (req.body.ship_street || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_city = (req.body.ship_city || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_region = (req.body.ship_region || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_country = (req.body.ship_country || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_zip = (req.body.ship_zip || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_phone = (req.body.ship_phone || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_comment = (req.body.ship_comment || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;').replace(/\n/g, ' '),
+            total_cost = parseFloat(req.body.total_cost);
+        var shipping_address = {};
+        if (!ship_method.match(/_noaddr$/i)) {
+            var errors = [];
+            if (!ship_name || !ship_name.length || ship_name.length > 80) errors.push(i18nm.__('invalid_name'));
+            if (!ship_street || !ship_street.length || ship_street.length > 120) errors.push(i18nm.__('invalid_street'));
+            if (!ship_city || !ship_city.length || ship_city.length > 120) errors.push(i18nm.__('invalid_city'));
+            if (!ship_region || !ship_region.length || ship_region.length > 120) errors.push(i18nm.__('invalid_region'));
+            if (!ship_country || !ship_country.match(/^[A-Z]{2}$/)) errors.push(i18nm.__('invalid_country'));
+            if (!ship_zip || !ship_zip.match(/^[0-9]{5,6}$/)) errors.push(i18nm.__('invalid_country'));
+            if (!ship_phone || !ship_phone.match(/^[0-9\+]{1,40}$/)) errors.push(i18nm.__('invalid_phone'));
+            if (ship_comment && ship_comment.length > 1024) errors.push(i18nm.__('invalid_comment'));
+            if (!total_cost || total_cost < 0) errors.push(i18nm.__('invalid_total_cost'));
+            if (!errors.length) {
+                var country = '';
+                for (var cn = 0; cn < countries.length; cn++)
+                    if (countries[cn] == ship_country) country = countries[cn];
+                if (!country) errors.push(i18nm.__('invalid_country'));
+            }
+            if (errors.length)
+                return res.send(JSON.stringify({
+                    status: 0,
+                    error: errors.join('. ')
+                }));
+        }
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'curs'
+            }, {
+                conf: 'ship'
+            }]
+        }).toArray(function(err, db) {
+            var whcurs = [],
+                whship = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+                for (var s = 0; s < db.length; s++) {
+                    if (db[s].conf == 'ship' && db[s].data)
+                        try {
+                            whship = JSON.parse(db[s].data);
+                        } catch (ex) {}
+                }
+            }
+            var whship_found;
+            for (var sh = 0; sh < whship.length; sh++)
+                if (whship[sh].id === ship_method) whship_found = whship[sh];
+            if (!whship_found)
+                return res.send(JSON.stringify({
+                    status: 0,
+                    error: i18nm.__('invalid_ship_method')
+                }));
+            var curs_hash = {},
+                rate_hash = {};
+            for (var cs = 0; cs < whcurs.length; cs++) {
+                curs_hash[whcurs[cs].id] = whcurs[cs][_locale] || whcurs[cs].id;
+                rate_hash[whcurs[cs].id] = whcurs[cs].exr || 1;
+            }
+            var catalog_cart = req.session.catalog_cart || [];
+            var warehouse_query = [];
+            for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
+                pfilename: catalog_cart[ca].sku
+            });
+            app.get('mongodb').collection('warehouse').find({
+                $or: warehouse_query
+            }).toArray(function(wh_err, whitems) {
+                var subtotal = 0,
+                    total_weight = 0,
+                    total_amount = 0;
+                if (whitems) {
+                    var cart = {};
+                    for (var wi = 0; wi < whitems.length; wi++) {
+                        var amount = 0;
+                        for (var cc = 0; cc < catalog_cart.length; cc++)
+                            if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
+                        var currency = curs_hash[whitems[wi].pcurs] || whitems[wi].pcurs,
+                            sum = whitems[wi].pprice * amount;
+                        if (parseInt(whitems[wi].pamount) > -1 && parseInt(whitems[wi].pamount) < amount)
+                            return res.send(JSON.stringify({
+                                status: 0,
+                                error: i18nm.__('item_missing') + ': ' + whitems[wi].ptitle,
+                                stop: 1
+                            }));
+                        cart[whitems[wi].pfilename] = parseFloat(amount);
+                        subtotal += sum * rate_hash[whitems[wi].pcurs];
+                        total_weight += whitems[wi].pweight * amount;
+                        total_amount = parseInt(total_amount) + parseInt(amount);
+                    }
+                    var ship_cost = whship_found.price;
+                    if (whship_found.weight > 0 && total_weight > 0) ship_cost *= Math.ceil(total_weight / whship_found.weight);
+                    if (whship_found.amnt > 0) ship_cost *= Math.ceil(total_amount / whship_found.amnt);
+                    var total = ship_cost + subtotal;
+                    if (total_cost != total)
+                        return res.send(JSON.stringify({
+                            status: 0,
+                            error: i18nm.__('invalid_total_cost'),
+                            stop: 1
+                        }));
+                    // Try to place an order
+                } else {
+                    return res.send(JSON.stringify({
+                        status: 0,
+                        error: i18nm.__('no_items_in_checkout'),
+                        stop: 1
+                    }));
+                }
+            });
+        });
+    });
 
     router.get('/checkout', function(req, res, next) {
         var _locale = req.session.current_locale;
@@ -69,14 +204,23 @@ module.exports = function(app) {
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'curs'
+            }, {
+                conf: 'ship'
             }]
         }).toArray(function(err, db) {
-            var whcurs = [];
+            var whcurs = [],
+                whship = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'curs' && db[i].data)
                         try {
                             whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+                for (var s = 0; s < db.length; s++) {
+                    if (db[s].conf == 'ship' && db[s].data)
+                        try {
+                            whship = JSON.parse(db[s].data);
                         } catch (ex) {}
                 }
             }
@@ -95,9 +239,11 @@ module.exports = function(app) {
                 $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
                 var checkout_html = '';
+                var subtotal = 0,
+                    missing_items = [],
+                    total_weight = 0,
+                    total_amount = 0;
                 if (whitems) {
-                    var subtotal = 0,
-                        missing_items = [];
                     for (var wi = 0; wi < whitems.length; wi++) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
@@ -112,6 +258,8 @@ module.exports = function(app) {
                             }, undefined);
                         }
                         subtotal += sum * rate_hash[whitems[wi].pcurs];
+                        total_weight += whitems[wi].pweight * amount;
+                        total_amount = parseInt(total_amount) + parseInt(amount);
                         checkout_html += pt_checkout_item(gaikan, {
                             lang: i18nm,
                             title: whitems[wi].ptitle,
@@ -132,15 +280,35 @@ module.exports = function(app) {
                 } else {
                     checkout_html = i18nm.__('no_items_in_checkout');
                 }
+                var country_list_html = '',
+                    sm_list_html = '';
+                for (var i = 0; i < countries.length; i++)
+                    country_list_html += pt_select_option(gaikan, {
+                        val: countries[i],
+                        text: i18nm.__('country_list')[i]
+                    }, undefined);
+                for (var sm = 0; sm < whship.length; sm++)
+                    sm_list_html += pt_select_option(gaikan, {
+                        val: whship[sm].id,
+                        text: whship[sm][_locale]
+                    }, undefined);
                 var out_html = checkout(gaikan, {
                     lang: i18nm,
                     checkout_html: checkout_html,
+                    country_list_html: country_list_html,
+                    sm_list_html: sm_list_html,
                     init_checkout: JSON.stringify(catalog_cart || []),
                     init_sort: sort,
                     init_view: show_all,
                     init_path: init_cat,
                     init_page: page,
-                    init_find: init_find
+                    init_find: init_find,
+                    total_weight: total_weight,
+                    total_amount: total_amount,
+                    shipping_methods: JSON.stringify(whship),
+                    subtotal_currency: whcurs[0][_locale],
+                    subtotal: subtotal,
+                    missing_items: JSON.stringify(missing_items)
                 }, undefined);
                 var data = {
                     title: i18nm.__('checkout'),

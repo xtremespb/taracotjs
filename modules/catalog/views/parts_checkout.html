@@ -9,5 +9,11 @@
     </thead>
     <tbody class="uk-form">
     	!{root.body}
+        <tr class="taracot-catalog-cart-table-lastrow">
+            <td><i>!{root.lang.__('subtotal')}:</i></td>
+            <td class="taracot-catalog-cart-td-price"></td>
+            <td class="taracot-catalog-cart-td-amount"></td>
+            <td class="taracot-catalog-cart-td-sum"><span id="taracot_catalog_cart_subtotal">!{root.subtotal}</span>&nbsp;!{root.subtotal_currency}</td>
+        </tr>
     </tbody>
 </table>
