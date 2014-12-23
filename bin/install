@@ -736,8 +736,104 @@ async.series([
                     callback();
                 });
             });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse\n");
+            db.createCollection('warehouse', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: warehouse\n");
+            ensure_indexes('warehouse', ['pfolder', 'pfilename', 'plang', 'ptitle'], null, null, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse_categories\n");
+            db.createCollection('warehouse_categories', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: warehouse_categories\n");
+            ensure_indexes('warehouse_categories', ['oname', 'ovalue'], null, null, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse_conf\n");
+            db.createCollection('warehouse_conf', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: warehouse_conf\n");
+            ensure_indexes('warehouse_conf', ['conf'], null, null, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse_addr\n");
+            db.createCollection('warehouse_addr', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: counters\n");
+            db.createCollection('counters', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding warehouse_orders item to counters collections...\n");
+            db.collection('menu').insert({
+                "_id": "warehouse_orders",
+                "seq": 0
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
         }
-
     ],
     function(err) {
         if (err) {
