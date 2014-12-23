@@ -6,7 +6,8 @@ module.exports = function(app) {
         path = app.get('path'),
         ObjectId = require('mongodb').ObjectID,
         fs = require('fs'),
-        parser = app.get('parser');
+        parser = app.get('parser'),
+        async = require('async');
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
@@ -91,6 +92,16 @@ module.exports = function(app) {
                     status: 0,
                     error: errors.join('. ')
                 }));
+            shipping_address = {
+                ship_name: ship_name,
+                ship_street: ship_street,
+                ship_city: ship_city,
+                ship_region: ship_region,
+                ship_country: ship_country,
+                ship_zip: ship_zip,
+                ship_phone: ship_phone,
+                ship_comment: ship_comment
+            };
         }
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
@@ -135,7 +146,8 @@ module.exports = function(app) {
                 pfilename: catalog_cart[ca].sku
             });
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query
+                $or: warehouse_query,
+                plang: _locale
             }).toArray(function(wh_err, whitems) {
                 var subtotal = 0,
                     total_weight = 0,
@@ -169,7 +181,118 @@ module.exports = function(app) {
                             error: i18nm.__('invalid_total_cost'),
                             stop: 1
                         }));
-                    // Try to place an order
+                    // Update the amounts
+                    var update_items = [];
+                    for (var key in cart) update_items.push(key);
+                    async.each(update_items, function(item, callback) {
+                        app.get('mongodb').collection('warehouse').update({
+                            pfilename: item
+                        }, {
+                            $inc: {
+                                pamount: -cart[item]
+                            }
+                        }, function(err) {
+                            callback(err);
+                        });
+                    }, function(update_err) {
+                        app.get('mongodb').collection('warehouse').find({
+                            $or: warehouse_query,
+                            plang: _locale
+                        }).toArray(function(uc_err, ucitems) {
+                            var fail = false;
+                            if (uc_err || update_err || !ucitems) fail = true;
+                            if (ucitems && !fail)
+                                for (var uci = 0; uci < ucitems.length; uci++)
+                                    if (ucitems[uci].pamount < 0) fail = true;
+                            if (fail) {
+                                // Something went wrong, we need to rollback the transaction
+                                async.each(update_items, function(item, callback) {
+                                    app.get('mongodb').collection('warehouse').update({
+                                        pfilename: item
+                                    }, {
+                                        $inc: {
+                                            pamount: cart[item]
+                                        }
+                                    }, function(err) {
+                                        callback(err);
+                                    });
+                                }, function(rollback_err) {
+                                    return res.send(JSON.stringify({
+                                        status: 0,
+                                        error: i18nm.__('order_place_failed'),
+                                        stop: 1
+                                    }));
+                                });
+                            } else {
+                                // Let's place an order
+                                // Get unique order ID
+                                app.get('mongodb').collection('counters').findAndModify({
+                                    _id: 'warehouse_orders'
+                                }, [], {
+                                    $inc: {
+                                        seq: 1
+                                    }
+                                }, {
+                                    new: true
+                                }, function(err, counters) {
+                                    var order_id;
+                                    if (err || !counters || !counters.seq) order_id = Date.now();
+                                    if (counters.seq) order_id = counters.seq;
+                                    // Insert a new order into warehouse_orders collection
+                                    app.get('mongodb').collection('warehouse_orders').insert({
+                                        user_id: req.session.auth._id,
+                                        order_id: order_id,
+                                        order_timestamp: Date.now(),
+                                        order_status: 0,
+                                        cart_data: cart,
+                                        ship_method: ship_method,
+                                        sum_subtotal: subtotal,
+                                        sum_total: total,
+                                        shipping_address: shipping_address
+                                    }, function(err) {
+                                        if (err) {
+                                            // Something went wrong, we need to rollback the transaction
+                                            async.each(update_items, function(item, callback) {
+                                                app.get('mongodb').collection('warehouse').update({
+                                                    pfilename: item
+                                                }, {
+                                                    $inc: {
+                                                        pamount: cart[item]
+                                                    }
+                                                }, function(err) {
+                                                    callback(err);
+                                                });
+                                            }, function(rollback_err) {
+                                                return res.send(JSON.stringify({
+                                                    status: 0,
+                                                    error: i18nm.__('order_place_failed'),
+                                                    stop: 1
+                                                }));
+                                            });
+                                        } else {
+                                            // Everything's fine, order has been placed
+                                            // Try to store shipping address in the database
+                                            app.get('mongodb').collection('warehouse_addr').update({
+                                                _id: req.session.auth._id,
+                                            }, {
+                                                shipping_address: shipping_address
+                                            }, {
+                                                upsert: true,
+                                                safe: false
+                                            }, function() {
+                                                // Return success
+                                                return res.send(JSON.stringify({
+                                                    status: 1,
+                                                    order_id: order_id
+                                                }));
+                                            });
+                                        }
+                                    });
+                                });
+
+                            }
+                        });
+                    });
                 } else {
                     return res.send(JSON.stringify({
                         status: 0,
@@ -194,13 +317,11 @@ module.exports = function(app) {
         if (page && (page == "NaN" || page < 0)) page = 1;
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
-
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect = "/catalog/checkout?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat;
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'curs'
@@ -236,7 +357,8 @@ module.exports = function(app) {
                 pfilename: catalog_cart[ca].sku
             });
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query
+                $or: warehouse_query,
+                plang: _locale
             }).toArray(function(wh_err, whitems) {
                 var checkout_html = '';
                 var subtotal = 0,
@@ -400,7 +522,8 @@ module.exports = function(app) {
                 }));
             }
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query
+                $or: warehouse_query,
+                plang: _locale
             }).toArray(function(wh_err, whitems) {
                 if (wh_err) return res.send(JSON.stringify({
                     status: 0
@@ -490,7 +613,8 @@ module.exports = function(app) {
                 pfilename: catalog_cart[ca].sku
             });
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query
+                $or: warehouse_query,
+                plang: _locale
             }).toArray(function(wh_err, whitems) {
                 var cart_html = '';
                 if (whitems) {

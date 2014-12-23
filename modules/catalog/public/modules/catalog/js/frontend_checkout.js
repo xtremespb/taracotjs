@@ -58,6 +58,7 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
     }
     $('.taracot-catalog-checkout-ajax').show();
     $('.taracot-catalog-checkout-btn-checkout').attr('disabled', true);
+    $('#taracot_catalog_checkout_error').hide();
     $.ajax({
         type: 'POST',
         url: '/catalog/ajax/checkout',
@@ -75,14 +76,47 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
             total_cost: $('#taracot_catalog_cart_total_sum').html()
         },
         success: function(data) {
-
+            if (data) {
+                if (data.status == '1') {
+                    if (data.order_id) $('.taracot-catalog-success-order-id').html(data.order_id);
+                    $('#taracot_catalog_checkout_div').hide();
+                    $('#taracot_catalog_checkout_success_div').fadeIn(300);
+                } else {
+                    $('#taracot_catalog_checkout_error').html(_lang_vars.ajax_failed);
+                    if (data.error) $('#taracot_catalog_checkout_error').html(data.error);
+                    if (data.stop) {
+                        $('.taracot-catalog-checkout-btn-checkout').hide();
+                    }
+                    $('#taracot_catalog_checkout_error').show();
+                    $('html,body').animate({
+                            scrollTop: $("#taracot_catalog_checkout_error").offset().top
+                        },
+                        'slow');
+                }
+            } else {
+                $('#taracot_catalog_checkout_error').html(_lang_vars.ajax_failed);
+                $('#taracot_catalog_checkout_error').show();
+                $('html,body').animate({
+                        scrollTop: $("#taracot_catalog_checkout_error").offset().top
+                    },
+                    'slow');
+            }
         },
         error: function() {
-
+            $('#taracot_catalog_checkout_error').html(_lang_vars.ajax_failed);
+            $('#taracot_catalog_checkout_error').show();
+            $('html,body').animate({
+                    scrollTop: $("#taracot_catalog_checkout_error").offset().top
+                },
+                'slow');
         },
         complete: function() {
             $('.taracot-catalog-checkout-ajax').hide();
             $('.taracot-catalog-checkout-btn-checkout').attr('disabled', false);
+            $('html,body').animate({
+                    scrollTop: $("#taracot_catalog_checkout_error").offset().top
+                },
+                'slow');
         }
     });
 
@@ -91,14 +125,22 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
 $(document).ready(function() {
     $('#taracot_catalog_checkout_wrap').show();
     $('#taracot_catalog_checkout_empty').hide();
+    $('.taracot-catalog-checkout-btn-checkout').show();
     $('#catalog_checkout_ship_method').change(catalog_checkout_ship_method_handler);
     catalog_checkout_ship_method_handler();
     if (navigator.language) {
         var _country = navigator.language;
         if (navigator.language.length > 2) _country = navigator.language.slice(-2);
-        $('#catalog_checkout_country').val(_country);
+        $('#catalog_checkout_ship_country').val(_country);
     }
     $('.taracot-catalog-checkout-btn-checkout').attr('disabled', false);
     if (_taracot_catalog_missing_items.length) $('.taracot-catalog-checkout-btn-checkout').attr('disabled', true);
     $('.taracot-catalog-checkout-btn-checkout').click(taracot_catalog_checkout_btn_checkout_handler);
+    $('.taracot-catalog-checkout-btn-back').click(function() {
+        var _path = _taracot_catalog_init_path || '/';
+        location.href = '/catalog' + _path + '?find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
+    });
+    $('.taracot-catalog-checkout-btn-finish').click(function() {
+        location.href = '/catalog?rnd=' + parseInt(Math.random() * 900000 + 1000);
+    });
 });

@@ -315,5 +315,10 @@
 	"invalid_country": "Invalid country data",
 	"invalid_phone": "Invalid phone data",
 	"invalid_ship_method": "Invalid shipping method",
-	"invalid_total_cost": "Invalid order cost"
+	"invalid_total_cost": "Invalid order cost",
+	"order_place_failed": "Your order cannot be placed right now, please try again later",
+	"order_has_been_placed": "Order has been placed",
+	"thanks_for_order": "Thanks for your order! It's being processed now.",
+	"your_order_id": "Your order ID",
+	"back_to_catalog": "Back to catalog"
 }

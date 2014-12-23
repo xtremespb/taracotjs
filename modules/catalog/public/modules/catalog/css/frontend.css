@@ -159,3 +159,6 @@
 .taracot-catalog-checkout-ajax {
     padding-right: 7px;
 }
+.taracot-catalog-success-order-id {
+    font-weight: bold;
+}
