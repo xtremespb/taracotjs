@@ -461,6 +461,7 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_amount");
             return res.send(JSON.stringify(rep));
         }
+        pamount = parseInt(pamount);
         if (!pprice || parseFloat(pprice) != pprice || pprice < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_price");
@@ -560,6 +561,14 @@ module.exports = function(app) {
                                         rep.status = 1;
                                         res.send(JSON.stringify(rep));
                                         if (!_err) {
+                                            // Update amount for all items with the same filename
+                                            app.get('mongodb').collection('warehouse').update({
+                                                pfilename: pfilename
+                                            }, {
+                                                $set: {
+                                                    pamount: pamount
+                                                }
+                                            }, function() {});
                                             var data1 = app.get('mongodb').collection('search_index').find({
                                                 space: 'warehouse',
                                                 item_id: id
@@ -630,6 +639,7 @@ module.exports = function(app) {
                 });
             } else {
                 var data1 = app.get('mongodb').collection('warehouse').find({
+                    plang: plang,
                     pfilename: pfilename
                 }, {
                     limit: 1
@@ -659,6 +669,14 @@ module.exports = function(app) {
                         last_modified: Date.now()
                     }, function(_err, _items) {
                         if (!_err) {
+                            // Update amount for all items with the same filename
+                            app.get('mongodb').collection('warehouse').update({
+                                pfilename: pfilename
+                            }, {
+                                $set: {
+                                    pamount: pamount
+                                }
+                            }, function() {});
                             var url = pcategory + '/' + pfilename;
                             url = url.replace(/(\/+)/, '/');
                             var data = {
