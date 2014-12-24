@@ -99,8 +99,7 @@ module.exports = function(app) {
                 ship_region: ship_region,
                 ship_country: ship_country,
                 ship_zip: ship_zip,
-                ship_phone: ship_phone,
-                ship_comment: ship_comment
+                ship_phone: ship_phone
             };
         }
         app.get('mongodb').collection('warehouse_conf').find({
@@ -248,7 +247,8 @@ module.exports = function(app) {
                                         ship_method: ship_method,
                                         sum_subtotal: subtotal,
                                         sum_total: total,
-                                        shipping_address: shipping_address
+                                        shipping_address: shipping_address,
+                                        ship_comment: ship_comment
                                     }, function(err) {
                                         if (err) {
                                             // Something went wrong, we need to rollback the transaction
