@@ -17,7 +17,8 @@ var process_rows = [ // Handlers for each column
 		return val;
 	},
 	function(val, id) {
-		if (val && parseInt(val) === 0) {
+		val = parseInt(val);
+		if (!val || val === 0) {
 			val = _lang_vars.status_0;
 		}
 		if (val == 1) {
