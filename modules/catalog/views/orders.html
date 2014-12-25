@@ -1,0 +1,33 @@
+<h1>!{root.lang.__('my_orders')}</h1>
+<div id="taracot_catalog_order_error" class="uk-alert uk-alert-danger" style="display:none"></div>
+<div id="taracot_catalog_orders_list">
+    !{root.orders_html}
+    <div class="uk-margin-top">
+        <button class="uk-button taracot-catalog-orders-btn-back">!{root.lang.__('continue_shopping')}</button>
+    </div>
+</div>
+<div id="taracot_catalog_order_loading" style="display:none">
+    <img src="/modules/catalog/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}
+</div>
+<div id="taracot_catalog_order_data_wrap" style="display:none">
+    <div id="taracot_catalog_order_data"></div>
+    <div class="uk-margin-top">
+        <button class="uk-button taracot-catalog-orders-btn-back-to-list">!{root.lang.__('back_to_order_list')}</button>
+    </div>
+</div>
+<script>
+var _lang_vars = {
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        order_id: "!{root.lang.__('order_id')}",
+        order_date: "!{root.lang.__('order_date')}",
+        title: "!{root.lang.__('title')}",
+        amount: "!{root.lang.__('item_amount')}",
+        items_ordered: "!{root.lang.__('items_ordered')}"
+    },
+    _taracot_catalog_init_sort = "!{root.init_sort}",
+    _taracot_catalog_init_view = "!{root.init_view}",
+    _taracot_catalog_init_path = "!{root.init_path}",
+    _taracot_catalog_init_find = "!{root.init_find}",
+    _taracot_catalog_init_page = "!{root.init_page}";
+</script>
+<script src="/modules/catalog/js/frontend_orders.js"></script>

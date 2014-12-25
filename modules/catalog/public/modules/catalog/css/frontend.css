@@ -162,3 +162,9 @@
 .taracot-catalog-success-order-id {
     font-weight: bold;
 }
+.taracot-catalog-right-links {
+    text-align: right;
+}
+.taracot-catalog-orders-tr {
+    cursor: pointer;
+}

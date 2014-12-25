@@ -12,6 +12,7 @@ module.exports = function(app) {
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
         checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/checkout.html'),
+        orders = gaikan.compileFromFile(path.join(__dirname, 'views') + '/orders.html'),
         catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
         catalog_item_view = gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
         pt_li_a = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
@@ -31,7 +32,9 @@ module.exports = function(app) {
         pt_checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout.html'),
         pt_checkout_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout_item.html'),
         pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html'),
-        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
+        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html'),
+        pt_orders = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders.html'),
+        pt_orders_tr = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders_tr.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -49,6 +52,154 @@ module.exports = function(app) {
     }];
 
     var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"];
+
+    router.post('/ajax/order', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1)
+            return res.send(JSON.stringify({
+                status: 0,
+                error: i18nm.__('unauth')
+            }));
+        var id = req.body.id;
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send(JSON.stringify({
+                status: 0,
+                error: i18nm.__('invalid_id')
+            }));
+        // Get order information
+        app.get('mongodb').collection('warehouse_orders').find({
+            _id: new ObjectId(id)
+        }).toArray(function(err, whorders) {
+            if (err || !whorders || !whorders.length || whorders[0].user_id != req.session.auth._id)
+                return res.send(JSON.stringify({
+                    status: 0,
+                    error: i18nm.__('unauth')
+                }));
+            var rep = whorders[0];
+            rep.status = 1;
+            // Get warehouse configuration
+            app.get('mongodb').collection('warehouse_conf').find({
+                $or: [{
+                    conf: 'curs'
+                }]
+            }).toArray(function(err, db) {
+                var whcurs = [];
+                if (!err && db && db.length) {
+                    for (var i = 0; i < db.length; i++) {
+                        if (db[i].conf == 'curs' && db[i].data)
+                            try {
+                                whcurs = JSON.parse(db[i].data);
+                            } catch (ex) {}
+                    }
+                }
+                var cart = whorders[0].cart_data,
+                    warehouse_query = [];
+                rep.cart_data = [];
+                for (var key in cart) warehouse_query.push({
+                    pfilename: key
+                });
+                // Get requested warehouse items
+                app.get('mongodb').collection('warehouse').find({
+                    $or: warehouse_query,
+                    plang: _locale
+                }).toArray(function(wh_err, whitems) {
+                    var moment = require('moment');
+                    var whitems_hash = {};
+                    if (whitems && whitems.length)
+                        for (var wi = 0; wi < whitems.length; wi++)
+                            whitems_hash[whitems[wi].pfilename] = whitems[wi].ptitle;
+                    for (var key in cart)
+                        rep.cart_data.push({
+                            title: whitems_hash[key] || key,
+                            amount: cart[key]
+                        });
+                    rep.order_timestamp = moment(rep.order_timestamp).format('L LT');
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
+    router.get('/orders', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        var page = parseInt(req.query.page) || 1,
+            sort = req.query.sort || 't',
+            show_all = req.query.show_all || '1',
+            init_find = req.query.find || '',
+            init_cat = req.query.cat || '';
+        if (sort && sort != 't' && sort != 'u' && sort != 'd') sort = 't';
+        if (show_all && show_all != '1' && show_all != '0') show_all = '1';
+        if (page && (page == "NaN" || page < 0)) page = 1;
+        if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
+        if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect = "/catalog/orders?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat;
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+        var moment = require('moment');
+        app.get('mongodb').collection('warehouse_conf').find({
+            $or: [{
+                conf: 'curs'
+            }]
+        }).toArray(function(err, db) {
+            var whcurs = [];
+            if (!err && db && db.length) {
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'curs' && db[i].data)
+                        try {
+                            whcurs = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            }
+            app.get('mongodb').collection('warehouse_orders').find({
+                user_id: req.session.auth._id
+            }, {
+                limit: 100
+            }).sort({
+                order_timestamp: -1
+            }).toArray(function(err, whorders) {
+                var orders_html = i18nm.__('no_orders');
+                if (!err && whorders && whorders.length) {
+                    var orders_list_html = '';
+                    for (var o = 0; o < whorders.length; o++)
+                        orders_list_html += pt_orders_tr(gaikan, {
+                            lang: i18nm,
+                            id: whorders[o]._id,
+                            order_id: whorders[o].order_id,
+                            order_date: moment(whorders[o].order_timestamp).format('L LT'),
+                            order_status: i18nm.__('order_status_list')[whorders[o].order_status],
+                            order_sum: whorders[o].sum_total + ' ' + whcurs[0][_locale]
+                        }, undefined);
+                    orders_html = pt_orders(gaikan, {
+                        lang: i18nm,
+                        items: orders_list_html
+                    }, undefined);
+                }
+                var out_html = orders(gaikan, {
+                    lang: i18nm,
+                    init_sort: sort,
+                    init_view: show_all,
+                    init_path: init_cat,
+                    init_page: page,
+                    init_find: init_find,
+                    orders_html: orders_html
+                }, undefined);
+                var data = {
+                    title: i18nm.__('my_orders'),
+                    current_lang: _locale,
+                    page_title: i18nm.__('my_orders'),
+                    content: out_html,
+                    keywords: '',
+                    description: '',
+                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                };
+                app.get('renderer').render(res, undefined, data, req);
+            });
+        });
+    });
 
     router.post('/ajax/checkout', function(req, res, next) {
         var _locale = req.session.current_locale;
@@ -207,7 +358,10 @@ module.exports = function(app) {
                                 // Something went wrong, we need to rollback the transaction
                                 async.each(update_items, function(item, callback) {
                                     app.get('mongodb').collection('warehouse').update({
-                                        pfilename: item
+                                        pfilename: item,
+                                        pamount: {
+                                            $ne: -1
+                                        }
                                     }, {
                                         $inc: {
                                             pamount: cart[item]
@@ -254,7 +408,10 @@ module.exports = function(app) {
                                             // Something went wrong, we need to rollback the transaction
                                             async.each(update_items, function(item, callback) {
                                                 app.get('mongodb').collection('warehouse').update({
-                                                    pfilename: item
+                                                    pfilename: item,
+                                                    pamount: {
+                                                        $ne: -1
+                                                    }
                                                 }, {
                                                     $inc: {
                                                         pamount: cart[item]
@@ -809,6 +966,11 @@ module.exports = function(app) {
                         }, undefined);
                     }
                     whitem.pcurs = curs_hash[whitem.pcurs] || whitem.pcurs;
+                    var catalog_cart = req.session.catalog_cart || [];
+                    var total_cart_items_count = 0;
+                    if (catalog_cart.length)
+                        for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
+                    var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (init_cat || '') + '&find=' + (init_find || '');
                     var out_html = catalog_item_view(gaikan, {
                         lang: i18nm,
                         whitem: whitem,
@@ -823,7 +985,9 @@ module.exports = function(app) {
                         init_view: show_all,
                         init_path: init_cat,
                         init_page: page,
-                        init_find: init_find
+                        init_find: init_find,
+                        url_data: url_data,
+                        cart_items_count: total_cart_items_count
                     });
                     var data = {
                         title: whitem.ptitle,
@@ -1147,6 +1311,11 @@ module.exports = function(app) {
                             filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
                             filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
                         }
+                        var catalog_cart = req.session.catalog_cart || [];
+                        var total_cart_items_count = 0;
+                        if (catalog_cart.length)
+                            for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
+                        var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (current_path || '') + '&find=' + (search_query || '');
                         out_html = catalog(gaikan, {
                             lang: i18nm,
                             current_cat_title: current_cat_title,
@@ -1162,7 +1331,9 @@ module.exports = function(app) {
                             init_view: show_all,
                             init_path: current_path,
                             init_page: page,
-                            init_find: search_query
+                            init_find: search_query,
+                            url_data: url_data,
+                            cart_items_count: total_cart_items_count
                         });
                         var data = {
                             title: current_cat_title,

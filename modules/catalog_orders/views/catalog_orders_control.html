@@ -43,7 +43,7 @@
         <div id="taracot-modal-edit-loading-error" class="uk-alert uk-alert-danger">
             <a class="uk-modal-close uk-close"></a>!{root.lang.__('ajax_failed')}</div>
         <div id="taracot-modal-edit-wrap">
-            <h1>!{root.lang.__('edit_order')}&nbsp;<span id="order_id"></span></h1>
+            <h1 class="uk-modal-header">!{root.lang.__('edit_order')}&nbsp;<span id="order_id"></span></h1>
             <p>!{root.lang.__('order_date')}:&nbsp;<span id="order_date"></span>
             </p>
             <div id="order_save_error" class="uk-alert uk-alert-danger" style="display:none">!{root.lang.__('form_contains_errors')}</div>
@@ -151,9 +151,10 @@
                 </li>
             </ul>
         </div>
-        <div class="taracot-buttons-area">
-            <button class="uk-button" type="button" id="taracot-edit-btn-save">!{root.lang.__('save')}</button>&nbsp;
-            <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+        <div class="taracot-buttons-area uk-modal-footer">
+        	<button class="uk-button uk-float-left uk-button-danger" type="button" id="taracot_edit_btn_cancel_order"><i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('cancel_order')}</button>
+            <button class="uk-button uk-button-success" type="button" id="taracot-edit-btn-save">!{root.lang.__('save')}</button>&nbsp;
+            <button class="uk-button uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
         </div>
     </div>
 </div>
@@ -164,6 +165,7 @@ var _lang_vars = {
         form_err_msg: "!{root.lang.__('form_err_msg')}",
         delete_err_msg: "!{root.lang.__('delete_err_msg')}",
         del_confirm: "!{root.lang.__('delete_confirm')}",
+        order_cancel_confirm: "!{root.lang.__('order_cancel_confirm')}",
         save_success: "!{root.lang.__('save_success')}",
         no_res: "!{root.lang.__('no_results_in_table')}"
     },

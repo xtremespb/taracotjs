@@ -320,5 +320,22 @@
 	"order_has_been_placed": "Order has been placed",
 	"thanks_for_order": "Thanks for your order! It's being processed now.",
 	"your_order_id": "Your order ID",
-	"back_to_catalog": "Back to catalog"
+	"back_to_catalog": "Back to catalog",
+	"my_orders": "My orders",
+	"order_status_list": [
+		"New",
+		"Paid",
+		"Processing",
+		"Shipped",
+		"Cancelled"
+	],
+	"no_orders": "You currently don't have any orders to display here.",
+	"order_id": "Order ID",
+	"order_date": "Date",
+	"order_status": "Status",
+	"order_sum": "Total",
+	"loading_data": "Loading data, please be patient...",
+	"invalid_id": "Invalid order ID",
+	"back_to_order_list": "Back to list",
+	"items_ordered": "Items ordered"
 }

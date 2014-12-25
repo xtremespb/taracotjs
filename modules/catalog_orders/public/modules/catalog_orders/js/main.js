@@ -109,6 +109,60 @@ var order_cart_del_btn_handler = function() {
     $(this).parent().parent().remove();
 };
 
+$('#taracot_edit_btn_cancel_order').click(function() {
+	if (!confirm(_lang_vars.order_cancel_confirm)) return;
+	$('#taracot-modal-edit-wrap').addClass('uk-hidden');
+    $('#taracot-modal-edit-loading').removeClass('uk-hidden');
+    $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
+    $('.taracot-buttons-area').hide();
+    $.ajax({
+        type: 'POST',
+        url: '/cp/catalog_orders/data/cancel',
+        data: {
+            id: current_id
+        },
+        dataType: "json",
+        success: function(data) {
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            if (data.status == 1) {
+                $('#taracot_table').medvedTable('update');
+                edit_modal.hide();
+                $.UIkit.notify({
+                    message: _lang_vars.save_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+                $('.taracot-buttons-area').show();
+                var _errmsg = _lang_vars.form_err_msg;
+                if (data.error) {
+                    _errmsg = data.error;
+                }
+                $.UIkit.notify({
+                    message: _errmsg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+            $('.taracot-buttons-area').show();
+            $.UIkit.notify({
+                message: _lang_vars.form_err_msg,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+
+    });
+});
+
 $('#catalog_cart_add_btn').click(function() {
     $('#catalog_cart_add_sku').removeClass('uk-form-danger');
     var sku = $.trim($('#catalog_cart_add_sku').val());
@@ -177,13 +231,13 @@ $('#taracot-edit-btn-save').click(function() {
     // Validation
     if (!sum_subtotal || sum_subtotal < 0) errors.push('#sum_subtotal');
     if (!sum_total || sum_total < 0) errors.push('#sum_total');
-    // if (!ship_name || !ship_name.length || ship_name.length > 80) errors.push('#ship_name');
-    // if (!ship_street || !ship_street.length || ship_street.length > 120) errors.push('#ship_street');
-    // if (!ship_city || !ship_city.length || ship_city.length > 120) errors.push('#ship_city');
-    // if (!ship_region || !ship_region.length || ship_region.length > 120) errors.push('#ship_region');
-    // if (!ship_country || !ship_country.match(/^[A-Z]{2}$/)) errors.push('#ship_country');
-    // if (!ship_zip || !ship_zip.match(/^[0-9]{5,6}$/)) errors.push('#ship_zip');
-    // if (!ship_phone || !ship_phone.match(/^[0-9\+]{1,40}$/)) errors.push('#ship_phone');
+    if (ship_name && (!ship_name.length || ship_name.length > 80)) errors.push('#ship_name');
+    if (ship_street && (!ship_street.length || ship_street.length > 120)) errors.push('#ship_street');
+    if (ship_city && (!ship_city.length || ship_city.length > 120)) errors.push('#ship_city');
+    if (ship_region && (!ship_region.length || ship_region.length > 120)) errors.push('#ship_region');
+    if (ship_country && (!ship_country.match(/^[A-Z]{2}$/))) errors.push('#ship_country');
+    if (ship_zip && (!ship_zip.match(/^[0-9]{5,6}$/))) errors.push('#ship_zip');
+    if (ship_phone && (!ship_phone.match(/^[0-9\+]{1,40}$/))) errors.push('#ship_phone');
     if (ship_comment && ship_comment.length > 1024) errors.push('#ship_comment');
     if (errors.length) {
         var _focus = false;
@@ -193,18 +247,22 @@ $('#taracot-edit-btn-save').click(function() {
             $(errors[e]).focus();
             _focus = true;
         }
-        $('#order_save_error').show();
+        return $('#order_save_error').show();
     }
     $('#order_cart_body').children().each(function() {
         var sku = $(this).children(':first').attr('rel'),
             amount = parseInt($('#cart_item_' + sku).val()) || 1;
         cart_data[sku] = amount;
     });
+    $('#taracot-modal-edit-wrap').addClass('uk-hidden');
+    $('#taracot-modal-edit-loading').removeClass('uk-hidden');
+    $('#taracot-modal-edit-loading-error').addClass('uk-hidden');
+    $('.taracot-buttons-area').hide();
     $.ajax({
         type: 'POST',
         url: '/cp/catalog_orders/data/save',
         data: {
-        	id: current_id,
+            id: current_id,
             order_status: order_status,
             sum_subtotal: sum_subtotal,
             sum_total: sum_total,
@@ -223,50 +281,52 @@ $('#taracot-edit-btn-save').click(function() {
         },
         dataType: "json",
         success: function(data) {
-			$('#taracot-modal-edit-loading').addClass('uk-hidden');
-			if (data.status == 1) {
-				$('#taracot_table').medvedTable('update');
-				edit_modal.hide();
-				$.UIkit.notify({
-					message: _lang_vars.save_success,
-					status: 'success',
-					timeout: 2000,
-					pos: 'top-center'
-				});
-			} else {
-				$('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-				var _errmsg = _lang_vars.form_err_msg;
-				if (data.error) {
-					_errmsg = data.error;
-				}
-				if (data.err_fields && data.err_fields.length) {
-					var _focus = false;
-					for (var i = 0; i < data.err_fields.length; i++) {
-						$('#' + data.err_fields[i]).addClass('uk-form-danger');
-						if (!_focus) {
-							$('#' + data.err_fields[i]).focus();
-							_focus = true;
-						}
-					}
-				}
-				$.UIkit.notify({
-					message: _errmsg,
-					status: 'danger',
-					timeout: 2000,
-					pos: 'top-center'
-				});
-			}
-		},
-		error: function() {
-			$('#taracot-modal-edit-loading').addClass('uk-hidden');
-			$('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-			$.UIkit.notify({
-				message: _lang_vars.form_err_msg,
-				status: 'danger',
-				timeout: 2000,
-				pos: 'top-center'
-			});
-		}
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            if (data.status == 1) {
+                $('#taracot_table').medvedTable('update');
+                edit_modal.hide();
+                $.UIkit.notify({
+                    message: _lang_vars.save_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+                $('.taracot-buttons-area').show();
+                var _errmsg = _lang_vars.form_err_msg;
+                if (data.error) {
+                    _errmsg = data.error;
+                }
+                if (data.err_fields && data.err_fields.length) {
+                    var _focus = false;
+                    for (var i = 0; i < data.err_fields.length; i++) {
+                        $('#' + data.err_fields[i]).addClass('uk-form-danger');
+                        if (!_focus) {
+                            $('#' + data.err_fields[i]).focus();
+                            _focus = true;
+                        }
+                    }
+                }
+                $.UIkit.notify({
+                    message: _errmsg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            $('#taracot-modal-edit-loading').addClass('uk-hidden');
+            $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
+            $('.taracot-buttons-area').show();
+            $.UIkit.notify({
+                message: _lang_vars.form_err_msg,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
 
     });
 });

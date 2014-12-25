@@ -2,7 +2,7 @@ module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
         order_id: 1,
-        user_id: 1,
+        item_id: 1,
         order_timestamp: 1,
         order_status: 1,
         sum_total: 1
@@ -16,6 +16,7 @@ module.exports = function(app) {
     var ObjectId = require('mongodb').ObjectID;
     var gaikan = require('gaikan');
     var path = require('path');
+    var async = require('async');
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
         directory: app.get('path').join(__dirname, 'lang'),
@@ -178,8 +179,8 @@ module.exports = function(app) {
         var moment = require('moment');
         moment.locale(req.session.current_locale);
         var rep = {};
-        var user_id = req.body.id;
-        if (typeof user_id == 'undefined' || !user_id.match(/^[a-f0-9]{24}$/)) {
+        var item_id = req.body.id;
+        if (typeof item_id == 'undefined' || !item_id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_query");
             res.send(JSON.stringify(rep));
@@ -195,7 +196,7 @@ module.exports = function(app) {
         // Get catalog_orders from MongoDB
         rep.data = {};
         app.get('mongodb').collection('warehouse_orders').find({
-            _id: new ObjectId(user_id)
+            _id: new ObjectId(item_id)
         }, {
             limit: 1
         }).toArray(function(err, items) {
@@ -269,9 +270,9 @@ module.exports = function(app) {
             sum_subtotal = parseFloat(req.body.sum_subtotal) || 0,
             sum_total = parseFloat(req.body.sum_total) || 0,
             shipping_method = req.body.shipping_method,
-            shipping_address = req.body.shipping_address,
+            shipping_address = req.body.shipping_address || {},
             ship_comment = req.body.ship_comment,
-            cart_data = req.body.cart_data;
+            cart_data = req.body.cart_data || [];
         // Validation
         if (!id || !id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
@@ -294,7 +295,8 @@ module.exports = function(app) {
                         } catch (ex) {}
                 }
             var shipping_method_found = false;
-            for (var wi = 0; wi < whship.length; wi++) if (whship[wi].id == shipping_method) shipping_method_found = true;
+            for (var wi = 0; wi < whship.length; wi++)
+                if (whship[wi].id == shipping_method) shipping_method_found = true;
             if (!shipping_method_found) {
                 rep.status = 0;
                 rep.err_fields.push('shipping_method');
@@ -316,9 +318,106 @@ module.exports = function(app) {
                 rep.err_fields.push('ship_comment');
             }
             if (rep.status === 0) return res.send(JSON.stringify(rep));
+            var shipping_address_f = {
+                ship_name: '',
+                ship_street: '',
+                ship_city: '',
+                ship_region: '',
+                ship_country: '',
+                ship_zip: '',
+                ship_phone: ''
+            };
+            if (shipping_address.ship_name && shipping_address.ship_name.length && shipping_address.ship_name.length < 81) shipping_address_f.ship_name = shipping_address.ship_name.replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;');
+            if (shipping_address.ship_street && shipping_address.ship_street.length && shipping_address.ship_street.length < 121) shipping_address_f.ship_street = shipping_address.ship_street.replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;');
+            if (shipping_address.ship_city && shipping_address.ship_city.length && shipping_address.ship_city.length < 121) shipping_address_f.ship_city = shipping_address.ship_city.replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;');
+            if (shipping_address.ship_region && shipping_address.ship_region.length && shipping_address.ship_region.length < 121) shipping_address_f.ship_region = shipping_address.ship_region.replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;');
+            if (shipping_address.ship_country && shipping_address.ship_country.match(/^[A-Z]{2}$/)) shipping_address_f.ship_country = shipping_address.ship_country;
+            if (shipping_address.ship_zip && shipping_address.ship_zip.match(/^[0-9]{5,6}$/)) shipping_address_f.ship_zip = shipping_address.ship_zip;
+            if (shipping_address.ship_phone && shipping_address.ship_phone.match(/^[0-9\+]{1,40}$/)) shipping_address_f.ship_phone = shipping_address.ship_phone;
+            if (ship_comment && ship_comment.length < 1025) ship_comment = ship_comment.replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;').replace(/\n/g, ' ');
+            var cart_data_f = {};
+            for (var key in cart_data)
+                if (key.match(/^[A-Za-z0-9_\-\.]{1,80}$/)) cart_data_f[key] = parseInt(cart_data[key]) || 1;
+            app.get('mongodb').collection('warehouse_orders').update({
+                _id: new ObjectId(id)
+            }, {
+                $set: {
+                    order_status: order_status,
+                    cart_data: cart_data_f,
+                    ship_method: shipping_method,
+                    sum_subtotal: sum_subtotal,
+                    sum_total: sum_total,
+                    shipping_address: shipping_address_f,
+                    ship_comment: ship_comment
+                }
+            }, function() {
+                res.send(JSON.stringify(rep));
+            });
         });
-
     });
+
+    router.post('/data/cancel', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            res.send(JSON.stringify(rep));
+            return;
+        }
+        var id = req.body.id;
+        // Validation
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+        app.get('mongodb').collection('warehouse_orders').find({
+            _id: new ObjectId(id)
+        }, {
+            limit: 1
+        }).toArray(function(err, items) {
+            if (err || !items || !items.length) return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+            var cart = items[0].cart_data,
+                update_items = [];
+            for (var key in cart) update_items.push(key);
+            // Rollback the warehouse items amounts transaction
+            async.each(update_items, function(item, callback) {
+                app.get('mongodb').collection('warehouse').update({
+                    pfilename: item,
+                    pamount: {
+                        $ne: -1
+                    }
+                }, {
+                    $inc: {
+                        pamount: cart[item],
+                    }
+                }, function(err) {
+                    callback(err);
+                });
+            }, function(rollback_err) {
+                // Set the order status to "Cancelled"
+                app.get('mongodb').collection('warehouse_orders').update({
+                        _id: new ObjectId(id)
+                    }, {
+                        $set: {
+                            order_status: 4
+                        }
+                    },
+                    function() {
+                        // OK
+                        return res.send({
+                            status: 1
+                        });
+                    });
+            });
+
+        });
+    });
+
     router.post('/data/delete', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         var rep = {

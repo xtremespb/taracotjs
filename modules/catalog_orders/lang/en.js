@@ -5,9 +5,6 @@
 	"select_none": "Select none",
 	"delete_selected": "Delete selected",
 	"search_field": "Search",
-	"oname": "Option",
-	"ovalue": "Value",
-	"lang": "Language",
 	"actions": "Actions",
 	"ajax_failed": "Server request failed",
 	"save": "Save",
@@ -20,7 +17,6 @@
 	"edit_option": "Edit option",
 	"any_language": "Any",
 	"save_success": "Item has been successfully saved",
-	"option_exists": "Option/language pair already exists",
 	"unauth": "You are not authorized",
 	"order_id": "Order ID",
 	"user_id": "Username",
@@ -300,5 +296,8 @@
 	],
 	"add_sku": "Add SKU",
 	"unknown_sku": "Unknown item",
-	"form_contains_errors": "Form contains errors"
+	"form_contains_errors": "Form contains errors",
+	"cancel_order": "Cancel order",
+	"order_cancel_confirm": "Are you sure to cancel this order? Customer will get a notification, the warehouse rollback will be made.",
+	"invalid_query": "invalid_query"
 }

@@ -53,6 +53,10 @@ var _process_cart = function(cart_values) {
 $(document).ready(function() {
     $('#taracot_catalog_cart_wrap').show();
     $('#taracot_catalog_cart_empty').hide();
+    if (!init_cart.length) {
+        $('#taracot_catalog_cart_empty').show();
+        $('#taracot_catalog_cart_wrap').hide();
+    }
     for (var ic = 0; ic < init_cart.length; ic++) $('#cart_amount_' + init_cart[ic].sku).val(init_cart[ic].amount);
     $('.taracot-catalog-cart-input-amount').each(function() {
         var id = $(this).attr('id').replace(/^cart_amount_/, '');
