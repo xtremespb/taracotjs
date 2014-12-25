@@ -145,7 +145,7 @@
 <div id="taracot_pages_folders_edit_dlg" class="uk-modal">
 	<div class="uk-modal-dialog">
 		<a class="uk-modal-close uk-close"></a>
-		<h1 id="taracot_pages_folders_edit_h1"></h1>
+		<h1 id="taracot_pages_folders_edit_h1" class="uk-modal-header"></h1>
 		<div class="uk-form uk-form-stacked" id="taracot_folders_edit_form">
 			<div class="uk-form-row">
 				<div class="uk-form-controls">
@@ -154,7 +154,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="uk-margin-top">
+		<div class="uk-margin-top uk-modal-footer">
 			<button class="uk-button" id="btn_folders_edit_save">!{root.lang.__('save')}</button>
 			<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
 		</div>
@@ -163,9 +163,9 @@
 <div id="taracot_pages_folders_select_dlg" class="uk-modal">
 	<div class="uk-modal-dialog">
 		<a class="uk-modal-close uk-close"></a>
-		<h1>!{root.lang.__('select_folder')}</h1>
+		<h1 class="uk-modal-header">!{root.lang.__('select_folder')}</h1>
 		<div id="jstree_folders_select"></div>
-		<div class="uk-margin-top">
+		<div class="uk-margin-top uk-modal-footer">
 			<button class="uk-button" id="btn_folders_select">!{root.lang.__('select')}</button>
 			<button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
 		</div>
@@ -202,12 +202,12 @@
 <div id="taracot_lock_dlg" class="uk-modal">
 	<div class="uk-modal-dialog">
 		<a class="uk-modal-close uk-close"></a>
-		<h1>!{root.lang.__('document_locked')}</h1>
+		<h1 class="uk-modal-header">!{root.lang.__('document_locked')}</h1>
 		<p>!{root.lang.__('document_locked_hint')}</p>
 		<p>!{root.lang.__('document_locked_by')}: <b><span id="document_lock_username"></span></b><br>
 		!{root.lang.__('document_locked_on')}: <span id="document_lock_timestamp"></span>
 		</p>
-		<div class="uk-margin-top">
+		<div class="uk-margin-top uk-modal-footer">
 			<button class="uk-button uk-button-danger" type="button" id="btn_steal_lock">!{root.lang.__('steal_lock')}</button>
 			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
 		</div>
@@ -216,9 +216,9 @@
 <div id="taracot_outdated_dlg" class="uk-modal">
 	<div class="uk-modal-dialog">
 		<a class="uk-modal-close uk-close"></a>
-		<h1>!{root.lang.__('document_outdated')}</h1>
+		<h1 class="uk-modal-header">!{root.lang.__('document_outdated')}</h1>
 		<p>!{root.lang.__('document_outdated_hint')}</p>
-		<div class="uk-margin-top">
+		<div class="uk-margin-top uk-modal-footer">
 			<button class="uk-button uk-button-danger" type="button" id="btn_force_save_outdated">!{root.lang.__('save_anyway')}</button>
 			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>
 		</div>
@@ -227,10 +227,10 @@
 <div id="taracot_autosave_dlg" class="uk-modal">
 	<div class="uk-modal-dialog">
 		<a class="uk-modal-close uk-close"></a>
-		<h1>!{root.lang.__('document_autosave')}</h1>
+		<h1 class="uk-modal-header">!{root.lang.__('document_autosave')}</h1>
 		<p>!{root.lang.__('document_autosave_hint')}</p>
 		<p><b>!{root.lang.__('unsaved_title')}:</b> <span id="autosave_title"></span></p>
-		<div class="uk-margin-top">
+		<div class="uk-margin-top uk-modal-footer">
 			<button class="uk-button uk-button-success" type="button" id="btn_restore_autosave">!{root.lang.__('restore_autosave')}</button>
 			<button class="uk-button uk-button-danger" type="button" id="btn_dont_restore_autosave">!{root.lang.__('dont_restore_autosave')}</button>
 			<button class="uk-button uk-modal-close">!{root.lang.__('cancel_edit')}</button>

@@ -2,35 +2,41 @@
 <div id="taracot_dlg_edit" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
-        <h1 id="taracot-dlg-edit-h1"></h1>
+        <h1 id="taracot-dlg-edit-h1" class="uk-modal-header"></h1>
         <fieldset class="uk-form" data-uk-margin>
             <input type="text" class="uk-width-1-1" id="taracot_dlg_edit_value">
         </fieldset>
-        <button class="uk-button" type="button" id="taracot_dlg_edit_btn_save">!{root.lang.__('save')}</button>
-        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+        <div class="uk-modal-footer">
+            <button class="uk-button" type="button" id="taracot_dlg_edit_btn_save">!{root.lang.__('save')}</button>
+            <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+        </div>
     </div>
 </div>
 <div id="taracot_dlg_link" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
-        <h1>!{root.lang.__('link')}</h1>
+        <h1 class="uk-modal-header">!{root.lang.__('link')}</h1>
         <fieldset class="uk-form" data-uk-margin>
             <input type="text" class="uk-width-1-1" id="taracot_dlg_link_value">
         </fieldset>
-        <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('close')}</button>
+        <div class="uk-modal-footer">
+            <button class="uk-button uk-button-danger uk-modal-close" type="button">!{root.lang.__('close')}</button>
+        </div>
     </div>
 </div>
 <div id="taracot_dlg_upload" class="uk-modal">
     <div class="uk-modal-dialog">
-        <h1>!{root.lang.__('upload')}</h1>
+        <h1 class="uk-modal-header">!{root.lang.__('upload')}</h1>
         <div class="uk-panel uk-panel-box uk-margin-bottom" id="taracot_upload_box"></div>
-        <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_add">!{root.lang.__('addfiles')}</button>
-        <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_clear">!{root.lang.__('clearupload')}</button>
-        <button class="uk-button uk-button-success taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_upload">!{root.lang.__('uploadbtn')}</button>
-        <button class="uk-button uk-button-danger taracot-upload-btn uk-modal-close" id="taracot_dlg_upload_btn_cancel" type="button">!{root.lang.__('close')}</button>
-        <div class="uk-form uk-margin-top">
-            <label>
-                <input type="checkbox" id="cbx_upload_auto_start" checked="true">&nbsp;!{root.lang.__('upload_auto_start')}</label>
+        <div class="uk-modal-footer">
+            <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_add">!{root.lang.__('addfiles')}</button>
+            <button class="uk-button uk-button taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_clear">!{root.lang.__('clearupload')}</button>
+            <button class="uk-button uk-button-success taracot-upload-btn" type="button" id="taracot_dlg_upload_btn_upload">!{root.lang.__('uploadbtn')}</button>
+            <button class="uk-button uk-button-danger taracot-upload-btn uk-modal-close" id="taracot_dlg_upload_btn_cancel" type="button">!{root.lang.__('close')}</button>
+            <div class="uk-form uk-margin-top">
+                <label>
+                    <input type="checkbox" id="cbx_upload_auto_start" checked="true">&nbsp;!{root.lang.__('upload_auto_start')}</label>
+            </div>
         </div>
     </div>
 </div>

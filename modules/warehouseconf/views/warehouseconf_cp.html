@@ -3,11 +3,13 @@
 <div id="warehouse_item_dlg" class="uk-modal">
     <div class="uk-modal-dialog">
         <a class="uk-modal-close uk-close"></a>
-        <h1>!{root.lang.__('select_item')}</h1>
+        <h1 class="uk-modal-header">!{root.lang.__('select_item')}</h1>
         <div class="uk-panel taracot-warehouse-items-panel">
             <ul class="uk-list uk-list-line" id="warehouse_items"></ul>
         </div>
-        <button class="uk-button uk-modal-close uk-margin-top uk-button-danger">!{root.lang.__('cancel')}</button>
+        <div class="uk-modal-footer">
+            <button class="uk-button uk-modal-close uk-margin-top uk-button-danger">!{root.lang.__('cancel')}</button>
+        </div>
     </div>
 </div>
 <ul class="uk-tab" data-uk-tab="{connect:'#warehouseconf_tabs'}">
