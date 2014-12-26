@@ -337,5 +337,8 @@
 	"loading_data": "Loading data, please be patient...",
 	"invalid_id": "Invalid order ID",
 	"back_to_order_list": "Back to list",
-	"items_ordered": "Items ordered"
+	"items_ordered": "Items ordered",
+	"shipping": "Shipping",
+	"summary": "Summary",
+	"edit_addr": "Edit address"
 }

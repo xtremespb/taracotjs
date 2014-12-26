@@ -152,7 +152,7 @@
     color: red;
     font-weight: bold;
 }
-#taracot_catalog_cart_total_sum {
+#taracot_catalog_cart_total_sum, .taracot_catalog_cart_total_sum {
     font-size: 120%;
     font-weight: bold;
 }
@@ -167,4 +167,11 @@
 }
 .taracot-catalog-orders-tr {
     cursor: pointer;
+}
+#catalog_order_status {
+    font-size: 100%;
+    padding: 8px;
+}
+.catalog-order-id {
+    display: inline-block;
 }

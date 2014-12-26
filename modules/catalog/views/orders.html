@@ -1,6 +1,68 @@
-<h1>!{root.lang.__('my_orders')}</h1>
-<div id="taracot_catalog_order_error" class="uk-alert uk-alert-danger" style="display:none"></div>
+<div id="taracot_modal_edit_addr" class="uk-modal">
+    <div class="uk-modal-dialog uk-modal-dialog-large">
+        <div id="taracot_modal_edit_addr_wrap">
+            <h1 class="uk-modal-header">!{root.lang.__('edit_addr')}</h1>
+                    <div class="uk-form uk-form-horizontal taracot-edit-form">
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_name')}:</label>
+                                <input class="uk-form-width-large order-edit-field" type="text" id="ship_name">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_street')}:</label>
+                                <input class="uk-form-width-large order-edit-field" type="text" id="ship_street">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_city')}:</label>
+                                <input class="uk-form-width-medium order-edit-field" type="text" id="ship_city">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_region')}:</label>
+                                <input class="uk-form-width-medium order-edit-field" type="text" id="ship_region">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_country')}:</label>
+                                <select id="ship_country" class="uk-form-width-medium order-edit-field">!{root.country_list_html}
+                                </select>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_zip')}:</label>
+                                <input class="uk-form-width-small order-edit-field" type="text" id="ship_zip">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_phone')}:</label>
+                                <input class="uk-form-width-medium order-edit-field" type="text" id="ship_phone">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row uk-margin-top">
+                                <label class="uk-form-label">!{root.lang.__('shipping_comment')}:</label>
+                                <textarea id="shipping_comment" class="uk-width-1-1 order-edit-field" rows="2"></textarea>
+                            </div>
+                        </fieldset>
+                    </div>
+        </div>
+        <div class="taracot-buttons-area uk-modal-footer">
+            <button class="uk-button uk-button-success" type="button" id="btn_save_addr">!{root.lang.__('save')}</button>&nbsp;
+            <button class="uk-button uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
 <div id="taracot_catalog_orders_list">
+    <h1>!{root.lang.__('my_orders')}</h1>
+    <div id="taracot_catalog_order_error" class="uk-alert uk-alert-danger" style="display:none"></div>
     !{root.orders_html}
     <div class="uk-margin-top">
         <button class="uk-button taracot-catalog-orders-btn-back">!{root.lang.__('continue_shopping')}</button>
@@ -10,7 +72,65 @@
     <img src="/modules/catalog/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}
 </div>
 <div id="taracot_catalog_order_data_wrap" style="display:none">
-    <div id="taracot_catalog_order_data"></div>
+    <div id="taracot_catalog_order_data">
+        <div>
+            <h1 class="catalog-order-id">!{root.lang.__('order_id')}&nbsp;<span id="catalog_order_id" class="catalog_order_data"></span></h1>
+            <span id="catalog_order_status" class="uk-badge uk-badge-notification catalog_order_data uk-float-right"></span>
+        </div>
+        <p>
+            <b>!{root.lang.__('order_date')}:</b>&nbsp;<span id="catalog_order_date" class="catalog_order_data"></span>
+        </p>
+        <h2>!{root.lang.__('summary')}:</h2>
+        <div class="uk-panel uk-panel-box">
+            <table class="uk-table">
+                <tbody>
+                    <tr>
+                        <td>!{root.lang.__('subtotal')}</td>
+                        <td class="taracot-catalog-cart-th-amount">
+                            <span id="catalog_order_subtotal" class="catalog_order_data"></span>&nbsp;<span class="catalog-currency"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>!{root.lang.__('total')}</td>
+                        <td class="taracot-catalog-cart-th-amount">
+                            <span id="catalog_order_total" class="taracot_catalog_cart_total_sum catalog_order_data"></span>&nbsp;<span class="catalog-currency"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <h2>!{root.lang.__('items_ordered')}:</h2>
+        <div class="uk-panel uk-panel-box">
+            <table class="uk-table">
+                <thead>
+                    <tr>
+                        <th>!{root.lang.__('title')}</th>
+                        <th class="taracot-catalog-cart-th-amount">!{root.lang.__('item_amount')}</th>
+                    </tr>
+                </thead>
+                <tbody id="catalog_orders_list" class="catalog_order_data"></tbody>
+            </table>
+        </div>
+        <h2>!{root.lang.__('shipping')}:</h2>
+        <div class="uk-grid">
+            <div class="uk-width-1-2">
+                <div class="uk-panel uk-panel-box">
+                    <button id="catalog_addr_edit" class="uk-panel-badge uk-button uk-button-success uk-button-mini"><i class="uk-icon-pencil"></i>&nbsp;!{root.lang.__('edit_addr')}</button>
+                    <span id="catalog_shipping_addr" class="catalog_order_data"></span>
+                </div>
+            </div>
+            <div class="uk-width-1-2">
+                <div class="uk-panel uk-panel-box">
+                    <b>!{root.lang.__('shipping_method')}:</b>&nbsp;<span id="catalog_shipping_method" class="catalog_order_data"></span>
+                    <br>
+                    <b>!{root.lang.__('phone')}:</b>&nbsp;<span id="catalog_shipping_phone" class="catalog_order_data"></span>
+                    <br>
+                    <b>!{root.lang.__('comment')}:</b>
+                    <div id="catalog_shipping_comment" class="catalog_order_data uk-margin-small-top"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="uk-margin-top">
         <button class="uk-button taracot-catalog-orders-btn-back-to-list">!{root.lang.__('back_to_order_list')}</button>
     </div>

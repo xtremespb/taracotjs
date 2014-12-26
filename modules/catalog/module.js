@@ -82,9 +82,12 @@ module.exports = function(app) {
             app.get('mongodb').collection('warehouse_conf').find({
                 $or: [{
                     conf: 'curs'
+                }, {
+                    conf: 'ship'
                 }]
             }).toArray(function(err, db) {
-                var whcurs = [];
+                var whcurs = [],
+                    whship = [];
                 if (!err && db && db.length) {
                     for (var i = 0; i < db.length; i++) {
                         if (db[i].conf == 'curs' && db[i].data)
@@ -92,6 +95,16 @@ module.exports = function(app) {
                                 whcurs = JSON.parse(db[i].data);
                             } catch (ex) {}
                     }
+                    for (var s = 0; s < db.length; s++) {
+                        if (db[s].conf == 'ship' && db[s].data)
+                            try {
+                                whship = JSON.parse(db[s].data);
+                            } catch (ex) {}
+                    }
+                }
+                var ship_hash = {};
+                for (var cs = 0; cs < whship.length; cs++) {
+                    ship_hash[whship[cs].id] = whship[cs][_locale] || whship[cs].id;
                 }
                 var cart = whorders[0].cart_data,
                     warehouse_query = [];
@@ -115,6 +128,9 @@ module.exports = function(app) {
                             amount: cart[key]
                         });
                     rep.order_timestamp = moment(rep.order_timestamp).format('L LT');
+                    if (whcurs && whcurs.length) rep.currency = whcurs[0][_locale];
+                    if (rep.ship_method && ship_hash[rep.ship_method]) rep.ship_method = ship_hash[rep.ship_method];
+                    rep.order_status_text = i18nm.__('order_status_list')[rep.order_status];
                     return res.send(JSON.stringify(rep));
                 });
             });
