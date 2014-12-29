@@ -1,4 +1,5 @@
-var _catalog_addr_required = false;
+var _catalog_addr_required = false,
+    placed_order_id_hex;
 
 var catalog_checkout_ship_method_handler = function() {
     for (var i = 0; i < _taracot_catalog_ship_methods.length; i++)
@@ -73,12 +74,13 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
             ship_zip: ship_zip,
             ship_phone: ship_phone,
             ship_comment: ship_comment,
-            total_cost: $('#taracot_catalog_cart_total_sum').html()
+            subtotal_cost: $('#taracot_catalog_cart_subtotal').html()
         },
         success: function(data) {
             if (data) {
                 if (data.status == '1') {
                     if (data.order_id) $('.taracot-catalog-success-order-id').html(data.order_id);
+                    if (data.order_id_hex) placed_order_id_hex = data.order_id_hex;
                     $('#taracot_catalog_checkout_div').hide();
                     $('#taracot_catalog_checkout_success_div').fadeIn(300);
                 } else {
@@ -122,6 +124,10 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
 
 };
 
+var taracot_catalog_checkout_btn_orders_handler = function() {
+    location.href = '/catalog/orders?mode=view&order_id=' + placed_order_id_hex;
+};
+
 $(document).ready(function() {
     $('#taracot_catalog_checkout_wrap').show();
     $('#taracot_catalog_checkout_empty').hide();
@@ -136,9 +142,10 @@ $(document).ready(function() {
     $('.taracot-catalog-checkout-btn-checkout').attr('disabled', false);
     if (_taracot_catalog_missing_items.length) $('.taracot-catalog-checkout-btn-checkout').attr('disabled', true);
     $('.taracot-catalog-checkout-btn-checkout').click(taracot_catalog_checkout_btn_checkout_handler);
+    $('.taracot-catalog-checkout-btn-orders').click(taracot_catalog_checkout_btn_orders_handler);
     $('.taracot-catalog-checkout-btn-back').click(function() {
         var _path = _taracot_catalog_init_path || '/';
-        location.href = '/catalog' + _path + '?find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
+        location.href = '/catalog/cart?cat=' + _path + '&find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
     });
     $('.taracot-catalog-checkout-btn-finish').click(function() {
         location.href = '/catalog?rnd=' + parseInt(Math.random() * 900000 + 1000);

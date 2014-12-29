@@ -67,17 +67,18 @@ $(document).ready(function() {
         var cart_values = [];
         for (var i = 0; i < cart_items.length; i++) {
             var val = $.trim($('#cart_amount_' + cart_items[i]).val());
-            if (val === '' || isNaN(parseInt(val)) || parseInt(val) < 0 || parseInt(val) > 999) {
+            if ($('#cart_amount_' + cart_items[i]).is(':visible') && (val === '' || isNaN(parseInt(val)) || parseInt(val) < 0 || parseInt(val) > 999)) {
                 $('#cart_amount_' + cart_items[i]).addClass('uk-form-danger');
                 $('#cart_amount_' + cart_items[i]).focus();
                 $('#taracot_catalog_cart_error').html(_lang_vars.form_errors);
                 $('#taracot_catalog_cart_error').show();
                 return;
             }
-            cart_values.push({
-                id: cart_items[i],
-                val: val
-            });
+            if ($('#cart_amount_' + cart_items[i]).is(':visible'))
+                cart_values.push({
+                    id: cart_items[i],
+                    val: val
+                });
         }
         _process_cart(cart_values);
     });
@@ -108,6 +109,6 @@ $(document).ready(function() {
     });
     // Checkout handler
     $('.taracot-catalog-cart-btn-checkout').click(function() {
-        location.href = '/catalog/checkout?find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
+        location.href = '/catalog/checkout?cat=' + (_taracot_catalog_init_path || '/') + '&find=' + (_taracot_catalog_init_find || '') + '&sort=' + (_taracot_catalog_init_sort || 't') + '&show_all=' + (_taracot_catalog_init_view || 1) + '&page=' + (_taracot_catalog_init_page || 1) + '&rnd=' + parseInt(Math.random() * 900000 + 1000);
     });
 });

@@ -215,7 +215,7 @@
 		"Oman",
 		"Pakistan",
 		"Palau",
-		"Palestinian Territory, Occupied",
+		"Palestinian Territory",
 		"Panama",
 		"Papua New Guinea",
 		"Paraguay",

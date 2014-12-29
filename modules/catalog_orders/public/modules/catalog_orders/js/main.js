@@ -1,4 +1,4 @@
-var edit_modal = new $.UIkit.modal("#taracot-modal-edit"),
+var edit_modal = new UIkit.modal("#taracot-modal-edit"),
     current_id = '',
     current_shipping_address = {};
 
@@ -127,7 +127,7 @@ $('#taracot_edit_btn_cancel_order').click(function() {
             if (data.status == 1) {
                 $('#taracot_table').medvedTable('update');
                 edit_modal.hide();
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
                     timeout: 2000,
@@ -140,7 +140,7 @@ $('#taracot_edit_btn_cancel_order').click(function() {
                 if (data.error) {
                     _errmsg = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _errmsg,
                     status: 'danger',
                     timeout: 2000,
@@ -152,7 +152,7 @@ $('#taracot_edit_btn_cancel_order').click(function() {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
             $('.taracot-buttons-area').show();
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.form_err_msg,
                 status: 'danger',
                 timeout: 2000,
@@ -285,7 +285,7 @@ $('#taracot-edit-btn-save').click(function() {
             if (data.status == 1) {
                 $('#taracot_table').medvedTable('update');
                 edit_modal.hide();
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
                     timeout: 2000,
@@ -308,7 +308,7 @@ $('#taracot-edit-btn-save').click(function() {
                         }
                     }
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _errmsg,
                     status: 'danger',
                     timeout: 2000,
@@ -320,7 +320,7 @@ $('#taracot-edit-btn-save').click(function() {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
             $('.taracot-buttons-area').show();
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.form_err_msg,
                 status: 'danger',
                 timeout: 2000,
@@ -351,7 +351,7 @@ var delete_item = function(ids) {
                     // load_data(current_page);
                     $('#taracot_table').medvedTable('update');
                 } else {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: _lang_vars.delete_err_msg,
                         status: 'danger',
                         timeout: 2000,
@@ -361,7 +361,7 @@ var delete_item = function(ids) {
             },
             error: function() {
                 $('#taracot_table').medvedTable('loading_indicator_hide');
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.delete_err_msg,
                     status: 'danger',
                     timeout: 2000,

@@ -216,7 +216,7 @@
 		"Oman",
 		"Pakistan",
 		"Palau",
-		"Palestinian Territory, Occupied",
+		"Palestinian Territory",
 		"Panama",
 		"Papua New Guinea",
 		"Paraguay",
@@ -315,7 +315,7 @@
 	"invalid_country": "Invalid country data",
 	"invalid_phone": "Invalid phone data",
 	"invalid_ship_method": "Invalid shipping method",
-	"invalid_total_cost": "Invalid order cost",
+	"invalid_subtotal_cost": "Invalid order cost",
 	"order_place_failed": "Your order cannot be placed right now, please try again later",
 	"order_has_been_placed": "Order has been placed",
 	"thanks_for_order": "Thanks for your order! It's being processed now.",
@@ -340,5 +340,13 @@
 	"items_ordered": "Items ordered",
 	"shipping": "Shipping",
 	"summary": "Summary",
-	"edit_addr": "Edit address"
+	"edit_addr": "Edit address",
+	"save": "Save",
+	"cancel": "Cancel",
+	"unauth": "You are not authorized to make changes to this order",
+	"cancel_order": "Cancel Order",
+	"order_cancel_confirm": "Are you sure to cancel this order?",
+	"invalid_query": "Invalid query. Plase refresh the current page and try again.",
+	"view_order": "View order details",
+	"on_website": "on website"
 }

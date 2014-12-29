@@ -175,3 +175,7 @@
 .catalog-order-id {
     display: inline-block;
 }
+.catalog-panel-box {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+}

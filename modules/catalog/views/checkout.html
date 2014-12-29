@@ -3,11 +3,13 @@
     <div id="taracot_catalog_checkout_wrap">
         <div class="uk-alert uk-alert-danger uk-margin-top" style="display:none" id="taracot_catalog_checkout_error"></div>
         <div class="uk-margin-top">
-            <h3>!{root.lang.__('order_summary')}</h3>
+            <h2>!{root.lang.__('order_summary')}</h2>
         </div>
-        !{root.checkout_html}
-        <h3>!{root.lang.__('shipment_options')}</h3>
-        <div class="uk-form uk-form-horizontal">
+        <div class="uk-panel uk-panel-box catalog-panel-box">
+            !{root.checkout_html}
+        </div>
+        <h2>!{root.lang.__('shipment_options')}</h2>
+        <div class="uk-form uk-form-horizontal uk-panel uk-panel-box catalog-panel-box">
             <div class="uk-form-row">
                 <label class="uk-form-label" for="catalog_checkout_ship_method">!{root.lang.__('shipping_method')}&nbsp;<span class="red-asterisk">*</span>
                 </label>
@@ -80,8 +82,8 @@
                 </div>
             </div>
         </div>
-        <h3>!{root.lang.__('final_result')}</h3>
-        <div>
+        <h2>!{root.lang.__('final_result')}</h2>
+        <div class="uk-panel uk-panel-box catalog-panel-box">
             <table class="uk-table">
                 <thead>
                     <tr>
@@ -107,6 +109,7 @@
             </table>
         </div>
         <div class="uk-margin-top">
+            <hr>
             <button class="uk-button uk-button-success taracot-catalog-checkout-btn-checkout"><span class="taracot-catalog-checkout-ajax" style="display:none"><img src="/modules/catalog/images/loading_16x16.gif" alt="" width="16" height="16"></span>!{root.lang.__('place_order')}</button>&nbsp;
             <button class="uk-button taracot-catalog-checkout-btn-back">!{root.lang.__('back_to_cart')}</button>
         </div>
@@ -124,6 +127,7 @@
     <p>!{root.lang.__('your_order_id')}: <span class="taracot-catalog-success-order-id"></span>
     </p>
     <div class="uk-margin-top">
+        <button class="uk-button uk-button-success taracot-catalog-checkout-btn-orders">!{root.lang.__('view_order')}</button>
         <button class="uk-button taracot-catalog-checkout-btn-finish">!{root.lang.__('back_to_catalog')}</button>
     </div>
 </div>

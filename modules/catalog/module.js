@@ -7,7 +7,8 @@ module.exports = function(app) {
         ObjectId = require('mongodb').ObjectID,
         fs = require('fs'),
         parser = app.get('parser'),
-        async = require('async');
+        async = require('async'),
+        mailer = app.get('mailer');
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
@@ -34,7 +35,11 @@ module.exports = function(app) {
         pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html'),
         pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html'),
         pt_orders = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders.html'),
-        pt_orders_tr = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders_tr.html');
+        pt_orders_tr = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders_tr.html'),
+        pt_mail_neworder_orders_table_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_html.html'),
+        pt_mail_neworder_orders_table_row_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_row_html.html'),
+        pt_mail_neworder_summary_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_summary_html.html'),
+        pt_mail_neworder_shipping_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_shipping_html.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales,
@@ -52,6 +57,153 @@ module.exports = function(app) {
     }];
 
     var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"];
+
+    router.post('/ajax/cancel', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 1)
+            return res.send({
+                status: 0,
+                error: i18nm.__("unauth")
+            });
+        var id = req.body.id;
+        // Validation
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+        app.get('mongodb').collection('warehouse_orders').find({
+            _id: new ObjectId(id),
+            user_id: req.session.auth._id
+        }, {
+            limit: 1
+        }).toArray(function(err, items) {
+            if (err || !items || !items.length || items[0].order_status !== 0) return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+            var cart = items[0].cart_data,
+                update_items = [];
+            for (var key in cart) update_items.push(key);
+            // Rollback the warehouse items amounts transaction
+            async.each(update_items, function(item, callback) {
+                app.get('mongodb').collection('warehouse').update({
+                    pfilename: item,
+                    pamount: {
+                        $ne: -1
+                    }
+                }, {
+                    $inc: {
+                        pamount: cart[item],
+                    }
+                }, function(err) {
+                    callback(err);
+                });
+            }, function(rollback_err) {
+                // Set the order status to "Cancelled"
+                app.get('mongodb').collection('warehouse_orders').update({
+                        _id: new ObjectId(id)
+                    }, {
+                        $set: {
+                            order_status: 4
+                        }
+                    },
+                    function() {
+                        // OK
+                        return res.send({
+                            status: 1
+                        });
+                    });
+            });
+
+        });
+    });
+
+    router.post('/ajax/addr', function(req, res, next) {
+        var _locale = req.session.current_locale;
+        i18nm.setLocale(_locale);
+        if (!req.session.auth || req.session.auth.status < 1)
+            return res.send(JSON.stringify({
+                status: 0,
+                error: i18nm.__('unauth')
+            }));
+        var id = req.body.id,
+            ship_name = (req.body.ship_name || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_street = (req.body.ship_street || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_city = (req.body.ship_city || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_region = (req.body.ship_region || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_country = (req.body.ship_country || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_zip = (req.body.ship_zip || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_phone = (req.body.ship_phone || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
+            ship_comment = (req.body.ship_comment || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;').replace(/\n/g, ' ');
+        // Validate
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send(JSON.stringify({
+                status: 0,
+                error: i18nm.__('invalid_id')
+            }));
+        var errors = [];
+        if (!ship_name || !ship_name.length || ship_name.length > 80) errors.push(i18nm.__('invalid_name'));
+        if (!ship_street || !ship_street.length || ship_street.length > 120) errors.push(i18nm.__('invalid_street'));
+        if (!ship_city || !ship_city.length || ship_city.length > 120) errors.push(i18nm.__('invalid_city'));
+        if (!ship_region || !ship_region.length || ship_region.length > 120) errors.push(i18nm.__('invalid_region'));
+        if (!ship_country || !ship_country.match(/^[A-Z]{2}$/)) errors.push(i18nm.__('invalid_country'));
+        if (!ship_zip || !ship_zip.match(/^[0-9]{5,6}$/)) errors.push(i18nm.__('invalid_country'));
+        if (!ship_phone || !ship_phone.match(/^[0-9\+]{1,40}$/)) errors.push(i18nm.__('invalid_phone'));
+        if (ship_comment && ship_comment.length > 1024) errors.push(i18nm.__('invalid_comment'));
+        if (!errors.length) {
+            var country = '';
+            for (var cn = 0; cn < countries.length; cn++)
+                if (countries[cn] == ship_country) country = countries[cn];
+            if (!country) errors.push(i18nm.__('invalid_country'));
+        }
+        if (errors.length)
+            return res.send(JSON.stringify({
+                status: 0,
+                error: errors.join('. ')
+            }));
+        shipping_address = {
+            ship_name: ship_name,
+            ship_street: ship_street,
+            ship_city: ship_city,
+            ship_region: ship_region,
+            ship_country: ship_country,
+            ship_zip: ship_zip,
+            ship_phone: ship_phone
+        };
+        // Get order information
+        app.get('mongodb').collection('warehouse_orders').find({
+            _id: new ObjectId(id),
+            user_id: req.session.auth._id
+        }, {
+            limit: 1
+        }).toArray(function(err, whorders) {
+            if (err || !whorders || !whorders.length || whorders[0].order_status > 0)
+                return res.send(JSON.stringify({
+                    status: 0,
+                    error: i18nm.__('unauth')
+                }));
+            app.get('mongodb').collection('warehouse_orders').update({
+                _id: new ObjectId(id)
+            }, {
+                $set: {
+                    shipping_address: shipping_address,
+                    ship_comment: ship_comment
+                }
+            }, function(err) {
+                if (err)
+                    return res.send(JSON.stringify({
+                        status: 0,
+                        error: i18nm.__('ajax_failed')
+                    }));
+                // OK
+                return res.send(JSON.stringify({
+                    status: 1
+                }));
+            });
+        });
+    });
 
     router.post('/ajax/order', function(req, res, next) {
         var _locale = req.session.current_locale;
@@ -118,6 +270,7 @@ module.exports = function(app) {
                     plang: _locale
                 }).toArray(function(wh_err, whitems) {
                     var moment = require('moment');
+                    moment.locale(_locale);
                     var whitems_hash = {};
                     if (whitems && whitems.length)
                         for (var wi = 0; wi < whitems.length; wi++)
@@ -127,6 +280,8 @@ module.exports = function(app) {
                             title: whitems_hash[key] || key,
                             amount: cart[key]
                         });
+                    for (var i = 0; i < countries.length; i++)
+                        if (rep.shipping_address.ship_country && countries[i] == rep.shipping_address.ship_country) rep.shipping_address.ship_country_full = i18nm.__('country_list')[i];
                     rep.order_timestamp = moment(rep.order_timestamp).format('L LT');
                     if (whcurs && whcurs.length) rep.currency = whcurs[0][_locale];
                     if (rep.ship_method && ship_hash[rep.ship_method]) rep.ship_method = ship_hash[rep.ship_method];
@@ -156,6 +311,7 @@ module.exports = function(app) {
             return;
         }
         var moment = require('moment');
+        moment.locale(_locale);
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'curs'
@@ -194,6 +350,12 @@ module.exports = function(app) {
                         items: orders_list_html
                     }, undefined);
                 }
+                var country_list_html = '';
+                for (var i = 0; i < countries.length; i++)
+                    country_list_html += pt_select_option(gaikan, {
+                        val: countries[i],
+                        text: i18nm.__('country_list')[i]
+                    }, undefined);
                 var out_html = orders(gaikan, {
                     lang: i18nm,
                     init_sort: sort,
@@ -201,7 +363,8 @@ module.exports = function(app) {
                     init_path: init_cat,
                     init_page: page,
                     init_find: init_find,
-                    orders_html: orders_html
+                    orders_html: orders_html,
+                    country_list_html: country_list_html
                 }, undefined);
                 var data = {
                     title: i18nm.__('my_orders'),
@@ -235,7 +398,7 @@ module.exports = function(app) {
             ship_zip = (req.body.ship_zip || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
             ship_phone = (req.body.ship_phone || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;'),
             ship_comment = (req.body.ship_comment || '').replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/</g, '').replace(/>/g, '').replace(/\"/g, '&quot;').replace(/\n/g, ' '),
-            total_cost = parseFloat(req.body.total_cost);
+            subtotal_cost = parseFloat(req.body.subtotal_cost);
         var shipping_address = {};
         if (!ship_method.match(/_noaddr$/i)) {
             var errors = [];
@@ -247,7 +410,7 @@ module.exports = function(app) {
             if (!ship_zip || !ship_zip.match(/^[0-9]{5,6}$/)) errors.push(i18nm.__('invalid_country'));
             if (!ship_phone || !ship_phone.match(/^[0-9\+]{1,40}$/)) errors.push(i18nm.__('invalid_phone'));
             if (ship_comment && ship_comment.length > 1024) errors.push(i18nm.__('invalid_comment'));
-            if (!total_cost || total_cost < 0) errors.push(i18nm.__('invalid_total_cost'));
+            if (!subtotal_cost || subtotal_cost < 0) errors.push(i18nm.__('invalid_subtotal_cost'));
             if (!errors.length) {
                 var country = '';
                 for (var cn = 0; cn < countries.length; cn++)
@@ -340,13 +503,15 @@ module.exports = function(app) {
                     var ship_cost = whship_found.price;
                     if (whship_found.weight > 0 && total_weight > 0) ship_cost *= Math.ceil(total_weight / whship_found.weight);
                     if (whship_found.amnt > 0) ship_cost *= Math.ceil(total_amount / whship_found.amnt);
-                    var total = ship_cost + subtotal;
-                    if (total_cost != total)
+                    var total = parseFloat(ship_cost) + parseFloat(subtotal);
+                    if (subtotal_cost != subtotal)
                         return res.send(JSON.stringify({
                             status: 0,
-                            error: i18nm.__('invalid_total_cost'),
+                            error: i18nm.__('invalid_subtotal_cost'),
                             stop: 1
                         }));
+                    var moment = require('moment');
+                    moment.locale(_locale);
                     // Update the amounts
                     var update_items = [];
                     for (var key in cart) update_items.push(key);
@@ -393,6 +558,9 @@ module.exports = function(app) {
                                     }));
                                 });
                             } else {
+                                // Generate hash for cart items
+                                var ucitems_hash = {};
+                                for (var uh = 0; uh < ucitems.length; uh++) ucitems_hash[ucitems[uh].pfilename] = ucitems[uh].ptitle;
                                 // Let's place an order
                                 // Get unique order ID
                                 app.get('mongodb').collection('counters').findAndModify({
@@ -419,7 +587,7 @@ module.exports = function(app) {
                                         sum_total: total,
                                         shipping_address: shipping_address,
                                         ship_comment: ship_comment
-                                    }, function(err) {
+                                    }, function(err, insit) {
                                         if (err) {
                                             // Something went wrong, we need to rollback the transaction
                                             async.each(update_items, function(item, callback) {
@@ -444,6 +612,71 @@ module.exports = function(app) {
                                             });
                                         } else {
                                             // Everything's fine, order has been placed
+                                            // Clean up cart
+                                            req.session.catalog_cart = [];
+                                            // Send mail to the user
+                                            if (req.session.auth.email) {
+                                                var _rows_html = '',
+                                                    _rows_txt = '';;
+                                                for (var key in cart) {
+                                                    _rows_html += pt_mail_neworder_orders_table_row_html(gaikan, {
+                                                        lang: i18nm,
+                                                        item: ucitems_hash[key],
+                                                        amount: cart[key]
+                                                    }, undefined);
+                                                    _rows_txt += ucitems_hash[key] + "\t" + cart[key] + "\n";
+                                                }
+                                                var _order_table = pt_mail_neworder_orders_table_html(gaikan, {
+                                                    lang: i18nm,
+                                                    rows: _rows_html,
+                                                    col1: i18nm.__('item_title'),
+                                                    col2: i18nm.__('item_amount')
+                                                }, undefined);
+                                                var items_txt = i18nm.__('item_title') + "\t" + i18nm.__('item_amount') + "\n" + _rows_txt;
+                                                var summary = pt_mail_neworder_summary_html(gaikan, {
+                                                    lang: i18nm,
+                                                    subtotal: subtotal,
+                                                    total: total,
+                                                    currency: whcurs[0][_locale]
+                                                }, undefined);
+                                                var summary_txt = i18nm.__('subtotal') + "\t" + subtotal + ' ' + whcurs[0][_locale] + "\n" + i18nm.__('total') + "\t" + total + ' ' + whcurs[0][_locale];
+                                                var addr = '',
+                                                    addr_txt = '',
+                                                    country_full = '',
+                                                    ship_method_title = '';
+                                                for (var i = 0; i < countries.length; i++)
+                                                    if (shipping_address.ship_country && countries[i] == shipping_address.ship_country) country_full = i18nm.__('country_list')[i];
+                                                for (var wsi = 0; wsi < whship.length; wsi++)
+                                                    if (whship[wsi].id == ship_method) ship_method_title = whship[wsi][_locale];
+                                                if (shipping_address.ship_name) {
+                                                    addr = shipping_address.ship_name + '<br>' + shipping_address.ship_street + '<br>' + shipping_address.ship_city + '<br>' +  shipping_address.ship_region + '<br>' +  shipping_address.ship_zip + ' ' + country_full;
+                                                    addr_txt = shipping_address.ship_name + "\n" + shipping_address.ship_street + "\n" + shipping_address.ship_city + "\n" +  shipping_address.ship_region + "\n" +  shipping_address.ship_zip + ' ' + country_full;
+                                                }
+                                                var shipping = pt_mail_neworder_shipping_html(gaikan, {
+                                                    lang: i18nm,
+                                                    shipping_method: ship_method_title || ship_method,
+                                                    ship_phone: shipping_address.ship_phone || '-',
+                                                    ship_comment: ship_comment || '-',
+                                                    addr: addr
+                                                }, undefined);
+                                                var view_url = req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id;
+                                                mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', {
+                                                    lang: i18nm,
+                                                    site_title: app.get('settings').site_title,
+                                                    order_id: order_id,
+                                                    order_date: moment(Date.now()).format('L LT'),
+                                                    items: _order_table,
+                                                    items_txt: items_txt,
+                                                    summary: summary,
+                                                    summary_txt: summary_txt,
+                                                    shipping: shipping,
+                                                    view_url: view_url,
+                                                    shipping_method: ship_method_title || ship_method,
+                                                    ship_phone: shipping_address.ship_phone || '-',
+                                                    ship_comment: ship_comment || '-',
+                                                    addr_txt: addr_txt
+                                                }, req);
+                                            }
                                             // Try to store shipping address in the database
                                             app.get('mongodb').collection('warehouse_addr').update({
                                                 _id: req.session.auth._id,
@@ -456,6 +689,7 @@ module.exports = function(app) {
                                                 // Return success
                                                 return res.send(JSON.stringify({
                                                     status: 1,
+                                                    order_id_hex: insit[0]._id,
                                                     order_id: order_id
                                                 }));
                                             });
@@ -1053,7 +1287,7 @@ module.exports = function(app) {
         if (show_all && show_all != '1' && show_all != '0') show_all = '1';
         if (page && (page == "NaN" || page < 0)) page = 1;
         if (show_all != '1') find_query.pamount = {
-            $ne: '0'
+            $ne: 0
         };
         if (sort == 't') sort_query = {
             ptitle: 1
