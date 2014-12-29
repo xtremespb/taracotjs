@@ -1,11 +1,11 @@
 var current_id = '',
     current_timestamp = 0,
     current_timestamp_new = 0,
-    folders_edit_dlg = $.UIkit.modal("#taracot_pages_folders_edit_dlg"),
-    folders_select_dlg = $.UIkit.modal("#taracot_pages_folders_select_dlg"),
-    outdated_dlg = $.UIkit.modal("#taracot_outdated_dlg"),
-    autosave_dlg = $.UIkit.modal("#taracot_autosave_dlg"),
-    lock_dlg = $.UIkit.modal("#taracot_lock_dlg"),
+    folders_edit_dlg = UIkit.modal("#taracot_pages_folders_edit_dlg"),
+    folders_select_dlg = UIkit.modal("#taracot_pages_folders_select_dlg"),
+    outdated_dlg = UIkit.modal("#taracot_outdated_dlg"),
+    autosave_dlg = UIkit.modal("#taracot_autosave_dlg"),
+    lock_dlg = UIkit.modal("#taracot_lock_dlg"),
     folders_edit = false,
     jstree_folders,
     jstree_folders_select,
@@ -282,7 +282,7 @@ var edit_item = function(id) {
                 if (data.error) {
                     _err = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _err,
                     status: 'danger',
                     timeout: 2000,
@@ -292,7 +292,7 @@ var edit_item = function(id) {
         },
         error: function() {
             taracot_ajax_progress_indicator('body', false);
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -321,7 +321,7 @@ var delete_item = function(ids) {
                 if (data.status == 1) {
                     $('#taracot_table').medvedTable('update');
                 } else {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: _lang_vars.delete_err_msg,
                         status: 'danger',
                         timeout: 2000,
@@ -331,7 +331,7 @@ var delete_item = function(ids) {
             },
             error: function() {
                 $('#taracot_table').medvedTable('loading_indicator_hide');
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.delete_err_msg,
                     status: 'danger',
                     timeout: 2000,
@@ -356,14 +356,14 @@ $('#btn_steal_lock').click(function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status == 1) {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.lock_removed,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
                 });
             } else {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.lock_remove_error,
                     status: 'danger',
                     timeout: 2000,
@@ -373,7 +373,7 @@ $('#btn_steal_lock').click(function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.lock_remove_error,
                 status: 'danger',
                 timeout: 2000,
@@ -427,7 +427,7 @@ $('#btn_edit_save').click(function() {
         }
     }
     if (form_errors) {
-        $.UIkit.notify({
+        UIkit.notify({
             message: _lang_vars.form_contain_errors,
             status: 'danger',
             timeout: 2000,
@@ -461,7 +461,7 @@ $('#btn_edit_save').click(function() {
             if (data.status == 1) {
                 if (auto_save_timer) window.clearTimeout(auto_save_timer);
                 $.jStorage.set("_taracot_pages_autosave", false);
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.page_save_success,
                     status: 'success',
                     timeout: 2000,
@@ -484,7 +484,7 @@ $('#btn_edit_save').click(function() {
                 if (data.error) {
                     _err = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _err,
                     status: 'danger',
                     timeout: 2000,
@@ -494,7 +494,7 @@ $('#btn_edit_save').click(function() {
         },
         error: function() {
             taracot_ajax_progress_indicator('body', false);
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,

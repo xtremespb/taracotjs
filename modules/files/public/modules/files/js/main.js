@@ -8,9 +8,9 @@ var clpbrd = {
 	dir: null,
 	files: []
 };
-var taracot_dlg_edit = new $.UIkit.modal("#taracot_dlg_edit");
-var taracot_dlg_link = new $.UIkit.modal("#taracot_dlg_link");
-var taracot_dlg_upload = new $.UIkit.modal("#taracot_dlg_upload", {
+var taracot_dlg_edit = new UIkit.modal("#taracot_dlg_edit");
+var taracot_dlg_link = new UIkit.modal("#taracot_dlg_link");
+var taracot_dlg_upload = new UIkit.modal("#taracot_dlg_upload", {
 	bgclose: false,
 	keyboard: false
 });
@@ -103,7 +103,7 @@ var uploader_init = function() {
 		if ($("#cbx_upload_auto_start").is(':checked')) dlguploadbtnupload_handler();
 	});
 	uploader.bind('Error', function(up, err) {
-		$.UIkit.notify({
+		UIkit.notify({
 			message: err.file.name + ': ' + err.message,
 			status: 'danger',
 			timeout: 2000,
@@ -124,7 +124,7 @@ var uploader_init = function() {
 		if (data) {
 			if (data.status === 0) {
 				if (data.error) {
-					$.UIkit.notify({
+					UIkit.notify({
 						message: data.error,
 						status: 'danger',
 						timeout: 2000,
@@ -225,7 +225,7 @@ var load_files_data = function(dir) {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -237,7 +237,7 @@ var load_files_data = function(dir) {
 		error: function() {
 			$('#files_grid_progress').hide();
 			$('#files_grid').html(_lang_vars.ajax_failed);
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -293,7 +293,7 @@ var new_text_file = function() {
 	$('#taracot_dlg_edit_value').removeClass('uk-form-danger');
 	if (!check_filename($('#taracot_dlg_edit_value').val())) {
 		$('#taracot_dlg_edit_value').addClass('uk-form-danger');
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_filename_syntax,
 			status: 'danger',
 			timeout: 2000,
@@ -363,7 +363,7 @@ var btndelete_handler = function(dnd) {
 			$('#btn_dummy').mouseover();
 			if (data && data.status == 1) {
 				load_files_data(current_dir);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.delete_success,
 					status: 'success',
 					timeout: 2000,
@@ -375,7 +375,7 @@ var btndelete_handler = function(dnd) {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -386,7 +386,7 @@ var btndelete_handler = function(dnd) {
 		error: function() {
 			$('#files_grid_progress').hide();
 			$('#files_grid').show();
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -416,7 +416,7 @@ var create_new_dir = function() {
 	$('#taracot_dlg_edit_value').removeClass('uk-form-danger');
 	if (!new_dir || !check_directory(new_dir)) {
 		$('#taracot_dlg_edit_value').addClass('uk-form-danger');
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_dir_syntax,
 			status: 'danger',
 			timeout: 2000,
@@ -444,7 +444,7 @@ var create_new_dir = function() {
 			shifty_handler();
 			if (data && data.status == 1) {
 				load_files_data(current_dir);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.newdir_success,
 					status: 'success',
 					timeout: 2000,
@@ -457,7 +457,7 @@ var create_new_dir = function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -472,7 +472,7 @@ var create_new_dir = function() {
 			taracot_dlg_edit.show();
 			shifty_handler();
 			$('#taracot_dlg_edit_value').focus();
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -499,7 +499,7 @@ var rename_file = function() {
 	$('#taracot_dlg_edit_value').removeClass('uk-form-danger');
 	if (!check_filename($('#taracot_dlg_edit_value').val())) {
 		$('#taracot_dlg_edit_value').addClass('uk-form-danger');
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_filename_syntax,
 			status: 'danger',
 			timeout: 2000,
@@ -509,7 +509,7 @@ var rename_file = function() {
 	}
 	if ($('#taracot_dlg_edit_value').val() == $('#taracot_rename_old_name').html()) {
 		$('#taracot_dlg_edit_value').addClass('uk-form-danger');
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.cannot_rename_same,
 			status: 'danger',
 			timeout: 2000,
@@ -538,7 +538,7 @@ var rename_file = function() {
 			shifty_handler();
 			if (data && data.status == 1) {
 				load_files_data(current_dir);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.rename_success,
 					status: 'success',
 					timeout: 2000,
@@ -551,7 +551,7 @@ var rename_file = function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -566,7 +566,7 @@ var rename_file = function() {
 			taracot_dlg_edit.show();
 			shifty_handler();
 			$('#taracot_dlg_edit_value').focus();
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -595,7 +595,7 @@ var cutcopy = function(mode) {
 
 var btncopy_handler = function() {
 	cutcopy('copy');
-	$.UIkit.notify({
+	UIkit.notify({
 		message: _lang_vars.clipboard_copy_success,
 		status: 'success',
 		timeout: 2000,
@@ -605,7 +605,7 @@ var btncopy_handler = function() {
 
 var btncut_handler = function() {
 	cutcopy('cut');
-	$.UIkit.notify({
+	UIkit.notify({
 		message: _lang_vars.clipboard_cut_success,
 		status: 'success',
 		timeout: 2000,
@@ -622,7 +622,7 @@ var btnpaste_handler = function(_dir) {
 		_current_dir = _dir;
 	}
 	if (clpbrd.dir == _current_dir) {
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.cannot_paste_to_source_dir,
 			status: 'danger',
 			timeout: 2000,
@@ -636,7 +636,7 @@ var btnpaste_handler = function(_dir) {
 		var rex1 = new RegExp('^' + _fn + '\/');
 		var rex2 = new RegExp('^' + _fn + '$');
 		if (_current_dir.match(rex1) || _current_dir.match(rex2)) {
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.cannot_paste_to_itself,
 				status: 'danger',
 				timeout: 2000,
@@ -667,7 +667,7 @@ var btnpaste_handler = function(_dir) {
 			if (data && data.status == 1) {
 				$('#btn_paste').attr('disabled', true);
 				load_files_data(current_dir);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.paste_success,
 					status: 'success',
 					timeout: 2000,
@@ -685,7 +685,7 @@ var btnpaste_handler = function(_dir) {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -697,7 +697,7 @@ var btnpaste_handler = function(_dir) {
 			load_buttons_state();
 			$('#files_grid_progress').hide();
 			$('#files_grid').show();
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -733,7 +733,7 @@ var btnunzip_handler = function(_dir) {
 			$('#files_grid').show();
 			if (data && data.status == 1) {
 				load_files_data(current_dir);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.unzip_success,
 					status: 'success',
 					timeout: 2000,
@@ -744,7 +744,7 @@ var btnunzip_handler = function(_dir) {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -756,7 +756,7 @@ var btnunzip_handler = function(_dir) {
 			load_buttons_state();
 			$('#files_grid_progress').hide();
 			$('#files_grid').show();
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -802,7 +802,7 @@ var btndownload_handler = function() {
 			if (data.error) {
 				_err = data.error;
 			}
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _err,
 				status: 'danger',
 				timeout: 2000,

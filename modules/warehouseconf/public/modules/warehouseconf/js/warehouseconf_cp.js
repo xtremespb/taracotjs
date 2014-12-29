@@ -1,6 +1,6 @@
 $.loadingIndicator();
 
-var warehouse_item_dlg = $.UIkit.modal("#warehouse_item_dlg"),
+var warehouse_item_dlg = UIkit.modal("#warehouse_item_dlg"),
     current_collection;
 
 $('#btn_descitem_add').click(function() {
@@ -33,7 +33,7 @@ $('#btn_currency_add').click(function() {
     $('.taracot-warehouseconf-curs-delete').unbind();
     $('.taracot-warehouseconf-curs-delete').click(btn_taracot_curs_delete_handler);
     $('#warehouseconf_curs').show();
-    $.UIkit.sortable($('#warehouseconf_curs_tb'), {
+    UIkit.sortable($('#warehouseconf_curs_tb'), {
         dragCustomClass: 'uk-form',
         handleClass: 'taracot-btn-curs-sort'
     });
@@ -47,7 +47,7 @@ $('#btn_ship_add').click(function() {
     $('.taracot-warehouseconf-ship-delete').unbind();
     $('.taracot-warehouseconf-ship-delete').click(btn_taracot_ship_delete_handler);
     $('#warehouseconf_ship').show();
-    $.UIkit.sortable($('#warehouseconf_ship_tb'), {
+    UIkit.sortable($('#warehouseconf_ship_tb'), {
         dragCustomClass: 'uk-form',
         handleClass: 'taracot-btn-ship-sort'
     });
@@ -119,7 +119,7 @@ var taracot_dlg_item_click_hanlder = function() {
     warehouse_item_dlg.hide();
     var item = '<li class="uk-badge uk-badge-success uk-badge-notification taracot-warehouse-item-notification" rel="' + $(this).attr('id').replace(/^_di_/, '') + '"><span>' + $(this).html() + '</span>&nbsp;<span><a class="uk-close taracot-warehouse-colitem-del"></a></span></li>';
     current_collection.children('td').eq(1).append(item);
-    $.UIkit.sortable(current_collection.children('td').eq(1), {
+    UIkit.sortable(current_collection.children('td').eq(1), {
         dragCustomClass: 'sortable-dragged-coll'
     });
     $('.taracot-warehouse-colitem-del').unbind();
@@ -151,14 +151,14 @@ $('#btn_save').click(function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status && data.status == 1) {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
                 });
             } else {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.ajax_failed,
                     status: 'danger',
                     timeout: 2000,
@@ -168,7 +168,7 @@ $('#btn_save').click(function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -321,7 +321,7 @@ $(document).ready(function() {
                 var item = '<div class="uk-badge uk-badge-success uk-badge-notification taracot-warehouse-item-notification" rel="' + init_collections[_gc].items[ci] + '"><span>' + _items_hash[init_collections[_gc].items[ci]] + '</span>&nbsp;<span><a class="uk-close taracot-warehouse-colitem-del"></a></span></div>';
                 $(this).append(item);
             }
-            $.UIkit.sortable($(this), {
+            UIkit.sortable($(this), {
                 dragCustomClass: 'sortable-dragged-coll'
             });
             $('.taracot-warehouse-colitem-del').unbind();

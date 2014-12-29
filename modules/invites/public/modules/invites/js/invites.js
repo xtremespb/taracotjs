@@ -1,5 +1,5 @@
 $.loadingIndicator();
-var inv_modal = new $.UIkit.modal("#taracot-modal-view");
+var inv_modal = new UIkit.modal("#taracot-modal-view");
 
 /* Configuration */
 
@@ -61,7 +61,7 @@ $('#btn-add-item').click(function() {
             	$('#invurl').focus();
             	$('#invurl').select();
             } else {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.ajax_failed,
                     status: 'danger',
                     timeout: 2000,
@@ -71,7 +71,7 @@ $('#btn-add-item').click(function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -102,7 +102,7 @@ var edit_item = function(id) {
             	$('#invurl').select();
             } else {
             	$.loadingIndicator('hide');
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.ajax_failed,
                     status: 'danger',
                     timeout: 2000,
@@ -112,7 +112,7 @@ var edit_item = function(id) {
         },
         error: function() {
         	$.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                     message: _lang_vars.ajax_failed,
                     status: 'danger',
                     timeout: 2000,
@@ -137,7 +137,7 @@ var delete_item = function(ids) {
                 if (data.status == 1) {
                     $('#taracot_table').medvedTable('update');
                 } else {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: _lang_vars.delete_err_msg,
                         status: 'danger',
                         timeout: 2000,
@@ -147,7 +147,7 @@ var delete_item = function(ids) {
             },
             error: function() {
                 $('#taracot_table').medvedTable('loading_indicator_hide');
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.delete_err_msg,
                     status: 'danger',
                     timeout: 2000,

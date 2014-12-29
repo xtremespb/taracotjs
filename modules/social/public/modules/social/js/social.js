@@ -255,7 +255,7 @@ var taracot_user_search_card_handler = function(_par, _uid) {
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -265,7 +265,7 @@ var taracot_user_search_card_handler = function(_par, _uid) {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -294,7 +294,7 @@ var taracot_btn_add_friend_handler = function() {
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -304,7 +304,7 @@ var taracot_btn_add_friend_handler = function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -335,7 +335,7 @@ var taracot_btn_accept_friend_handler = function() {
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -345,7 +345,7 @@ var taracot_btn_accept_friend_handler = function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -401,7 +401,7 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
             } else {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -411,7 +411,7 @@ var taracot_btn_send_msg_handler = function(_par, _id) {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -441,7 +441,7 @@ var taracot_btn_post_msg_handler = function() {
             if (data.status != 1) {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -456,7 +456,7 @@ var taracot_btn_post_msg_handler = function() {
         error: function() {
             $('#btn_send_msg').show();
             $('#btn_send_msg_loading').hide();
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -484,7 +484,7 @@ var taracot_social_unfriend_handler = function(e) {
             if (data.status != 1) {
                 var _msg = _lang_vars.ajax_failed;
                 if (data.error) _msg = data.error;
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _msg,
                     status: 'danger',
                     timeout: 2000,
@@ -498,7 +498,7 @@ var taracot_social_unfriend_handler = function(e) {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,

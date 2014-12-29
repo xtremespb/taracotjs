@@ -18,7 +18,7 @@
     var methods = {
         init: function(_options) {
             $('body').append('<div id="_taracot-loading-modal" class="uk-modal"><div class="uk-modal-dialog uk-modal-dialog-frameless" style="background:0;box-shadow:0 0 0px rgba(0,0,0,0);position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;width:100px;height:100px;"><div id="_taracot_loader_image"></div></div></div>');
-            _taracot_loading_modal = $.UIkit.modal("#_taracot-loading-modal", {
+            _taracot_loading_modal = UIkit.modal("#_taracot-loading-modal", {
                 bgclose: false,
                 keyboard: false
             });

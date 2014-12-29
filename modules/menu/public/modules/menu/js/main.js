@@ -1,4 +1,4 @@
-var taracot_dlg_menu_edit = new $.UIkit.modal("#taracot_dlg_menu_edit");
+var taracot_dlg_menu_edit = new UIkit.modal("#taracot_dlg_menu_edit");
 var edit_id;
 var edit_lng;
 
@@ -57,7 +57,7 @@ $('#btn_load_menu').click(function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -68,7 +68,7 @@ $('#btn_load_menu').click(function() {
 		error: function() {
 			$('#load_menu_loading').addClass('uk-hidden');
 			$('#btn_load_menu').attr('disabled', false);
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -102,7 +102,7 @@ $('#btn_menu_save').click(function() {
 			if (data.status == 1) {
 				$('#menu_editor').addClass('uk-hidden');
 				$('#btn_load_menu').attr('disabled', false);
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.save_success,
 					status: 'success',
 					timeout: 2000,
@@ -113,7 +113,7 @@ $('#btn_menu_save').click(function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -123,7 +123,7 @@ $('#btn_menu_save').click(function() {
 		},
 		error: function() {
 			taracot_ajax_progress_indicator('body', false);
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -153,7 +153,7 @@ $('#taracot_dlg_menu_edit_btn_save').click(function() {
 		errors = true;
 	}
 	if (errors) {
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.form_contains_errors,
 			status: 'danger',
 			timeout: 2000,

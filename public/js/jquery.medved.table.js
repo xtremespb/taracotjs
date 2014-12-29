@@ -190,7 +190,7 @@
             error: function() {
                 taracot_table_loading_indicator(false);
                 $('#' + table_id + '_filter').prop('disabled', false);
-                $.UIkit.notify({
+                UIkit.notify({
                     message: options.error_message,
                     status: 'danger',
                     timeout: 2000,

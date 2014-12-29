@@ -8,8 +8,8 @@ var clpbrd = {
 	dir: null,
 	files: []
 };
-var taracot_dlg_edit = new $.UIkit.modal("#taracot_dlg_edit");
-var taracot_dlg_upload = new $.UIkit.modal("#taracot_dlg_upload", {
+var taracot_dlg_edit = new UIkit.modal("#taracot_dlg_edit");
+var taracot_dlg_upload = new UIkit.modal("#taracot_dlg_upload", {
 	bgclose: false,
 	keyboard: false
 });
@@ -117,7 +117,7 @@ var load_files_data = function(dir) {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -129,7 +129,7 @@ var load_files_data = function(dir) {
 		error: function() {
 			$('#files_grid_progress').hide();
 			$('#files_grid').html(_lang_vars.ajax_failed);
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,

@@ -21,7 +21,7 @@ var load_captcha = function() {
 			if (data.img) {
 				$('#auth_captcha_img').attr('src', 'data:image/jpeg;base64,' + data.img);
 			} else {
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.ajax_failed,
 					status: 'danger',
 					timeout: 2000,
@@ -30,7 +30,7 @@ var load_captcha = function() {
 			}
 		},
 		error: function() {
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -49,7 +49,7 @@ $('#auth_login').click(function() {
 	if (!$('#auth_username').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
 		$('#auth_username').addClass('uk-form-danger');
 		$('#auth_username').focus();
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_username_syntax,
 			status: 'danger',
 			timeout: 2000,
@@ -60,7 +60,7 @@ $('#auth_login').click(function() {
 	if (!$('#auth_password').val().match(/^.{5,80}$/)) {
 		$('#auth_password').addClass('uk-form-danger');
 		$('#auth_password').focus();
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_password_syntax,
 			status: 'danger',
 			timeout: 2000,
@@ -71,7 +71,7 @@ $('#auth_login').click(function() {
 	if (captcha_req && !$('#auth_captcha').val().match(/^[0-9]{4}$/)) {
 		$('#auth_captcha').addClass('uk-form-danger');
 		$('#auth_captcha').focus();
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_captcha,
 			status: 'danger',
 			timeout: 2000,
@@ -102,7 +102,7 @@ $('#auth_login').click(function() {
 				$('#captcha_div').show();
 				captcha_req = true;
 				if (data.error) {
-					$.UIkit.notify({
+					UIkit.notify({
 						message: data.error,
 						status: 'danger',
 						timeout: 2000,
@@ -120,7 +120,7 @@ $('#auth_login').click(function() {
 			}
 		},
 		error: function() {
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,

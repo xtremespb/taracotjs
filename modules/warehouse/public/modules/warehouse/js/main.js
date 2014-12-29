@@ -1,13 +1,13 @@
 var current_id = '',
     current_timestamp = 0,
     current_timestamp_new = 0,
-    categories_edit_dlg = $.UIkit.modal("#taracot_warehouse_categories_edit_dlg"),
-    categories_select_dlg = $.UIkit.modal("#taracot_warehouse_categories_select_dlg"),
-    warehouse_item_dlg = $.UIkit.modal("#warehouse_item_dlg"),
-    warehouse_coll_dlg = $.UIkit.modal("#warehouse_coll_dlg"),
-    outdated_dlg = $.UIkit.modal("#taracot_outdated_dlg"),
-    autosave_dlg = $.UIkit.modal("#taracot_autosave_dlg"),
-    lock_dlg = $.UIkit.modal("#taracot_lock_dlg"),
+    categories_edit_dlg = UIkit.modal("#taracot_warehouse_categories_edit_dlg"),
+    categories_select_dlg = UIkit.modal("#taracot_warehouse_categories_select_dlg"),
+    warehouse_item_dlg = UIkit.modal("#warehouse_item_dlg"),
+    warehouse_coll_dlg = UIkit.modal("#warehouse_coll_dlg"),
+    outdated_dlg = UIkit.modal("#taracot_outdated_dlg"),
+    autosave_dlg = UIkit.modal("#taracot_autosave_dlg"),
+    lock_dlg = UIkit.modal("#taracot_lock_dlg"),
     categories_edit = false,
     jstree_categories,
     jstree_categories_select,
@@ -264,7 +264,7 @@ var edit_item_show = function(data) {
     if (data.pcategory_id) $('#pcategory_id').val(data.pcategory_id);
     if (data.plang) $('#plang').val(data.plang);
     if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
-    if (data.pamount) $('#pamount').val(data.pamount);
+    if (!parseInt(data.pamount).isNaN) $('#pamount').val(parseInt(data.pamount));
     if (data.pprice) $('#pprice').val(data.pprice);
     if (data.pweight) $('#pweight').val(data.pweight);
     if (data.pdesc) $('#pdesc').val(data.pdesc);
@@ -300,7 +300,7 @@ var edit_item_show = function(data) {
             var item = '<div><table style="width:100%"><tr><td style="width:120px">' + (items_lng[data.pchars[pc].id] || data.pchars[pc].id) + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + data.pchars[pc].id + '" value="' + data.pchars[pc].val + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
             $('#warehouse_chars').append(item);
         }
-        $.UIkit.sortable($('#warehouse_chars'), {
+        UIkit.sortable($('#warehouse_chars'), {
             handleClass: 'taracot-btn-chars-sort'
         });
         $('.taracot-btn-chars-del').unbind();
@@ -347,7 +347,7 @@ var edit_item = function(id) {
                 if (data.error) {
                     _err = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _err,
                     status: 'danger',
                     timeout: 2000,
@@ -357,7 +357,7 @@ var edit_item = function(id) {
         },
         error: function() {
             taracot_ajax_progress_indicator('body', false);
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -386,7 +386,7 @@ var delete_item = function(ids) {
                 if (data.status == 1) {
                     $('#taracot_table').medvedTable('update');
                 } else {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: _lang_vars.delete_err_msg,
                         status: 'danger',
                         timeout: 2000,
@@ -396,7 +396,7 @@ var delete_item = function(ids) {
             },
             error: function() {
                 $('#taracot_table').medvedTable('loading_indicator_hide');
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.delete_err_msg,
                     status: 'danger',
                     timeout: 2000,
@@ -421,14 +421,14 @@ $('#btn_steal_lock').click(function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status == 1) {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.lock_removed,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
                 });
             } else {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.lock_remove_error,
                     status: 'danger',
                     timeout: 2000,
@@ -438,7 +438,7 @@ $('#btn_steal_lock').click(function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.lock_remove_error,
                 status: 'danger',
                 timeout: 2000,
@@ -517,7 +517,7 @@ $('#btn_edit_save').click(function() {
         if (!error_focus) error_focus = '#pcurs';
     }
     if (form_errors) {
-        $.UIkit.notify({
+        UIkit.notify({
             message: _lang_vars.form_contain_errors,
             status: 'danger',
             timeout: 2000,
@@ -568,7 +568,7 @@ $('#btn_edit_save').click(function() {
             if (data.status == 1) {
                 if (auto_save_timer) window.clearTimeout(auto_save_timer);
                 $.jStorage.set("_taracot_warehouse_autosave", false);
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.page_save_success,
                     status: 'success',
                     timeout: 2000,
@@ -591,7 +591,7 @@ $('#btn_edit_save').click(function() {
                 if (data.error) {
                     _err = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _err,
                     status: 'danger',
                     timeout: 2000,
@@ -601,7 +601,7 @@ $('#btn_edit_save').click(function() {
         },
         error: function() {
             taracot_ajax_progress_indicator('body', false);
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -656,7 +656,7 @@ $('#btn_images_delete').click(function() {
                 for (var i = 0; i < ns.length; i++) $('#' + ns[i]).remove();
             } else {
                 if (data.error) {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: data.error,
                         status: 'danger',
                         timeout: 2000,
@@ -666,7 +666,7 @@ $('#btn_images_delete').click(function() {
             }
         },
         error: function() {
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
@@ -724,7 +724,7 @@ var taracot_dlg_item_click_hanlder = function() {
     warehouse_item_dlg.hide();
     var item = '<div><table style="width:100%"><tr><td style="width:120px">' + $(this).html() + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + $(this).attr('id').replace(/^_di_/, '') + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
     $('#warehouse_chars').append(item);
-    $.UIkit.sortable($('#warehouse_chars'), {
+    UIkit.sortable($('#warehouse_chars'), {
         handleClass: 'taracot-btn-chars-sort'
     });
     $('.taracot-btn-chars-del').unbind();
@@ -742,7 +742,7 @@ var taracot_dlg_coll_click_hanlder = function() {
     for (var i = 0; i < whitems.length; i++) items_lng[whitems[i].id] = whitems[i][current_lng];
     for (var ci = 0; ci < items.length; ci++) items_html += '<div><table style="width:100%"><tr><td style="width:120px">' + (items_lng[items[ci]] || items[ci]) + '</td><td><input type="text" class="taracot-chars-item uk-width-1-1" rel="' + items[ci] + '"></td><td style="width:100px"><button class="uk-button uk-button-small uk-button-danger taracot-btn-chars-del"><i class="uk-icon uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button uk-button-small taracot-btn-chars-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr></table></div>';
     $('#warehouse_chars').append(items_html);
-    $.UIkit.sortable($('#warehouse_chars'), {
+    UIkit.sortable($('#warehouse_chars'), {
         handleClass: 'taracot-btn-chars-sort'
     });
     $('.taracot-btn-chars-del').unbind();
@@ -873,7 +873,7 @@ var init_uploader = function() {
         uploader.start();
     });
     uploader.bind('Error', function(up, err) {
-        $.UIkit.notify({
+        UIkit.notify({
             message: err.file.name + ': ' + err.message,
             status: 'danger',
             timeout: 2000,
@@ -894,7 +894,7 @@ var init_uploader = function() {
         if (data) {
             if (data.status === 0) {
                 if (data.error) {
-                    $.UIkit.notify({
+                    UIkit.notify({
                         message: data.error,
                         status: 'danger',
                         timeout: 2000,

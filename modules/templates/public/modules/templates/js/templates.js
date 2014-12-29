@@ -1,4 +1,4 @@
-var edit_modal = new $.UIkit.modal("#taracot-modal-edit");
+var edit_modal = new UIkit.modal("#taracot-modal-edit");
 var current_id = '';
 var ckeditor;
 
@@ -74,7 +74,7 @@ $('#taracot-edit-btn-save').click(function() {
             if (data.status == 1) {
                 $('#taracot_table').medvedTable('update');
                 edit_modal.hide();
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
                     timeout: 2000,
@@ -96,7 +96,7 @@ $('#taracot-edit-btn-save').click(function() {
                         }
                     }
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _errmsg,
                     status: 'danger',
                     timeout: 2000,
@@ -107,7 +107,7 @@ $('#taracot-edit-btn-save').click(function() {
         error: function() {
             $('#taracot-modal-edit-loading').addClass('uk-hidden');
             $('#taracot-modal-edit-wrap').removeClass('uk-hidden');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.form_err_msg,
                 status: 'danger',
                 timeout: 2000,

@@ -40,14 +40,14 @@ $('#btn_save').click(function() {
         success: function(data) {
             $.loadingIndicator('hide');
             if (data.status && data.status == 1) {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.save_success,
                     status: 'success',
                     timeout: 2000,
                     pos: 'top-center'
                 });
             } else {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.ajax_failed,
                     status: 'danger',
                     timeout: 2000,
@@ -57,7 +57,7 @@ $('#btn_save').click(function() {
         },
         error: function() {
             $.loadingIndicator('hide');
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,

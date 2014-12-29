@@ -29,7 +29,7 @@ var btn_categories_click_handler = function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -42,7 +42,7 @@ var btn_categories_click_handler = function() {
 			}
 		},
 		error: function() {
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -128,7 +128,7 @@ $('#btn-tree-save').click(function() {
 			jstree_find_root();
 			if (data.status == 1) {
 				categories_data = fldrs;
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _lang_vars.categories_save_success,
 					status: 'success',
 					timeout: 2000,
@@ -140,7 +140,7 @@ $('#btn-tree-save').click(function() {
 				if (data.error) {
 					_err = data.error;
 				}
-				$.UIkit.notify({
+				UIkit.notify({
 					message: _err,
 					status: 'danger',
 					timeout: 2000,
@@ -149,7 +149,7 @@ $('#btn-tree-save').click(function() {
 			}
 		},
 		error: function() {
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.ajax_failed,
 				status: 'danger',
 				timeout: 2000,
@@ -198,7 +198,7 @@ $('#btn_categories_edit_save').click(function() {
 	if (!sel || !sel.length || sel.length > 1) return;
 	if (!check_directory($('#fname').val())) {
 		$('#fname').addClass('uk-form-danger');
-		$.UIkit.notify({
+		UIkit.notify({
 			message: _lang_vars.invalid_category,
 			status: 'danger',
 			timeout: 2000,
@@ -220,7 +220,7 @@ $('#btn_categories_edit_save').click(function() {
 		});
 		if (!cn) {
 			$('#fname').addClass('uk-form-danger');
-			$.UIkit.notify({
+			UIkit.notify({
 				message: _lang_vars.duplicate_category,
 				status: 'danger',
 				timeout: 2000,

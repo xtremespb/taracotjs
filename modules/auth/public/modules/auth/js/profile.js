@@ -1,7 +1,7 @@
-var dlg_password = new $.UIkit.modal("#dlg_password");
-var dlg_email = new $.UIkit.modal("#dlg_email");
-var dlg_realname = new $.UIkit.modal("#dlg_realname");
-var dlg_auth_finish = new $.UIkit.modal("#dlg_auth_finish");
+var dlg_password = new UIkit.modal("#dlg_password");
+var dlg_email = new UIkit.modal("#dlg_email");
+var dlg_realname = new UIkit.modal("#dlg_realname");
+var dlg_auth_finish = new UIkit.modal("#dlg_auth_finish");
 $.loadingIndicator();
 
 var uploader;
@@ -116,7 +116,7 @@ $('#btn_pc_save').click(function() {
                 $('#taracot_pc_error').show();
             } else {
                 dlg_password.hide();
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.password_saved,
                     status: 'success',
                     timeout: 2000,
@@ -296,7 +296,7 @@ $('#btn_rn_save').click(function() {
                 	$('#profile_realname').html('');
                 	auth_realname = '';
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.realname_saved,
                     status: 'success',
                     timeout: 2000,
@@ -366,7 +366,7 @@ $('#btn_set_save').click(function() {
                 dlg_auth_finish.hide();
                 $('#taracot_oauth_finish_wrap').hide();
                 if (data.username) $('#profile_username').html(data.username);
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.username_password_saved,
                     status: 'success',
                     timeout: 2000,
@@ -440,7 +440,7 @@ var uploader_init = function() {
     });
     uploader.bind('Error', function(up, err) {
     	$.loadingIndicator('hide');
-    	$.UIkit.notify({
+    	UIkit.notify({
             message: err.message,
             status: 'danger',
             timeout: 2000,
@@ -461,7 +461,7 @@ var uploader_init = function() {
         if (data) {
             if (data.result === 0) {
                 if (data.error) {
-                	$.UIkit.notify({
+                	UIkit.notify({
 			            message: data.error,
 			            status: 'danger',
 			            timeout: 2000,

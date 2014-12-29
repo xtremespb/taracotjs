@@ -14,7 +14,7 @@ var btn_save_click_handler = function() {
         success: function(data) {
             taracot_ajax_progress_indicator('body', false);
             if (data && data.status == 1) {
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _lang_vars.document_saved,
                     status: 'success',
                     timeout: 2000,
@@ -26,7 +26,7 @@ var btn_save_click_handler = function() {
                 if (data.error) {
                     _err = data.error;
                 }
-                $.UIkit.notify({
+                UIkit.notify({
                     message: _err,
                     status: 'danger',
                     timeout: 2000,
@@ -36,7 +36,7 @@ var btn_save_click_handler = function() {
         },
         error: function() {
             taracot_ajax_progress_indicator('body', false);
-            $.UIkit.notify({
+            UIkit.notify({
                 message: _lang_vars.ajax_failed,
                 status: 'danger',
                 timeout: 2000,
