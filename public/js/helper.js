@@ -10,8 +10,8 @@ function submitOnEnter(e) {
             // down=40,up=38,pgdn=34,pgup=33
             if (window.previousKeyCode == 33 || window.previousKeyCode == 34 ||
                 window.previousKeyCode == 39 || window.previousKeyCode == 40) {
-                    window.previousKeyCode = keycode;
-                    return false;
+                window.previousKeyCode = keycode;
+                return false;
             }
         }
         return true;
@@ -21,14 +21,15 @@ function submitOnEnter(e) {
     }
 }
 
-function getUrlVars() {
-    var vars = [],
-        hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-    return vars;
-}
+(function($) {
+    $.queryString = (function(a) {
+        if (a === "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i) {
+            var p = a[i].split('=');
+            if (p.length != 2) continue;
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+    })(window.location.search.substr(1).split('&'));
+})(jQuery);
