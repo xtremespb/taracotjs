@@ -109,5 +109,6 @@
 	"weight": "Weight",
 	"pweight_hint": "Define item weight, zero means not important",
 	"pshortdesc": "Short description",
-	"pshortdesc_hint": "Define a short description, up to 1024 characters long, displayed in catalog list"
+	"pshortdesc_hint": "Define a short description, up to 1024 characters long, displayed in catalog list",
+	"pamount_unlimited": "Amount is not limited"
 }

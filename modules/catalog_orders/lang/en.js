@@ -299,5 +299,18 @@
 	"form_contains_errors": "Form contains errors",
 	"cancel_order": "Cancel order",
 	"order_cancel_confirm": "Are you sure to cancel this order? Customer will get a notification, the warehouse rollback will be made.",
-	"invalid_query": "invalid_query"
+	"invalid_query": "invalid_query",
+	"ship_track": "Tracking number",
+	"your_order_id": "Your order ID",
+	"order_status_changed": "Order status has been changed to",
+	"previous_status": "Previous status",
+	"view_order": "View your order",
+	"on_website": "on website",
+	"no_tracking_number_yet": "not specified",
+	"locked": "Locked",
+	"order_locked": "Order is locked",
+	"order_locked_by_another_user": "Order is currently locked by another user",
+	"steal_lock": "Steal lock",
+	"close": "Close",
+	"unlock_hint": "Please ask the user to open and close the requested order to unlock. If you're sure the lock is not required anymore, click the &quot;Steal lock&quot; button to unlock an order."
 }

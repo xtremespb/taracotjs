@@ -385,10 +385,12 @@ module.exports = function(app) {
             pimages = req.body.pimages,
             pchars = req.body.pchars,
             pamount = req.body.pamount,
+            pamount_unlimited = 0,
             pprice = req.body.pprice,
             pweight = req.body.pweight,
             pcurs = req.body.pcurs,
             current_timestamp = req.body.current_timestamp;
+        if (req.body.pamount_unlimited != '0') pamount_unlimited = 1;
         if (pimages && !util.isArray(pimages)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_query");
@@ -412,7 +414,15 @@ module.exports = function(app) {
                     rep.error = i18nm.__("invalid_query");
                     return res.send(JSON.stringify(rep));
                 }
-                if (pchars[pc].val) pchars[pc].val = pchars[pc].val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                if (parseFloat(pchars[pc].val) == pchars[pc].val) {
+                    pchars[pc].val = parseFloat(pchars[pc].val);
+                } else {
+                    if (pchars[pc].val) {
+                        pchars[pc].val = pchars[pc].val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                    } else {
+                        pchars[pc].val = '';
+                    }
+                }
             }
         } else {
             pchars = [];
@@ -456,7 +466,7 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
-        if (!pamount || parseInt(pamount) != pamount || pamount < -1) {
+        if (!pamount || parseInt(pamount) != pamount || pamount < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_amount");
             return res.send(JSON.stringify(rep));
@@ -535,6 +545,7 @@ module.exports = function(app) {
                                         pchars: pchars,
                                         pcontent: pcontent,
                                         pamount: pamount,
+                                        pamount_unlimited: pamount_unlimited,
                                         pprice: pprice,
                                         pweight: pweight,
                                         pcurs: pcurs,
@@ -566,8 +577,11 @@ module.exports = function(app) {
                                                 pfilename: pfilename
                                             }, {
                                                 $set: {
-                                                    pamount: pamount
+                                                    pamount: pamount,
+                                                    pamount_unlimited: pamount_unlimited
                                                 }
+                                            }, {
+                                                multi: true
                                             }, function() {});
                                             var data1 = app.get('mongodb').collection('search_index').find({
                                                 space: 'warehouse',
@@ -662,6 +676,7 @@ module.exports = function(app) {
                         pdesc: pdesc,
                         pimages: pimages,
                         pamount: pamount,
+                        pamount_unlimited: pamount_unlimited,
                         pprice: pprice,
                         pweight: pweight,
                         pcurs: pcurs,
@@ -674,8 +689,11 @@ module.exports = function(app) {
                                 pfilename: pfilename
                             }, {
                                 $set: {
-                                    pamount: pamount
+                                    pamount: pamount,
+                                    pamount_unlimited: pamount_unlimited
                                 }
+                            }, {
+                                multi: true
                             }, function() {});
                             var url = pcategory + '/' + pfilename;
                             url = url.replace(/(\/+)/, '/');

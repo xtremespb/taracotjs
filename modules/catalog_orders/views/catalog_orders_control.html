@@ -1,4 +1,20 @@
 <h1>!{root.lang.__('module_name')}</h1>
+<div id="dlg_locked" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-spinner uk-icon-spin" id="dlg_locked_loading" style="display:none"></div>
+        <div id="dlg_locked_wrap">
+            <h1 class="uk-modal-header">!{root.lang.__('order_locked')}</h1>
+            <p>!{root.lang.__('order_locked_by_another_user')} (<span id="order_locked_by"></span>).</p>
+            <p>!{root.lang.__('unlock_hint')}</p>
+            <div class="uk-modal-footer">
+                <div>
+                    <button class="uk-button uk-button-danger uk-float-left" id="order_steal_lock">!{root.lang.__('steal_lock')}</button>
+                    <button class="uk-button uk-modal-close">!{root.lang.__('close')}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="uk-float-left uk-margin-bottom">
     <div class="uk-button-group">
         <button class="uk-button" id="btn-select-all" data-uk-tooltip title="!{root.lang.__('select_all')}"><i class="uk-icon-square"></i>
@@ -90,6 +106,12 @@
                         </fieldset>
                         <fieldset>
                             <div class="uk-form-row">
+                                <label class="uk-form-label">!{root.lang.__('ship_track')}:</label>
+                                <input class="uk-form-width-medium order-edit-field" type="text" id="ship_track">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="uk-form-row">
                                 <label class="uk-form-label">!{root.lang.__('ship_name')}:</label>
                                 <input class="uk-form-width-large order-edit-field" type="text" id="ship_name">
                             </div>
@@ -152,9 +174,9 @@
             </ul>
         </div>
         <div class="taracot-buttons-area uk-modal-footer">
-        	<button class="uk-button uk-float-left uk-button-danger" type="button" id="taracot_edit_btn_cancel_order"><i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('cancel_order')}</button>
+            <button class="uk-button uk-float-left uk-button-danger" type="button" id="taracot_edit_btn_cancel_order"><i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('cancel_order')}</button>
             <button class="uk-button uk-button-success" type="button" id="taracot-edit-btn-save">!{root.lang.__('save')}</button>&nbsp;
-            <button class="uk-button uk-modal-close" type="button">!{root.lang.__('cancel')}</button>
+            <button class="uk-button" type="button" id="taracot-edit-btn-cancel">!{root.lang.__('cancel')}</button>
         </div>
     </div>
 </div>
@@ -171,10 +193,11 @@ var _lang_vars = {
     },
     _order_status_list = !{
         root.order_status_list
-    }
-_shipping_methods = !{
-    root.shipping_methods
-};
+    },
+    _shipping_methods = !{
+        root.shipping_methods
+    },
+    _auth_user_id = "!{root.auth_user_id}";
 for (var _sl = 0; _sl < _order_status_list.length; _sl++) $('#order_status').append('<option value="' + _sl + '">' + _order_status_list[_sl] + '</option>');
 for (var _sp = 0; _sp < _shipping_methods.length; _sp++) $('#shipping_method').append('<option value="' + _shipping_methods[_sp].id + '">' + _shipping_methods[_sp].val + '</option>');
 </script>

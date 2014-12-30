@@ -410,7 +410,7 @@ module.exports = function(app) {
             if (!ship_zip || !ship_zip.match(/^[0-9]{5,6}$/)) errors.push(i18nm.__('invalid_country'));
             if (!ship_phone || !ship_phone.match(/^[0-9\+]{1,40}$/)) errors.push(i18nm.__('invalid_phone'));
             if (ship_comment && ship_comment.length > 1024) errors.push(i18nm.__('invalid_comment'));
-            if (!subtotal_cost || subtotal_cost < 0) errors.push(i18nm.__('invalid_subtotal_cost'));
+            if (parseInt(subtotal_cost).isNAN || subtotal_cost < 0) errors.push(i18nm.__('invalid_subtotal_cost'));
             if (!errors.length) {
                 var country = '';
                 for (var cn = 0; cn < countries.length; cn++)
@@ -432,6 +432,7 @@ module.exports = function(app) {
                 ship_phone: ship_phone
             };
         }
+        // Get configuration
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'curs'
@@ -474,6 +475,7 @@ module.exports = function(app) {
             for (var ca = 0; ca < catalog_cart.length; ca++) warehouse_query.push({
                 pfilename: catalog_cart[ca].sku
             });
+            // Find warehouse items in cart
             app.get('mongodb').collection('warehouse').find({
                 $or: warehouse_query,
                 plang: _locale
@@ -517,7 +519,8 @@ module.exports = function(app) {
                     for (var key in cart) update_items.push(key);
                     async.each(update_items, function(item, callback) {
                         app.get('mongodb').collection('warehouse').update({
-                            pfilename: item
+                            pfilename: item,
+                            pamount_unlimited: 0
                         }, {
                             $inc: {
                                 pamount: -cart[item]
@@ -649,8 +652,8 @@ module.exports = function(app) {
                                                 for (var wsi = 0; wsi < whship.length; wsi++)
                                                     if (whship[wsi].id == ship_method) ship_method_title = whship[wsi][_locale];
                                                 if (shipping_address.ship_name) {
-                                                    addr = shipping_address.ship_name + '<br>' + shipping_address.ship_street + '<br>' + shipping_address.ship_city + '<br>' +  shipping_address.ship_region + '<br>' +  shipping_address.ship_zip + ' ' + country_full;
-                                                    addr_txt = shipping_address.ship_name + "\n" + shipping_address.ship_street + "\n" + shipping_address.ship_city + "\n" +  shipping_address.ship_region + "\n" +  shipping_address.ship_zip + ' ' + country_full;
+                                                    addr = shipping_address.ship_name + '<br>' + shipping_address.ship_street + '<br>' + shipping_address.ship_city + '<br>' + shipping_address.ship_region + '<br>' + shipping_address.ship_zip + ' ' + country_full;
+                                                    addr_txt = shipping_address.ship_name + "\n" + shipping_address.ship_street + "\n" + shipping_address.ship_city + "\n" + shipping_address.ship_region + "\n" + shipping_address.ship_zip + ' ' + country_full;
                                                 }
                                                 var shipping = pt_mail_neworder_shipping_html(gaikan, {
                                                     lang: i18nm,
@@ -659,8 +662,7 @@ module.exports = function(app) {
                                                     ship_comment: ship_comment || '-',
                                                     addr: addr
                                                 }, undefined);
-                                                var view_url = req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id;
-                                                mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', {
+                                                var mail_data = {
                                                     lang: i18nm,
                                                     site_title: app.get('settings').site_title,
                                                     order_id: order_id,
@@ -670,18 +672,24 @@ module.exports = function(app) {
                                                     summary: summary,
                                                     summary_txt: summary_txt,
                                                     shipping: shipping,
-                                                    view_url: view_url,
+                                                    view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
                                                     shipping_method: ship_method_title || ship_method,
                                                     ship_phone: shipping_address.ship_phone || '-',
                                                     ship_comment: ship_comment || '-',
-                                                    addr_txt: addr_txt
-                                                }, req);
+                                                    addr_txt: addr_txt,
+                                                    subj: i18nm.__('your_order_id') + ' ' + order_id
+                                                };
+                                                mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
+                                                mail_data.subj = i18nm.__('order_id') + ' ' + order_id;
+                                                mail_data.view_url = req.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                                                mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
                                             }
                                             // Try to store shipping address in the database
                                             app.get('mongodb').collection('warehouse_addr').update({
-                                                _id: req.session.auth._id,
+                                                user_id: req.session.auth._id,
                                             }, {
-                                                shipping_address: shipping_address
+                                                shipping_address: shipping_address,
+                                                user_id: req.session.auth._id
                                             }, {
                                                 upsert: true,
                                                 safe: false
@@ -821,34 +829,44 @@ module.exports = function(app) {
                         val: whship[sm].id,
                         text: whship[sm][_locale]
                     }, undefined);
-                var out_html = checkout(gaikan, {
-                    lang: i18nm,
-                    checkout_html: checkout_html,
-                    country_list_html: country_list_html,
-                    sm_list_html: sm_list_html,
-                    init_checkout: JSON.stringify(catalog_cart || []),
-                    init_sort: sort,
-                    init_view: show_all,
-                    init_path: init_cat,
-                    init_page: page,
-                    init_find: init_find,
-                    total_weight: total_weight,
-                    total_amount: total_amount,
-                    shipping_methods: JSON.stringify(whship),
-                    subtotal_currency: whcurs[0][_locale],
-                    subtotal: subtotal,
-                    missing_items: JSON.stringify(missing_items)
-                }, undefined);
-                var data = {
-                    title: i18nm.__('checkout'),
-                    current_lang: _locale,
-                    page_title: i18nm.__('checkout'),
-                    content: out_html,
-                    keywords: '',
-                    description: '',
-                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
-                };
-                app.get('renderer').render(res, undefined, data, req);
+                app.get('mongodb').collection('warehouse_addr').find({
+                    user_id: req.session.auth._id
+                }, {
+                    limit: 1
+                }).toArray(function(wa_err, waitems) {
+                    var shipping_address = {};
+                    if (!wa_err && waitems && waitems.length)
+                        shipping_address = waitems[0].shipping_address || {};
+                    var out_html = checkout(gaikan, {
+                        lang: i18nm,
+                        checkout_html: checkout_html,
+                        country_list_html: country_list_html,
+                        sm_list_html: sm_list_html,
+                        init_checkout: JSON.stringify(catalog_cart || []),
+                        init_sort: sort,
+                        init_view: show_all,
+                        init_path: init_cat,
+                        init_page: page,
+                        init_find: init_find,
+                        total_weight: total_weight,
+                        total_amount: total_amount,
+                        shipping_methods: JSON.stringify(whship),
+                        subtotal_currency: whcurs[0][_locale],
+                        subtotal: subtotal,
+                        missing_items: JSON.stringify(missing_items),
+                        shipping_address: JSON.stringify(shipping_address)
+                    }, undefined);
+                    var data = {
+                        title: i18nm.__('checkout'),
+                        current_lang: _locale,
+                        page_title: i18nm.__('checkout'),
+                        content: out_html,
+                        keywords: '',
+                        description: '',
+                        extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                    };
+                    app.get('renderer').render(res, undefined, data, req);
+                });
             });
         });
     });

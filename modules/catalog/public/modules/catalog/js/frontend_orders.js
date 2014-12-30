@@ -52,6 +52,7 @@ var taracot_catalog_orders_tr_handler = function(evnt, _id) {
                 shipping_address_data.comment = data.ship_comment || '';
                 $('#catalog_shipping_addr').html(addr);
                 $('#catalog_shipping_phone').html(data.shipping_address.ship_phone || '');
+                $('#catalog_shipping_track').html(data.ship_track || '-');
                 $('#catalog_shipping_comment').html(data.ship_comment || '');
                 $('#catalog_order_subtotal').html(data.sum_subtotal || '0');
                 $('#catalog_order_total').html(data.sum_total || '0');
@@ -254,4 +255,12 @@ $(document).ready(function() {
         $('#taracot_catalog_order_data_wrap').hide();
     });
     $('#catalog_addr_edit').click(catalog_addr_edit_handler);
+    // Show an order if requested
+    if ($.queryString.mode == 'view' && $.queryString.order_id) {
+        push_state({
+            mode: 'list',
+            order_id: $.queryString.order_id
+        }, "?mode=view&order_id=" + $.queryString.order_id);
+        taracot_catalog_orders_tr_handler(undefined, $.queryString.order_id);
+    }
 });

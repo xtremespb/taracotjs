@@ -129,6 +129,8 @@ var taracot_catalog_checkout_btn_orders_handler = function() {
 };
 
 $(document).ready(function() {
+    $('.taracot-catalog-addr-field').val('');
+    $(".taracot-catalog-addr-field")[0].selectedIndex = 0;
     $('#taracot_catalog_checkout_wrap').show();
     $('#taracot_catalog_checkout_empty').hide();
     $('.taracot-catalog-checkout-btn-checkout').show();
@@ -150,4 +152,11 @@ $(document).ready(function() {
     $('.taracot-catalog-checkout-btn-finish').click(function() {
         location.href = '/catalog?rnd=' + parseInt(Math.random() * 900000 + 1000);
     });
+    if (_taracot_catalog_shipping_address.ship_name) $('#catalog_checkout_ship_name').val(_taracot_catalog_shipping_address.ship_name);
+    if (_taracot_catalog_shipping_address.ship_street) $('#catalog_checkout_ship_street').val(_taracot_catalog_shipping_address.ship_street);
+    if (_taracot_catalog_shipping_address.ship_city) $('#catalog_checkout_ship_city').val(_taracot_catalog_shipping_address.ship_city);
+    if (_taracot_catalog_shipping_address.ship_region) $('#catalog_checkout_ship_region').val(_taracot_catalog_shipping_address.ship_region);
+    if (_taracot_catalog_shipping_address.ship_country) $('#catalog_checkout_ship_country').val(_taracot_catalog_shipping_address.ship_country);
+    if (_taracot_catalog_shipping_address.ship_zip) $('#catalog_checkout_ship_zip').val(_taracot_catalog_shipping_address.ship_zip);
+    if (_taracot_catalog_shipping_address.ship_phone) $('#catalog_checkout_ship_phone').val(_taracot_catalog_shipping_address.ship_phone);
 });

@@ -116,6 +116,8 @@ var auto_save_data = function() {
     var pdesc = $.trim($('#pdesc').val());
     var pimages = [];
     var pamount = $.trim($('#pamount').val());
+    var pamount_unlimited = 0;
+    if ($('#pamount_unlimited').is(':checked')) pamount_unlimited = 1;
     var pcurs = $('#pcurs').val();
     var pprice = $.trim($('#pprice').val());
     var pweight = $.trim($('#pweight').val());
@@ -141,6 +143,7 @@ var auto_save_data = function() {
         pkeywords: pkeywords,
         pdesc: pdesc,
         pamount: pamount,
+        pamount_unlimited: pamount_unlimited,
         pprice: pprice,
         pweight: pweight,
         pimages: pimages,
@@ -202,6 +205,7 @@ var btn_add_item_handler = function() {
     $('.taracot-page-edit-form-control').each(function() {
         $(this).val('');
         $(this).removeClass('uk-form-danger');
+        $(this).prop('checked', false);
     });
     $('#pcontent').val('');
     $('#plang').val(locales[0]);
@@ -265,6 +269,8 @@ var edit_item_show = function(data) {
     if (data.plang) $('#plang').val(data.plang);
     if (data.pkeywords) $('#pkeywords').val(data.pkeywords);
     if (!parseInt(data.pamount).isNaN) $('#pamount').val(parseInt(data.pamount));
+    $('#pamount_unlimited').prop('checked', false);
+    if (data.pamount_unlimited) $('#pamount_unlimited').prop('checked', true);
     if (data.pprice) $('#pprice').val(data.pprice);
     if (data.pweight) $('#pweight').val(data.pweight);
     if (data.pdesc) $('#pdesc').val(data.pdesc);
@@ -465,6 +471,8 @@ $('#btn_edit_save').click(function() {
     var pcategory = $.trim($('#pcategory').val());
     var pcategory_id = $('#pcategory_id').val();
     var pamount = $('#pamount').val();
+    var pamount_unlimited = 0;
+    if ($('#pamount_unlimited').is(':checked')) pamount_unlimited = 1;
     var pcurs = $('#pcurs').val();
     var pprice = $('#pprice').val();
     var pweight = $('#pweight').val();
@@ -496,7 +504,7 @@ $('#btn_edit_save').click(function() {
         form_errors = true;
         if (!error_focus) error_focus = '#pfilename';
     }
-    if (!pamount || parseInt(pamount) != pamount || pamount < -1) {
+    if (!pamount || parseInt(pamount) != pamount || pamount < 0) {
         $('#pamount').addClass('uk-form-danger');
         form_errors = true;
         if (!error_focus) error_focus = '#pamount';
@@ -555,6 +563,7 @@ $('#btn_edit_save').click(function() {
             pkeywords: pkeywords,
             pdesc: pdesc,
             pamount: pamount,
+            pamount_unlimited: pamount_unlimited,
             pprice: pprice,
             pweight: pweight,
             pimages: pimages,

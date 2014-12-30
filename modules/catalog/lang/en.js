@@ -348,5 +348,6 @@
 	"order_cancel_confirm": "Are you sure to cancel this order?",
 	"invalid_query": "Invalid query. Plase refresh the current page and try again.",
 	"view_order": "View order details",
-	"on_website": "on website"
+	"on_website": "on website",
+	"ship_track": "Tracking number"
 }
