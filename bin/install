@@ -807,6 +807,13 @@ async.series([
             });
         },
         function(callback) {
+            console.log("\nCreating indexes for collection: warehouse_addr\n");
+            ensure_indexes('warehouse_addr', ['user_id'], null, true, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
             console.log("\nCreating collection: counters\n");
             db.createCollection('counters', function(err, collection) {
                 if (err) {
@@ -821,7 +828,7 @@ async.series([
         function(callback) {
             if (program.update) return callback();
             console.log("\nAdding warehouse_orders item to counters collections...\n");
-            db.collection('menu').insert({
+            db.collection('counters').insert({
                 "_id": "warehouse_orders",
                 "seq": 0
             }, function(err) {
@@ -830,6 +837,25 @@ async.series([
                     console.log(err);
                     process.exit(1);
                 }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse_orders\n");
+            db.createCollection('warehouse_orders', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: warehouse_orders\n");
+            ensure_indexes('warehouse_orders', ['order_id', 'order_status', 'order_timestamp', 'user_id'], null, null, function() {
                 console.log("... success");
                 callback();
             });
