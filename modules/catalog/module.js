@@ -1062,10 +1062,11 @@ module.exports = function(app) {
                             currency: currency
                         }, undefined);
                     }
+                    var whcurs_ = whcurs[0] || {};
                     cart_html = pt_cart(gaikan, {
                         body: cart_html,
                         subtotal: subtotal,
-                        subtotal_currency: whcurs[0][_locale],
+                        subtotal_currency: whcurs_[_locale],
                         lang: i18nm
                     }, undefined);
                 } else {
@@ -1296,7 +1297,7 @@ module.exports = function(app) {
         var total = 0,
             page = parseInt(req.query.page) || 1,
             max_pages = 10,
-            items_per_page = 2,
+            items_per_page = 10,
             sort = req.query.sort || 't',
             show_all = req.query.show_all || '1',
             page_url = '',

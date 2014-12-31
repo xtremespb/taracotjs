@@ -405,36 +405,40 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
                 if (woitems[0]) {
-                    if (woitems[0].order_status != order_status && req.session.auth.email) {
-                        var mail_data = {
-                            lang: i18nm,
-                            order_id: woitems[0].order_id,
-                            order_status_old: i18nm.__('order_status_list')[woitems[0].order_status],
-                            order_status: i18nm.__('order_status_list')[order_status],
-                            ship_track: ship_track || i18nm.__('no_tracking_number_yet'),
-                            view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
-                            subj: i18nm.__('your_order_id') + ' ' + woitems[0].order_id
-                        };
-                        mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + woitems[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);
-                    }
+                    app.get('mongodb').collection('users').find({
+                        _id: new ObjectId(woitems[0].user_id)
+                    }).toArray(function(us_err, usitems) {
+                        if (woitems[0].order_status != order_status && !us_err && usitems && usitems.length && usitems[0].email) {
+                            var mail_data = {
+                                lang: i18nm,
+                                order_id: woitems[0].order_id,
+                                order_status_old: i18nm.__('order_status_list')[woitems[0].order_status],
+                                order_status: i18nm.__('order_status_list')[order_status],
+                                ship_track: ship_track || i18nm.__('no_tracking_number_yet'),
+                                view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
+                                subj: i18nm.__('your_order_id') + ' ' + woitems[0].order_id
+                            };
+                            mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + woitems[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);
+                        }
+                        app.get('mongodb').collection('warehouse_orders').update({
+                            _id: new ObjectId(id)
+                        }, {
+                            $set: {
+                                order_status: order_status,
+                                cart_data: cart_data_f,
+                                ship_method: shipping_method,
+                                sum_subtotal: sum_subtotal,
+                                sum_total: sum_total,
+                                shipping_address: shipping_address_f,
+                                ship_comment: ship_comment,
+                                ship_track: ship_track,
+                                locked_by: undefined
+                            }
+                        }, function() {
+                            res.send(JSON.stringify(rep));
+                        });
+                    });
                 }
-                app.get('mongodb').collection('warehouse_orders').update({
-                    _id: new ObjectId(id)
-                }, {
-                    $set: {
-                        order_status: order_status,
-                        cart_data: cart_data_f,
-                        ship_method: shipping_method,
-                        sum_subtotal: sum_subtotal,
-                        sum_total: sum_total,
-                        shipping_address: shipping_address_f,
-                        ship_comment: ship_comment,
-                        ship_track: ship_track,
-                        locked_by: undefined
-                    }
-                }, function() {
-                    res.send(JSON.stringify(rep));
-                });
             });
         });
     });
@@ -491,9 +495,26 @@ module.exports = function(app) {
                         }
                     },
                     function() {
-                        // OK
-                        return res.send({
-                            status: 1
+                        // Send notification to user
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(items[0].user_id)
+                        }).toArray(function(us_err, usitems) {
+                            if (!us_err && usitems && usitems.length && usitems[0].email) {
+                                var mail_data = {
+                                    lang: i18nm,
+                                    order_id: items[0].order_id,
+                                    order_status_old: i18nm.__('order_status_list')[items[0].order_status],
+                                    order_status: i18nm.__('order_status_list')[4],
+                                    ship_track: items[0].ship_track || i18nm.__('no_tracking_number_yet'),
+                                    view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
+                                    subj: i18nm.__('your_order_id') + ' ' + items[0].order_id
+                                };
+                                mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + items[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);
+                                // OK
+                                return res.send({
+                                    status: 1
+                                });
+                            }
                         });
                     });
             });

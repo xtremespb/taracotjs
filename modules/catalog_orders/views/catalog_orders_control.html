@@ -137,7 +137,9 @@
                         <fieldset>
                             <div class="uk-form-row">
                                 <label class="uk-form-label">!{root.lang.__('ship_country')}:</label>
-                                <select id="ship_country" class="uk-form-width-medium order-edit-field">!{root.country_list_html}
+                                <select id="ship_country" class="uk-form-width-medium order-edit-field">
+                                    <option value="">&mdash;</option>
+                                    !{root.country_list_html}
                                 </select>
                             </div>
                         </fieldset>
@@ -153,12 +155,24 @@
                                 <input class="uk-form-width-medium order-edit-field" type="text" id="ship_phone">
                             </div>
                         </fieldset>
-                        <fieldset>
-                            <div class="uk-form-row uk-margin-top">
-                                <label class="uk-form-label">!{root.lang.__('shipping_comment')}:</label>
-                                <textarea id="shipping_comment" class="uk-width-1-1 order-edit-field" rows="2"></textarea>
+                        <div class="uk-grid">
+                            <div class="uk-width-1-2">
+                                <fieldset>
+                                    <div class="uk-form-row uk-margin-top">
+                                        <label class="uk-form-label">!{root.lang.__('shipping_comment')}:</label>
+                                        <textarea id="shipping_comment" class="uk-width-1-1 order-edit-field" rows="2"></textarea>
+                                    </div>
+                                </fieldset>
                             </div>
-                        </fieldset>
+                            <div class="uk-width-1-2">
+                                <fieldset>
+                                    <div class="uk-form-row uk-margin-top">
+                                        <label class="uk-form-label">!{root.lang.__('shipping_address')}:</label>
+                                        <textarea id="shipping_address" class="uk-width-1-1 catalog-textarea-addr" rows="2"></textarea>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 <li>
@@ -201,4 +215,5 @@ var _lang_vars = {
 for (var _sl = 0; _sl < _order_status_list.length; _sl++) $('#order_status').append('<option value="' + _sl + '">' + _order_status_list[_sl] + '</option>');
 for (var _sp = 0; _sp < _shipping_methods.length; _sp++) $('#shipping_method').append('<option value="' + _shipping_methods[_sp].id + '">' + _shipping_methods[_sp].val + '</option>');
 </script>
-<script src="/modules/catalog_orders/js/main.js"></script>
+<!--<script src="/modules/catalog_orders/js/main.js"></script>-->
+<script src="/modules/catalog_orders/js/catalog_orders.min.js"></script>

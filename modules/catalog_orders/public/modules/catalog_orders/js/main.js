@@ -99,6 +99,7 @@ var load_edit_data = function(id) {
                 $('.order-cart-del-btn').unbind();
                 $('.order-cart-del-btn').click(order_cart_del_btn_handler);
                 $('#order_status').focus();
+                _generate_address();
             } else {
                 if (data.locked_by) {
                     $('#order_locked_by').html(data.locked_by);
@@ -212,6 +213,7 @@ $('#catalog_cart_add_btn').click(function() {
 var edit_item = function(id) {
     current_id = id;
     edit_modal.show();
+    $('#shipping_address').val('');
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
     $('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
     $('#taracot-modal-edit-wrap').addClass('uk-hidden');
@@ -452,7 +454,18 @@ $('#order_steal_lock').click(function() {
     });
 });
 
+var _generate_address = function() {
+    var addr = $('#ship_name').val() + "\n" + $('#ship_street').val() + "\n" + $('#ship_city').val() + "\n" + $('#ship_region').val() + "\n" + $('#ship_zip').val() + " " + $('#ship_country option:selected').text();
+    $('#shipping_address').val(addr);
+};
+
+$('.order-edit-field').change(_generate_address);
+$('#shipping_address').click(function() {
+    $('#shipping_address').select();
+});
+
 $(document).ready(function() {
+    $("#shipping_address").prop("readonly", true);
     $('#taracot_table').medvedTable({
         col_count: 5,
         sort_mode: -1,

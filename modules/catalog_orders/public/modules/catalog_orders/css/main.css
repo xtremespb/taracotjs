@@ -1,31 +1,34 @@
 .taracot-loading {
-	position: absolute;
-	background: #fff;
-	filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
-	-moz-opacity: 0.8;
-	-khtml-opacity: 0.8;
-	opacity: 0.8;
+    position: absolute;
+    background: #fff;
+    filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
+    -moz-opacity: 0.8;
+    -khtml-opacity: 0.8;
+    opacity: 0.8;
 }
 .taracot-buttons-area {
-	padding-top: 15px;
-	margin-top: 30px;
-	border-top: 1px solid #ddd;
-	text-align: right;
+    padding-top: 15px;
+    margin-top: 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
 }
 th.taracot_table_sortable {
-	cursor: pointer;
+    cursor: pointer;
 }
 .taracot-edit-form > fieldset {
-	margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 .order-edit-panel {
-	border-top: 0;
+    border-top: 0;
     background-color: #fff;
     padding: 8px;
 }
 .order_cart_amount {
-	width: 50px;
+    width: 50px;
 }
 .order_cart_del {
-	width: 30px;
+    width: 30px;
+}
+.catalog-textarea-addr {
+    background: #eee !important;
 }
