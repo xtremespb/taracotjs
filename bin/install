@@ -18,7 +18,6 @@ program
     .option('-i, --uid [uid]', 'Set user ID')
     .option('-g, --gid [gid]', 'Set group ID')
     .option('-s, --silent', 'Don\'t ask anything (perform silently)')
-    .option('-d, --demo', 'Set demo server options (you won\'t need this)')
     .parse(process.argv);
 
 var mongo_url = program.mongo || config.mongo.url;
@@ -54,24 +53,6 @@ async.series([
                 db = _db;
                 callback();
             });
-        },
-        function(callback) {
-            if (program.demo) {
-                config.captcha = "captcha_gm";
-                config.graphicsmagick = true;
-                console.log("Saving demo server-related changes to config.js file\n");
-                fs.writeFile('../config.js', 'var config = ' + JSON.stringify(config, null, "\t") + ";\n\nmodule.exports = config;", function(err) {
-                    if (err) {
-                        console.log("\nCould not save config.js file. Check your permissions");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("... success\n");
-                    callback();
-                });
-            } else {
-                callback();
-            }
         },
         function(callback) {
             if (mongo_url != config.mongo.url || redis_host != config.redis.host || redis_port != config.redis.port || port != config.port || gid != config.gid || uid != config.uid) {
@@ -320,7 +301,7 @@ async.series([
         },
         function(callback) {
             console.log("\nCreating indexes for collection: settings\n");
-            ensure_indexes('settings', ['oname', 'ovalue', 'olang'], null, null, function() {
+            ensure_indexes('settings', ['oname', 'olang'], null, null, function() {
                 console.log("... success");
                 callback();
             });
@@ -466,7 +447,7 @@ async.series([
         },
         function(callback) {
             console.log("\nCreating indexes for collection: pages_folders\n");
-            ensure_indexes('pages_folders', ['oname', 'ovalue'], null, null, function() {
+            ensure_indexes('pages_folders', ['oname'], null, null, function() {
                 console.log("... success");
                 callback();
             });
@@ -541,10 +522,10 @@ async.series([
             console.log("\nAdding default item to menu collection (en)...\n");
             db.collection('menu').insert({
                 "lang": "en",
-                "menu_source": "<li id=\"taracot_menu_1408371943280\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Home</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378176219\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Blog feed</span>&nbsp;(<a href=\"/blog\" class=\"uk-nestable-item-url\">/blog</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378845428\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">New post</span>&nbsp;(<a href=\"/blog/post\" class=\"uk-nestable-item-url\">/blog/post</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378186758\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Social</span>&nbsp;(<a href=\"/social\" class=\"uk-nestable-item-url\">/social</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1414680280546\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Feedback</span>&nbsp;(<a href=\"/feedback\" class=\"uk-nestable-item-url\">/feedback</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>",
-                "menu_raw": "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul>",
-                "menu_uikit": "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul></nav>",
-                "menu_uikit_offcanvas": "<li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li>"
+                "menu_source": "<li id=\"taracot_menu_1408371943280\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Home</span>&nbsp;(<a href=\"/\" class=\"uk-nestable-item-url\">/</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378176219\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Blog feed</span>&nbsp;(<a href=\"/blog\" class=\"uk-nestable-item-url\">/blog</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378845428\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">New post</span>&nbsp;(<a href=\"/blog/post\" class=\"uk-nestable-item-url\">/blog/post</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1413378186758\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Social</span>&nbsp;(<a href=\"/social\" class=\"uk-nestable-item-url\">/social</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1420029808206\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Shop</span>&nbsp;(<a href=\"/catalog\" class=\"uk-nestable-item-url\">/catalog</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li><li id=\"taracot_menu_1414680280546\" class=\"uk-nestable-list-item\"><div class=\"uk-nestable-item\"><div class=\"uk-nestable-handle\"></div><div data-nestable-action=\"toggle\"></div>&nbsp;<span class=\"uk-nestable-item-text\">Feedback</span>&nbsp;(<a href=\"/feedback\" class=\"uk-nestable-item-url\">/feedback</a>)&nbsp;&nbsp;&nbsp;<button class=\"uk-button uk-button-small taracot-btn-menu-edit\"><i class=\"uk-icon-edit\"></i></button>&nbsp;<button class=\"uk-button uk-button-small uk-button-danger taracot-btn-menu-delete\"><i class=\"uk-icon-trash-o\"></i></button></div></li>",
+                "menu_raw": "<ul><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_catalog\"><a href=\"/catalog\">Shop</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul>",
+                "menu_uikit": "<nav class=\"uk-navbar\"><ul class=\"uk-navbar-nav\"><li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_catalog\"><a href=\"/catalog\">Shop</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li></ul></nav>",
+                "menu_uikit_offcanvas": "<li class=\"taracot_menu_item_\"><a href=\"/\">Home</a></li><li class=\"taracot_menu_item_blog\"><a href=\"/blog\">Blog feed</a></li><li class=\"taracot_menu_item_blog_post\"><a href=\"/blog/post\">New post</a></li><li class=\"taracot_menu_item_social\"><a href=\"/social\">Social</a></li><li class=\"taracot_menu_item_catalog\"><a href=\"/catalog\">Shop</a></li><li class=\"taracot_menu_item_feedback\"><a href=\"/feedback\">Feedback</a></li>"
             }, function(err) {
                 if (err) {
                     console.log("... failed");
@@ -757,6 +738,197 @@ async.series([
             });
         },
         function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (1/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "8Gb Smart Buy Cobra",
+                "pshortdesc": "Compact and cheap USB stick by Smart Buy",
+                "pfilename": "TDS00001",
+                "pcategory": "/storage/usb_flash",
+                "pcategory_id": "j1_3",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["58b8d5b8ced7332f435668b15b6eb48a"],
+                "pchars": [{
+                    "id": "capacity_gb",
+                    "val": 8
+                }, {
+                    "id": "interface",
+                    "val": "USB 2.0"
+                }, {
+                    "id": "color",
+                    "val": "red"
+                }],
+                "pcontent": "<p>Compact and robust USB stick.</p>\n",
+                "pamount": 100,
+                "pamount_unlimited": 0,
+                "pprice": "300",
+                "pweight": "0.02",
+                "pcurs": "rur"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (2/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "16Gb Silicon Power I-Series",
+                "pshortdesc": "16Gb Silicon Power I-Series, SP016GBUF2M01V1K, Flash USB, black",
+                "pfilename": "TDS00002",
+                "pcategory": "/storage/usb_flash",
+                "pcategory_id": "j1_3",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["139312b8960a51f7a601e01c9eb39c71", "a438ec7015acf1da5c13cb649c1afcf0"],
+                "pamount": 50,
+                "pamount_unlimited": 0,
+                "pprice": "700",
+                "pweight": "0.1",
+                "pcurs": "rur",
+                "pcontent": ""
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (3/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "32Gb Transcend JetFlash 700",
+                "pshortdesc": "32Gb Transcend JetFlash 700, TS32GJF700, USB 3.0, Flash USB",
+                "pfilename": "TDS00003",
+                "pcategory": "/storage/usb_flash",
+                "pcategory_id": "j1_3",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["661e84ae052879073ed77cbf720989ad", "c157983ba9c37cde40edf5021517f223", "527fc0f513bc9505c77e2ae4c6656829"],
+                "pamount": 10,
+                "pamount_unlimited": 0,
+                "pprice": "1220",
+                "pweight": "0.04",
+                "pcurs": "rur",
+                "pcontent": ""
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (4/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "L-Pro 3.5\" BOX (10 pcs)",
+                "pshortdesc": "3.5\" double side, high capacity, formatted",
+                "pfilename": "TDS00004",
+                "pcategory": "/storage/floppy",
+                "pcategory_id": "j1_4",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["e686545d51dc3879f85c2a9c9b856568", "1da71e8209a3713ba4eac9f217316193"],
+                "pchars": [{
+                    "id": "capacity_mb",
+                    "val": 1.44
+                }, {
+                    "id": "floppy_size",
+                    "val": "3.5&quot;"
+                }],
+                "pcontent": "",
+                "pamount": 5,
+                "pamount_unlimited": 0,
+                "pprice": "280",
+                "pweight": "0.3",
+                "pcurs": "rur"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (5/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "SDHC 32Gb Class 10 SanDisk Ultra",
+                "pshortdesc": "SDHC 32Gb Class 10 SanDisk Ultra SDSDU-032G-U46",
+                "pfilename": "TDS00005",
+                "pcategory": "/storage/memory_cards/sd",
+                "pcategory_id": "j1_8",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["f437f67242c5b806e7e09c9b1e8de2fc"],
+                "pamount": 5,
+                "pamount_unlimited": 0,
+                "pprice": "1430",
+                "pweight": "0.2",
+                "pcurs": "rur",
+                "pcontent": ""
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse collection (6/6)...\n");
+            db.collection('warehouse').insert({
+                "ptitle": "Classic NES console",
+                "pshortdesc": "Basic refurbished NES Nintendo System with controller, all hook-ups, and a new 72-pin",
+                "pfilename": "TDS00006",
+                "pcategory": "/game_console/nes",
+                "pcategory_id": "j1_7",
+                "plang": "en",
+                "pkeywords": "",
+                "pdesc": "",
+                "pimages": ["76cdb7a45539a90a9c28556f1351b958"],
+                "pamount": 0,
+                "pamount_unlimited": 0,
+                "pprice": "3000",
+                "pweight": "1.5",
+                "pcurs": "rur",
+                "pcontent": ""
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
             console.log("\nCreating collection: warehouse_categories\n");
             db.createCollection('warehouse_categories', function(err, collection) {
                 if (err) {
@@ -770,7 +942,23 @@ async.series([
         },
         function(callback) {
             console.log("\nCreating indexes for collection: warehouse_categories\n");
-            ensure_indexes('warehouse_categories', ['oname', 'ovalue'], null, null, function() {
+            ensure_indexes('warehouse_categories', ['oname'], null, null, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_categories collection...\n");
+            db.collection('warehouse_categories').insert({
+                "oname": "categories_json",
+                "ovalue": "[{\"id\":\"j1_1\",\"text\":\"/\",\"data\":null,\"parent\":\"#\",\"type\":\"root\"},{\"id\":\"j1_2\",\"text\":\"storage\",\"data\":{\"lang\":{\"en\":\"Storage\",\"ru\":\"Накопители\"}},\"parent\":\"j1_1\",\"type\":\"category\"},{\"id\":\"j1_3\",\"text\":\"usb_flash\",\"data\":{\"lang\":{\"en\":\"USB sticks\",\"ru\":\"Флешки\"}},\"parent\":\"j1_2\",\"type\":\"category\"},{\"id\":\"j1_4\",\"text\":\"floppy\",\"data\":{\"lang\":{\"en\":\"Floppy\",\"ru\":\"Дискеты\"}},\"parent\":\"j1_2\",\"type\":\"category\"},{\"id\":\"j1_5\",\"text\":\"memory_cards\",\"data\":{\"lang\":{\"en\":\"Memory cards\",\"ru\":\"Карты памяти\"}},\"parent\":\"j1_2\",\"type\":\"category\"},{\"id\":\"j1_8\",\"text\":\"sd\",\"data\":{\"lang\":{\"en\":\"SD / SDHC\",\"ru\":\"SD / SDHC\"}},\"parent\":\"j1_5\",\"type\":\"category\"},{\"id\":\"j1_9\",\"text\":\"microsd\",\"data\":{\"lang\":{\"en\":\"MicroSD\",\"ru\":\"MicroSD\"}},\"parent\":\"j1_5\",\"type\":\"category\"},{\"id\":\"j1_6\",\"text\":\"game_console\",\"data\":{\"lang\":{\"en\":\"Game console\",\"ru\":\"Игровые консоли\"}},\"parent\":\"j1_1\",\"type\":\"category\"},{\"id\":\"j1_7\",\"text\":\"nes\",\"data\":{\"lang\":{\"en\":\"NES\",\"ru\":\"NES\"}},\"parent\":\"j1_6\",\"type\":\"category\"}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
                 console.log("... success");
                 callback();
             });
@@ -795,6 +983,86 @@ async.series([
             });
         },
         function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_conf collection (1/5)...\n");
+            db.collection('warehouse_conf').insert({
+                "conf": "items",
+                "data": "[{\"id\":\"interface\",\"en\":\"Interface\",\"ru\":\"Интерфейс\"},{\"id\":\"color\",\"en\":\"Color\",\"ru\":\"Цвет\"},{\"id\":\"capacity_gb\",\"en\":\"Capacity (GB)\",\"ru\":\"Объем (Гб)\"},{\"id\":\"floppy_size\",\"en\":\"Floppy size\",\"ru\":\"Размер дискеты\"},{\"id\":\"capacity_mb\",\"en\":\"Capacity (MB)\",\"ru\":\"Объем (Мб)\"}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_conf collection (2/5)...\n");
+            db.collection('warehouse_conf').insert({
+                "conf": "collections",
+                "data": "[{\"id\":\"storage\",\"items\":[\"capacity_gb\",\"interface\",\"color\"]},{\"id\":\"storage_floppy\",\"items\":[\"capacity_mb\",\"floppy_size\"]}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_conf collection (3/5)...\n");
+            db.collection('warehouse_conf').insert({
+                "conf": "curs",
+                "data": "[{\"id\":\"rur\",\"exr\":\"1\",\"en\":\"RUR\",\"ru\":\"руб.\"}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_conf collection (4/5)...\n");
+            db.collection('warehouse_conf').insert({
+                "conf": "ship",
+                "data": "[{\"id\":\"ruspost\",\"weight\":\"0.2\",\"amnt\":\"1\",\"price\":\"200\",\"en\":\"Russian Post\",\"ru\":\"Почта России\"},{\"id\":\"pickup_noaddr\",\"weight\":\"0\",\"amnt\":\"0\",\"price\":\"0\",\"en\":\"Pick up\",\"ru\":\"Самовывоз\"}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            if (program.update) return callback();
+            console.log("\nAdding default item to warehouse_conf collection (5/5)...\n");
+            db.collection('warehouse_conf').insert({
+                "conf": "misc",
+                "data": "[{\"id\":\"weight_units\",\"en\":\"kg\",\"ru\":\"кг\"}]"
+            }, function(err) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
             console.log("\nCreating collection: warehouse_addr\n");
             db.createCollection('warehouse_addr', function(err, collection) {
                 if (err) {
@@ -809,6 +1077,25 @@ async.series([
         function(callback) {
             console.log("\nCreating indexes for collection: warehouse_addr\n");
             ensure_indexes('warehouse_addr', ['user_id'], null, true, function() {
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating collection: warehouse_orders\n");
+            db.createCollection('warehouse_orders', function(err, collection) {
+                if (err) {
+                    console.log("... failed");
+                    console.log(err);
+                    process.exit(1);
+                }
+                console.log("... success");
+                callback();
+            });
+        },
+        function(callback) {
+            console.log("\nCreating indexes for collection: warehouse_orders\n");
+            ensure_indexes('warehouse_orders', ['order_id', 'order_status', 'order_timestamp', 'user_id'], null, null, function() {
                 console.log("... success");
                 callback();
             });
@@ -837,25 +1124,6 @@ async.series([
                     console.log(err);
                     process.exit(1);
                 }
-                console.log("... success");
-                callback();
-            });
-        },
-        function(callback) {
-            console.log("\nCreating collection: warehouse_orders\n");
-            db.createCollection('warehouse_orders', function(err, collection) {
-                if (err) {
-                    console.log("... failed");
-                    console.log(err);
-                    process.exit(1);
-                }
-                console.log("... success");
-                callback();
-            });
-        },
-        function(callback) {
-            console.log("\nCreating indexes for collection: warehouse_orders\n");
-            ensure_indexes('warehouse_orders', ['order_id', 'order_status', 'order_timestamp', 'user_id'], null, null, function() {
                 console.log("... success");
                 callback();
             });
