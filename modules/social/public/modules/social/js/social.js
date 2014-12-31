@@ -531,7 +531,7 @@ $('#search_for_people_query').bind('keypress', function(e) {
     }
 });
 
-$('[data-uk-switcher]').on('uk.switcher.show', function(event, area) {
+$('[data-uk-switcher]').on('show.uk.switcher', function(event, area) {
     if (!_nav_startup) return _nav_startup = true;
     $('.taracot-social-title').show();
     if ($(area).attr('id') === 'switcher_area_mypage') {
