@@ -409,7 +409,7 @@ module.exports = function(app) {
         }
         if (pchars) {
             for (var pc = 0; pc < pchars.length; pc++) {
-                if (!pchars[pc].id || !pchars[pc].id.match(/^[a-z0-9]{1,50}$/i)) {
+                if (!pchars[pc].id || !pchars[pc].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
                     rep.status = 0;
                     rep.error = i18nm.__("invalid_query");
                     return res.send(JSON.stringify(rep));

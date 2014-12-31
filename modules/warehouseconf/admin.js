@@ -103,7 +103,7 @@ module.exports = function(app) {
         if (descitems && util.isArray(descitems)) {
             for (var i = 0; i < descitems.length; i++) {
                 var ui = {};
-                if (descitems[i].id && descitems[i].id.match(/^[a-z0-9]{1,50}$/i)) {
+                if (descitems[i].id && descitems[i].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
                     ui.id = descitems[i].id;
                     for (l = 0; l < app.get('config').locales.length; l++) {
                         var li = descitems[i][app.get('config').locales[l]];
@@ -119,7 +119,7 @@ module.exports = function(app) {
         if (curs && util.isArray(curs)) {
             for (var j = 0; j < curs.length; j++) {
                 var uc = {};
-                if (curs[j].id && curs[j].id.match(/^[a-z0-9]{1,50}$/i)) {
+                if (curs[j].id && curs[j].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
                     uc.id = curs[j].id;
                     uc.exr = curs[j].exr;
                     if (uc.exr) uc.exr = parseFloat(uc.exr);
@@ -138,7 +138,7 @@ module.exports = function(app) {
         if (ship && util.isArray(ship)) {
             for (var s = 0; s < ship.length; s++) {
                 var us = {};
-                if (ship[s].id && ship[s].id.match(/^[a-z0-9]{1,50}$/i)) {
+                if (ship[s].id && ship[s].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
                     us.id = ship[s].id;
                     us.weight = ship[s].weight;
                     if (us.weight) us.weight = parseFloat(us.weight);
