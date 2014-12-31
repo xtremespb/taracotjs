@@ -242,7 +242,7 @@
     var search_event = function() {
         var val = $('#' + table_id + '_filter').val();
         val = val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' '); // trim
-        if (val.length < 3) {
+        if (val.length < 2) {
             clearTimeout(autocomplete_timer);
             if (autocomplete_flag) {
                 autocomplete_flag = false;
