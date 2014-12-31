@@ -158,6 +158,46 @@ module.exports = function(grunt) {
                 files: {
                     'modules/social/public/modules/social/js/social.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/jquery.history.min.js', 'public/js/moment.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/social/public/modules/social/js/jquery.typing.min.js', 'modules/social/public/modules/social/js/social.js' ]
                 }
+            },
+            module_catalog_frontend: {
+                files: {
+                    'modules/catalog/public/modules/catalog/js/frontend.min.js': [ 'public/js/helper.js', 'modules/catalog/public/modules/catalog/js/frontend.js' ]
+                }
+            },
+            module_catalog_frontend_cart: {
+                files: {
+                    'modules/catalog/public/modules/catalog/js/frontend_cart.min.js': [ 'modules/catalog/public/modules/catalog/js/frontend_cart.js' ]
+                }
+            },
+            module_catalog_frontend_checkout: {
+                files: {
+                    'modules/catalog/public/modules/catalog/js/frontend_checkout.min.js': [ 'modules/catalog/public/modules/catalog/js/frontend_checkout.js' ]
+                }
+            },
+            module_catalog_frontend_item: {
+                files: {
+                    'modules/catalog/public/modules/catalog/js/frontend_item.min.js': [ 'public/js/magnific/magnific.min.js', 'modules/catalog/public/modules/catalog/js/frontend_item.js' ]
+                }
+            },
+            module_catalog_frontend_orders: {
+                files: {
+                    'modules/catalog/public/modules/catalog/js/frontend_orders.min.js': [ 'public/js/helper.js', 'public/js/jquery.history.min.js', 'modules/catalog/public/modules/catalog/js/frontend_orders.js' ]
+                }
+            },
+            module_catalog_orders: {
+                files: {
+                    'modules/catalog_orders/public/modules/catalog_orders/js/catalog_orders.min.js': [ 'modules/catalog_orders/public/modules/catalog_orders/js/main.js' ]
+                }
+            },
+            module_warehouse: {
+                files: {
+                    'modules/warehouse/public/modules/warehouse/js/warehouse.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'public/js/jstorage.js', 'public/js/moment.min.js', 'modules/warehouse/public/modules/warehouse/js/dragdrop.js', 'modules/warehouse/public/modules/warehouse/js/dragdrop.helper.js', 'modules/warehouse/public/modules/warehouse/js/jquery.shifty.js', 'modules/warehouse/public/modules/warehouse/js/main.js', 'modules/warehouse/public/modules/warehouse/js/tree.js' ]
+                }
+            },
+            module_warehouseconf: {
+                files: {
+                    'modules/warehouseconf/public/modules/warehouseconf/js/warehouseconf.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'modules/warehouseconf/public/modules/warehouseconf/js/warehouseconf_cp.js' ]
+                }
             }
         }
     });
