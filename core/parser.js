@@ -1,8 +1,5 @@
-var htmlToText = require('html-to-text');
-var natural = require('natural'),
-    tokenizer = new natural.WordPunctTokenizer();
-natural.LancasterStemmer.attach();
-
+var htmlToText = require('html-to-text'),
+    snowball = require('snowball');
 module.exports = function(app) {
     var parser = {
         html2text: function(html) {
@@ -31,31 +28,19 @@ module.exports = function(app) {
                 desc: desc.join(' ').replace(/ \.\.\.$/, '...')
             };
         },
-        stem: function(word) {
-            var res = word;
-            if (word.match(/[\u0400-\u04FF]/gi)) {
-                res = natural.PorterStemmerRu.stem(word);
-            } else {
-                res = natural.PorterStemmer.stem(word);
-            }
-            return res;
-        },
         stem_all: function(words) {
-            var res = words;
+            var stemmer;
             for (var i = 0; i < words.length; i++) {
-                if (res[i].match(/[\u0400-\u04FF]/gi)) {
-                    res[i] = natural.PorterStemmerRu.stem(res[i]);
+                if (words[i].match(/[\u0400-\u04FF]/gi)) {
+                    stemmer = new snowball('Russian');
                 } else {
-                    res[i] = natural.PorterStemmer.stem(words[i]);
+                    stemmer = new snowball('English');
                 }
+                stemmer.setCurrent(words[i]);
+                stemmer.stem();
+                words[i] = stemmer.getCurrent();
             }
-            return res;
-        },
-        stem_lancaster: function(word) {
-            return word.stem();
-        },
-        stem_lancaster_string: function(string) {
-            return string.tokenizeAndStem();
+            return words;
         }
     };
 
