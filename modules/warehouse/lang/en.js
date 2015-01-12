@@ -90,7 +90,7 @@
 	"dont_restore_autosave": "Don't restore",
 	"warehouse": "Warehouse data",
 	"amount": "Amount",
-	"pamount_hint": "Positive integer = item available, 0 = item unavailable, -1 = unlimited",
+	"pamount_hint": "Positive integer = item available, 0 = item unavailable",
 	"price": "Price",
 	"pprice_hint": "Float number, example: 34.95",
 	"images": "Images",
