@@ -356,6 +356,12 @@ module.exports = function(app) {
                         val: countries[i],
                         text: i18nm.__('country_list')[i]
                     }, undefined);
+                var total_cart_items_count = 0,
+                    catalog_cart = req.session.catalog_cart || [];
+                if (catalog_cart.length)
+                        for (var cct = 0; cct < catalog_cart.length; cct++) total_cart_items_count += parseInt(catalog_cart[cct].amount);
+                var warehouse_categories = _default_folders_hash,
+                    bread = get_bread(warehouse_categories, '', req, true);
                 var out_html = orders(gaikan, {
                     lang: i18nm,
                     init_sort: sort,
@@ -364,7 +370,9 @@ module.exports = function(app) {
                     init_page: page,
                     init_find: init_find,
                     orders_html: orders_html,
-                    country_list_html: country_list_html
+                    country_list_html: country_list_html,
+                    cart_items_count: total_cart_items_count,
+                    bread: bread
                 }, undefined);
                 var data = {
                     title: i18nm.__('my_orders'),
@@ -837,6 +845,11 @@ module.exports = function(app) {
                     var shipping_address = {};
                     if (!wa_err && waitems && waitems.length)
                         shipping_address = waitems[0].shipping_address || {};
+                    var total_cart_items_count = 0;
+                    if (catalog_cart.length)
+                        for (var cct = 0; cct < catalog_cart.length; cct++) total_cart_items_count += parseInt(catalog_cart[cct].amount);
+                    var warehouse_categories = _default_folders_hash,
+                        bread = get_bread(warehouse_categories, '', req, true);
                     var out_html = checkout(gaikan, {
                         lang: i18nm,
                         checkout_html: checkout_html,
@@ -854,7 +867,9 @@ module.exports = function(app) {
                         subtotal_currency: whcurs[0][_locale],
                         subtotal: subtotal,
                         missing_items: JSON.stringify(missing_items),
-                        shipping_address: JSON.stringify(shipping_address)
+                        shipping_address: JSON.stringify(shipping_address),
+                        bread: bread,
+                        cart_items_count: total_cart_items_count
                     }, undefined);
                     var data = {
                         title: i18nm.__('checkout'),
@@ -1072,6 +1087,11 @@ module.exports = function(app) {
                 } else {
                     cart_html = i18nm.__('no_items_in_cart');
                 }
+                var total_cart_items_count = 0;
+                if (catalog_cart.length)
+                    for (var cct = 0; cct < catalog_cart.length; cct++) total_cart_items_count += parseInt(catalog_cart[cct].amount);
+                var warehouse_categories = _default_folders_hash,
+                    bread = get_bread(warehouse_categories, '', req, true);
                 var out_html = cart(gaikan, {
                     lang: i18nm,
                     cart_html: cart_html,
@@ -1080,7 +1100,9 @@ module.exports = function(app) {
                     init_view: show_all,
                     init_path: init_cat,
                     init_page: page,
-                    init_find: init_find
+                    init_find: init_find,
+                    bread: bread,
+                    cart_items_count: total_cart_items_count
                 }, undefined);
                 var data = {
                     title: i18nm.__('cart'),
@@ -1325,11 +1347,16 @@ module.exports = function(app) {
                 query_words = parser.stem_all(query_words);
                 var query_arr = [];
                 for (var i = 0; i < query_words.length; i++) {
+                    var _rex = new RegExp(query_words[i], "i");
                     query_arr.push({
                         $or: [{
-                            ptitle: new RegExp(query_words[i])
+                            ptitle: {
+                                $regex: _rex
+                            }
                         }, {
-                            pshortdesc: new RegExp(query_words[i])
+                            pshortdesc: {
+                                $regex: _rex
+                            }
                         }]
                     });
                 }

@@ -34,7 +34,7 @@
 	"no_items_in_cart": "Currently there are no items in cart. You may add something by clicking the &quot;Buy item&quot; button.",
 	"item_not_avail": "Item is not available for purchase",
 	"checkout": "Checkout",
-	"continue_shopping": "Continue shopping",
+	"continue_shopping": "Go back",
 	"no_items_in_checkout": "Unable to checkout: no items available",
 	"item_missing": "The requested amount is currently not available",
 	"place_order": "Place order",

@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    // Hide empty characteristics
+    if (!$('#pchars_list').html()) $('#pchars_area').hide();
     // Init Magnific Popup
     $('.taracot-catalog-item-images-gallery').magnificPopup({
         delegate: 'a',

@@ -9,13 +9,19 @@
 }
 .taracot-catalog-item {
     background: transparent;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 .taracot-catalog-item > .uk-comment-header {
-    padding: 0;
+    padding: 5px;
     background: transparent;
 }
 .taracot-catalog-item > .uk-comment-header > .uk-comment-meta {
     color: #222;
+}
+.taracot-catalog-item:hover {
+    background-color: #efefef;
 }
 .taracot-catalog-sku {
     background: #ccc;
@@ -29,7 +35,8 @@
 .taracot-catalog-price-area {
     display: inline-block;
     float: right;
-    width: 150px;
+    text-align: right;
+    margin-left: 25px;
 }
 .uk-comment-title {
     margin-top: 0px;
@@ -84,6 +91,7 @@
 .taracot-catalog-thumb {
     width: 50px;
     height: 50px;
+    margin-right: 10px;
 }
 .taracot-catalog-item > .uk-comment-header > .uk-comment-title > a {
     text-decoration: none;
@@ -122,7 +130,7 @@
 }
 .taracot-catalog-item-desc-dt {
     display: inline-block;
-    background: #fff;
+    background: #fefefe;
     padding-right: 5px;
 }
 .taracot-catalog-cart-th-price, .taracot-catalog-cart-td-price, .taracot-catalog-cart-th-sum, .taracot-catalog-cart-td-sum {
