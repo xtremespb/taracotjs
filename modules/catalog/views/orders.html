@@ -1,3 +1,9 @@
+<div class="uk-grid uk-margin-bottom">
+    <div class="uk-width-1-2">!{root.bread.html_uikit}</div>
+    <div class="uk-width-1-2 taracot-catalog-right-links">
+        <a href="/catalog/cart!{root.url_data}" class="uk-button uk-button-small"><span class="uk-badge">!{root.cart_items_count}</span>&nbsp;!{root.lang.__('cart')}</a>&nbsp;<a href="/catalog/orders!{root.url_data}" class="uk-button uk-button-small"><i class="uk-icon-reorder"></i>&nbsp;!{root.lang.__('my_orders')}</a>
+    </div>
+</div>
 <div id="taracot_modal_edit_addr" class="uk-modal">
     <div class="uk-modal-dialog">
         <div id="taracot_modal_edit_addr_wrap">
@@ -128,13 +134,13 @@
         </div>
         <h2>!{root.lang.__('shipping')}:</h2>
         <div class="uk-grid">
-            <div class="uk-width-1-2">
+            <div class="uk-width-large-1-2 uk-width-medium-1-1 uk-width-small-1-1 uk-margin-bottom">
                 <div class="uk-panel uk-panel-box">
                     <button id="catalog_addr_edit" class="uk-panel-badge uk-button uk-button-success uk-button-mini"><i class="uk-icon-pencil"></i>&nbsp;!{root.lang.__('edit_addr')}</button>
                     <span id="catalog_shipping_addr" class="catalog_order_data"></span>
                 </div>
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-large-1-2 uk-width-medium-1-1 uk-width-small-1-1">
                 <div class="uk-panel uk-panel-box">
                     <b>!{root.lang.__('shipping_method')}:</b>&nbsp;<span id="catalog_shipping_method" class="catalog_order_data"></span>
                     <br>
@@ -150,7 +156,7 @@
     </div>
     <hr>
     <div class="uk-margin-top">
-        <button class="uk-button uk-float-right uk-button-danger" type="button" id="catalog_cancel_order"><span id="catalog_cancel_order_loading" style="display:none"><img src="/modules/catalog/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;</span><i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('cancel_order')}</button>
+        <button class="uk-button uk-float-right uk-button-danger" type="button" id="catalog_cancel_order"><span id="catalog_cancel_order_loading" style="display:none;margin-left:5px"><img src="/modules/catalog/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;</span><i class="uk-icon-warning"></i>&nbsp;!{root.lang.__('cancel_order')}</button>
         <button class="uk-button taracot-catalog-orders-btn-back-to-list">!{root.lang.__('back_to_order_list')}</button>
     </div>
 </div>

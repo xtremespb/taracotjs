@@ -1,19 +1,22 @@
-<table class="uk-table">
-    <thead>
-        <tr>
-            <th>!{root.lang.__('item_title')}</th>
-            <th class="taracot-catalog-cart-th-price">!{root.lang.__('item_price')}</th>
-            <th class="taracot-catalog-cart-th-amount">!{root.lang.__('item_amount')}</th>
-            <th class="taracot-catalog-cart-th-sum">!{root.lang.__('item_sum')}</th>
-        </tr>
-    </thead>
-    <tbody class="uk-form">
-    	!{root.body}
-        <tr class="taracot-catalog-cart-table-lastrow">
-            <td><i>!{root.lang.__('subtotal')}:</i></td>
-            <td class="taracot-catalog-cart-td-price"></td>
-            <td class="taracot-catalog-cart-td-amount"></td>
-            <td class="taracot-catalog-cart-td-sum"><span id="taracot_catalog_cart_subtotal">!{root.subtotal}</span>&nbsp;!{root.subtotal_currency}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="uk-overflow-container">
+    <table class="uk-table">
+        <thead>
+            <tr>
+                <th>!{root.lang.__('item_title')}</th>
+                <th class="taracot-catalog-cart-th-price">!{root.lang.__('item_price')}</th>
+                <th class="taracot-catalog-cart-th-amount">!{root.lang.__('item_amount')}</th>
+                <th class="taracot-catalog-cart-th-sum">!{root.lang.__('item_sum')}</th>
+            </tr>
+        </thead>
+        <tbody class="uk-form">
+            !{root.body}
+            <tr class="taracot-catalog-cart-table-lastrow">
+                <td><i>!{root.lang.__('subtotal')}:</i>
+                </td>
+                <td class="taracot-catalog-cart-td-price"></td>
+                <td class="taracot-catalog-cart-td-amount"></td>
+                <td class="taracot-catalog-cart-td-sum"><span id="taracot_catalog_cart_subtotal">!{root.subtotal}</span>&nbsp;!{root.subtotal_currency}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

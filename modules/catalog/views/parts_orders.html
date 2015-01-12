@@ -1,11 +1,13 @@
-<table class="uk-table uk-table-striped uk-table-hover">
-    <thead>
-        <th>!{root.lang.__('order_id')}</th>
-        <th>!{root.lang.__('order_date')}</th>
-        <th>!{root.lang.__('order_status')}</th>
-        <th>!{root.lang.__('order_sum')}</th>
-    </thead>
-    <tbody>
-    	!{root.items}
-    </tbody>
-</table>
+<div class="uk-overflow-container">
+    <table class="uk-table uk-table-striped uk-table-hover">
+        <thead>
+            <th>!{root.lang.__('order_id')}</th>
+            <th>!{root.lang.__('order_date')}</th>
+            <th>!{root.lang.__('order_status')}</th>
+            <th>!{root.lang.__('order_sum')}</th>
+        </thead>
+        <tbody>
+            !{root.items}
+        </tbody>
+    </table>
+</div>

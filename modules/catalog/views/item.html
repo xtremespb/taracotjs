@@ -16,8 +16,10 @@
         <h4>!{root.lang.__('general_info')}</h4>
         <div>!{root.pgeninfo}</div>
         <div>!{root.whitem.pcontent}</div>
-        <h4>!{root.lang.__('chars')}</h4>
-        <div>!{root.pchars}</div>
+        <div id="pchars_area">
+            <h4>!{root.lang.__('chars')}</h4>
+            <div id="pchars_list">!{root.pchars}</div>
+        </div>
     </div>
     <div class="uk-width-2-10">
         <div class="taracot-catalog-item-area-price">
@@ -49,6 +51,6 @@ var _taracot_catalog_gallery_magnific_int = {
     _taracot_catalog_init_page = "!{root.init_page}",
     _taracot_catalog_init_sku = "!{root.whitem.pfilename}";
 </script>
-<!--<script src="/js/magnific/magnific.min.js"></script>
-<script src="/modules/catalog/js/frontend_item.js"></script>-->
-<script src="/modules/catalog/js/frontend_item.min.js"></script>
+<script src="/js/magnific/magnific.min.js"></script>
+<script src="/modules/catalog/js/frontend_item.js"></script>
+<!--<script src="/modules/catalog/js/frontend_item.min.js"></script>-->

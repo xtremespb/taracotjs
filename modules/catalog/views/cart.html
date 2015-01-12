@@ -1,16 +1,25 @@
+<div class="uk-grid uk-margin-bottom">
+    <div class="uk-width-1-2">!{root.bread.html_uikit}</div>
+    <div class="uk-width-1-2 taracot-catalog-right-links">
+        <a href="/catalog/cart!{root.url_data}" class="uk-button uk-button-small"><span class="uk-badge">!{root.cart_items_count}</span>&nbsp;!{root.lang.__('cart')}</a>&nbsp;<a href="/catalog/orders!{root.url_data}" class="uk-button uk-button-small"><i class="uk-icon-reorder"></i>&nbsp;!{root.lang.__('my_orders')}</a>
+    </div>
+</div>
 <h1>!{root.lang.__('cart')}</h1>
 <div id="taracot_catalog_cart_wrap">
     <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_catalog_cart_error"></div>
-    !{root.cart_html}
+    <div class="uk-overflow-container">
+        !{root.cart_html}
+    </div>
     <div class="uk-margin-top">
         <hr>
-    	<button class="uk-button uk-button-success taracot-catalog-cart-btn-checkout">!{root.lang.__('checkout')}</button>&nbsp;<button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
+        <button class="uk-button uk-button-success taracot-catalog-cart-btn-checkout">!{root.lang.__('checkout')}</button>&nbsp;
+        <button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
     </div>
 </div>
 <div id="taracot_catalog_cart_empty" style="display:none">
     !{root.lang.__('no_items_in_cart')}
     <div class="uk-margin-top">
-    	<button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
+        <button class="uk-button taracot-catalog-cart-btn-back">!{root.lang.__('continue_shopping')}</button>
     </div>
 </div>
 <script>
