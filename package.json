@@ -26,11 +26,11 @@
     "moment": "^2.8.3",
     "mongodb": "~1.4.5",
     "multer": "~0.1.0",
-    "natural": "~0.1.28",
     "nodemailer": "~1.0.2",
     "nodemailer-sendmail-transport": "~0.1.2",
     "redis": "~0.10.2",
     "request": "^2.42.0",
+    "snowball": "^0.3.1",
     "socket.io": "^1.1.0",
     "unzip": "~0.1.9",
     "winston": "~0.7.3"
