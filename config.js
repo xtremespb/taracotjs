@@ -13,7 +13,7 @@ var config = {
         "en",
         "ru"
     ],
-    "payment": {
+    "catalog_payment": {
         "enabled": true,
         "api": "robokassa",
         "robokassa": {
