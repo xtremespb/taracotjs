@@ -364,10 +364,6 @@ config.modules.forEach(function(module) {
     }
 });
 
-// Load payment API if enabled
-
-if (config.payment && config.payment.enabled && config.payment.api) app.use('/api/payment/', require('./modules/payment/' + config.payment.api)(app));
-
 // Error 404 (not found)
 
 app.use(function(req, res, next) {
