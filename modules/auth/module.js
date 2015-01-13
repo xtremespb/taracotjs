@@ -333,7 +333,7 @@ module.exports = function(app) {
                         return callback();
                     }
                     var user_id = items[0]._id.toHexString();
-                    var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
+                    var register_url = config.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + act_code;
                     mailer.send(email, i18nm.__('mail_register_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_register_html', 'mail_register_txt', {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
@@ -540,7 +540,7 @@ module.exports = function(app) {
                         return;
                     }
                     var user_id = items[0]._id.toHexString();
-                    var reset_url = req.protocol + '://' + req.get('host') + '/auth/password?user=' + user_id + '&code=' + res_code;
+                    var reset_url = config.protocol + '://' + req.get('host') + '/auth/password?user=' + user_id + '&code=' + res_code;
                     mailer.send(email, i18nm.__('mail_reset_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_reset_html', 'mail_reset_txt', {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
@@ -1025,7 +1025,7 @@ module.exports = function(app) {
                             if (email_new) {
                                 delete req.session.auth;
                                 var user_id = items[0]._id.toHexString();
-                                var register_url = req.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + update.act_code;
+                                var register_url = config.protocol + '://' + req.get('host') + '/auth/activate?user=' + user_id + '&code=' + update.act_code;
                                 mailer.send(email_new, i18nm.__('mail_change_email_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_change_email_html', 'mail_change_email_txt', {
                                     lang: i18nm,
                                     site_title: app.get('settings').site_title,

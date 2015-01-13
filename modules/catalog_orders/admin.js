@@ -415,7 +415,7 @@ module.exports = function(app) {
                                 order_status_old: i18nm.__('order_status_list')[woitems[0].order_status],
                                 order_status: i18nm.__('order_status_list')[order_status],
                                 ship_track: ship_track || i18nm.__('no_tracking_number_yet'),
-                                view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
+                                view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
                                 subj: i18nm.__('your_order_id') + ' ' + woitems[0].order_id
                             };
                             mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + woitems[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);
@@ -506,7 +506,7 @@ module.exports = function(app) {
                                     order_status_old: i18nm.__('order_status_list')[items[0].order_status],
                                     order_status: i18nm.__('order_status_list')[4],
                                     ship_track: items[0].ship_track || i18nm.__('no_tracking_number_yet'),
-                                    view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
+                                    view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
                                     subj: i18nm.__('your_order_id') + ' ' + items[0].order_id
                                 };
                                 mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + items[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);

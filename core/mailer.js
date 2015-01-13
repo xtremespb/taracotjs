@@ -20,7 +20,7 @@ module.exports = function(app) {
                     title: subject,
                     message: data_html,
                     site_title: site_title,
-                    site_url: req.protocol + '://' + req.get('host')
+                    site_url: config.protocol + '://' + req.get('host')
                 });
             var mailOptions = {
                 from: config.mailer.sender,

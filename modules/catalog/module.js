@@ -680,7 +680,7 @@ module.exports = function(app) {
                                                     summary: summary,
                                                     summary_txt: summary_txt,
                                                     shipping: shipping,
-                                                    view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
+                                                    view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
                                                     shipping_method: ship_method_title || ship_method,
                                                     ship_phone: shipping_address.ship_phone || '-',
                                                     ship_comment: ship_comment || '-',
@@ -689,7 +689,7 @@ module.exports = function(app) {
                                                 };
                                                 mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
                                                 mail_data.subj = i18nm.__('order_id') + ' ' + order_id;
-                                                mail_data.view_url = req.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                                                mail_data.view_url = app.get('config').protocol + '://' + req.get('host') + '/cp/catalog_orders';
                                                 mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
                                             }
                                             // Try to store shipping address in the database
