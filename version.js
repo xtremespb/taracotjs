@@ -1,5 +1,5 @@
 var version = {
-	"taracotjs": "0.4.365"
+	"taracotjs": "0.5.13"
 };
 
 module.exports = version;
