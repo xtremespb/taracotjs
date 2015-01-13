@@ -14,7 +14,8 @@ module.exports = function(app) {
         router = app.get('express').Router(),
         config = app.get('config'),
         crypto = require('crypto'),
-        mailer = app.get('mailer');
+        mailer = app.get('mailer'),
+        ObjectId = require('mongodb').ObjectID;
 
     var gaikan = require('gaikan'),
         payment_html = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/payment.html'),
@@ -55,7 +56,7 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(config.catalog_payment.robokassa.sMerchantLogin + ':' + order.sum_total + ':' + invid + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex');
+                signature = crypto.createHash('md5').update(config.catalog_payment.robokassa.sMerchantLogin + ':' + order.sum_total + ':' + invid + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             return res.redirect(303, config.catalog_payment.robokassa.url + "?MrchLogin=" + config.catalog_payment.robokassa.sMerchantLogin + "&OutSum=" + order.sum_total + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.catalog_payment.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
         });
     });
@@ -79,7 +80,7 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex');
+                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
             if (signature != SignatureValue) return res.send("Invalid signature");
             app.get('mongodb').collection('warehouse_orders').update({
                     order_id: InvId
@@ -91,20 +92,22 @@ module.exports = function(app) {
                 function(err) {
                     if (err) return res.send("Cannot update database");
                     // Send "Payment success" email
-                    if (req.session.auth.email) {
+                    app.get('mongodb').collection('users').find({
+                        _id: new ObjectId(order.user_id)
+                    }).toArray(function(us_err, users) {
                         var mail_data = {
                             lang: i18nm,
                             site_title: app.get('settings').site_title,
                             order_id: order.order_id,
-                            view_url: req.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + order._id,
+                            view_url: config.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + order._id,
                             subj: i18nm.__('your_order_id') + ' ' + order.order_id
                         };
-                        mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
+                        if (!us_err && users && users.length && users[0].email) mailer.send(users[0].email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
                         mail_data.subj = i18nm.__('order_id') + ' ' + order.order_id;
-                        mail_data.view_url = req.protocol + '://' + req.get('host') + '/cp/catalog_orders';
-                        mailer.send(req.session.auth.email, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
-                    }
-                    return res.send("OK" + InvId);
+                        mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
+                        return res.send("OK" + InvId);
+                    });
                 });
         });
     });
@@ -146,8 +149,8 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex');
-            if (signature != SignatureValue) {
+                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+            if (signature != SignatureValue.toUpperCase()) {
                 render_data.content = payment_html(gaikan, {
                     title: i18nm.__('payment_error'),
                     msg: i18nm.__('invalid_signature')
