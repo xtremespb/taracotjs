@@ -8,7 +8,7 @@ module.exports = function(app) {
         words: function(text, title) {
             var _desc = text.replace(/\n/g, '  ').replace(/\s{2,}/g, ' ').split(/ /);
             if (title) text += ' ' + title;
-            var _words = text.replace(/\n/g, '  ').replace(/[^a-z\u0400-\u04FF\s\-'`]/gi, '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').toLowerCase().replace(/\s{2,}/g, ' ').split(/ /);
+            var _words = text.replace(/\n/g, '  ').replace(/[^0-9a-z\u0400-\u04FF\s\-'`]/gi, '').replace(/ё/g, 'е').replace(/Ё/g, 'Е').toLowerCase().replace(/\s{2,}/g, ' ').split(/ /);
             var _check = {},
                 words = [],
                 desc = [];
@@ -30,6 +30,7 @@ module.exports = function(app) {
         },
         stem_all: function(words) {
             var stemmer;
+            console.log(JSON.stringify(words));
             for (var i = 0; i < words.length; i++) {
                 if (words[i].match(/[\u0400-\u04FF]/gi)) {
                     stemmer = new snowball('Russian');
@@ -38,7 +39,7 @@ module.exports = function(app) {
                 }
                 stemmer.setCurrent(words[i]);
                 stemmer.stem();
-                words[i] = stemmer.getCurrent();
+                if (!words[i].match(/[0-9]/)) words[i] = stemmer.getCurrent();
             }
             return words;
         }
