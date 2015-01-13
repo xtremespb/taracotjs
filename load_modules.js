@@ -99,10 +99,10 @@ var load_modules = {
 		cp_id: 'warehouse',
 		cp_prefix: '/cp/warehouse/'
 	}, {
-		name: 'warehouseconf',
+		name: 'warehouse_conf',
 		prefix: '',
-		cp_id: 'warehouseconf',
-		cp_prefix: '/cp/warehouseconf/'
+		cp_id: 'warehouse_conf',
+		cp_prefix: '/cp/warehouse_conf/'
 	}, {
 		name: 'catalog_orders',
 		prefix: '',
@@ -117,6 +117,10 @@ var load_modules = {
 		prefix: '',
 		cp_id: 'pages',
 		cp_prefix: '/cp/pages'
+	}, {
+		name: 'catalog_payment_robokassa',
+		prefix: '/api/catalog_payment/',
+		cp_prefix: ''
 	}]
 };
 

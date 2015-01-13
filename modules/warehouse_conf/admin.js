@@ -15,7 +15,7 @@ module.exports = function(app) {
     router.get('/', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 2) {
-            req.session.auth_redirect = '/cp/warehouseconf';
+            req.session.auth_redirect = '/cp/warehouse_conf';
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
@@ -61,7 +61,7 @@ module.exports = function(app) {
                         } catch (ex) {}
                 }
             }
-            var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouseconf_cp', {
+            var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouse_conf_cp', {
                 lang: i18nm,
                 auth: req.session.auth,
                 init_descitems: JSON.stringify(items),
@@ -75,8 +75,8 @@ module.exports = function(app) {
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
-                css: '<link rel="stylesheet" href="/modules/warehouseconf/css/main.css">' + "\n\t\t"
-            }, i18nm, 'warehouseconf_cp', req.session.auth);
+                css: '<link rel="stylesheet" href="/modules/warehouse_conf/css/main.css">' + "\n\t\t"
+            }, i18nm, 'warehouse_conf_cp', req.session.auth);
         });
     });
     router.post('/config/save', function(req, res) {

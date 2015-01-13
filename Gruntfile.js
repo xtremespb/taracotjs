@@ -194,9 +194,9 @@ module.exports = function(grunt) {
                     'modules/warehouse/public/modules/warehouse/js/warehouse.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'public/js/jstorage.js', 'public/js/moment.min.js', 'modules/warehouse/public/modules/warehouse/js/dragdrop.js', 'modules/warehouse/public/modules/warehouse/js/dragdrop.helper.js', 'modules/warehouse/public/modules/warehouse/js/jquery.shifty.js', 'modules/warehouse/public/modules/warehouse/js/main.js', 'modules/warehouse/public/modules/warehouse/js/tree.js' ]
                 }
             },
-            module_warehouseconf: {
+            module_warehouse_conf: {
                 files: {
-                    'modules/warehouseconf/public/modules/warehouseconf/js/warehouseconf.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'modules/warehouseconf/public/modules/warehouseconf/js/warehouseconf_cp.js' ]
+                    'modules/warehouse_conf/public/modules/warehouse_conf/js/warehouse_conf.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'modules/warehouse_conf/public/modules/warehouse_conf/js/warehouse_conf_cp.js' ]
                 }
             }
         }
