@@ -763,8 +763,8 @@ async.series([
                 "pcontent": "<p>Compact and robust USB stick.</p>\n",
                 "pamount": 100,
                 "pamount_unlimited": 0,
-                "pprice": "300",
-                "pweight": "0.02",
+                "pprice": 300,
+                "pweight": 0.02,
                 "pcurs": "rur"
             }, function(err) {
                 if (err) {
@@ -791,8 +791,8 @@ async.series([
                 "pimages": ["139312b8960a51f7a601e01c9eb39c71", "a438ec7015acf1da5c13cb649c1afcf0"],
                 "pamount": 50,
                 "pamount_unlimited": 0,
-                "pprice": "700",
-                "pweight": "0.1",
+                "pprice": 700,
+                "pweight": 0.1,
                 "pcurs": "rur",
                 "pcontent": ""
             }, function(err) {
@@ -820,8 +820,8 @@ async.series([
                 "pimages": ["661e84ae052879073ed77cbf720989ad", "c157983ba9c37cde40edf5021517f223", "527fc0f513bc9505c77e2ae4c6656829"],
                 "pamount": 10,
                 "pamount_unlimited": 0,
-                "pprice": "1220",
-                "pweight": "0.04",
+                "pprice": 1220,
+                "pweight": 0.04,
                 "pcurs": "rur",
                 "pcontent": ""
             }, function(err) {
@@ -857,8 +857,8 @@ async.series([
                 "pcontent": "",
                 "pamount": 5,
                 "pamount_unlimited": 0,
-                "pprice": "280",
-                "pweight": "0.3",
+                "pprice": 280,
+                "pweight": 0.3,
                 "pcurs": "rur"
             }, function(err) {
                 if (err) {
@@ -885,8 +885,8 @@ async.series([
                 "pimages": ["f437f67242c5b806e7e09c9b1e8de2fc"],
                 "pamount": 5,
                 "pamount_unlimited": 0,
-                "pprice": "1430",
-                "pweight": "0.2",
+                "pprice": 1430,
+                "pweight": 0.2,
                 "pcurs": "rur",
                 "pcontent": ""
             }, function(err) {
@@ -914,8 +914,8 @@ async.series([
                 "pimages": ["76cdb7a45539a90a9c28556f1351b958"],
                 "pamount": 0,
                 "pamount_unlimited": 0,
-                "pprice": "3000",
-                "pweight": "1.5",
+                "pprice": 3000,
+                "pweight": 1.5,
                 "pcurs": "rur",
                 "pcontent": ""
             }, function(err) {
