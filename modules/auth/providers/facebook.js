@@ -57,11 +57,17 @@ module.exports = function(app) {
                                 req.session.auth = items[0];
                                 req.session.auth.timestamp = Date.now();
                                 delete req.session.auth.password;
-                                if (!gm) return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                if (!gm) {
+                                    if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
+                                    return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                }
                                 var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
                                 var file = fs.createWriteStream(app.get('config').dir.avatars + '/' + afn + '.jpg');
                                 request.get('http://graph.facebook.com/' + user_data.id + '/picture?type=large').pipe(file).on('close', function() {
-                                    if (!fs.existsSync(app.get('config').dir.avatars + '/' + afn + '.jpg')) return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                    if (!fs.existsSync(app.get('config').dir.avatars + '/' + afn + '.jpg')) {
+                                        if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
+                                        return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                    }
                                     var img = gm(app.get('config').dir.avatars + '/' + afn + '.jpg');
                                     img.size(function(err, size) {
                                         if (!err) {
@@ -74,9 +80,11 @@ module.exports = function(app) {
                                             }
                                             img.setFormat('jpeg');
                                             img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
+                                                if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                                 return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                             });
                                         } else {
+                                            if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                         }
                                     });
@@ -87,6 +95,7 @@ module.exports = function(app) {
                         req.session.auth = items[0];
                         req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
+                        if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                     }
                 });

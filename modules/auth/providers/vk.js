@@ -64,14 +64,19 @@ module.exports = function(app) {
                                     req.session.auth = items[0];
                                     req.session.auth.timestamp = Date.now();
                                     delete req.session.auth.password;
-                                    if (!gm) return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                    if (!gm) {
+                                        if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
+                                        return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                    }
                                     var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
                                     var file = fs.createWriteStream(app.get('config').dir.avatars + '/' + afn + '.jpg');
                                     if (user_data.photo_medium) {
                                         request.get(user_data.photo_medium).pipe(file).on('close', function() {
+                                            if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                         });
                                     } else {
+                                        if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                     }
                                 });
@@ -80,6 +85,7 @@ module.exports = function(app) {
                             req.session.auth = items[0];
                             req.session.auth.timestamp = Date.now();
                             delete req.session.auth.password;
+                            if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                         }
                     });

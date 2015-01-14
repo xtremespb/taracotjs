@@ -59,6 +59,7 @@ module.exports = function(app) {
                                 req.session.auth = items[0];
                                 req.session.auth.timestamp = Date.now();
                                 delete req.session.auth.password;
+                                if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                 return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                             });
                         });
@@ -66,6 +67,7 @@ module.exports = function(app) {
                         req.session.auth = items[0];
                         req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
+                        if (req.session.auth_redirect) return res.redirect(303, req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                     }
                 });
