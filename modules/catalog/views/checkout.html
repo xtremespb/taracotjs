@@ -133,8 +133,9 @@
     <p>!{root.lang.__('your_order_id')}: <span class="taracot-catalog-success-order-id"></span>
     </p>
     <div class="uk-margin-top">
-        <button class="uk-button uk-button-success taracot-catalog-checkout-btn-orders">!{root.lang.__('view_order')}</button>
-        <button class="uk-button taracot-catalog-checkout-btn-finish">!{root.lang.__('back_to_catalog')}</button>
+        <button class="uk-button taracot-catalog-checkout-btn-orders">!{root.lang.__('view_order')}</button>&nbsp;
+        <button class="uk-button taracot-catalog-checkout-btn-finish">!{root.lang.__('back_to_catalog')}</button>&nbsp;
+        <button class="uk-button uk-button-success taracot-catalog-checkout-btn-pay">!{root.lang.__('make_payment')}</button>&nbsp;
     </div>
 </div>
 <script>
@@ -158,7 +159,8 @@ var _lang_vars = {
     },
     _taracot_catalog_shipping_address = !{
         root.shipping_address
-    };
+    },
+    _taracot_payment_enabled = !{root.payment_enabled};
 </script>
 <!--<script src="/modules/catalog/js/frontend_checkout.js"></script>-->
 <script src="/modules/catalog/js/frontend_checkout.min.js"></script>

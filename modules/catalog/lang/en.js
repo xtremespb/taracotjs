@@ -349,5 +349,6 @@
 	"invalid_query": "Invalid query. Plase refresh the current page and try again.",
 	"view_order": "View order details",
 	"on_website": "on website",
-	"ship_track": "Tracking number"
+	"ship_track": "Tracking number",
+	"make_payment": "Pay online"
 }

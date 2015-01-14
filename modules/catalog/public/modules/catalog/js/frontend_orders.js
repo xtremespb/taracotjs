@@ -1,6 +1,7 @@
 var edit_addr_dlg = new UIkit.modal("#taracot_modal_edit_addr"),
     shipping_address_data = {},
     current_id = '',
+    current_num,
     _history_handler_disable = false;
 
 var taracot_catalog_orders_tr_handler = function(evnt, _id) {
@@ -25,6 +26,7 @@ var taracot_catalog_orders_tr_handler = function(evnt, _id) {
                     order_id: id
                 }, "?mode=view&order_id=" + id);
                 current_id = id;
+                if (data.order_id) current_num = data.order_id;
                 $('#taracot_catalog_order_loading').hide();
                 $('#taracot_catalog_order_data_wrap').show();
                 $('.catalog_order_data').empty();
@@ -38,6 +40,8 @@ var taracot_catalog_orders_tr_handler = function(evnt, _id) {
                     $('#catalog_addr_edit').show();
                     $('#catalog_cancel_order').show();
                 }
+                $('.taracot-catalog-checkout-btn-pay').show();
+                if (!data.payment_enabled) $('.taracot-catalog-checkout-btn-pay').hide();
                 $('#catalog_order_date').html(data.order_timestamp);
                 for (var i = 0; i < data.cart_data.length; i++) $('#catalog_orders_list').append('<tr><td>' + data.cart_data[i].title + '</td><td>' + data.cart_data[i].amount + '</td></tr>');
                 $('#catalog_shipping_method').html(data.ship_method);
@@ -71,6 +75,11 @@ var taracot_catalog_orders_tr_handler = function(evnt, _id) {
             $('#taracot_catalog_orders_list').show();
         }
     });
+};
+
+var taracot_catalog_checkout_btn_pay_handler = function() {
+    if (!current_num) return;
+    location.href = '/api/catalog_payment/invoice/' + current_num + '?rnd=' + Math.random().toString().replace('.', '');
 };
 
 var catalog_addr_edit_handler = function() {
@@ -235,6 +244,8 @@ $(document).ready(function() {
     $('.taracot-catalog-addr-field').removeClass('uk-form-danger');
     $('#btn_save_addr').attr('disabled', false);
     $('#catalog_cancel_order').attr('disabled', false);
+    // Pay online button handler
+    $('.taracot-catalog-checkout-btn-pay').click(taracot_catalog_checkout_btn_pay_handler);
     // Orders list click handler
     $('.taracot-catalog-orders-tr').click(taracot_catalog_orders_tr_handler);
     // Save address click handler

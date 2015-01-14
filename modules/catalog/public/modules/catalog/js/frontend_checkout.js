@@ -1,5 +1,6 @@
 var _catalog_addr_required = false,
-    placed_order_id_hex;
+    placed_order_id_hex,
+    placed_order_id_num;
 
 var catalog_checkout_ship_method_handler = function() {
     for (var i = 0; i < _taracot_catalog_ship_methods.length; i++)
@@ -79,7 +80,10 @@ var taracot_catalog_checkout_btn_checkout_handler = function() {
         success: function(data) {
             if (data) {
                 if (data.status == '1') {
-                    if (data.order_id) $('.taracot-catalog-success-order-id').html(data.order_id);
+                    if (data.order_id) {
+                        $('.taracot-catalog-success-order-id').html(data.order_id);
+                        placed_order_id_num = data.order_id;
+                    }
                     if (data.order_id_hex) placed_order_id_hex = data.order_id_hex;
                     $('#taracot_catalog_checkout_div').hide();
                     $('#taracot_catalog_checkout_success_div').fadeIn(300);
@@ -128,6 +132,11 @@ var taracot_catalog_checkout_btn_orders_handler = function() {
     location.href = '/catalog/orders?mode=view&order_id=' + placed_order_id_hex;
 };
 
+var taracot_catalog_checkout_btn_pay_handler = function() {
+    if (!placed_order_id_num) return;
+    location.href = '/api/catalog_payment/invoice/' + placed_order_id_num + '?rnd=' + Math.random().toString().replace('.', '');
+};
+
 $(document).ready(function() {
     $('.taracot-catalog-addr-field').val('');
     $(".taracot-catalog-addr-field")[0].selectedIndex = 0;
@@ -135,6 +144,8 @@ $(document).ready(function() {
     $('#taracot_catalog_checkout_empty').hide();
     $('.taracot-catalog-checkout-btn-checkout').show();
     $('#catalog_checkout_ship_method').change(catalog_checkout_ship_method_handler);
+    $('.taracot-catalog-checkout-btn-pay').click(taracot_catalog_checkout_btn_pay_handler);
+    if (!_taracot_payment_enabled) $('.taracot-catalog-checkout-btn-pay').hide();
     catalog_checkout_ship_method_handler();
     if (navigator.language) {
         var _country = navigator.language;

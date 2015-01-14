@@ -284,6 +284,7 @@ module.exports = function(app) {
                         if (rep.shipping_address.ship_country && countries[i] == rep.shipping_address.ship_country) rep.shipping_address.ship_country_full = i18nm.__('country_list')[i];
                     rep.order_timestamp = moment(rep.order_timestamp).format('L LT');
                     if (whcurs && whcurs.length) rep.currency = whcurs[0][_locale];
+                    rep.payment_enabled = (app.get('config').catalog_payment && app.get('config').catalog_payment.enabled && rep.order_status === 0);
                     if (rep.ship_method && ship_hash[rep.ship_method]) rep.ship_method = ship_hash[rep.ship_method];
                     rep.order_status_text = i18nm.__('order_status_list')[rep.order_status];
                     return res.send(JSON.stringify(rep));
@@ -869,7 +870,8 @@ module.exports = function(app) {
                         missing_items: JSON.stringify(missing_items),
                         shipping_address: JSON.stringify(shipping_address),
                         bread: bread,
-                        cart_items_count: total_cart_items_count
+                        cart_items_count: total_cart_items_count,
+                        payment_enabled: (app.get('config').catalog_payment && app.get('config').catalog_payment.enabled)
                     }, undefined);
                     var data = {
                         title: i18nm.__('checkout'),

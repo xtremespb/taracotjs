@@ -477,11 +477,13 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
+        pprice = parseFloat(pprice);
         if (!pweight || parseFloat(pweight) != pweight || pweight < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_weight");
             return res.send(JSON.stringify(rep));
         }
+        pweight = parseFloat(pweight);
         if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_price");
