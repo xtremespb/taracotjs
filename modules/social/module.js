@@ -26,6 +26,7 @@ module.exports = function(app) {
         var mode = app.set('settings').social_mode || 'private',
             areas = app.set('settings').social_areas || '[]';
         if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/social';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;

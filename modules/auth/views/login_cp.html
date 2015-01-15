@@ -2,50 +2,56 @@
 <html dir="ltr" class="uk-height-1-1">
 
 <head>
-	<meta charset="utf-8">
-	<title>!{root.lang.__('auth')}</title>
-	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-	<link rel="stylesheet" href="/css/uikit/uikit.min.css">
-	<link rel="stylesheet" href="/modules/auth/css/cp_auth.css">
-	<script src="/js/admin.min.js"></script>
+    <meta charset="utf-8">
+    <title>!{root.lang.__('auth')}</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/uikit/uikit.min.css">
+    <link rel="stylesheet" href="/modules/auth/css/cp_auth.css">
+    <script src="/js/admin.min.js"></script>
 </head>
 
 <body class="uk-height-1-1">
-	<div class="uk-vertical-align uk-text-center uk-height-1-1" id="auth_box_wrap">
-		<div class="uk-vertical-align-middle" style="width:250px;">
-			<div id="auth_box">
-				<div class="uk-panel uk-panel-box uk-form">
-					<div class="uk-form-row">
-						<input class="uk-width-1-1 uk-form-large taracot-auth-field" type="text" id="auth_username" placeholder="!{root.lang.__('username')}">
-					</div>
-					<div class="uk-form-row">
-						<input class="uk-width-1-1 uk-form-large taracot-auth-field" type="password" id="auth_password" placeholder="!{root.lang.__('password')}">
-					</div>
-					<div class="uk-form-row" id="captcha_div">
-						<input class="uk-form-large uk-width-1-3 taracot-auth-field" type="text" id="auth_captcha" placeholder="!{root.lang.__('captcha')}" style="text-align:center">&nbsp;:&nbsp;
-						<img src="/images/blank.gif" id="auth_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
-					</div>
-					<div class="uk-form-row"><button class="uk-width-1-1 uk-button" id="auth_login" href="#">!{root.lang.__('login')}</button>
-					<div class="uk-progress uk-progress-success uk-progress-striped uk-active uk-hidden" id="auth_progress"><div class="uk-progress-bar" style="width: 100%;"></div></div>
-					</div>
-				</div>
-			</div>
-			<div class="taracot_cp_auth_footer"><a href="http://taracot.org">TaracotJS</a>&nbsp;&copy;&nbsp;2014 Michael A. Matveev</div>
-		</div>
-	</div>
-	<script type="text/javascript">
-	var _lang_vars = {
-		ajax_failed: "!{root.lang.__('ajax_failed')}",
-		invalid_username_syntax: "!{root.lang.__('invalid_username_syntax')}",
-		invalid_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
-		invalid_captcha: "!{root.lang.__('invalid_captcha')}"
-	};
-	var redirect_url = "!{root.redirect}" || "/";
-	var captcha_type = "!{root.captcha}";
-	var captcha_req = !{root.captcha_req};
-	if (!captcha_req) $('#captcha_div').hide();
-	</script>
-	<script src="/modules/auth/js/auth_cp.min.js"></script>
+    <div class="uk-vertical-align uk-text-center uk-height-1-1" id="auth_box_wrap">
+        <div class="uk-vertical-align-middle" style="width:250px;">
+            <div id="auth_box">
+                <div class="uk-panel uk-panel-box uk-form">
+                    <div class="uk-form-row">
+                        <input class="uk-width-1-1 uk-form-large taracot-auth-field" type="text" id="auth_username" placeholder="!{root.lang.__('username')}">
+                    </div>
+                    <div class="uk-form-row">
+                        <input class="uk-width-1-1 uk-form-large taracot-auth-field" type="password" id="auth_password" placeholder="!{root.lang.__('password')}">
+                    </div>
+                    <div class="uk-form-row" id="captcha_div">
+                        <input class="uk-form-large uk-width-1-3 taracot-auth-field" type="text" id="auth_captcha" placeholder="!{root.lang.__('captcha')}" style="text-align:center">&nbsp;:&nbsp;
+                        <img src="/images/blank.gif" id="auth_captcha_img" data-uk-tooltip title="!{root.lang.__('captcha_click_to_update')}">
+                    </div>
+                    <div class="uk-form-row">
+                        <button class="uk-width-1-1 uk-button" id="auth_login" href="#">!{root.lang.__('login')}</button>
+                        <div class="uk-progress uk-progress-success uk-progress-striped uk-active uk-hidden" id="auth_progress">
+                            <div class="uk-progress-bar" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="taracot_cp_auth_footer"><a href="http://taracot.org">TaracotJS</a>&nbsp;&copy;&nbsp;2014 Michael A. Matveev</div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var _lang_vars = {
+            ajax_failed: "!{root.lang.__('ajax_failed')}",
+            invalid_username_syntax: "!{root.lang.__('invalid_username_syntax')}",
+            invalid_password_syntax: "!{root.lang.__('invalid_password_syntax')}",
+            invalid_captcha: "!{root.lang.__('invalid_captcha')}"
+        },
+        redirect_url = "!{root.redirect}" || "/",
+        redirect_host = "!{root.redirect_host}" || location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : ''),
+        captcha_type = "!{root.captcha}",
+        captcha_req = !{
+            root.captcha_req
+        };
+    if (!captcha_req) $('#captcha_div').hide();
+    </script>
+    <script src="/modules/auth/js/auth_cp.min.js"></script>
 </body>
 
 </html>

@@ -307,6 +307,7 @@ module.exports = function(app) {
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = "/catalog/orders?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat;
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -742,6 +743,7 @@ module.exports = function(app) {
         if (init_cat) init_cat = init_cat.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (init_find) init_find = init_find.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = "/catalog/checkout?rnd=" + Math.random().toString().replace('.', '') + '&page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + init_find + '&cat=' + init_cat;
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;

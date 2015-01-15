@@ -22,6 +22,7 @@ module.exports = function(app) {
 	router.get('/', function(req, res) {
 		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
+			req.session.auth_redirect_host = req.get('host');
 			req.session.auth_redirect = '/cp/browse';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;

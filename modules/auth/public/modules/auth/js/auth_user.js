@@ -87,7 +87,7 @@ $('#btn_login').click(function() {
 				load_captcha();
 			} else {
 				$('#auth_form').hide();
-				location.href = redirect_url + "?rnd=" + Math.random().toString().replace('.', '');
+				location.href = redirect_host + redirect_url + "?rnd=" + Math.random().toString().replace('.', '');
 			}
 		},
 		error: function() {

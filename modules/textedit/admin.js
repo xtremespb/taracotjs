@@ -18,6 +18,7 @@ module.exports = function(app) {
 	router.get('/', function(req, res, next) {
 		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
+			req.session.auth_redirect_host = req.get('host');
 			req.session.auth_redirect = '/cp/textedit';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;
@@ -66,6 +67,7 @@ module.exports = function(app) {
 	router.post('/data/save', function(req, res, next) {
 		i18nm.setLocale(req.session.current_locale);
 		if (!req.session.auth || req.session.auth.status < 2) {
+			req.session.auth_redirect_host = req.get('host');
 			req.session.auth_redirect = '/cp/textedit';
 			res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
 			return;

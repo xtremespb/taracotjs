@@ -79,6 +79,7 @@ module.exports = function(app) {
             captcha_req: captcha_req,
             data: data,
             redirect: req.session.auth_redirect,
+            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
             config_auth: JSON.stringify(_config_auth)
         }, req);
         data.content = render;
@@ -101,6 +102,7 @@ module.exports = function(app) {
             lang: i18nm,
             captcha: _cap,
             captcha_req: captcha_req,
+            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
             redirect: req.session.auth_redirect
         }, req);
         res.send(render);
@@ -163,6 +165,7 @@ module.exports = function(app) {
                     captcha_req: true,
                     data: data,
                     invcode: invcode,
+                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 data.content = render;
@@ -375,6 +378,7 @@ module.exports = function(app) {
                 data: data,
                 act_res: act_res,
                 act_status: false,
+                redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
                 redirect: req.session.auth_redirect
             }, req);
             app.get('renderer').render(res, undefined, data, req);
@@ -393,6 +397,7 @@ module.exports = function(app) {
                     data: data,
                     act_res: i18nm.__("unable_to_activate"),
                     act_status: false,
+                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 return app.get('renderer').render(res, undefined, data, req);
@@ -419,6 +424,7 @@ module.exports = function(app) {
                     data: data,
                     act_res: act_msg,
                     act_status: act_status,
+                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 app.get('mongodb').collection('users').find({
@@ -465,6 +471,7 @@ module.exports = function(app) {
             captcha: _cap,
             captcha_req: true,
             data: data,
+            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
             redirect: req.session.auth_redirect
         }, req);
         data.content = render;
@@ -701,6 +708,7 @@ module.exports = function(app) {
     router.get('/logout', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/auth/profile';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
@@ -801,6 +809,7 @@ module.exports = function(app) {
     router.get('/profile', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/auth/profile';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;

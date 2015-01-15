@@ -27,6 +27,7 @@ module.exports = function(app) {
     	var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         if (!req.session.auth || req.session.auth.status < 2) {
+            req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/cp/invites';
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
