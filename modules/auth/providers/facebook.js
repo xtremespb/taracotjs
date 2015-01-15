@@ -59,7 +59,7 @@ module.exports = function(app) {
                                 delete req.session.auth.password;
                                 if (!gm) {
                                     if (req.session.auth_redirect) {
-                                        var host = req.session.auth_redirect_host || '';
+                                        var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                         return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                     }
                                     return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -69,7 +69,7 @@ module.exports = function(app) {
                                 request.get('http://graph.facebook.com/' + user_data.id + '/picture?type=large').pipe(file).on('close', function() {
                                     if (!fs.existsSync(app.get('config').dir.avatars + '/' + afn + '.jpg')) {
                                         if (req.session.auth_redirect) {
-                                            var host = req.session.auth_redirect_host || '';
+                                            var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                             return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                         }
                                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -87,14 +87,14 @@ module.exports = function(app) {
                                             img.setFormat('jpeg');
                                             img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
                                                 if (req.session.auth_redirect) {
-                                                    var host = req.session.auth_redirect_host || '';
+                                                    var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                                     return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                                 }
                                                 return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
                                             });
                                         } else {
                                             if (req.session.auth_redirect) {
-                                                var host = req.session.auth_redirect_host || '';
+                                                var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                                 return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                             }
                                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -108,7 +108,7 @@ module.exports = function(app) {
                         req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
                         if (req.session.auth_redirect) {
-                            var host = req.session.auth_redirect_host || '';
+                            var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                             return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                         }
                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));

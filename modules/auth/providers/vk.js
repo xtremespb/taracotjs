@@ -66,7 +66,7 @@ module.exports = function(app) {
                                     delete req.session.auth.password;
                                     if (!gm) {
                                         if (req.session.auth_redirect) {
-                                            var host = req.session.auth_redirect_host || '';
+                                            var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                             return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                         }
                                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -76,7 +76,7 @@ module.exports = function(app) {
                                     if (user_data.photo_medium) {
                                         request.get(user_data.photo_medium).pipe(file).on('close', function() {
                                             if (req.session.auth_redirect) {
-                                                var host = req.session.auth_redirect_host || '';
+                                                var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                                 return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                             }
                                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -95,7 +95,7 @@ module.exports = function(app) {
                             req.session.auth.timestamp = Date.now();
                             delete req.session.auth.password;
                             if (req.session.auth_redirect) {
-                                var host = req.session.auth_redirect_host || '';
+                                var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                 return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                             }
                             return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));

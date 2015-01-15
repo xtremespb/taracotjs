@@ -30,12 +30,12 @@ module.exports = function(app) {
                 if (error || response.statusCode != 200) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
                 var user_data = JSON.parse(body);
                 app.get('mongodb').collection('users').find({
-                    email: user_data.email
+                    email: user_data.default_email
                 }, {
                     limit: 1
                 }).toArray(function(err, items) {
                     if (err) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
-                    if (typeof items == 'undefined' || !items || !items.length) {
+                    if (!items || !items.length) {
                         var _now = Date.now();
                         var user = {
                             username: 'ya_' + _now,
@@ -60,7 +60,7 @@ module.exports = function(app) {
                                 req.session.auth.timestamp = Date.now();
                                 delete req.session.auth.password;
                                 if (req.session.auth_redirect) {
-                                    var host = req.session.auth_redirect_host || '';
+                                    var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                                     return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                                 }
                                 return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
@@ -71,7 +71,7 @@ module.exports = function(app) {
                         req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
                         if (req.session.auth_redirect) {
-                            var host = req.session.auth_redirect_host || '';
+                            var host = config.protocol + '://' + req.session.auth_redirect_host || '';
                             return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
                         }
                         return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
