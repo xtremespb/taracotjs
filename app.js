@@ -256,7 +256,7 @@ var public_folders_rx = new RegExp('^(' + public_folder_dirs.join('|') + ')');
 // Update site statistics
 
 app.use(function(req, res, next) {
-    if (req.method == 'GET' && req.url !== '/cp' && !req.url.match(public_folders_rx)) {
+    if (req.method == 'GET' && req.url !== '/cp' && !req.url.match(public_folders_rx) && req.url !== '/auth/captcha') {
         var now = new Date();
         var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime() / 1000;
         var update = {
@@ -265,37 +265,15 @@ app.use(function(req, res, next) {
             }
         };
         if (!req.session || !req.session.statistics_saved || req.session.statistics_saved != today) {
-            update = {
-                $inc: {
-                    hits: 1,
-                    visitors: 1
-                }
-            };
+            update.$inc.visitors = 1;
             if (req.session) req.session.statistics_saved = today;
         }
-        app.get('mongodb').collection('statistics').find({
+        app.get('mongodb').collection('statistics').update({
             day: today
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            if (!err) {
-                if (items && items.length) {
-                    app.get('mongodb').collection('statistics').update({
-                        day: today
-                    }, update, function(err) {
-                        next();
-                    });
-                } else {
-                    update = {
-                        day: today,
-                        hits: 1,
-                        visitors: 1
-                    };
-                    app.get('mongodb').collection('statistics').insert(update, function(err) {
-                        next();
-                    });
-                }
-            }
+        }, update, {
+            upsert: true
+        }, function(err) {
+            next();
         });
     } else {
         next();
