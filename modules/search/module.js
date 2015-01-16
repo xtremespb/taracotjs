@@ -56,12 +56,16 @@ module.exports = function(app) {
         }
         query_words = parser.stem_all(query_words);
         var query_arr = [];
-        for (var i=0; i<query_words.length; i++) {
-        	query_arr.push({ swords: new RegExp(query_words[i]) });
+        for (var i = 0; i < query_words.length; i++) {
+            query_arr.push({
+                swords: {
+                    $regex: new RegExp(query_words[i])
+                }
+            });
         }
         rep.items = [];
         var find_query = {
-        	slang: req.session.current_locale,
+            slang: req.session.current_locale,
             $and: query_arr
         };
         app.get('mongodb').collection('search_index').find(find_query).count(function(err, items_count) {

@@ -73,13 +73,15 @@ module.exports = function(app) {
             if (_config_auth[key].clientSecret) delete _config_auth[key].clientSecret;
         }
         if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) _config_auth = [];
+        var redirect_host = '';
+        if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
         var render = renderer.render_file(path.join(__dirname, 'views'), 'login_user', {
             lang: i18nm,
             captcha: _cap,
             captcha_req: captcha_req,
             data: data,
             redirect: req.session.auth_redirect,
-            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+            redirect_host: redirect_host,
             config_auth: JSON.stringify(_config_auth)
         }, req);
         data.content = render;
@@ -98,11 +100,13 @@ module.exports = function(app) {
         }
         var captcha_req = false;
         if (req.session.captcha_req) captcha_req = true;
+        var redirect_host = '';
+        if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
         var render = renderer.render_file(path.join(__dirname, 'views'), 'login_cp', {
             lang: i18nm,
             captcha: _cap,
             captcha_req: captcha_req,
-            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+            redirect_host: redirect_host,
             redirect: req.session.auth_redirect
         }, req);
         res.send(render);
@@ -159,13 +163,15 @@ module.exports = function(app) {
                     description: '',
                     extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/register.css" type="text/css">'
                 };
+                var redirect_host = '';
+                if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
                 var render = renderer.render_file(path.join(__dirname, 'views'), 'register', {
                     lang: i18nm,
                     captcha: _cap,
                     captcha_req: true,
                     data: data,
                     invcode: invcode,
-                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+                    redirect_host: redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 data.content = render;
@@ -373,12 +379,14 @@ module.exports = function(app) {
             extra_css: ''
         };
         if (act_res) {
+            var redirect_host = '';
+            if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
             data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
                 lang: i18nm,
                 data: data,
                 act_res: act_res,
                 act_status: false,
-                redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+                redirect_host: redirect_host,
                 redirect: req.session.auth_redirect
             }, req);
             app.get('renderer').render(res, undefined, data, req);
@@ -392,12 +400,14 @@ module.exports = function(app) {
             limit: 1
         }).toArray(function(err, items) {
             if (err || typeof items == 'undefined' || items.length === 0) {
+                var redirect_host = '';
+                if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
                 data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
                     lang: i18nm,
                     data: data,
                     act_res: i18nm.__("unable_to_activate"),
                     act_status: false,
-                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+                    redirect_host: redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 return app.get('renderer').render(res, undefined, data, req);
@@ -419,12 +429,14 @@ module.exports = function(app) {
                     req.session.auth = items[0];
                     req.session.auth.timestamp = Date.now();
                 }
+                var redirect_host = '';
+                if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
                 data.content = renderer.render_file(path.join(__dirname, 'views'), 'activate', {
                     lang: i18nm,
                     data: data,
                     act_res: act_msg,
                     act_status: act_status,
-                    redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+                    redirect_host: redirect_host,
                     redirect: req.session.auth_redirect
                 }, req);
                 app.get('mongodb').collection('users').find({
@@ -466,12 +478,14 @@ module.exports = function(app) {
             description: '',
             extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/reset.css" type="text/css">'
         };
+        var redirect_host = '';
+        if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
         var render = renderer.render_file(path.join(__dirname, 'views'), 'reset', {
             lang: i18nm,
             captcha: _cap,
             captcha_req: true,
             data: data,
-            redirect_host: config.protocol + '://' + req.session.auth_redirect_host,
+            redirect_host: redirect_host,
             redirect: req.session.auth_redirect
         }, req);
         data.content = render;
