@@ -49,6 +49,7 @@ module.exports = function(app) {
                                 username_auth: 'vk_' + _now,
                                 username_vk_uid: user_data.uid,
                                 need_finish: '1',
+                                regdate: Date.now(),
                                 status: 1
                             };
                             app.get('mongodb').collection('users').insert(user, function(err, items) {

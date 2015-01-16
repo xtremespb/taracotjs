@@ -42,6 +42,7 @@ module.exports = function(app) {
                             password: crypto.createHash('md5').update(config.salt + '.' + Math.random()).digest('hex'),
                             username_auth: 'fb_' + _now,
                             need_finish: '1',
+                            regdate: Date.now(),
                             status: 1
                         };
                         app.get('mongodb').collection('users').insert(user, function(err, items) {
