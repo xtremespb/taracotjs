@@ -42,7 +42,7 @@ Please visit https://wiki.taracot.org/ for more information on this project.
 
 ## License
 
-Copyright (c) 2014 Michael A. Matveev (<xtreme@rh1.ru>)
+Copyright (c) 2014-2015 Michael A. Matveev (<xtreme@rh1.ru>)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
