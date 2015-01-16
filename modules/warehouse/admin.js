@@ -1,28 +1,28 @@
 module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
-        pcategory: 1,
-        pfilename: 1,
-        ptitle: 1,
-        plang: 1
-    };
-    var sort_cell_default = 'pcategory';
-    var sort_cell_default_mode = 1;
+            pcategory: 1,
+            pfilename: 1,
+            ptitle: 1,
+            plang: 1
+        },
+        sort_cell_default = 'pcategory',
+        sort_cell_default_mode = 1;
     // Set items per page for this module
     var items_per_page = 30;
     //
-    var router = app.get('express').Router();
-    var ObjectId = require('mongodb').ObjectID;
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales_dev_mode
-    });
-    var parser = app.get('parser');
-    var crypto = require('crypto');
-    var fs = require("fs-extra");
-    var gm = false;
+    var router = app.get('express').Router(),
+        ObjectId = require('mongodb').ObjectID,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales,
+            directory: app.get('path').join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales_dev_mode
+        }),
+        parser = app.get('parser'),
+        crypto = require('crypto'),
+        fs = require("fs-extra"),
+        gm = false;
     if (app.get('config').graphicsmagick) {
         gm = require('gm');
     }

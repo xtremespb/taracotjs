@@ -1,25 +1,25 @@
 module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
-        username: 1,
-        realname: 1,
-        email: 1,
-        status: 1
-    };
-    var sort_cell_default = 'username';
-    var sort_cell_default_mode = 1;
+            username: 1,
+            realname: 1,
+            email: 1,
+            status: 1
+        },
+        sort_cell_default = 'username',
+        sort_cell_default_mode = 1;
     // Set items per page for this module
     var items_per_page = 30;
     //
-    var router = app.get('express').Router();
-    var crypto = require('crypto');
-    var ObjectId = require('mongodb').ObjectID;
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales_dev_mode
-    });
+    var router = app.get('express').Router(),
+        crypto = require('crypto'),
+        ObjectId = require('mongodb').ObjectID,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales,
+            directory: app.get('path').join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales_dev_mode
+        });
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
@@ -216,9 +216,9 @@ module.exports = function(app) {
         if (groups) {
             var groups_arr = groups.toLowerCase().replace(/[^a-z0-9_,]/g, "").split(',');
             var groups_arr_unique = groups_arr.filter(function(item, pos) {
-    			return groups_arr.indexOf(item) == pos;
-			}).sort();
-			groups = groups_arr_unique.join(', ');
+                return groups_arr.indexOf(item) == pos;
+            }).sort();
+            groups = groups_arr_unique.join(', ');
         }
         if (rep.status === 0) {
             res.send(JSON.stringify(rep));
