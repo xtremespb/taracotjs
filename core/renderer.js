@@ -15,6 +15,7 @@ module.exports = function(app) {
 
     var renderer = {
         render: function(res, layout, data, req) {
+        	i18nm.setLocale(req.session.current_locale);
             var _layout = layout || config.layouts.default;
             data.auth = {
                 username: '',
