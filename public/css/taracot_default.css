@@ -40,7 +40,7 @@ html, body {
     text-align: right;
 }
 .taracot-img-logo {
-    width: 200px !important;
+    width: 280px !important;
     height: 45px;
 }
 input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {
@@ -174,11 +174,11 @@ input:focus, textarea:focus, select:focus {
     height: 40px;
 }
 .taracot-mobile-line {
-    background: #fafafa;
+    background: #666;
     height: 5px;
-    border-left: #ccc 6px solid;
-    border-right: #ccc 6px solid;
-    border-top: #ccc 1px solid;
+    border-left: #666 6px solid;
+    border-right: #666 6px solid;
+    border-top: #666 1px solid;
     z-index: 100;
     -webkit-border-top-right-radius: 5px;
     -webkit-border-top-left-radius: 5px;
