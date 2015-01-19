@@ -103,7 +103,7 @@ var config = {
         "file": {
             "level": "error",
             "filename": "../logs/taracotjs.log",
-            "json": false,
+            "json": true,
             "maxsize": 1048576,
             "maxFiles": 3
         },
