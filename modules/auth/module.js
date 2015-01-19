@@ -1,17 +1,17 @@
 module.exports = function(app) {
-    var router = app.get('express').Router();
-    var renderer = app.get('renderer');
-    var config = app.get('config');
-    var path = app.get('path');
-    var mailer = app.get('mailer');
-    var crypto = require('crypto');
-    var i18nm = new(require('i18n-2'))({
-        locales: config.locales,
-        directory: path.join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales_dev_mode
-    });
-    var async = require('async');
+    var router = app.get('express').Router(),
+        renderer = app.get('renderer'),
+        config = app.get('config'),
+        path = app.get('path'),
+        mailer = app.get('mailer'),
+        crypto = require('crypto'),
+        i18nm = new(require('i18n-2'))({
+            locales: config.locales,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales_dev_mode
+        }),
+        async = require('async');
     // Social Auth: begin
     var config_auth = app.get('config_auth');
     for (var key in config_auth) app.use('/auth/', require('./providers/' + key)(app));
