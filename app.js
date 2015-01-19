@@ -358,20 +358,20 @@ app.use(function(err, req, res, next) {
         method: req.method,
         url: req.url,
         ip: req.ip,
-        ips: req.ips,
-        stack: err.stack
+        stack: err.stack,
+        statusCode: res.statusCode
     };
-    if (!config.log.stack || err.status == 404) {
-        delete _data.stack;
-    }
-    logger.error(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url + ' ' + err.message, {});
+    if (!config.log.stack || err.status == 404) delete _data.stack;
+    if (!err.message) err.message = "Internal server error";
+    if (!err.status) err.status = 500;
+    logger.error(err.message, _data);
     if (res.statusCode != 404) console.log("\n" + err.stack + "\n");
     var site_title = 'TaracotJS';
     if (app.get('settings') && app.get('settings').site_title) site_title = app.get('settings').site_title;
     res.render('error', {
-        message: err.message,
         site_title: site_title,
-        error: err
+        data: _data,
+        err: err
     });
 });
 
