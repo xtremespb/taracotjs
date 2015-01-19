@@ -6,12 +6,10 @@
     <meta name="format-detection" content="telephone=no">
     <link name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>!{root.message} | !{root.site_title}</title>
+    <title>!{root.err.message} | !{root.site_title}</title>
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/uikit/uikit.min.css">
     <link rel="stylesheet" href="/css/taracot_default.css">
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/uikit/uikit.min.js"></script>
 </head>
 <body class="uk-height-1-1">
     <div class="uk-vertical-align uk-text-center uk-height-1-1">
@@ -25,7 +23,7 @@
                 <div class="taracot-error-box-head-p1">DON'T</div>
                 <div class="taracot-error-box-head-p2">PANIC YET</div>
             </div>
-            <span class="taracot-error-box-msg">!{root.error.status} /// !{root.message}</span>
+            <span class="taracot-error-box-msg">!{root.err.status} /// !{root.err.message}</span>
         </div>
     </div>
 </body>
