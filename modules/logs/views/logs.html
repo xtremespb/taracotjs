@@ -1,0 +1,158 @@
+<h1>!{root.lang.__('module_name_cp')}</h1>
+
+<div id="warehouse_item_dlg" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1 class="uk-modal-header">!{root.lang.__('select_item')}</h1>
+        <div class="uk-panel taracot-warehouse-items-panel">
+            <ul class="uk-list uk-list-line" id="warehouse_items"></ul>
+        </div>
+        <div class="uk-modal-footer">
+            <button class="uk-button uk-modal-close uk-margin-top uk-button-danger">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
+<ul class="uk-tab" data-uk-tab="{connect:'#warehouse_conf_tabs'}">
+    <li><a href="">!{root.lang.__('module_descitems')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_collections')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_currencies')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_shipment')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_misc')}</a>
+    </li>
+</ul>
+<ul id="warehouse_conf_tabs" class="uk-panel uk-panel-box uk-switcher taracot-warehouse_conf-panel">
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouse_conf_descitems_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_descitem_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_descitem_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="warehouse_conf_descitems">
+            <thead>
+                <tr id="warehouse_conf_descitems_th">
+                    <th style="width:150px">!{root.lang.__('descitem_id')}</th>
+                </tr>
+            </thead>
+            <tbody id="warehouse_conf_descitems_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouse_conf_collections_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_collection_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_collection_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="warehouse_conf_collections">
+            <thead>
+                <tr id="warehouse_conf_collections_th">
+                    <th style="width:150px">!{root.lang.__('collection_id')}</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="warehouse_conf_collections_tb"></tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouse_conf_currencies_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_currency_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_currency_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="warehouse_conf_curs">
+            <thead>
+                <tr id="warehouse_conf_curs_th">
+                    <th style="width:150px">!{root.lang.__('currency_id')}</th>
+                    <th style="width:150px">!{root.lang.__('exchange_rate')}</th>
+                </tr>
+            </thead>
+            <tbody id="warehouse_conf_curs_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouse_conf_shipment_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_ship_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_shipment_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="warehouse_conf_ship">
+            <thead>
+                <tr id="warehouse_conf_ship_th">
+                    <th style="width:150px">!{root.lang.__('shipment_id')}</th>
+                    <th style="width:80px">!{root.lang.__('weight')}</th>
+                    <th style="width:80px">!{root.lang.__('amnt')}</th>
+                    <th style="width:80px">!{root.lang.__('price')}</th>
+                </tr>
+            </thead>
+            <tbody id="warehouse_conf_ship_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('warehouse_conf_misc_hint')}</div>
+        <table class="uk-table uk-margin-top" id="warehouse_conf_misc">
+            <thead>
+                <tr id="warehouse_conf_misc_th">
+                    <th style="width:150px">!{root.lang.__('par')}</th>
+                </tr>
+            </thead>
+            <tbody id="warehouse_conf_misc_tb" class="uk-form">
+            </tbody>
+        </table>
+    </li>
+</ul>
+<div class="uk-margin-top">
+    <button class="uk-button" id="btn_save"><i class="uk-icon-save"></i>&nbsp;!{root.lang.__('save_all_changes')}</button>
+</div>
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    save_success: "!{root.lang.__('save_success')}",
+    confirm_delete_descitem: "!{root.lang.__('confirm_delete_descitem')}"
+};
+var locales = !{
+    root.locales
+};
+var init_items = !{
+    root.items
+};
+var init_collections = !{
+    root.collections
+};
+var init_curs = !{
+    root.curs
+};
+var init_ship = !{
+    root.ship
+};
+var init_misc = !{
+    root.misc
+};
+var current_locale = "!{root.current_locale}";
+for (var i = 0; i < locales.length; i++) {
+    $('#warehouse_conf_descitems_th').append('<th>' + locales[i] + '</th>');
+    $('#warehouse_conf_curs_th').append('<th>' + locales[i] + '</th>');
+    $('#warehouse_conf_ship_th').append('<th>' + locales[i] + '</th>');
+    $('#warehouse_conf_misc_th').append('<th>' + locales[i] + '</th>');
+}
+var misc_pars = ["!{root.lang.__('weight_units')}"];
+for (var mp = 0; mp < misc_pars.length; mp++) {
+    var _app = '';
+    _app += '<td>' + misc_pars[mp] + '</td>';
+    for (var ml = 0; ml < locales.length; ml++) _app += '<td><input type="text" class="uk-width-1-1"></td>';
+    $('#warehouse_conf_misc_tb').append('<tr>' + _app + '</tr>');
+}
+$('#warehouse_conf_descitems_th').append('<th style="width:30px"></th>');
+$('#warehouse_conf_curs_th').append('<th style="width:100px"></th>');
+$('#warehouse_conf_descitems').hide();
+$('#warehouse_conf_collections').hide();
+$('#warehouse_conf_curs').hide();
+$('#warehouse_conf_ship').hide();
+</script>
+<!--<script src="/js/jquery.medved.loading.js"></script>
+<script src="/js/uikit/addons/sortable.min.js"></script>
+<script src="/modules/warehouse_conf/js/warehouse_conf_cp.js"></script>-->
+
+<script src="/modules/warehouse_conf/js/warehouse_conf.min.js"></script>
