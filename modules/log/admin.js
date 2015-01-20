@@ -18,6 +18,12 @@ module.exports = function(app) {
     };
     router.get('/', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        if (!req.session.auth || req.session.auth.status < 2) {
+            req.session.auth_redirect_host = req.get('host');
+            req.session.auth_redirect = '/cp/log';
+            res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
         var log_data = {
             lang: i18nm,
             auth: req.session.auth,
@@ -63,7 +69,7 @@ module.exports = function(app) {
             if (log_html.length) log_data.log_html = parts_table(gaikan, {
                 lang: i18nm,
                 rows: log_html,
-                total: log_arr.length
+                total: log_arr.length - 1
             }, undefined);
             if (!log_html) log_data.log_html = i18nm.__('no_log_file_available_yet');
             return app.get('cp').render(req, res, {

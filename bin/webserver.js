@@ -41,6 +41,7 @@ if (config.redis.active) {
 var server = http.listen(port, function() {
     if (config.gid) process.setgid(config.gid);
     if (config.uid) process.setuid(config.uid);
+    console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
     console.log('[%s] server listening on port: ' + port, process.pid);
 });
 
