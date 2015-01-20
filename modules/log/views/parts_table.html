@@ -1,0 +1,18 @@
+<div class="uk-overflow-container">
+    <table class="uk-table uk-table-hover uk-table-striped">
+        <thead>
+            <th class="log-table-code">!{root.lang.__('code')}</th>
+            <th>!{root.lang.__('message')}</th>
+            <th class="log-table-ip">!{root.lang.__('ip')}</th>
+            <th>!{root.lang.__('url')}</th>
+            <th class="log-table-timestamp">!{root.lang.__('timestamp')}</th>
+            <th class="log-table-stack">!{root.lang.__('stack')}</th>
+        </thead>
+        <tbody>
+            !{root.rows}
+        </tbody>
+    </table>
+</div>
+<div class="uk-margin-top uk-margin-bottom">
+!{root.lang.__('total_log_records')}: !{root.total}
+</div>

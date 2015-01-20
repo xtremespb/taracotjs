@@ -121,6 +121,11 @@ var load_modules = {
 		name: 'catalog_payment_robokassa',
 		prefix: '/api/catalog_payment/',
 		cp_prefix: ''
+	}, {
+		name: 'log',
+		prefix: '',
+		cp_id: 'log',
+		cp_prefix: '/cp/log'
 	}]
 };
 

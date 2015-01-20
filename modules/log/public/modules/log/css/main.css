@@ -1,0 +1,18 @@
+.taracot-stack-view {
+    height: 150px;
+}
+.log-table-code {
+    width: 30px;
+    text-align: center;
+}
+.log-table-ip {
+    width: 60px;
+    text-align: center;
+}
+.log-table-stack {
+    width: 20px;
+    text-align: center;
+}
+.log-table-timestamp {
+    width: 100px;
+}

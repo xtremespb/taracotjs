@@ -1,0 +1,18 @@
+<div id="stack_dialog" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <div id="taracot-modal-view-wrap">
+            <h1 class="uk-modal-header">
+                !{root.lang.__('view_stack')}
+            </h1>
+            <div>
+                <pre class="uk-scrollable-text taracot-stack-view"><code id="taracot_stacktrace"></code></pre>
+            </div>
+            <div class="taracot-buttons-area uk-modal-footer">
+                <button class="uk-button uk-modal-close" type="button">!{root.lang.__('close')}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<h1>!{root.lang.__('module_name_cp')}</h1>
+!{root.log_html}
+<script src="/modules/log/js/log.js"></script>
