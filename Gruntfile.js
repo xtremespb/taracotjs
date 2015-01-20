@@ -198,6 +198,11 @@ module.exports = function(grunt) {
                 files: {
                     'modules/warehouse_conf/public/modules/warehouse_conf/js/warehouse_conf.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/sortable.min.js', 'modules/warehouse_conf/public/modules/warehouse_conf/js/warehouse_conf_cp.js' ]
                 }
+            },
+            log: {
+                files: {
+                    'modules/log/public/modules/log/js/log.min.js': [ 'modules/log/public/modules/log/js/log.js' ]
+                }
             }
         }
     });
