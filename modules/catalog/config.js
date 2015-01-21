@@ -9,7 +9,7 @@ var config = {
             "sMerchantPass1": "",
             "sMerchantPass2": ""
         }
-    },
+    }
 };
 
 module.exports = config;
