@@ -4,65 +4,104 @@ var program = require('commander'),
     async = require('async'),
     config = require('../config'),
     mongoclient = require('mongodb').MongoClient,
+    fs = require('fs'),
+    modules = ['settings', 'auth', 'cp', 'pages', 'parts', 'user'],
     db;
 
 program
     .version(config.taracotjs)
     .option('-s, --silent', 'Don\'t ask anything (perform silently)')
+    .option('-u, --update', 'Update mode (no default values are created)')
+    .option('-m, --module [module]', 'Install specified module only')
     .parse(process.argv);
 
-var mongo_url = config.mongo.url;
-
-async.series([
-        function(callback) {
-            console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
-            console.log("This script will install modules to your TaracotJS installation.\n");
-            console.log("A working MongoDB connection is required.");
-            console.log("Current MongoDB URL: " + mongo_url + "\n");
-            console.log("Note: you should have been running install-system script before you continue.\n");
-            if (program.silent || program.mongo) return callback();
-            program.confirm('Do you wish to continue? ', function(ok) {
-                if (ok) {
-                    callback();
-                } else {
-                    console.log("\nAborted");
-                    process.exit(code = 0);
-                }
-            });
-        },
-        function(callback) {
-            mongoclient.connect(mongo_url, config.mongo_options, function(err, _db) {
-                if (err) {
-                    console.log("\nCould not connect to the MongoDB. Please check config.js");
-                    console.log(err);
+var mongo_url = config.mongo.url,
+    finst = function() {
+        mongoclient.connect(mongo_url, config.mongo_options, function(err, _db) {
+            if (err) {
+                console.log("\nCould not connect to the MongoDB. Please check config.js");
+                console.log(err);
+                process.exit(1);
+            }
+            console.log("\nConnected to MongoDB");
+            db = _db;
+            if (program.module) {
+                if (!fs.existsSync('../modules/' + program.module) || !fs.lstatSync('../modules/' + program.module).isDirectory()) {
+                    console.log("\nModule not found: " + program.module);
                     process.exit(1);
                 }
-                console.log("\nConnected to MongoDB\n");
-                db = _db;
-                callback();
-            });
-        },
-        function(callback) {
-            var test = require('../modules/catalog/install')(db, ensure_indexes, config);
-            test.collections(function() {
-                test.indexes(function() {
-                    test.defaults(function() {
-                        callback();
+                var installer = require('../modules/' + program.module + '/install')(db, ensure_indexes, config);
+                installer.collections(function() {
+                    installer.indexes(function() {
+                        installer.misc(function() {
+                            if (program.update) {
+                                console.log("\nInstallation complete.");
+                                process.exit(code = 0);
+                            } else {
+                                installer.defaults(function() {
+                                    console.log("\nInstallation complete.");
+                                    process.exit(code = 0);
+                                });
+                            }
+                        });
                     });
                 });
-            });
+            } else {
+                fs.readdir('../modules', function(err, files) {
+                    if (err) {
+                        console.log("\nCould not get modules list");
+                        console.log(err);
+                        process.exit(1);
+                    }
+                    var modules_hash = {},
+                        inst_arr = [];
+                    for (var m in modules) modules_hash[modules[m]] = true;
+                    for (var f in files)
+                        if (fs.lstatSync('../modules/' + files[f]).isDirectory() && !modules_hash[files[f]]) modules.push(files[f]);
+                    for (var md in modules) {
+                        var install = require('../modules/' + modules[md] + '/install')(db, ensure_indexes, config);
+                        if (install) inst_arr.push(install);
+                    }
+                    async.eachSeries(inst_arr, function(installer, ase_callback) {
+                        installer.collections(function() {
+                            installer.indexes(function() {
+                                installer.misc(function() {
+                                    if (program.update) {
+                                        ase_callback();
+                                    } else {
+                                        installer.defaults(function() {
+                                            ase_callback();
+                                        });
+                                    }
+                                });
+                            });
+                        });
+                    }, function(err) {
+                        console.log("\nInstallation complete.");
+                        process.exit(code = 0);
+                    });
+                });
+            }
+        });
+    };
+
+console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
+console.log("This script will install modules to your TaracotJS installation.\n");
+console.log("A working MongoDB connection is required.");
+console.log("Current MongoDB URL: " + mongo_url + "\n");
+console.log("Note: you should have been running install-system script before you continue.\n");
+if (program.silent) {
+    finst();
+} else {
+    program.confirm('Do you wish to continue? ', function(ok) {
+        if (ok) {
+            finst();
+        } else {
+            console.log("\nAborted");
+            process.exit(code = 0);
         }
-    ],
-    function(err) {
-        if (err) {
-            console.log("\nInstallation failed");
-            console.log(err);
-            process.exit(1);
-        }
-        console.log("\nAll done!");
-        process.exit(code = 0);
-    }
-);
+    });
+}
 
 /*
 
