@@ -9,25 +9,16 @@ var config = {
             "index"
         ]
     },
-    "locales": [
-        "en",
-        "ru"
-    ],
-    "catalog_payment": {
-        "enabled": true,
-        "api": "robokassa",
-        "robokassa": {
-            "url": "http://test.robokassa.ru/Index.aspx",
-            "sMerchantLogin": "taracotjs_demo",
-            "sIncCurrLabel": "BANKOCEAN2R",
-            "sMerchantPass1": "",
-            "sMerchantPass2": ""
-        }
+    "locales": {
+        "dev_mode": true,
+        "detect_from_subdomain": true,
+        "detect_from_query": false,
+        "detect_from_cookie": false,
+        "avail": [
+            "en",
+            "ru"
+        ]
     },
-    "locales_dev_mode": true,
-    "locale_from_subdomain": true,
-    "locale_from_query": false,
-    "locale_from_cookie": false,
     "dir": {
         "storage": "../public/files",
         "storage_url": "/files",
