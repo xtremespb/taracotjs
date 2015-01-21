@@ -2,10 +2,10 @@ module.exports = function(app) {
     var router = app.get('express').Router(),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         async = require('async');
     router.get_module_name = function(req) {
@@ -27,18 +27,18 @@ module.exports = function(app) {
                 oname: 'site_auth'
             }]
         };
-        for (var l = 0; l < app.get('config').locales.length; l++) {
+        for (var l = 0; l < app.get('config').locales.avail.length; l++) {
             query.$or.push({
                 oname: 'site_title',
-                olang: app.get('config').locales[l]
+                olang: app.get('config').locales.avail[l]
             });
             query.$or.push({
                 oname: 'site_keywords',
-                olang: app.get('config').locales[l]
+                olang: app.get('config').locales.avail[l]
             });
             query.$or.push({
                 oname: 'site_description',
-                olang: app.get('config').locales[l]
+                olang: app.get('config').locales.avail[l]
             });
         }
         app.get('mongodb').collection('settings').find(query).toArray(function(err, items) {
@@ -66,7 +66,7 @@ module.exports = function(app) {
                 init_mode: mode,
                 init_authn: authn,
                 init_meta: JSON.stringify(meta),
-                locales: JSON.stringify(app.get('config').locales)
+                locales: JSON.stringify(app.get('config').locales.avail)
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
@@ -106,13 +106,13 @@ module.exports = function(app) {
         var items = [];
         for (var i = 0; i < metadata.length; i++) {
             if (metadata[i].id == 'site_title' || metadata[i].id == 'site_description' || metadata[i].id == 'site_keywords') {
-                for (var l = 0; l < app.get('config').locales.length; l++) {
+                for (var l = 0; l < app.get('config').locales.avail.length; l++) {
                     var item = {
-                        olang: app.get('config').locales[l],
+                        olang: app.get('config').locales.avail[l],
                         oname: metadata[i].id,
                         ovalue: ''
                     };
-                    if (metadata[i][app.get('config').locales[l]]) item.ovalue = metadata[i][app.get('config').locales[l]].replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r]/g, ' ');
+                    if (metadata[i][app.get('config').locales.avail[l]]) item.ovalue = metadata[i][app.get('config').locales.avail[l]].replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r]/g, ' ');
                     items.push(item);
                 }
 

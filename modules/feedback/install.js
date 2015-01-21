@@ -39,7 +39,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] Feedback page: ru");
-                        db.collection('warehouse').insert({
+                        db.collection('pages').insert({
                             "ptitle": "Feedback",
                             "pfilename": "feedback",
                             "pfolder": "/",
@@ -68,6 +68,10 @@ module.exports = function(db, ensure_indexes, config) {
                     console.log("[*] Finished inserting default values");
                     _callback();
                 });
+            },
+            misc: function(_callback) {
+                // Misc. tasks
+                _callback();
             }
         };
     return is;

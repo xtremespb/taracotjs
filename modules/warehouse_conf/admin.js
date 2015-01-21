@@ -2,10 +2,10 @@ module.exports = function(app) {
     var router = app.get('express').Router(),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         util = require('util');
     router.get_module_name = function(req) {
@@ -72,7 +72,7 @@ module.exports = function(app) {
                 ship: JSON.stringify(ship),
                 misc: JSON.stringify(misc),
                 current_locale: req.session.current_locale,
-                locales: JSON.stringify(app.get('config').locales)
+                locales: JSON.stringify(app.get('config').locales.avail)
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
@@ -106,11 +106,11 @@ module.exports = function(app) {
                 var ui = {};
                 if (descitems[i].id && descitems[i].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
                     ui.id = descitems[i].id;
-                    for (l = 0; l < app.get('config').locales.length; l++) {
-                        var li = descitems[i][app.get('config').locales[l]];
+                    for (l = 0; l < app.get('config').locales.avail.length; l++) {
+                        var li = descitems[i][app.get('config').locales.avail[l]];
                         if (li) {
                             li = li.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                            ui[app.get('config').locales[l]] = li;
+                            ui[app.get('config').locales.avail[l]] = li;
                         }
                     }
                     descitems_update.push(ui);
@@ -125,11 +125,11 @@ module.exports = function(app) {
                     uc.exr = curs[j].exr;
                     if (uc.exr) uc.exr = parseFloat(uc.exr);
                     if (isNaN(uc.exr)) uc.exr = '';
-                    for (l = 0; l < app.get('config').locales.length; l++) {
-                        var lc = curs[j][app.get('config').locales[l]];
+                    for (l = 0; l < app.get('config').locales.avail.length; l++) {
+                        var lc = curs[j][app.get('config').locales.avail[l]];
                         if (lc) {
                             lc = lc.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                            uc[app.get('config').locales[l]] = lc;
+                            uc[app.get('config').locales.avail[l]] = lc;
                         }
                     }
                     curs_update.push(uc);
@@ -150,11 +150,11 @@ module.exports = function(app) {
                     us.price = ship[s].price;
                     if (us.price) us.price = parseFloat(us.price);
                     if (isNaN(us.price)) us.price = '';
-                    for (l = 0; l < app.get('config').locales.length; l++) {
-                        var ls = ship[s][app.get('config').locales[l]];
+                    for (l = 0; l < app.get('config').locales.avail.length; l++) {
+                        var ls = ship[s][app.get('config').locales.avail[l]];
                         if (ls) {
                             ls = ls.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                            us[app.get('config').locales[l]] = ls;
+                            us[app.get('config').locales.avail[l]] = ls;
                         }
                     }
                     ship_update.push(us);
@@ -166,11 +166,11 @@ module.exports = function(app) {
                 var uim = {};
                 if (misc[mi].id && (misc[mi].id == 'weight_units')) {
                     uim.id = misc[mi].id;
-                    for (l = 0; l < app.get('config').locales.length; l++) {
+                    for (l = 0; l < app.get('config').locales.avail.length; l++) {
                         var lim = misc[mi][app.get('config').locales[l]];
                         if (lim) {
                             lim = lim.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                            uim[app.get('config').locales[l]] = lim;
+                            uim[app.get('config').locales.avail[l]] = lim;
                         }
                     }
                     misc_update.push(uim);

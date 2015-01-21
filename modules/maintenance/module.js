@@ -1,10 +1,10 @@
 module.exports = function(app) {
     var router = app.get('express').Router(),
         i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         renderer = app.get('renderer');
     router.get('/', function(req, res) {

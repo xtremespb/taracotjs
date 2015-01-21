@@ -6,10 +6,10 @@ module.exports = function(app) {
         mailer = app.get('mailer'),
         crypto = require('crypto'),
         i18nm = new(require('i18n-2'))({
-            locales: config.locales,
+            locales: config.locales.avail,
             directory: path.join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         async = require('async');
     // Social Auth: begin

@@ -1,10 +1,10 @@
 module.exports = function(app) {
 
     var i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         fs = require("fs-extra"),
         router = app.get('express').Router(),
@@ -38,7 +38,7 @@ module.exports = function(app) {
             lang: i18nm,
             io: io,
             CKEditorFuncNum: CKEditorFuncNum,
-            locales: JSON.stringify(app.get('config').locales)
+            locales: JSON.stringify(app.get('config').locales.avail)
         }, req);
         res.send(body);
     });

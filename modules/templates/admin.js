@@ -15,10 +15,10 @@ module.exports = function(app) {
     var router = app.get('express').Router(),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         });
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
@@ -34,7 +34,7 @@ module.exports = function(app) {
         }
         var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'templates_control', {
             lang: i18nm,
-            locales: JSON.stringify(app.get('config').locales)
+            locales: JSON.stringify(app.get('config').locales.avail)
         }, req);
         app.get('cp').render(req, res, {
             body: body,

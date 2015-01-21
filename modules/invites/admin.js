@@ -13,10 +13,10 @@ module.exports = function(app) {
     var router = app.get('express').Router();
     var ObjectId = require('mongodb').ObjectID;
     var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales,
+        locales: app.get('config').locales.avail,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: app.get('config').locales_dev_mode
+        devMode: app.get('config').locales.dev_mode
     });
     var crypto = require('crypto');
     router.get_module_name = function(req) {
@@ -34,7 +34,7 @@ module.exports = function(app) {
         }
         var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'invites_control', {
             lang: i18nm,
-            locales: JSON.stringify(app.get('config').locales),
+            locales: JSON.stringify(app.get('config').locales.avail),
             current_locale: _locale
         }, req);
         app.get('cp').render(req, res, {

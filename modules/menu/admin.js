@@ -1,10 +1,10 @@
 module.exports = function(app) {
 	var router = app.get('express').Router();
 	var i18nm = new(require('i18n-2'))({
-		locales: app.get('config').locales,
+		locales: app.get('config').locales.avail,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: app.get('config').locales_dev_mode
+    	devMode: app.get('config').locales.dev_mode
 	});
 	router.get_module_name = function(req) {
 		i18nm.setLocale(req.session.current_locale);
@@ -41,7 +41,7 @@ module.exports = function(app) {
 			}
 			var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'menu_control', {
 				lang: i18nm,
-				locales: JSON.stringify(app.get('config').locales),
+				locales: JSON.stringify(app.get('config').locales.avail),
 				pages: JSON.stringify(pages)
 			}, req);
 			app.get('cp').render(req, res, {
@@ -56,9 +56,9 @@ module.exports = function(app) {
 			status: 1
 		};
 		var lng = req.body.lng;
-		var _lng = app.get('config').locales[0];
-		for (var i = 0; i < app.get('config').locales.length; i++) {
-			if (lng == app.get('config').locales[i]) _lng = app.get('config').locales[i];
+		var _lng = app.get('config').locales.avail[0];
+		for (var i = 0; i < app.get('config').locales.avail.length; i++) {
+			if (lng == app.get('config').locales.avail[i]) _lng = app.get('config').locales.avail[i];
 		}
 		lng = _lng;
 		if (!req.session.auth || req.session.auth.status < 2) {
@@ -100,9 +100,9 @@ module.exports = function(app) {
 		menu_uikit = menu_uikit.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
 		menu_uikit_offcanvas = menu_uikit_offcanvas.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
 		menu_raw = menu_raw.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
-		var _lng = app.get('config').locales[0];
-		for (var i = 0; i < app.get('config').locales.length; i++) {
-			if (lng == app.get('config').locales[i]) _lng = app.get('config').locales[i];
+		var _lng = app.get('config').locales.avail[0];
+		for (var i = 0; i < app.get('config').locales.avail.length; i++) {
+			if (lng == app.get('config').locales.avail[i]) _lng = app.get('config').locales.avail[i];
 		}
 		lng = _lng;
 		if (!req.session.auth || req.session.auth.status < 2) {

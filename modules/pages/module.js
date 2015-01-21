@@ -2,10 +2,10 @@ module.exports = function(app) {
     var router = app.get('express').Router();
     var gaikan = require('gaikan');
     var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales,
+        locales: app.get('config').locales.avail,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: app.get('config').locales_dev_mode
+        devMode: app.get('config').locales.dev_mode
     });
     var Entities = require('html-entities').AllHtmlEntities;
     entities = new Entities();
@@ -130,7 +130,7 @@ module.exports = function(app) {
             var pi = {
                 name: fldrs_hash[id].text
             };
-            var locales = app.get('config').locales;
+            var locales = app.get('config').locales.avail;
             if (fldrs_hash[id].data && fldrs_hash[id].data.lang) {
                 for (var i = 0; i < locales.length; i++) {
                     pi[locales[i]] = fldrs_hash[id].data.lang[locales[i]];

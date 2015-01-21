@@ -2,10 +2,10 @@ module.exports = function(app) {
     var items_per_page = 30;
     var router = app.get('express').Router();
     var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales,
+        locales: app.get('config').locales.avail,
         directory: app.get('path').join(__dirname, 'lang'),
         extension: '.js',
-        devMode: app.get('config').locales_dev_mode
+        devMode: app.get('config').locales.dev_mode
     });
     var renderer = app.get('renderer'),
         path = app.get('path'),

@@ -36,7 +36,7 @@ module.exports = function(db, ensure_indexes, config) {
                     function(callback) {
                         console.log("[+] Collection: invites");
                         ensure_indexes('invites', ['invdate', 'invcode', 'invused'], null, null, function() {
-                            console.log("[*] Success (warehouse)");
+                            console.log("[*] Success (invites)");
                             callback();
                         });
                     }

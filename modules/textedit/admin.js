@@ -1,10 +1,10 @@
 module.exports = function(app) {
     app.set('textedit', true);
     var i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs-extra'),
         itob = require('./itob'),
@@ -60,7 +60,7 @@ module.exports = function(app) {
             lang: i18nm,
             content: content,
             file: JSON.stringify(file),
-            locales: JSON.stringify(app.get('config').locales)
+            locales: JSON.stringify(app.get('config').locales.avail)
         }, req);
         res.send(body);
     });
@@ -128,7 +128,7 @@ module.exports = function(app) {
         var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'error', {
             lang: i18nm,
             err: err,
-            locales: JSON.stringify(app.get('config').locales)
+            locales: JSON.stringify(app.get('config').locales.avail)
         });
         res.send(body);
     };

@@ -7,10 +7,10 @@ var config = require('../config'),
 module.exports = function(app) {
 
     var i18nm = new(require('i18n-2'))({
-        locales: config.locales,
+        locales: config.locales.avail,
         directory: path.join(__dirname, 'lang'),
         extension: '.js',
-        devMode: config.locales_dev_mode
+        devMode: config.locales.dev_mode
     });
 
     var renderer = {

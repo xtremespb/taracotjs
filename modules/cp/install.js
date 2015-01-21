@@ -14,6 +14,10 @@ module.exports = function(db, ensure_indexes, config) {
             defaults: function(_callback) {
                 // Create default values
                 _callback();
+            },
+            misc: function(_callback) {
+                // Misc. tasks
+                _callback();
             }
         };
     return is;

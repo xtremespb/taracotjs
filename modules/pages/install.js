@@ -97,7 +97,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] Default page: ru");
-                        db.collection('warehouse').insert({
+                        db.collection('pages').insert({
                             ptitle: 'Главная страница',
                             pfolder: '/',
                             pfilename: '',

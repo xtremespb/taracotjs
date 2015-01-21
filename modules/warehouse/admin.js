@@ -14,10 +14,10 @@ module.exports = function(app) {
     var router = app.get('express').Router(),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
-            locales: app.get('config').locales,
+            locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
             extension: '.js',
-            devMode: app.get('config').locales_dev_mode
+            devMode: app.get('config').locales.dev_mode
         }),
         parser = app.get('parser'),
         crypto = require('crypto'),
@@ -86,7 +86,7 @@ module.exports = function(app) {
                     whcurs: JSON.stringify(whcurs),
                     auth: req.session.auth,
                     current_locale: req.session.current_locale,
-                    locales: JSON.stringify(app.get('config').locales)
+                    locales: JSON.stringify(app.get('config').locales.avail)
                 }, req);
                 app.get('cp').render(req, res, {
                     body: body,
@@ -435,10 +435,10 @@ module.exports = function(app) {
                 return res.send(JSON.stringify(rep));
             }
         }
-        var _plang = app.get('config').locales[0];
-        for (var i = 0; i < app.get('config').locales.length; i++) {
-            if (plang == app.get('config').locales[i]) {
-                _plang = app.get('config').locales[i];
+        var _plang = app.get('config').locales.avail[0];
+        for (var i = 0; i < app.get('config').locales.avail.length; i++) {
+            if (plang == app.get('config').locales.avail[i]) {
+                _plang = app.get('config').locales.avail[i];
             }
         }
         plang = _plang;

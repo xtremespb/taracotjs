@@ -87,7 +87,7 @@ module.exports = function(db, ensure_indexes, config) {
                 async.series([
                     function(callback) {
                         console.log("[+] site_title (en)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_title',
                             ovalue: 'Taracot JS',
                             olang: 'en'
@@ -103,7 +103,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] site_title (ru)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_title',
                             ovalue: 'Taracot JS',
                             olang: 'ru'
@@ -119,7 +119,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] site_keywords (en)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_keywords',
                             ovalue: 'taracot, taracotjs, node.js, mongodb, redis, cms, content management system',
                             olang: 'en'
@@ -135,7 +135,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] site_keywords (ru)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_keywords',
                             ovalue: 'taracot, taracotjs, node.js, mongodb, redis, cms, система управления сайтами',
                             olang: 'ru'
@@ -151,7 +151,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] site_description (en)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_description',
                             ovalue: 'TaracotJS is a simple content management system (CMS) written in JavaScript on both client and server sides (using Node). It\'s free, open source and is running on multiple platrforms including Linux, MacOS and Windows. All modern browsers are supported.',
                             olang: 'en'
@@ -167,7 +167,7 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         console.log("[+] site_description (ru)");
-                        db.collection('pages').insert({
+                        db.collection('settings').insert({
                             oname: 'site_description',
                             ovalue: 'TaracotJS - простая система управления сайтами (CMS), написанная на JavaScript и построенная на технологиях Node.JS, MongoDB и Redis.',
                             olang: 'ru'

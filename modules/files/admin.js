@@ -1,9 +1,9 @@
 module.exports = function(app) {
 	var i18nm = new(require('i18n-2'))({
-		locales: app.get('config').locales,
+		locales: app.get('config').locales.avail,
 		directory: app.get('path').join(__dirname, 'lang'),
 		extension: '.js',
-    	devMode: app.get('config').locales_dev_mode
+    	devMode: app.get('config').locales.dev_mode
 	});
 	var fs = require("fs-extra");
 	var router = app.get('express').Router();
@@ -33,7 +33,7 @@ module.exports = function(app) {
 			lang: i18nm,
 			textedit: textedit,
 			files_url: app.get('config').dir.storage_url,
-			locales: JSON.stringify(app.get('config').locales)
+			locales: JSON.stringify(app.get('config').locales.avail)
 		}, req);
 		app.get('cp').render(req, res, {
 			body: body,
