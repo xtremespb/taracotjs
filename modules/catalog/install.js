@@ -1,5 +1,6 @@
 module.exports = function(db, ensure_indexes, config) {
     var async = require('async'),
+    	fs = require('fs-extra'),
         is = {
             name: 'catalog',
             version: '0.5.20',
@@ -437,7 +438,13 @@ module.exports = function(db, ensure_indexes, config) {
             },
             misc: function(_callback) {
                 // Other things to do
-                _callback();
+                if (!fs.existsSync('../public/files/warehouse')) {
+                	fs.copy('../modules/catalog/files/warehouse', '../public/files/warehouse', function(err) {
+                		_callback();
+                	});
+                } else {
+                	_callback();
+                }
             }
         };
     return is;
