@@ -9,10 +9,7 @@ var config = require('./config');
 var fs = require('fs');
 var config_auth = require('./config_auth');
 var version = require('./version');
-var load_modules = require('./load_modules');
 config.taracotjs = version.taracotjs;
-config.blocks = load_modules.blocks;
-config.modules = load_modules.modules;
 var path = require('path');
 var crypto = require('crypto');
 var I18n = require('i18n-2');
@@ -112,24 +109,25 @@ if (!app.get('blocks')) {
     app.set('blocks_sync', {});
 }
 
-config.blocks.forEach(function(_block) {
-    app.use(express.static(path.join(__dirname, 'modules/' + _block.name + '/public')));
-});
+// Get modules list
 
-// Load modules
+var modules = fs.readdirSync(path.join(__dirname, 'modules/'));
+for (var mt in modules)
+    if (!fs.lstatSync(path.join(__dirname, 'modules', modules[mt])).isDirectory()) modules.splice(mt);
+app.set('modules', modules);
 
-config.modules.forEach(function(module) {
-    app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
-});
+// Set static
+
+for (var md in modules) app.use(express.static(path.join(__dirname, 'modules/' + modules[md] + '/public')));
 
 // Locales
 
 I18n.expressBind(app, {
-    locales: config.locales,
+    locales: config.locales.avail,
     cookieName: config.cookie.prefix,
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js',
-    devMode: app.get('config').locales_dev_mode
+    devMode: app.get('config').locales.dev_mode
 });
 
 // Connect Redis or fallback to Mongo
@@ -198,9 +196,9 @@ app.use(function(req, res, next) {
         return;
     }
     // Set locales from query and from cookie
-    if (app.get('config').locale_from_cookie) req.i18n.setLocaleFromCookie();
-    if (app.get('config').locale_from_subdomain) req.i18n.setLocaleFromSubdomain();
-    if (app.get('config').locale_from_query) req.i18n.setLocaleFromQuery();
+    if (app.get('config').locales.detect_from_cookie) req.i18n.setLocaleFromCookie();
+    if (app.get('config').locales.detect_from_subdomain) req.i18n.setLocaleFromSubdomain();
+    if (app.get('config').locales.detect_from_query) req.i18n.setLocaleFromQuery();
     // Logging
     logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
     // Clear auth_redirect if already authorized
@@ -323,24 +321,23 @@ app.use(function(req, res, next) {
     next();
 });
 
-// Load blocks
+// Load modules and blocks
 
-config.blocks.forEach(function(_block) {
-    var _b = require('./modules/' + _block.name + '/block')(app);
-    app.use(express.static(path.join(__dirname, 'modules/' + _block.name + '/public')));
-    if (_b.data) app.get('blocks')[_block.name] = _b.data;
-    if (_b.data_sync) app.get('blocks_sync')[_block.name] = _b.data_sync;
-});
-
-// Load modules
-
-config.modules.forEach(function(module) {
-    app.use(express.static(path.join(__dirname, 'modules/' + module.name + '/public')));
-    app.use(module.prefix, require('./modules/' + module.name + '/module')(app));
-    if (module.cp_prefix.length > 0) {
-        app.use(module.cp_prefix, require('./modules/' + module.name + '/admin')(app));
-    }
-});
+for (var mb in modules) {
+    var _b, _m, _a, _r = {
+            prefix: ''
+        },
+        _mp = path.join(__dirname, 'modules', modules[mb], '/');
+    if (fs.existsSync(_mp + 'routing.js')) _r = require(_mp + 'routing');
+    app.set(modules[mb] + '_routing', _r);
+    if (fs.existsSync(_mp + 'block.js')) _b = require(_mp + 'block')(app);
+    if (_b && _b.data) app.get('blocks')[modules[mb]] = _b.data;
+    if (_b && _b.data_sync) app.get('blocks_sync')[modules[mb]] = _b.data_sync;
+    if (fs.existsSync(_mp + 'module.js')) _m = require(_mp + 'module')(app);
+    if (fs.existsSync(_mp + 'admin.js')) _a = require(_mp + 'admin')(app);
+    if (_m && _r.prefix !== undefined) app.use(_r.prefix, _m);
+    if (_r.cp_prefix && _a) app.use(_r.cp_prefix, _a);
+}
 
 // Error 404 (not found)
 
