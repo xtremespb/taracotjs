@@ -193,7 +193,7 @@ input:focus, textarea:focus, select:focus {
 .flag {
     width: 16px;
     height: 11px;
-    background: url(/images/flags.png) no-repeat;
+    background: url(/modules/lang/images/flags.png) no-repeat;
 }
 .flag.flag-de {
     background-position: -16px 0
@@ -206,4 +206,32 @@ input:focus, textarea:focus, select:focus {
 }
 .flag.flag-us {
     background-position: -16px -11px
+}
+.taracot-header-search-box {
+    background: url(/modules/search/images/search_white.png) no-repeat 10px 6px #444;
+    border: 0 none;
+    font: bold 12px Arial, Helvetica, Sans-serif;
+    color: #d7d7d7;
+    width: 150px;
+    padding: 6px 15px 6px 35px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+.taracot-header-search-box:focus {
+    background: url(/modules/search/images/search_dark.png) no-repeat 10px 6px #fcfcfc;
+    color: #333;
+    width: 200px;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }

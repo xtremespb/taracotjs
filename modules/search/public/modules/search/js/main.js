@@ -151,9 +151,8 @@ $('#search_query').bind('keypress', function(e) {
 
 $(document).ready(function() {
     $('#search_query').focus();
-    var _url_vars = getUrlVars();
-    if (_url_vars && _url_vars.query) {
-        $('#search_query').val(decodeURIComponent(_url_vars.query));
+    if ($.queryString.query) {
+        $('#search_query').val($.queryString.query);
         $('#btn_search').click();
     }
 });
