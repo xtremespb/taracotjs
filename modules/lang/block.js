@@ -1,5 +1,4 @@
-var gaikan = require('gaikan'),
-    cache = {};
+var gaikan = require('gaikan');
 module.exports = function(app) {
     var locales = app.get('config').locales.avail,
         i18nm = new(require('i18n-2'))({
@@ -14,7 +13,6 @@ module.exports = function(app) {
     var block = {
         data: function(req, res, callback) {
             var lng = req.session.current_locale;
-            if (cache[lng]) return callback(cache[lng]);
             var default_lng = app.get('config').locales.avail[0],
                 flags_data = {
                     lang: i18nm,
@@ -40,7 +38,6 @@ module.exports = function(app) {
                     top: html_output,
                     li: html_output_li
                 };
-            cache[lng] = data;
             callback(data);
         }
     };
