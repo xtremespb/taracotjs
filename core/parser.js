@@ -13,7 +13,7 @@ module.exports = function(app) {
                 words = [],
                 desc = [];
             for (var i = 0; i < _words.length; i++)
-                if (!_check[_words[i]] && _words[i].length > 3) {
+                if (!_check[_words[i]] && _words[i].length > 2) {
                     _check[_words[i]] = 1;
                     words.push(_words[i]);
                 }
@@ -23,14 +23,14 @@ module.exports = function(app) {
             } else {
                 desc = _desc;
             }
+            var _desc_str = _desc.join(' ');
             return {
                 words: words.join(' '),
-                desc: desc.join(' ').replace(/ \.\.\.$/, '...')
+                desc: _desc_str.substring(0, _desc_str.indexOf('!{root.'))
             };
         },
         stem_all: function(words) {
             var stemmer;
-            console.log(JSON.stringify(words));
             for (var i = 0; i < words.length; i++) {
                 if (words[i].match(/[\u0400-\u04FF]/gi)) {
                     stemmer = new snowball('Russian');
