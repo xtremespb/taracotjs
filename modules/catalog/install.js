@@ -1,6 +1,6 @@
 module.exports = function(db, ensure_indexes, config) {
     var async = require('async'),
-    	fs = require('fs-extra'),
+        fs = require('fs-extra'),
         is = {
             name: 'catalog',
             version: '0.5.20',
@@ -425,6 +425,126 @@ module.exports = function(db, ensure_indexes, config) {
                                 callback();
                             });
                         });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 1/6");
+                        db.collection('search_index').insert({
+                            "item_id": "54c0f4d30aa0059c22eb5c1e",
+                            "sdesc": "Basic refurbished NES Nintendo System with controller, all hook-ups, and a new 72-pin",
+                            "slang": "en",
+                            "space": "warehouse",
+                            "stitle": "Classic NES console",
+                            "surl": "/catalog/item/TDS00006",
+                            "swords": "basic refurbished nintendo system with controller hook-ups 72-pin classic console nes"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 2/6");
+                        db.collection('search_index').insert({
+                            "item_id": "54c0f4d30aa0059c22eb5c1c",
+                            "sdesc": "3.5\" double side, high capacity, formatted",
+                            "slang": "en",
+                            "space": "warehouse",
+                            "stitle": "L-Pro 3.5\" BOX (10 pcs)",
+                            "surl": "/catalog/item/TDS00004",
+                            "swords": "double side high capacity formatted l-pro"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 3/6");
+                        db.collection('search_index').insert({
+                            "item_id": "54c0f4d30aa0059c22eb5c1d",
+                            "sdesc": "SDHC 32Gb Class 10 SanDisk Ultra SDSDU-032G-U46",
+                            "slang": "en",
+                            "space": "warehouse",
+                            "stitle": "SDHC 32Gb Class 10 SanDisk Ultra",
+                            "surl": "/catalog/item/TDS00005",
+                            "swords": "sdhc 32gb class sandisk ultra sdsdu-032g-u46"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 4/6");
+                        db.collection('search_index').insert({
+                            "swords": "compact cheap stick smart buycompact robust cobra 8gb",
+                            "sdesc": "Compact and cheap USB stick by Smart Buy",
+                            "stitle": "8Gb Smart Buy Cobra",
+                            "slang": "en",
+                            "surl": "/catalog/item/TDS00001",
+                            "item_id": "54c0f4d30aa0059c22eb5c19",
+                            "space": "warehouse"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 5/6");
+                        db.collection('search_index').insert({
+                            "item_id": "54c0f4d30aa0059c22eb5c1b",
+                            "sdesc": "32Gb Transcend JetFlash 700, TS32GJF700, USB 3.0, Flash USB",
+                            "slang": "en",
+                            "space": "warehouse",
+                            "stitle": "32Gb Transcend JetFlash 700",
+                            "surl": "/catalog/item/TDS00003",
+                            "swords": "32gb transcend jetflash ts32gjf700 flash"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] warehouse samples search index: 6/6");
+                        db.collection('search_index').insert({
+                            "swords": "16gb silicon power i-series sp016gbuf2m01v1k flash black",
+                            "sdesc": "16Gb Silicon Power I-Series, SP016GBUF2M01V1K, Flash USB, black",
+                            "stitle": "16Gb Silicon Power I-Series",
+                            "slang": "en",
+                            "surl": "/catalog/item/TDS00002",
+                            "item_id": "54c0f4d30aa0059c22eb5c1a",
+                            "space": "warehouse"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
                     }
                 ], function(err) {
                     if (err) {
@@ -439,11 +559,11 @@ module.exports = function(db, ensure_indexes, config) {
             misc: function(_callback) {
                 // Other things to do
                 if (!fs.existsSync('../public/files/warehouse')) {
-                	fs.copy('../modules/catalog/files/warehouse', '../public/files/warehouse', function(err) {
-                		_callback();
-                	});
+                    fs.copy('../modules/catalog/files/warehouse', '../public/files/warehouse', function(err) {
+                        _callback();
+                    });
                 } else {
-                	_callback();
+                    _callback();
                 }
             }
         };

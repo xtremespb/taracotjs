@@ -73,74 +73,115 @@ module.exports = function(db, ensure_indexes, config) {
                 // Create default values
                 console.log("\nInserting default values for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
-                    function(callback) {
-                        console.log("[+] Default page: en");
-                        db.collection('pages').insert({
-                            ptitle: 'Default page',
-                            pfolder: '/',
-                            pfilename: '',
-                            plang: 'en',
-                            playout: config.layouts.default,
-                            pfolder_id: 'j1_1',
-                            pkeywords: 'sample, keywords, here',
-                            pdesc: 'This is the sample page',
-                            pcontent: 'The installation is complete ;-)'
-                        }, function(err) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
-                            callback();
-                        });
-                    },
-                    function(callback) {
-                        console.log("[+] Default page: ru");
-                        db.collection('pages').insert({
-                            ptitle: 'Главная страница',
-                            pfolder: '/',
-                            pfilename: '',
-                            plang: 'ru',
-                            playout: config.layouts.default,
-                            pfolder_id: 'j1_1',
-                            pkeywords: 'образец, ключевых, слов',
-                            pdesc: 'Тестовая страница',
-                            pcontent: 'Инсталляция успешно выполнена ;-)'
-                        }, function(err) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
-                            callback();
-                        });
-                    },
-                    function(callback) {
-                        console.log("[+] page_folders");
-                        db.collection('page_folders').insert({
-                            oname: 'folders_json',
-                            ovalue: '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]'
-                        }, function(err) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
-                            callback();
-                        });
-                    }
-                ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished inserting default values");
-                    _callback();
-                });
+                        function(callback) {
+                            console.log("[+] Default page: en");
+                            db.collection('pages').insert({
+                                ptitle: 'Default page',
+                                pfolder: '/',
+                                pfilename: '',
+                                plang: 'en',
+                                playout: config.layouts.default,
+                                pfolder_id: 'j1_1',
+                                pkeywords: 'sample, keywords, here',
+                                pdesc: 'This is the sample page',
+                                pcontent: 'The installation is complete ;-)'
+                            }, function(err) {
+                                if (err) {
+                                    console.log("[!] Fail");
+                                    console.log(err);
+                                    process.exit(1);
+                                }
+                                console.log("[*] Success");
+                                callback();
+                            });
+                        },
+                        function(callback) {
+                            console.log("[+] Default page search index: en");
+                            db.collection('search_index').insert({
+                                "item_id": "54c0ef39c00ad59027af778a",
+                                "sdesc": "The installation is complete ;-)",
+                                "slang": "en",
+                                "space": "pages",
+                                "stitle": "Default page",
+                                "surl": "/",
+                                "swords": "installation complete default page"
+                            }, function(err) {
+                                if (err) {
+                                    console.log("[!] Fail");
+                                    console.log(err);
+                                    process.exit(1);
+                                }
+                                console.log("[*] Success");
+                                callback();
+                            });
+                        },
+                        function(callback) {
+                            console.log("[+] Default page: ru");
+                            db.collection('pages').insert({
+                                ptitle: 'Главная страница',
+                                pfolder: '/',
+                                pfilename: '',
+                                plang: 'ru',
+                                playout: config.layouts.default,
+                                pfolder_id: 'j1_1',
+                                pkeywords: 'образец, ключевых, слов',
+                                pdesc: 'Тестовая страница',
+                                pcontent: 'Инсталляция успешно выполнена ;-)'
+                            }, function(err) {
+                                if (err) {
+                                    console.log("[!] Fail");
+                                    console.log(err);
+                                    process.exit(1);
+                                }
+                                console.log("[*] Success");
+                                callback();
+                            });
+                        },
+                        function(callback) {
+                            console.log("[+] Default page search index: ru");
+                            db.collection('search_index').insert({
+                                "swords": "инсталляция успешно выполнена главная страница",
+                                "sdesc": "Инсталляция успешно выполнена ;-)",
+                                "stitle": "Главная страница",
+                                "slang": "ru",
+                                "surl": "/",
+                                "item_id": "54c0ef39c00ad59027af778b",
+                                "space": "pages"
+                            }, function(err) {
+                                if (err) {
+                                    console.log("[!] Fail");
+                                    console.log(err);
+                                    process.exit(1);
+                                }
+                                console.log("[*] Success");
+                                callback();
+                            });
+                        },
+                        function(callback) {
+                            console.log("[+] page_folders");
+                            db.collection('page_folders').insert({
+                                oname: 'folders_json',
+                                ovalue: '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]'
+                            }, function(err) {
+                                if (err) {
+                                    console.log("[!] Fail");
+                                    console.log(err);
+                                    process.exit(1);
+                                }
+                                console.log("[*] Success");
+                                callback();
+                            });
+                        }
+                    ],
+                    function(err) {
+                        if (err) {
+                            console.log("[!] Installation failed");
+                            console.log(err);
+                            process.exit(1);
+                        }
+                        console.log("[*] Finished inserting default values");
+                        _callback();
+                    });
             },
             misc: function(_callback) {
                 // Other things to do

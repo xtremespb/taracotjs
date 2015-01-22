@@ -38,9 +38,29 @@ module.exports = function(db, ensure_indexes, config) {
                         });
                     },
                     function(callback) {
+                        console.log("[+] Feedback page search index: en");
+                        db.collection('search_index').insert({
+                            "swords": "feedback please fill following form leave your rootblockssyncfeedback'lang'rootcurrentlang'dataidnamelabelenyour namelabelruваше имяtypetextclassuk-form-width-largemandatorytrueidemaillabelenyour e-maillabelruваш e-mailtypeemailclassuk-form-width-mediumidreasonlabelendo like taracotjslabelruвам нравится системаtypeselectclassuk-form-width-smallvaluesvalueenyesvalueruдаvalueennovalueruнетidmessagelabelenmessagelabelruсообщениеtypetextareaclassuk-form-width-largemandatorytrue'",
+                            "sdesc": "FEEDBACK Please fill the following form to leave your feedback.",
+                            "stitle": "Feedback",
+                            "slang": "en",
+                            "surl": "/feedback",
+                            "item_id": "54c0ef39c00ad59027af779d",
+                            "space": "pages"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
                         console.log("[+] Feedback page: ru");
                         db.collection('pages').insert({
-                            "ptitle": "Feedback",
+                            "ptitle": "Обратная связь",
                             "pfilename": "feedback",
                             "pfolder": "/",
                             "pfolder_id": "j1_1",
@@ -49,6 +69,26 @@ module.exports = function(db, ensure_indexes, config) {
                             "pkeywords": "",
                             "pdesc": "",
                             "pcontent": "<h1>Обратная связь</h1>\n\n<p>Пожалуйста, используйте форму, расположенную ниже, для обратной связи.</p>\n\n<p>!{root.blocks_sync.feedback(&#39;&quot;lang&quot;:&quot;&#39;+root.current_lang+&#39;&quot;#&quot;data&quot;:(([&quot;id&quot;:&quot;name&quot;#&quot;label_en&quot;:&quot;Your name&quot;#&quot;label_ru&quot;:&quot;Ваше имя&quot;#&quot;type&quot;:&quot;text&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]#[&quot;id&quot;:&quot;email&quot;#&quot;label_en&quot;:&quot;Your e-mail&quot;#&quot;label_ru&quot;:&quot;Ваш e-mail&quot;#&quot;type&quot;:&quot;email&quot;#&quot;class&quot;:&quot;uk-form-width-medium&quot;]#[&quot;id&quot;:&quot;reason&quot;#&quot;label_en&quot;:&quot;Do you like TaracotJS?&quot;#&quot;label_ru&quot;:&quot;Вам нравится система?&quot;#&quot;type&quot;:&quot;select&quot;#&quot;class&quot;:&quot;uk-form-width-small&quot;#&quot;values&quot;:(([&quot;value_en&quot;:&quot;Yes&quot;#&quot;value_ru&quot;:&quot;Да&quot;]#[&quot;value_en&quot;:&quot;No&quot;#&quot;value_ru&quot;:&quot;Нет&quot;]))]#[&quot;id&quot;:&quot;message&quot;#&quot;label_en&quot;:&quot;Message&quot;#&quot;label_ru&quot;:&quot;Сообщение&quot;#&quot;type&quot;:&quot;textarea&quot;#&quot;class&quot;:&quot;uk-form-width-large&quot;#&quot;mandatory&quot;:&quot;true&quot;]))&#39;)}</p>\n"
+                        }, function(err) {
+                            if (err) {
+                                console.log("[!] Fail");
+                                console.log(err);
+                                process.exit(1);
+                            }
+                            console.log("[*] Success");
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        console.log("[+] Feedback page search index: ru");
+                        db.collection('search_index').insert({
+                            "swords": "обратная связь пожалуйста используйте форму расположенную ниже обратной связи rootblockssyncfeedback'lang'rootcurrentlang'dataidnamelabelenyour namelabelruваше имяtypetextclassuk-form-width-largemandatorytrueidemaillabelenyour e-maillabelruваш e-mailtypeemailclassuk-form-width-mediumidreasonlabelendo like taracotjslabelruвам нравится системаtypeselectclassuk-form-width-smallvaluesvalueenyesvalueruдаvalueennovalueruнетidmessagelabelenmessagelabelruсообщениеtypetextareaclassuk-form-width-largemandatorytrue'",
+                            "sdesc": "ОБРАТНАЯ СВЯЗЬ Пожалуйста, используйте форму, расположенную ниже, для обратной связи.",
+                            "stitle": "Обратная связь",
+                            "slang": "ru",
+                            "surl": "/feedback",
+                            "item_id": "54c0ef39c00ad59027af779e",
+                            "space": "pages"
                         }, function(err) {
                             if (err) {
                                 console.log("[!] Fail");
