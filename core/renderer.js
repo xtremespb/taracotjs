@@ -7,16 +7,17 @@ var config = require('../config'),
 module.exports = function(app) {
 
     var i18nm = new(require('i18n-2'))({
-        locales: config.locales.avail,
-        directory: path.join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: config.locales.dev_mode
-    });
+            locales: config.locales.avail,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: config.locales.dev_mode
+        }),
+        templates = {};
 
     var renderer = {
         render: function(res, layout, data, req) {
-        	i18nm.setLocale(req.session.current_locale);
-            var _layout = layout || config.layouts.default;
+            i18nm.setLocale(req.session.current_locale);
+            var _layout = (layout || config.layouts.default) + '_' + req.session.current_locale;
             data.auth = {
                 username: '',
                 email: '',
@@ -57,9 +58,11 @@ module.exports = function(app) {
             if (app.get('settings') && app.get('settings').site_title) data.site_title = app.get('settings').site_title;
             async.waterfall(fa, function() {
                 try {
-                    res.render(_layout, data);
+                    var rfn = templates[_layout] || gaikan.compileFromFile('../views/' + _layout + '.html');
+                    if (!templates[_layout]) templates[_layout] = rfn;
+                    return res.send(rfn(gaikan, data, undefined));
                 } catch (ex) {
-                    res.send('Cannot render layout: ' + ex);
+                    return res.send('Cannot render layout: ' + ex);
                 }
             });
         },
