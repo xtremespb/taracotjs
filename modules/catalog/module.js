@@ -797,7 +797,7 @@ module.exports = function(app) {
                     missing_items = [],
                     total_weight = 0,
                     total_amount = 0;
-                if (whitems) {
+                if (whitems && whitems.length) {
                     for (var wi = 0; wi < whitems.length; wi++) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
@@ -1066,9 +1066,11 @@ module.exports = function(app) {
                 $or: warehouse_query,
                 plang: _locale
             }).toArray(function(wh_err, whitems) {
-                var cart_html = '';
-                if (whitems) {
+                var cart_html = '',
+                    whitems_length = 0;
+                if (whitems && whitems.length) {
                     var subtotal = 0;
+                    whitems_length = whitems.length;
                     for (var wi = 0; wi < whitems.length; wi++) {
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
@@ -1112,7 +1114,8 @@ module.exports = function(app) {
                     init_page: page,
                     init_find: init_find,
                     bread: bread,
-                    cart_items_count: total_cart_items_count
+                    cart_items_count: total_cart_items_count,
+                    whitems_length: whitems_length
                 }, undefined);
                 var data = {
                     title: i18nm.__('cart'),

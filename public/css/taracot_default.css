@@ -1,6 +1,9 @@
 html, body {
     background: #43464c;
 }
+textarea:focus, input:focus{
+    outline: 0;
+}
 .tc-margin-bottom {
     margin-bottom: 30px;
 }

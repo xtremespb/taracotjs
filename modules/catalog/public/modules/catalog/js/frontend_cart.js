@@ -53,7 +53,7 @@ var _process_cart = function(cart_values) {
 $(document).ready(function() {
     $('#taracot_catalog_cart_wrap').show();
     $('#taracot_catalog_cart_empty').hide();
-    if (!init_cart.length) {
+    if (!init_cart.length || whitems_length === 0) {
         $('#taracot_catalog_cart_empty').show();
         $('#taracot_catalog_cart_wrap').hide();
     }
