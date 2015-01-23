@@ -1,0 +1,5 @@
+<li>
+    <div class="taracot-offcanvas-search-box">
+        <input class="uk-search-field taracot-offcanvas-search-field" type="search" placeholder="!{root.lang.__('enter_search_query')}" value="!{root.search_query}"><script>$(".taracot-offcanvas-search-field").bind("keypress",function(e){var t;if(window.event)t=window.event.keyCode;else if(e)t=e.keyCode?e.keyCode:e.which;else return;if(t==13){if(window.previousKeyCode){if(window.previousKeyCode==33||window.previousKeyCode==34||window.previousKeyCode==39||window.previousKeyCode==40){window.previousKeyCode=t;return}}var n=$.trim($(".taracot-offcanvas-search-field").val());if(n&&n.length>2)location.href="/search?query="+n;return true}else{window.previousKeyCode=t}})</script>
+    </div>
+</li>

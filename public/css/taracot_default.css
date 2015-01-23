@@ -210,7 +210,6 @@ input:focus, textarea:focus, select:focus {
 .taracot-header-search-box {
     background: url(/modules/search/images/search_white.png) no-repeat 10px 6px #444;
     border: 0 none;
-    font: bold 12px Arial, Helvetica, Sans-serif;
     color: #d7d7d7;
     width: 150px;
     padding: 6px 15px 6px 35px;
@@ -234,4 +233,7 @@ input:focus, textarea:focus, select:focus {
     -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
     text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+.taracot-offcanvas-search-box {
+    margin: 10px;
 }

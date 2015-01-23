@@ -11,10 +11,11 @@ module.exports = function(app) {
         search_block_li = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/search_block_li.html');
     var block = {
         data: function(req, res, callback) {
-            var lng = req.session.current_locale;
-            var data = {
+            var lng = req.session.current_locale,
+                data = {
                 top: search_block_top(gaikan, {
-                    lang: i18nm
+                    lang: i18nm,
+                    search_query: req.query.query || ''
                 }, undefined),
                 li: search_block_li(gaikan, {
                     lang: i18nm
