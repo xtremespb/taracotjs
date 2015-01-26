@@ -70,7 +70,7 @@ module.exports = function(app) {
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
-                css: '<link rel="stylesheet" href="/modules/siteconf/css/main.css">' + "\n\t\t"
+                css: '<link rel="stylesheet" href="/modules/siteconf/css/main.css">'
             }, i18nm, 'siteconf_cp', req.session.auth);
         });
     });
