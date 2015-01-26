@@ -389,7 +389,7 @@ module.exports = function(app) {
                     content: out_html,
                     keywords: '',
                     description: '',
-                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                    extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                 };
                 app.get('renderer').render(res, undefined, data, req);
             });
@@ -888,7 +888,7 @@ module.exports = function(app) {
                         content: out_html,
                         keywords: '',
                         description: '',
-                        extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                        extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                     };
                     app.get('renderer').render(res, undefined, data, req);
                 });
@@ -1124,7 +1124,7 @@ module.exports = function(app) {
                     content: out_html,
                     keywords: '',
                     description: '',
-                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                    extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                 };
                 app.get('renderer').render(res, undefined, data, req);
             });
@@ -1300,7 +1300,7 @@ module.exports = function(app) {
                         content: out_html,
                         keywords: whitem.pkeywords,
                         description: whitem.pdesc,
-                        extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                        extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                     };
                     var layout = whitem.playout || undefined;
                     return app.get('renderer').render(res, layout, data, req);
@@ -1651,7 +1651,7 @@ module.exports = function(app) {
                             content: out_html,
                             keywords: '',
                             description: '',
-                            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                            extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
                         };
                         return app.get('renderer').render(res, undefined, data, req);
                     });

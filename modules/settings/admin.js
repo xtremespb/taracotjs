@@ -36,7 +36,7 @@ module.exports = function(app) {
         }, req);
         app.get('cp').render(req, res, {
             body: body,
-            css: '<link rel="stylesheet" href="/modules/settings/css/main.css">' + "\n\t\t"
+            css: '<link rel="stylesheet" href="/modules/settings/css/main.css">'
         }, i18nm, 'settings', req.session.auth);
     });
     router.post('/data/list', function(req, res) {

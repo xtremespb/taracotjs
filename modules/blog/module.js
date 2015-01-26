@@ -355,7 +355,7 @@ module.exports = function(app) {
             page_title: i18nm.__('blog_post'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/blog/css/main.css" type="text/css"><link rel="stylesheet" href="/modules/blog/js/wysibb/theme/default/wbbtheme.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/blog/css/main.css" type="text/css"><link rel="stylesheet" href="/modules/blog/js/wysibb/theme/default/wbbtheme.css" type="text/css">'
         };
         var render = renderer.render_file(path.join(__dirname, 'views'), 'post', {
             lang: i18nm,
@@ -835,7 +835,7 @@ module.exports = function(app) {
                 page_title: i18nm.__('edit_post'),
                 keywords: '',
                 description: '',
-                extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/blog/css/main.css" type="text/css"><link rel="stylesheet" href="/modules/blog/js/wysibb/theme/default/wbbtheme.css" type="text/css">'
+                extra_css: '<link rel="stylesheet" href="/modules/blog/css/main.css" type="text/css"><link rel="stylesheet" href="/modules/blog/js/wysibb/theme/default/wbbtheme.css" type="text/css">'
             };
             if (items[0].post_title) items[0].post_title = items[0].post_title.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
             if (items[0].post_keywords) items[0].post_keywords = items[0].post_keywords.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');

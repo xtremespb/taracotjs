@@ -66,7 +66,7 @@ module.exports = function(app) {
             page_title: i18nm.__('auth'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
         };
         var _config_auth = JSON.parse(JSON.stringify(config_auth));
         for (var key in _config_auth) {
@@ -161,7 +161,7 @@ module.exports = function(app) {
                     page_title: i18nm.__('register'),
                     keywords: '',
                     description: '',
-                    extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/register.css" type="text/css">'
+                    extra_css: '<link rel="stylesheet" href="/modules/auth/css/register.css" type="text/css">'
                 };
                 var redirect_host = '';
                 if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
@@ -476,7 +476,7 @@ module.exports = function(app) {
             page_title: i18nm.__('reset'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/reset.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/auth/css/reset.css" type="text/css">'
         };
         var redirect_host = '';
         if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
@@ -833,7 +833,7 @@ module.exports = function(app) {
             page_title: i18nm.__('profile'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_profile.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/auth/css/user_profile.css" type="text/css">'
         };
         var render = renderer.render_file(path.join(__dirname, 'views'), 'profile', {
             lang: i18nm,
@@ -1175,7 +1175,7 @@ module.exports = function(app) {
             page_title: i18nm.__('error'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/auth/css/user_auth.css" type="text/css">'
         };
         var render = renderer.render_file(path.join(__dirname, 'views'), 'error', {
             lang: i18nm,

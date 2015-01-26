@@ -17,7 +17,7 @@ module.exports = function(app) {
             page_title: i18nm.__('module_name'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/search/css/main.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/search/css/main.css" type="text/css">'
         };
         var render = renderer.render_file(path.join(__dirname, 'views'), 'search', {
             lang: i18nm,

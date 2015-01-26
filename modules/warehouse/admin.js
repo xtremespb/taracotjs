@@ -90,7 +90,7 @@ module.exports = function(app) {
                 }, req);
                 app.get('cp').render(req, res, {
                     body: body,
-                    css: '<link rel="stylesheet" href="/modules/warehouse/css/main.css">' + "\n\t\t" + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">' + "\n\t\t"
+                    css: '<link rel="stylesheet" href="/modules/warehouse/css/main.css">' + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">'
                 }, i18nm, 'warehouse', req.session.auth);
             });
         });

@@ -33,7 +33,7 @@ module.exports = function(app) {
             log_data.log_html = i18nm.__('no_log_file_available_yet');
             return app.get('cp').render(req, res, {
                 body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
-                css: '<link rel="stylesheet" href="/modules/log/css/main.css">' + "\n\t\t"
+                css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
             }, i18nm, 'log', req.session.auth);
         }
         fs.readFile(app.get('config').log.file.filename, function(err, data) {
@@ -41,7 +41,7 @@ module.exports = function(app) {
                 log_data.log_html = i18nm.__('cannot_read_log');
                 return app.get('cp').render(req, res, {
                     body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
-                    css: '<link rel="stylesheet" href="/modules/log/css/main.css">' + "\n\t\t"
+                    css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
                 }, i18nm, 'log', req.session.auth);
             }
             var log_arr = data.toString().split("\n"),
@@ -74,7 +74,7 @@ module.exports = function(app) {
             if (!log_html) log_data.log_html = i18nm.__('no_log_file_available_yet');
             return app.get('cp').render(req, res, {
                 body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
-                css: '<link rel="stylesheet" href="/modules/log/css/main.css">' + "\n\t\t"
+                css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
             }, i18nm, 'log', req.session.auth);
         });
     });

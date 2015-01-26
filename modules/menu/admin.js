@@ -46,7 +46,7 @@ module.exports = function(app) {
 			}, req);
 			app.get('cp').render(req, res, {
 				body: body,
-				css: '<link rel="stylesheet" href="/modules/menu/css/main.css">' + "\n\t\t"
+				css: '<link rel="stylesheet" href="/modules/menu/css/main.css">'
 			}, i18nm, 'menu', req.session.auth);
 		});
 	});

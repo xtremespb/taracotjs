@@ -76,7 +76,7 @@ module.exports = function(app) {
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
-                css: '<link rel="stylesheet" href="/modules/warehouse_conf/css/main.css">' + "\n\t\t"
+                css: '<link rel="stylesheet" href="/modules/warehouse_conf/css/main.css">'
             }, i18nm, 'warehouse_conf_cp', req.session.auth);
         });
     });

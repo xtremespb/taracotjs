@@ -36,7 +36,7 @@ module.exports = function(app) {
             page_title: i18nm.__('social'),
             keywords: '',
             description: '',
-            extra_css: "\n\t" + '<link rel="stylesheet" href="/modules/social/css/frontend.css" type="text/css">'
+            extra_css: '<link rel="stylesheet" href="/modules/social/css/frontend.css" type="text/css">'
         };
         var _regdate = i18nm.__('unknown_regdate');
         if (req.session.auth.regdate) _regdate = req.session.auth.regdate;
