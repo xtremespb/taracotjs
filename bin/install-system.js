@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var program = require('commander'),
     async = require('async'),
     crypto = require('crypto'),

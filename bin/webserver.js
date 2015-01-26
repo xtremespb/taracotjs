@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var config = require('../config'),
     version = require('../version');
 

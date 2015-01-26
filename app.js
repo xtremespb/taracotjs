@@ -1,7 +1,13 @@
-// Taracot JS
-// Content management systems written with Node.js and Express.js
+/*
 
-// Load libraries
+    Taracot JS
+    Content management systems written with Node.js and Express.js
+    (c) 2014-2015 Michael A. Matveev
+    https://taracot.org
+
+*/
+
+/* Load libraries */
 
 var express = require('express');
 var cookieParser = require('cookie-parser');
@@ -37,11 +43,11 @@ var multer = require('multer');
 var bodyParser = require('body-parser');
 var mailer = require('./core/mailer')(app);
 
-// Enable trusted proxy
+/* Enable trusted proxy */
 
 app.enable('trust proxy');
 
-// Logging
+/* Logging */
 
 var logger = new(winston.Logger)({
     transports: [
@@ -51,7 +57,7 @@ var logger = new(winston.Logger)({
 });
 logger.exitOnError = false;
 
-// Redis events handler
+/* Redis events handler */
 
 app.set('redis_connected', false);
 
@@ -64,7 +70,7 @@ if (redis_client) {
     });
 }
 
-// Set variables
+/* Set variables */
 
 app.set('config', config);
 app.set('config_auth', config_auth);
@@ -83,7 +89,7 @@ app.set('parser', parser);
 app.set('session', session);
 app.engine('html', gaikan);
 
-// Use items
+/* Use items */
 
 app.use(multer({
     dest: config.dir.tmp + '/',
@@ -100,7 +106,7 @@ app.use(cookieParser(config.cookie.secret));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-// Load static
+/* Load static */
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -109,18 +115,18 @@ if (!app.get('blocks')) {
     app.set('blocks_sync', {});
 }
 
-// Get modules list
+/* Get modules list */
 
 var modules = fs.readdirSync(path.join(__dirname, 'modules/'));
 for (var mt in modules)
     if (!fs.lstatSync(path.join(__dirname, 'modules', modules[mt])).isDirectory()) modules.splice(mt);
 app.set('modules', modules);
 
-// Set static
+/* Set static */
 
 for (var md in modules) app.use(express.static(path.join(__dirname, 'modules/' + modules[md] + '/public')));
 
-// Locales
+/* Locales */
 
 I18n.expressBind(app, {
     locales: config.locales.avail,
@@ -130,7 +136,7 @@ I18n.expressBind(app, {
     devMode: app.get('config').locales.dev_mode
 });
 
-// Connect Redis or fallback to Mongo
+/* Connect Redis or fallback to Mongo */
 
 var _store = new RedisStore({
     client: redis_client,
@@ -159,7 +165,7 @@ app.use(session({
     unset: config.session.unset
 }));
 
-// Pre-load functions
+/* Pre-load functions */
 
 app.use(function(req, res, next) {
     if (typeof app.get('mongodb') == 'undefined' || !app.get('mongodb')) {
@@ -182,7 +188,7 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next) {
     var err;
-    // Check database connection
+    /* Check database connection */
     if (typeof app.get('mongodb') == 'undefined' || !app.get('mongodb')) {
         err = new Error(req.i18n.__("database_connection_failed"));
         err.status = 500;
@@ -195,20 +201,20 @@ app.use(function(req, res, next) {
         next(err);
         return;
     }
-    // Set locales from query and from cookie
+    /* Set locales from query and from cookie */
     if (app.get('config').locales.detect_from_cookie) req.i18n.setLocaleFromCookie();
     if (app.get('config').locales.detect_from_subdomain) req.i18n.setLocaleFromSubdomain();
     if (app.get('config').locales.detect_from_query) req.i18n.setLocaleFromQuery();
-    // Logging
+    /* Logging */
     logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
-    // Clear auth_redirect if already authorized
+    /* Clear auth_redirect if already authorized */
     if (req.session && req.session.auth) {
         delete req.session.auth_redirect;
     }
     next();
 });
 
-// Load settings
+/* Load settings */
 
 var _timestamp_settings_query = {};
 
@@ -239,7 +245,7 @@ app.use(function(req, res, next) {
     });
 });
 
-// Get public folders list (to not include into site statistics)
+/* Get public folders list (to not include into site statistics) */
 
 var public_folder = fs.readdirSync('../public');
 var public_folder_dirs = ['/modules/', '/cp/'];
@@ -251,7 +257,7 @@ public_folder.forEach(function(file) {
 });
 var public_folders_rx = new RegExp('^(' + public_folder_dirs.join('|') + ')');
 
-// Update site statistics
+/* Update site statistics */
 
 app.use(function(req, res, next) {
     if (req.method == 'GET' && req.url !== '/cp' && !req.url.match(public_folders_rx) && req.url !== '/auth/captcha') {
@@ -278,7 +284,7 @@ app.use(function(req, res, next) {
     }
 });
 
-// Load authorization data
+/* Load authorization data */
 
 app.use(function(req, res, next) {
     app.get('auth-core').check(req, function(auth) {
@@ -310,7 +316,7 @@ app.use(function(req, res, next) {
     });
 });
 
-// Load avatar
+/* Load avatar */
 
 app.use(function(req, res, next) {
     if (req.session && req.session.auth) {
@@ -321,7 +327,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// Load modules and blocks
+/* Load modules and blocks */
 
 for (var mb in modules) {
     var _b, _m, _a, _r = {
@@ -339,7 +345,7 @@ for (var mb in modules) {
     if (_r.cp_prefix && _a) app.use(_r.cp_prefix, _a);
 }
 
-// Error 404 (not found)
+/* Error 404 (not found) */
 
 app.use(function(req, res, next) {
     var err = new Error(req.i18n.__("pagenotfound"));
@@ -347,7 +353,7 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-// Error handler
+/* Error handler */
 
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
