@@ -1,6 +1,5 @@
 module.exports = function(db, ensure_indexes, config) {
-    var async = require('async'),
-        is = {
+    var is = {
             name: 'warehouse_conf',
             version: '0.5.20',
             collections: function(_callback) {
@@ -17,6 +16,10 @@ module.exports = function(db, ensure_indexes, config) {
             },
             misc: function(_callback) {
                 // Misc. tasks
+                _callback();
+            },
+            uninstall: function(_callback) {
+                // Uninstall tasks
                 _callback();
             }
         };

@@ -5,76 +5,46 @@ module.exports = function(db, ensure_indexes, config) {
             version: '0.5.20',
             collections: function(_callback) {
                 // Create collections
-                console.log("\nCreating collections for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: pages");
                         db.createCollection('pages', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: page_folders");
                         db.createCollection('page_folders', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating collections");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
             indexes: function(_callback) {
                 // Create indexes
-                console.log("\nCreating indexes for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: pages");
                         ensure_indexes('pages', ['pfolder', 'pfilename', 'plang', 'ptitle'], null, null, function() {
-                            console.log("[*] Success (pages)");
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: pages_folders");
-                        ensure_indexes('pages_folders', ['oname'], null, null, function() {
-                            console.log("[*] Success (page_folders)");
+                        ensure_indexes('page_folders', ['oname'], null, null, function() {
                             callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating indexes");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
             defaults: function(_callback) {
                 // Create default values
-                console.log("\nInserting default values for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                         function(callback) {
-                            console.log("[+] Default page: en");
                             db.collection('pages').insert({
                                 ptitle: 'Default page',
                                 pfolder: '/',
@@ -86,17 +56,11 @@ module.exports = function(db, ensure_indexes, config) {
                                 pdesc: 'This is the sample page',
                                 pcontent: 'The installation is complete ;-)'
                             }, function(err) {
-                                if (err) {
-                                    console.log("[!] Fail");
-                                    console.log(err);
-                                    process.exit(1);
-                                }
-                                console.log("[*] Success");
+                                if (err) return callback(err);
                                 callback();
                             });
                         },
                         function(callback) {
-                            console.log("[+] Default page search index: en");
                             db.collection('search_index').insert({
                                 "item_id": "54c0ef39c00ad59027af778a",
                                 "sdesc": "The installation is complete ;-)",
@@ -106,17 +70,11 @@ module.exports = function(db, ensure_indexes, config) {
                                 "surl": "/",
                                 "swords": "installation complete default page"
                             }, function(err) {
-                                if (err) {
-                                    console.log("[!] Fail");
-                                    console.log(err);
-                                    process.exit(1);
-                                }
-                                console.log("[*] Success");
+                                if (err) return callback(err);
                                 callback();
                             });
                         },
                         function(callback) {
-                            console.log("[+] Default page: ru");
                             db.collection('pages').insert({
                                 ptitle: 'Главная страница',
                                 pfolder: '/',
@@ -128,17 +86,11 @@ module.exports = function(db, ensure_indexes, config) {
                                 pdesc: 'Тестовая страница',
                                 pcontent: 'Инсталляция успешно выполнена ;-)'
                             }, function(err) {
-                                if (err) {
-                                    console.log("[!] Fail");
-                                    console.log(err);
-                                    process.exit(1);
-                                }
-                                console.log("[*] Success");
+                                if (err) return callback(err);
                                 callback();
                             });
                         },
                         function(callback) {
-                            console.log("[+] Default page search index: ru");
                             db.collection('search_index').insert({
                                 "swords": "инсталляция успешно выполнена главная страница",
                                 "sdesc": "Инсталляция успешно выполнена ;-)",
@@ -148,44 +100,41 @@ module.exports = function(db, ensure_indexes, config) {
                                 "item_id": "54c0ef39c00ad59027af778b",
                                 "space": "pages"
                             }, function(err) {
-                                if (err) {
-                                    console.log("[!] Fail");
-                                    console.log(err);
-                                    process.exit(1);
-                                }
-                                console.log("[*] Success");
+                                if (err) return callback(err);
                                 callback();
                             });
                         },
                         function(callback) {
-                            console.log("[+] page_folders");
                             db.collection('page_folders').insert({
                                 oname: 'folders_json',
                                 ovalue: '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]'
                             }, function(err) {
-                                if (err) {
-                                    console.log("[!] Fail");
-                                    console.log(err);
-                                    process.exit(1);
-                                }
-                                console.log("[*] Success");
+                                if (err) return callback(err);
                                 callback();
                             });
                         }
                     ],
                     function(err) {
-                        if (err) {
-                            console.log("[!] Installation failed");
-                            console.log(err);
-                            process.exit(1);
-                        }
-                        console.log("[*] Finished inserting default values");
+                        if (err) return _callback(err);
                         _callback();
                     });
             },
             misc: function(_callback) {
                 // Other things to do
                 _callback();
+            },
+            uninstall: function(_callback) {
+                var collections = ['pages', 'page_folders'];
+                async.eachSeries(collections, function(name, e_callback) {
+                    db.collection(name).drop(function(err) {
+                        if (err) return e_callback(err);
+                        e_callback();
+                    });
+
+                }, function(err) {
+                    if (err) return _callback(err);
+                    _callback();
+                });
             }
         };
     return is;

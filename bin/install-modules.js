@@ -31,14 +31,31 @@ var mongo_url = config.mongo.url,
                     process.exit(1);
                 }
                 var installer = require('../modules/' + program.module + '/install')(db, ensure_indexes, config);
-                installer.collections(function() {
-                    installer.indexes(function() {
-                        installer.misc(function() {
+                console.log("[*] Installing module: " + installer.name + ' (' + installer.version + ')');
+                installer.collections(function(err) {
+                    if (err) {
+                        console.log("\n[!] Fail: " + err);
+                        process.exit(code = 1);
+                    }
+                    installer.indexes(function(err) {
+                        if (err) {
+                            console.log("\n[!] Fail: " + err);
+                            process.exit(code = 1);
+                        }
+                        installer.misc(function(err) {
+                            if (err) {
+                                console.log("\n[!] Fail: " + err);
+                                process.exit(code = 1);
+                            }
                             if (program.update) {
                                 console.log("\nInstallation complete.");
                                 process.exit(code = 0);
                             } else {
-                                installer.defaults(function() {
+                                installer.defaults(function(err) {
+                                    if (err) {
+                                        console.log("\n[!] Fail: " + err);
+                                        process.exit(code = 1);
+                                    }
                                     console.log("\nInstallation complete.");
                                     process.exit(code = 0);
                                 });
@@ -63,13 +80,30 @@ var mongo_url = config.mongo.url,
                         if (install) inst_arr.push(install);
                     }
                     async.eachSeries(inst_arr, function(installer, ase_callback) {
-                        installer.collections(function() {
-                            installer.indexes(function() {
-                                installer.misc(function() {
+                        console.log("[*] Installing module: " + installer.name + ' (' + installer.version + ')');
+                        installer.collections(function(err) {
+                            if (err) {
+                                console.log("\n[!] Fail: " + err);
+                                process.exit(code = 1);
+                            }
+                            installer.indexes(function(err) {
+                                if (err) {
+                                    console.log("\n[!] Fail: " + err);
+                                    process.exit(code = 1);
+                                }
+                                installer.misc(function(err) {
+                                    if (err) {
+                                        console.log("\n[!] Fail: " + err);
+                                        process.exit(code = 1);
+                                    }
                                     if (program.update) {
                                         ase_callback();
                                     } else {
-                                        installer.defaults(function() {
+                                        installer.defaults(function(err) {
+                                            if (err) {
+                                                console.log("\n[!] Fail: " + err);
+                                                process.exit(code = 1);
+                                            }
                                             ase_callback();
                                         });
                                     }

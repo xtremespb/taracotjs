@@ -5,50 +5,28 @@ module.exports = function(db, ensure_indexes, config) {
             version: '0.5.20',
             collections: function(_callback) {
                 // Create collections
-                console.log("\nCreating collections for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: search_index");
                         db.createCollection('search_index', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating collections");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
             indexes: function(_callback) {
                 // Create indexes
-                console.log("\nCreating indexes for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: search_index");
-                        ensure_indexes('blog', ['post_timestamp'], null, null, function() {
-                            ensure_indexes('search_index', ['swords', 'space', 'item_id'], null, true, function() {
-                                console.log("[*] Success (search_index)");
-                                callback();
-                            });
+                        ensure_indexes('search_index', ['swords', 'space', 'item_id'], null, true, function() {
+                            callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating indexes");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
@@ -59,6 +37,19 @@ module.exports = function(db, ensure_indexes, config) {
             misc: function(_callback) {
                 // Other things to do
                 _callback();
+            },
+            uninstall: function(_callback) {
+                var collections = ['search_index'];
+                async.eachSeries(collections, function(name, e_callback) {
+                    db.collection(name).drop(function(err) {
+                        if (err) return e_callback(err);
+                        e_callback();
+                    });
+
+                }, function(err) {
+                    if (err) return _callback(err);
+                    _callback();
+                });
             }
         };
     return is;

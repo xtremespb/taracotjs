@@ -5,86 +5,50 @@ module.exports = function(db, ensure_indexes, config) {
             version: '0.5.20',
             collections: function(_callback) {
                 // Create collections
-                console.log("\nCreating collections for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: social_friends");
                         db.createCollection('social_friends', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: social_conversations");
                         db.createCollection('social_conversations', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: social_messages");
                         db.createCollection('social_messages', function(err, collection) {
-                            if (err) {
-                                console.log("[!] Fail");
-                                console.log(err);
-                                process.exit(1);
-                            }
-                            console.log("[*] Success");
+                            if (err) return callback(err);
                             callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating collections");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
             indexes: function(_callback) {
                 // Create indexes
-                console.log("\nCreating indexes for module: " + this.name + ' (version ' + this.version + ")\n");
                 async.series([
                     function(callback) {
-                        console.log("[+] Collection: social_friends");
                         ensure_indexes('social_friends', ['u1', 'u2', 'friends'], null, true, function() {
-                            console.log("[*] Success (social_friends)");
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: social_conversations");
                         ensure_indexes('social_conversations', ['u1', 'u2'], null, true, function() {
-                            console.log("[*] Success (social_conversations)");
                             callback();
                         });
                     },
                     function(callback) {
-                        console.log("[+] Collection: social_messages");
                         ensure_indexes('social_messages', ['last_tstamp'], null, null, function() {
-                            console.log("[*] Success (social_messages)");
                             callback();
                         });
                     }
                 ], function(err) {
-                    if (err) {
-                        console.log("[!] Installation failed");
-                        console.log(err);
-                        process.exit(1);
-                    }
-                    console.log("[*] Finished creating indexes");
+                    if (err) return _callback(err);
                     _callback();
                 });
             },
@@ -95,6 +59,19 @@ module.exports = function(db, ensure_indexes, config) {
             misc: function(_callback) {
                 // Other things to do
                 _callback();
+            },
+            uninstall: function(_callback) {
+                var collections = ['social_friends', 'social_conversations', 'social_messages'];
+                async.eachSeries(collections, function(name, e_callback) {
+                    db.collection(name).drop(function(err) {
+                        if (err) return e_callback(err);
+                        e_callback();
+                    });
+
+                }, function(err) {
+                    if (err) return _callback(err);
+                    _callback();
+                });
             }
         };
     return is;
