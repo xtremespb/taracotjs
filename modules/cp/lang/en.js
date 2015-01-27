@@ -10,7 +10,7 @@
 	"mongo_url": "MongoDB",
 	"redis": "Redis",
 	"default_layout": "Default layout",
-	"current_version": "TaracotJS version",
+	"current_version": "TaracotJS core version",
 	"system": "System",
 	"hostname": "Hostname",
 	"os": "Operating system",
@@ -36,5 +36,7 @@
 	"no_stats_avail": "No statistical data currently available. At least two days are required to show charts.",
 	"chart_hint": "The left (X) axis represents the number of visits, the right (Y) axis represents the corresponding days of month",
 	"MB": "MB",
-	"modules": "Modules"
+	"modules": "Modules",
+	"server": "Server",
+	"updates": "Updates"
 }

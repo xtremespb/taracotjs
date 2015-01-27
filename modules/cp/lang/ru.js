@@ -10,7 +10,7 @@
 	"mongo_url": "MongoDB",
 	"redis": "Redis",
 	"default_layout": "Шаблон по умолчанию",
-	"current_version": "Версия TaracotJS",
+	"current_version": "Версия ядра TaracotJS",
 	"system": "Система",
 	"hostname": "Хост",
 	"os": "Операционная система",
