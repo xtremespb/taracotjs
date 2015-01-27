@@ -4,9 +4,9 @@ var config = {
     "uid": "",
     "protocol": "http",
     "layouts": {
-        "default": "index",
+        "default": "taracot_default",
         "avail": [
-            "index"
+            "taracot_default"
         ]
     },
     "locales": {
