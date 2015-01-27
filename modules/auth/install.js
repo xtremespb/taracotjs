@@ -1,8 +1,8 @@
-var crypto = require('crypto');
+var crypto = require('crypto'),
+    async = require('async');
 
 module.exports = function(db, ensure_indexes, config) {
-    var async = require('async'),
-        is = {
+    var is = {
             name: 'auth',
             version: '0.5.20',
             collections: function(_callback) {

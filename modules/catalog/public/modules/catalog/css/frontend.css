@@ -8,14 +8,16 @@
     padding-left: 10px;
 }
 .taracot-catalog-item {
-    background: transparent;
+    background: 0 0;
+    border: 0;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
 .taracot-catalog-item > .uk-comment-header {
     padding: 5px;
-    background: transparent;
+    border: 0;
+    background: 0 0;
 }
 .taracot-catalog-item > .uk-comment-header > .uk-comment-meta {
     color: #222;
