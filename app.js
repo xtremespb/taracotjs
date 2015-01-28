@@ -115,12 +115,20 @@ if (!app.get('blocks')) {
     app.set('blocks_sync', {});
 }
 
-/* Get modules list */
+/* Get modules list and version info */
 
-var modules = fs.readdirSync(path.join(__dirname, 'modules/'));
+var modules = fs.readdirSync(path.join(__dirname, 'modules/')),
+    version_info = {
+        core: config.taracotjs
+    };
 for (var mt in modules)
     if (!fs.lstatSync(path.join(__dirname, 'modules', modules[mt])).isDirectory()) modules.splice(mt);
 app.set('modules', modules);
+for (var mt in modules) {
+    var installer = require(path.join(__dirname, 'modules', modules[mt], 'install'))(undefined, undefined, undefined);
+    version_info[modules[mt]] = installer.version;
+}
+app.set('version_info', version_info);
 
 /* Set static */
 
