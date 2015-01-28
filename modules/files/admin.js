@@ -9,7 +9,7 @@ module.exports = function(app) {
 	var router = app.get('express').Router();
 	var mime = require('mime');
 	var archiver = require('archiver');
-	var unzip = require('unzip');
+	var unzip = require('unzip2');
 	var gm = false;
 	if (app.get('config').graphicsmagick) {
 		gm = require('gm');

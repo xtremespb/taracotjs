@@ -30,10 +30,10 @@
     "nodemailer": "~1.0.2",
     "nodemailer-sendmail-transport": "~0.1.2",
     "redis": "~0.10.2",
-    "request": "^2.42.0",
+    "request": "^2.51.0",
     "snowball": "^0.3.1",
     "socket.io": "^1.1.0",
-    "unzip": "~0.1.9",
+    "unzip2": "^0.2.5",
     "winston": "~0.7.3"
   },
   "devDependencies": {
