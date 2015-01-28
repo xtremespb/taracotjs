@@ -5,7 +5,7 @@
 	"logout": "Выход",
 	"taracot_dashboard": "Статус",
 	"User": "Пользователь",
-	"up_and_running": "Инсталляция успешно выполнена, TaracotJS запущен.",
+	"up_and_running": "TaracotJS запущен.",
 	"config": "Конфигурация",
 	"mongo_url": "MongoDB",
 	"redis": "Redis",

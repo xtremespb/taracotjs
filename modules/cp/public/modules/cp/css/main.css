@@ -104,3 +104,24 @@ input:focus,textarea:focus,select:focus{
 fieldset {
 	border: 0;
 }
+.taracot-cp-top-tabs {
+	padding: 10px;
+	border-left: 1px solid #eee;
+	border-right: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	margin-bottom: 20px;
+}
+.taracot-updates-table-version-column {
+	width: 80px;
+}
+.taracot-updates-version-outdated {
+	background-color: red;
+	color: #fff;
+}
+.taracot_updates_buttons_wrap {
+	margin-top: 25px;
+}
+.taracot-update-progress-box {
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
+}

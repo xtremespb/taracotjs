@@ -1,3 +1,19 @@
+<div id="taracot_dlg_update" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h1>!{root.lang.__('update_system')}</h1>
+        </div>
+        <div id="taracot-update-progress">
+            <p>!{root.lang.__('system_update_notice')}</p>
+            <p>!{root.lang.__('restart_notice')}</p>
+            <p>!{root.lang.__('multiple_instances_notice')}</p>
+        </div>
+        <div class="uk-modal-footer taracot-dlg-update-footer">
+            <button class="uk-button uk-button-danger" id="taracot_btn_update_start">!{root.lang.__('start_update')}</button>&nbsp;<button class="uk-button uk-modal-close">!{root.lang.__('close')}</button>
+
+        </div>
+    </div>
+</div>
 <h1>!{root.lang.__('taracot_dashboard')}</h1>
 <div class="uk-margin-bottom">!{root.lang.__('up_and_running')}</div>
 <ul class="uk-tab" data-uk-tab="{connect:'#dashboard_tabs'}">
@@ -8,7 +24,7 @@
     <li><a href="">!{root.lang.__('updates')}</a>
     </li>
 </ul>
-<ul id="dashboard_tabs" class="uk-switcher">
+<ul id="dashboard_tabs" class="uk-switcher taracot-cp-top-tabs">
     <li>
         <h2>!{root.lang.__('config')}</h2>
         <table class="uk-table uk-table-hover">
@@ -75,25 +91,39 @@
         </div>
     </li>
     <li>
-    	<h2>!{root.lang.__('updates')}</h2>
+        <h2>!{root.lang.__('updates')}</h2>
+        <div>!{root.updates_table}</div>
+        <div class="taracot_updates_buttons_wrap">
+            <button class="uk-button uk-button-danger" id="taracot_btn_update">!{root.lang.__('update_modules')}: !{root.total_updates_avail}</button>
+        </div>
     </li>
 </ul>
 <script>
 var days = !{
-    root.days
-};
-var months = !{
-    root.months
-};
-var visitors = !{
-    root.visitors
-};
-var hits = !{
-    root.hits
-};
-var _lang_vars = {
-    no_stats_avail: "!{root.lang.__('no_stats_avail')}"
-};
+        root.days
+    },
+    months = !{
+        root.months
+    },
+    visitors = !{
+        root.visitors
+    },
+    hits = !{
+        root.hits
+    },
+    total_updates_avail = !{
+        root.total_updates_avail
+    },
+    _lang_vars = {
+    	ajax_failed: "!{root.lang.__('ajax_failed')}",
+        no_stats_avail: "!{root.lang.__('no_stats_avail')}",
+        initializing_update: "!{root.lang.__('initializing_update')}",
+        update_started: "!{root.lang.__('update_started')}",
+        cannot_get_update_status: "!{root.lang.__('cannot_get_update_status')}",
+        update_progress: "!{root.lang.__('update_progress')}",
+        update_complete: "!{root.lang.__('update_complete')}",
+        update_failed: "!{root.lang.__('update_failed')}",
+    };
 </script>
 <script src="/js/Chart.min.js"></script>
-<script src="/modules/cp/js/cp.min.js"></script>
+<script src="/modules/cp/js/main.js"></script>
