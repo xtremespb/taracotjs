@@ -37,7 +37,7 @@ module.exports = function(app) {
                             if (up_data[ud].update_timestamp) update_timestamp = up_data[ud].update_timestamp;
                             if (up_data[ud].update_last) update_last = up_data[ud].update_last;
                         }
-                    if (!update_timestamp || Date.now() - update_timestamp > 108) { // 10800000 = 3 hours
+                    if (!update_timestamp || Date.now() - update_timestamp > 10800000) { // 10800000 = 3 hours
                         request({
                             url: updates_url,
                             proxy: proxy_url,

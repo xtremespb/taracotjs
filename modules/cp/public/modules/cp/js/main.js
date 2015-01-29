@@ -13,7 +13,9 @@ var taracot_btn_update_handler = function() {
 var taracot_restart_countdown = function() {
     downcounter--;
     var prc = parseInt(100 / downcounter_save) * downcounter;
-    $('#taracot_updater_restart_progress').html('0:' + downcounter);
+    var _downcounter = String(downcounter);
+    if (_downcounter.length == 1) _downcounter = '0' + _downcounter;
+    $('#taracot_updater_restart_progress').html('0:' + _downcounter);
     $('#taracot_updater_restart_progress').css('width', prc + '%');
     if (downcounter > 0) {
         setTimeout(taracot_restart_countdown, 1000);
@@ -123,7 +125,15 @@ var taracot_btn_update_start_handler = function() {
 ********************************************************************/
 
 $(document).ready(function() {
-    if (total_updates_avail === 0) $('.taracot_updates_buttons_wrap').hide();
+    if (total_updates_avail === 0) {
+    	$('.taracot-updates-exclamation').hide();
+    	$('.taracot_updates_buttons_wrap').hide();
+    } else {
+    	setInterval(function() {
+    		$('.taracot-updates-exclamation').toggle();
+    		$('.taracot-updates-exclamation-grey').toggle();
+    	}, 500);
+    }
     $('#taracot_btn_update').click(taracot_btn_update_handler);
     $('#taracot_btn_update_start').click(taracot_btn_update_start_handler);
     var data = {

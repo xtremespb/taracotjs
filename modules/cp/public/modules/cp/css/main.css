@@ -125,3 +125,11 @@ fieldset {
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
 }
+.taracot-updates-exclamation {
+	color: red;
+	padding-left: 5px;
+}
+.taracot-updates-exclamation-grey {
+	color: #aaa;
+	padding-left: 5px;
+}
