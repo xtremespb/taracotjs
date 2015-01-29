@@ -10,7 +10,7 @@ module.exports = function(app) {
         router = app.get('express').Router(),
         mime = require('mime'),
         archiver = require('archiver'),
-        unzip = require('unzip'),
+        unzip = require('unzip2'),
         crypto = require('crypto'),
         gm = false;
 
