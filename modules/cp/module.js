@@ -274,7 +274,7 @@ module.exports = function(app) {
                     });
                 }, function(err) {
                     if (err) {
-                        cp_updater_messages.push(JSON.stringify(err));
+                        cp_updater_messages.push(err);
                         app.set('_cp_updater_messages', cp_updater_messages);
                         app.set('_cp_updater_fail', true);
                     }

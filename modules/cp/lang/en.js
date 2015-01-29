@@ -63,5 +63,6 @@
 	"update_failed": "TaracotJS update has been failed. Please try to refresh this page and try to update again. If your TaracotJS instance will fail to response, please update manually using command line.",
 	"cannot_download": "Error while downloading",
 	"installing_module": "Installing module",
-	"restart_failed": "TaracotJS cannot be restarted. Please restart manually."
+	"restart_failed": "TaracotJS cannot be restarted. Please restart manually.",
+	"invalid_checksum": "Invalid checksum"
 }
