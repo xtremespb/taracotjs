@@ -122,11 +122,15 @@ glob(production_dir + "/**/*.html", {}, function(err, html_files) {
                     }
                     // Build core update
                     console.log("Copying core update files...");
+                    min_dir = source_dir;
                     fs.copySync(min_dir + '/bin', modules_dir_tmp + '/bin');
                     fs.copySync(min_dir + '/core', modules_dir_tmp + '/core');
                     fs.copySync(min_dir + '/fonts', modules_dir_tmp + '/fonts');
                     fs.copySync(min_dir + '/public', modules_dir_tmp + '/public');
                     fs.copySync(min_dir + '/views', modules_dir_tmp + '/views');
+                    fs.copySync(min_dir + '/app.js', modules_dir_tmp + '/app.js');
+                    fs.copySync(min_dir + '/version.js', modules_dir_tmp + '/version.js');
+                    fs.copySync(min_dir + '/package.json', modules_dir_tmp + '/package.json');
                     var core_archive = archiver('zip'),
                         core_output = fs.createWriteStream(modules_dir + '/taracot_core.zip_');
                     core_archive.pipe(core_output);

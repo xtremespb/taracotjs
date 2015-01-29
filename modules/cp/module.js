@@ -2,7 +2,8 @@ module.exports = function(app) {
 
     var updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
         modules_url = 'https://taracot.org/source/taracotjs',
-        request = require("request"),
+        proxy_url = 'http://10.206.247.66:8080',
+        request = require("request"), // Set undefined if no proxy
         router = app.get('express').Router(),
         os = require('os'),
         fs = require('fs-extra'),
@@ -39,6 +40,7 @@ module.exports = function(app) {
                     if (!update_timestamp || Date.now() - update_timestamp > 108) { // 10800000 = 3 hours
                         request({
                             url: updates_url,
+                            proxy: proxy_url,
                             json: true
                         }, function(error, response, body) {
                             if (!error && response.statusCode === 200) {
@@ -107,8 +109,10 @@ module.exports = function(app) {
                                 });
                             }
                             days.push(dt.getDate());
-                            visitors.push(items[i].visitors);
-                            hits.push(items[i].hits);
+                            if (items[i].visitors && items[i].hits) {
+                                visitors.push(items[i].visitors);
+                                hits.push(items[i].hits);
+                            }
                         }
                     }
                     var updates_table = i18nm.__('no_update_info_available');
@@ -207,8 +211,10 @@ module.exports = function(app) {
                     request({
                         method: 'GET',
                         url: modules_url + '/taracot_' + module + '.zip',
+                        proxy: proxy_url,
                         encoding: null
                     }, function(error, response, body) {
+                    	console.log(error);
                         if (error || response.statusCode !== 200) return callback(i18nm.__('cannot_download') + ' ' + 'taracot_' + module + '.zip');
                         cp_updater_messages.push(i18nm.__('saving_module') + ": " + module);
                         app.set('_cp_updater_messages', cp_updater_messages);
@@ -240,9 +246,9 @@ module.exports = function(app) {
                     });
                 }, function(err) {
                     if (err) {
-                    	cp_updater_messages.push(err);
+                        cp_updater_messages.push(err);
                         app.set('_cp_updater_messages', cp_updater_messages);
-                    	app.set('_cp_updater_fail', true);
+                        app.set('_cp_updater_fail', true);
                     }
                     app.set('_cp_updater_complete', true);
                 });
