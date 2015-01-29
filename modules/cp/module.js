@@ -2,8 +2,8 @@ module.exports = function(app) {
 
     var updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
         modules_url = 'https://taracot.org/source/taracotjs',
-        proxy_url = 'http://10.206.247.66:8080',
-        request = require("request"), // Set undefined if no proxy
+        proxy_url = '',  // Set undefined if no proxy
+        request = require("request"),
         router = app.get('express').Router(),
         os = require('os'),
         fs = require('fs-extra'),
@@ -41,6 +41,7 @@ module.exports = function(app) {
                         request({
                             url: updates_url,
                             proxy: proxy_url,
+                            timeout: 10000, // 10 seconds
                             json: true
                         }, function(error, response, body) {
                             if (!error && response.statusCode === 200) {
