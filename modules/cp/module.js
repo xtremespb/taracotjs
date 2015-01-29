@@ -301,6 +301,28 @@ module.exports = function(app) {
         }));
     });
 
+    router.post('/_update/restart', function(req, res) {
+        if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2)
+            return res.send(JSON.stringify({
+                status: 0
+            }));
+        var restart_cmd = app.get('config').update_restart_command || undefined;
+        setTimeout(function() {
+            if (restart_cmd) {
+                var sys = require('sys');
+                var exec = require('child_process').exec;
+                exec(restart_cmd, function(error, stdout, stderr) {
+                    sys.puts(stdout);
+                });
+            } else {
+                process.exit(1);
+            }
+        }, 1000);
+        return res.send(JSON.stringify({
+            status: 1
+        }));
+    });
+
     function ensure_indexes(col, ia, _opt, ow, callback) {
         var opt = {
             unique: false,
@@ -327,7 +349,7 @@ module.exports = function(app) {
             }
         }
         async.every(_fns, function(fns, _callback) {
-            db.collection(fns.col).ensureIndex(fns.ix, function() {
+            app.get('mongodb').collection(fns.col).ensureIndex(fns.ix, function() {
                 _callback(true);
             });
         }, function(result) {

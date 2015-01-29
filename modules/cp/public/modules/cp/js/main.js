@@ -1,3 +1,6 @@
+var downcounter = 20, // seconds, les or equal to 60
+    downcounter_save = downcounter;
+
 var taracot_dlg_update = new UIkit.modal("#taracot_dlg_update", {
     bgclose: false,
     keyboard: false
@@ -5,6 +8,19 @@ var taracot_dlg_update = new UIkit.modal("#taracot_dlg_update", {
 
 var taracot_btn_update_handler = function() {
     taracot_dlg_update.show();
+};
+
+var taracot_restart_countdown = function() {
+    downcounter--;
+    var prc = parseInt(100 / downcounter_save) * downcounter;
+    $('#taracot_updater_restart_progress').html('0:' + downcounter);
+    $('#taracot_updater_restart_progress').css('width', prc + '%');
+    if (downcounter > 0) {
+        setTimeout(taracot_restart_countdown, 1000);
+    } else {
+        $('#taracot_updater_restart_progress').parent().hide();
+        location.href = "/cp?rnd=" + Math.random().toString().replace('.', '');
+    }
 };
 
 var check_update_status = function() {
@@ -19,11 +35,38 @@ var check_update_status = function() {
                     msg_html += '<li>' + data.messages[i] + '</li>';
             $('#taracot_updater_messages').html(msg_html);
             if (data.complete) {
-            	$('.taracot-update-progress-gif').hide();
+                $('.taracot-update-progress-gif').hide();
                 if (data.failed) {
                     $('#taracot-update-progress').append('<p class="uk-alert uk-alert-danger">' + _lang_vars.update_failed + '</p>');
                 } else {
-                    $('#taracot-update-progress').append('<p class="uk-alert uk-alert-success">' + _lang_vars.update_complete + '</p>');
+                    $('#taracot-update-progress').append('<p class="uk-alert uk-alert-success">' + _lang_vars.update_complete + '</p><div class="uk-progress"><div class="uk-progress-bar" id="taracot_updater_restart_progress" style="width:100%;">0:' + downcounter + '</div></div>');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/cp/_update/restart',
+                        dataType: "json",
+                        success: function(data) {
+                            if (data.status === 1) {
+                                setTimeout(taracot_restart_countdown, 1000);
+                            } else {
+                                $('#taracot_updater_restart_progress').parent().hide();
+                                UIkit.notify({
+                                    message: _lang_vars.restart_failed,
+                                    status: 'danger',
+                                    timeout: 2000,
+                                    pos: 'top-center'
+                                });
+                            }
+                        },
+                        error: function() {
+                            $('#taracot_updater_restart_progress').parent().hide();
+                            UIkit.notify({
+                                message: _lang_vars.restart_failed,
+                                status: 'danger',
+                                timeout: 2000,
+                                pos: 'top-center'
+                            });
+                        }
+                    });
                 }
             }
             if (!data.complete && !data.failed) setTimeout(check_update_status, 1000);
