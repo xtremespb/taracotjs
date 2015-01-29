@@ -61,5 +61,6 @@
 	"update_progress": "Update progress",
 	"update_complete": "TaracotJS has been sucessfully updated.",
 	"update_failed": "TaracotJS update has been failed. Please try to refresh this page and try to update again. If your TaracotJS instance will fail to response, please update manually using command line.",
-	"cannot_download": "Error while downloading"
+	"cannot_download": "Error while downloading",
+	"installing_module": "Installing module"
 }

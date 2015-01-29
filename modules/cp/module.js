@@ -214,7 +214,6 @@ module.exports = function(app) {
                         proxy: proxy_url,
                         encoding: null
                     }, function(error, response, body) {
-                    	console.log(error);
                         if (error || response.statusCode !== 200) return callback(i18nm.__('cannot_download') + ' ' + 'taracot_' + module + '.zip');
                         cp_updater_messages.push(i18nm.__('saving_module') + ": " + module);
                         app.set('_cp_updater_messages', cp_updater_messages);
@@ -227,10 +226,12 @@ module.exports = function(app) {
                                 if (module_sum != update_last[module].checksum) return callback(i18nm.__('invalid_checksum') + ": " + module);
                                 cp_updater_messages.push(i18nm.__('extracting_module') + ": " + module);
                                 app.set('_cp_updater_messages', cp_updater_messages);
+                                var extract_path = app.get('path').join(__dirname, '..');
+                                if (module == 'core') extract_path = app.get('path').join(__dirname, '..', '..');
                                 var p;
                                 try {
                                     p = fs.createReadStream(dest).pipe(unzip.Extract({
-                                        path: app.get('path').join(__dirname, '..')
+                                        path: extract_path
                                     }));
                                 } catch (ex) {
                                     return callback(ex);
@@ -239,14 +240,40 @@ module.exports = function(app) {
                                     callback(err);
                                 });
                                 p.on('close', function() {
-                                    callback();
+                                    if (module == 'core') return callback();
+                                    // Run installation scripts
+                                    cp_updater_messages.push(i18nm.__('installing_module') + ": " + module);
+                                    try {
+                                        var installer = require('../' + module + '/install')(app.get('mongodb'), ensure_indexes, app.get('config'));
+                                        installer.collections(function(err) {
+                                            if (err) {
+                                                cp_updater_messages.push(err + ": " + module);
+                                                app.set('_cp_updater_messages', cp_updater_messages);
+                                            }
+                                            installer.indexes(function(err) {
+                                                if (err) {
+                                                    cp_updater_messages.push(err + ": " + module);
+                                                    app.set('_cp_updater_messages', cp_updater_messages);
+                                                }
+                                                installer.misc(function(err) {
+                                                    if (err) {
+                                                        cp_updater_messages.push(err + ": " + module);
+                                                        app.set('_cp_updater_messages', cp_updater_messages);
+                                                    }
+                                                    return callback();
+                                                });
+                                            });
+                                        });
+                                    } catch (ex) {
+                                        return callback(ex.message);
+                                    }
                                 });
                             });
                         });
                     });
                 }, function(err) {
                     if (err) {
-                        cp_updater_messages.push(err);
+                        cp_updater_messages.push(JSON.stringify(err));
                         app.set('_cp_updater_messages', cp_updater_messages);
                         app.set('_cp_updater_fail', true);
                     }
@@ -273,6 +300,40 @@ module.exports = function(app) {
             failed: ff
         }));
     });
+
+    function ensure_indexes(col, ia, _opt, ow, callback) {
+        var opt = {
+            unique: false,
+            background: true,
+            dropDups: false,
+            w: 1
+        };
+        if (_opt) opt = _opt;
+        var _fns = [];
+        for (var i = 0; i < ia.length; i++) {
+            var i1 = {};
+            i1[ia[i]] = 1;
+            _fns.push({
+                col: col,
+                ix: i1
+            });
+            if (!ow) {
+                var i2 = {};
+                i2[ia[i]] = -1;
+                _fns.push({
+                    col: col,
+                    ix: i2
+                });
+            }
+        }
+        async.every(_fns, function(fns, _callback) {
+            db.collection(fns.col).ensureIndex(fns.ix, function() {
+                _callback(true);
+            });
+        }, function(result) {
+            callback();
+        });
+    }
 
     return router;
 };
