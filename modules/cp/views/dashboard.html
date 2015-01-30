@@ -9,8 +9,8 @@
             <p>!{root.lang.__('multiple_instances_notice')}</p>
         </div>
         <div class="uk-modal-footer taracot-dlg-update-footer">
-            <button class="uk-button uk-button-danger" id="taracot_btn_update_start">!{root.lang.__('start_update')}</button>&nbsp;<button class="uk-button uk-modal-close">!{root.lang.__('close')}</button>
-
+            <button class="uk-button uk-button-danger" id="taracot_btn_update_start">!{root.lang.__('start_update')}</button>&nbsp;
+            <button class="uk-button uk-modal-close">!{root.lang.__('close')}</button>
         </div>
     </div>
 </div>
@@ -92,7 +92,7 @@
     </li>
     <li>
         <h2>!{root.lang.__('updates')}</h2>
-        <div>!{root.updates_table}</div>
+        <div class="uk-overflow-container">!{root.updates_table}</div>
         <div class="taracot_updates_buttons_wrap">
             <button class="uk-button uk-button-danger" id="taracot_btn_update">!{root.lang.__('update_modules')}: !{root.total_updates_avail}</button>
         </div>
@@ -115,7 +115,7 @@ var days = !{
         root.total_updates_avail
     },
     _lang_vars = {
-    	ajax_failed: "!{root.lang.__('ajax_failed')}",
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
         no_stats_avail: "!{root.lang.__('no_stats_avail')}",
         initializing_update: "!{root.lang.__('initializing_update')}",
         update_started: "!{root.lang.__('update_started')}",
@@ -123,6 +123,7 @@ var days = !{
         update_progress: "!{root.lang.__('update_progress')}",
         update_complete: "!{root.lang.__('update_complete')}",
         update_failed: "!{root.lang.__('update_failed')}",
+        restarting: "!{root.lang.__('restarting')}",
         restart_failed: "!{root.lang.__('restart_failed')}"
     };
 </script>

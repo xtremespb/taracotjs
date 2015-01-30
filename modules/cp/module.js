@@ -2,7 +2,7 @@ module.exports = function(app) {
 
     var updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
         modules_url = 'https://taracot.org/source/taracotjs',
-        proxy_url = '',  // Set undefined if no proxy
+        proxy_url = 'http://10.206.247.66:8080', // Set undefined if no proxy
         request = require("request"),
         router = app.get('express').Router(),
         os = require('os'),
@@ -168,6 +168,8 @@ module.exports = function(app) {
 
     router.post('/_update/start', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        var moment = require('moment');
+        moment.locale(req.session.current_locale);
         if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2)
             return res.send(JSON.stringify({
                 status: 0,
@@ -203,84 +205,98 @@ module.exports = function(app) {
             app.set('_cp_updater_messages', cp_updater_messages);
             app.set('_cp_updater_complete', undefined);
             app.set('_cp_updater_fail', undefined);
-            setTimeout(function() {
-                async.eachSeries(outdated_modules, function(module, callback) {
-                    cp_updater_messages.push(i18nm.__('downloading_module') + ": " + module);
-                    app.set('_cp_updater_messages', cp_updater_messages);
-                    var dest = app.get('path').join(__dirname, '..', app.get('config').dir.tmp, 'taracot_' + module + '.zip'),
-                        file = fs.createWriteStream(dest);
-                    request({
-                        method: 'GET',
-                        url: modules_url + '/taracot_' + module + '.zip',
-                        proxy: proxy_url,
-                        encoding: null
-                    }, function(error, response, body) {
-                        if (error || response.statusCode !== 200) return callback(i18nm.__('cannot_download') + ' ' + 'taracot_' + module + '.zip');
-                        cp_updater_messages.push(i18nm.__('saving_module') + ": " + module);
-                        app.set('_cp_updater_messages', cp_updater_messages);
-                        fs.writeFile(dest, body, function(err) {
-                            if (err) return callback(err);
-                            cp_updater_messages.push(i18nm.__('validating_checksum') + ": " + module);
+            fs.exists(app.get('config').dir.tmp + '/taracot_cp_updater.lock', function(lock_exists) {
+                if (lock_exists) return res.send(JSON.stringify({
+                    status: 0,
+                    error: i18nm.__('update_in_progress') + ': taracot_cp_updater.lock'
+                }));
+                fs.writeFile(app.get('config').dir.tmp + '/taracot_cp_updater.lock', Date.now(), function(err) {
+                    if (err) return res.send(JSON.stringify({
+                        status: 0,
+                        error: i18nm.__('cannot_create_lock') + ': taracot_cp_updater.lock'
+                    }));
+                    setTimeout(function() {
+                        async.eachSeries(outdated_modules, function(module, callback) {
+                            cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('downloading_module') + ": " + module);
                             app.set('_cp_updater_messages', cp_updater_messages);
-                            checksum.file(dest, function(err, module_sum) {
-                                if (err) return callback(err);
-                                if (module_sum != update_last[module].checksum) return callback(i18nm.__('invalid_checksum') + ": " + module);
-                                cp_updater_messages.push(i18nm.__('extracting_module') + ": " + module);
+                            var dest = app.get('path').join(__dirname, '..', app.get('config').dir.tmp, 'taracot_' + module + '.zip'),
+                                file = fs.createWriteStream(dest);
+                            request({
+                                method: 'GET',
+                                url: modules_url + '/taracot_' + module + '.zip',
+                                proxy: proxy_url,
+                                encoding: null
+                            }, function(error, response, body) {
+                                if (error || response.statusCode !== 200) return callback(i18nm.__('cannot_download') + ' ' + 'taracot_' + module + '.zip');
+                                cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('saving_module') + ": " + module);
                                 app.set('_cp_updater_messages', cp_updater_messages);
-                                var extract_path = app.get('path').join(__dirname, '..');
-                                if (module == 'core') extract_path = app.get('path').join(__dirname, '..', '..');
-                                var p;
-                                try {
-                                    p = fs.createReadStream(dest).pipe(unzip.Extract({
-                                        path: extract_path
-                                    }));
-                                } catch (ex) {
-                                    return callback(ex);
-                                }
-                                p.on('error', function(err) {
-                                    callback(err);
-                                });
-                                p.on('close', function() {
-                                    if (module == 'core') return callback();
-                                    // Run installation scripts
-                                    cp_updater_messages.push(i18nm.__('installing_module') + ": " + module);
-                                    try {
-                                        var installer = require('../' + module + '/install')(app.get('mongodb'), ensure_indexes, app.get('config'));
-                                        installer.collections(function(err) {
-                                            if (err) {
-                                                cp_updater_messages.push(err + ": " + module);
-                                                app.set('_cp_updater_messages', cp_updater_messages);
-                                            }
-                                            installer.indexes(function(err) {
-                                                if (err) {
-                                                    cp_updater_messages.push(err + ": " + module);
-                                                    app.set('_cp_updater_messages', cp_updater_messages);
-                                                }
-                                                installer.misc(function(err) {
+                                fs.writeFile(dest, body, function(err) {
+                                    if (err) return callback(err);
+                                    cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('validating_checksum') + ": " + module);
+                                    app.set('_cp_updater_messages', cp_updater_messages);
+                                    checksum.file(dest, function(err, module_sum) {
+                                        if (err) return callback(err);
+                                        if (module_sum != update_last[module].checksum) return callback(i18nm.__('invalid_checksum') + ": " + module);
+                                        cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('extracting_module') + ": " + module);
+                                        app.set('_cp_updater_messages', cp_updater_messages);
+                                        var extract_path = app.get('path').join(__dirname, '..');
+                                        if (module == 'core') extract_path = app.get('path').join(__dirname, '..', '..');
+                                        var p;
+                                        try {
+                                            p = fs.createReadStream(dest).pipe(unzip.Extract({
+                                                path: extract_path
+                                            }));
+                                        } catch (ex) {
+                                            return callback(ex);
+                                        }
+                                        p.on('error', function(err) {
+                                            callback(err);
+                                        });
+                                        p.on('close', function() {
+                                            if (module == 'core') return callback();
+                                            // Run installation scripts
+                                            cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('installing_module') + ": " + module);
+                                            try {
+                                                var installer = require('../' + module + '/install')(app.get('mongodb'), ensure_indexes, app.get('config'));
+                                                installer.collections(function(err) {
                                                     if (err) {
-                                                        cp_updater_messages.push(err + ": " + module);
+                                                        cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + err + ": " + module);
                                                         app.set('_cp_updater_messages', cp_updater_messages);
                                                     }
-                                                    return callback();
+                                                    installer.indexes(function(err) {
+                                                        if (err) {
+                                                            cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + err + ": " + module);
+                                                            app.set('_cp_updater_messages', cp_updater_messages);
+                                                        }
+                                                        installer.misc(function(err) {
+                                                            if (err) {
+                                                                cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + err + ": " + module);
+                                                                app.set('_cp_updater_messages', cp_updater_messages);
+                                                            }
+                                                            return callback();
+                                                        });
+                                                    });
                                                 });
-                                            });
+                                            } catch (ex) {
+                                                return callback(ex.message);
+                                            }
                                         });
-                                    } catch (ex) {
-                                        return callback(ex.message);
-                                    }
+                                    });
                                 });
                             });
+                        }, function(err) {
+                            if (err) {
+                                cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + err);
+                                app.set('_cp_updater_messages', cp_updater_messages);
+                                app.set('_cp_updater_fail', true);
+                            }
+                            fs.unlink(app.get('config').dir.tmp + '/taracot_cp_updater.lock', function(err) {
+                                app.set('_cp_updater_complete', true);
+                            });
                         });
-                    });
-                }, function(err) {
-                    if (err) {
-                        cp_updater_messages.push(err);
-                        app.set('_cp_updater_messages', cp_updater_messages);
-                        app.set('_cp_updater_fail', true);
-                    }
-                    app.set('_cp_updater_complete', true);
+                    }, 100);
                 });
-            }, 100);
+            });
             return res.send(JSON.stringify({
                 status: 1
             }));

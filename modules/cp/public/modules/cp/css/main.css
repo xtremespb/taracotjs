@@ -124,6 +124,7 @@ fieldset {
 .taracot-update-progress-box {
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
+	height: 100px;
 }
 .taracot-updates-exclamation {
 	color: red;

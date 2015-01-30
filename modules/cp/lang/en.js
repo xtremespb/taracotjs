@@ -59,10 +59,15 @@
 	"extracting_module": "Extracting module",
 	"cannot_get_update_status": "Error: cannot get update status",
 	"update_progress": "Update progress",
-	"update_complete": "TaracotJS has been sucessfully updated. Terminating the current instance and waiting for restart...",
+	"update_complete": "TaracotJS has been sucessfully updated. Waiting for restart...",
+	"restaring": "Restarting...",
 	"update_failed": "TaracotJS update has been failed. Please try to refresh this page and try to update again. If your TaracotJS instance will fail to response, please update manually using command line.",
 	"cannot_download": "Error while downloading",
 	"installing_module": "Installing module",
 	"restart_failed": "TaracotJS cannot be restarted. Please restart manually.",
-	"invalid_checksum": "Invalid checksum"
+	"invalid_checksum": "Invalid checksum",
+	"update_in_progress": "Update has been already started. Remove lock file",
+	"cannot_create_lock": "Error while creating lock file",
+	"cannot_remove_lock": "Error while removing lock file",
+	"restarting": "Restarting"
 }

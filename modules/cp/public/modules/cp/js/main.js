@@ -36,18 +36,20 @@ var check_update_status = function() {
                 for (var i = 0; i < data.messages.length; i++)
                     msg_html += '<li>' + data.messages[i] + '</li>';
             $('#taracot_updater_messages').html(msg_html);
+            $('.taracot-update-progress-box').scrollTop(1000000);
             if (data.complete) {
                 $('.taracot-update-progress-gif').hide();
                 if (data.failed) {
                     $('#taracot-update-progress').append('<p class="uk-alert uk-alert-danger">' + _lang_vars.update_failed + '</p>');
                 } else {
-                    $('#taracot-update-progress').append('<p class="uk-alert uk-alert-success">' + _lang_vars.update_complete + '</p><div class="uk-progress"><div class="uk-progress-bar" id="taracot_updater_restart_progress" style="width:100%;">0:' + downcounter + '</div></div>');
+                    $('#taracot-update-progress').append('<p class="uk-alert uk-alert-success taracot-alert-update-success">' + _lang_vars.update_complete + '</p><div class="uk-progress"><div class="uk-progress-bar" id="taracot_updater_restart_progress" style="width:100%;">0:' + downcounter + '</div></div>');
                     $.ajax({
                         type: 'POST',
                         url: '/cp/_update/restart',
                         dataType: "json",
                         success: function(data) {
                             if (data.status === 1) {
+                                $('.taracot-alert-update-success').html(_lang_vars.restarting);
                                 setTimeout(taracot_restart_countdown, 1000);
                             } else {
                                 $('#taracot_updater_restart_progress').parent().hide();
@@ -74,7 +76,10 @@ var check_update_status = function() {
             if (!data.complete && !data.failed) setTimeout(check_update_status, 1000);
         },
         error: function() {
+            $('.taracot-update-progress-gif').hide();
             $('#taracot_updater_messages').html('<li>' + _lang_vars.cannot_get_update_status + '</li>');
+            $('#taracot-update-progress').append('<p class="uk-alert uk-alert-danger">' + _lang_vars.update_failed + '</p>');
+            $('.taracot-update-progress-box').scrollTop(1000000);
         }
     });
 };
@@ -82,7 +87,7 @@ var check_update_status = function() {
 var taracot_btn_update_start_handler = function() {
     $('.taracot-dlg-update-footer').hide();
     var _text_save = $('#taracot-update-progress').html();
-    $('#taracot-update-progress').html('<p class="taracot-update-progress-gif"><img src="/modules/cp/images/loading_36x36.gif"></p><i class="uk-icon-circle-o"></i> ' + _lang_vars.initializing_update + '<br>');
+    $('#taracot-update-progress').html('<p class="taracot-update-progress-gif"><img src="/modules/cp/images/loading_36x36.gif" class="uk-float-right"></p><i class="uk-icon-check"></i> ' + _lang_vars.initializing_update + '<br>');
     $.ajax({
         type: 'POST',
         url: '/cp/_update/start',
@@ -90,7 +95,7 @@ var taracot_btn_update_start_handler = function() {
         success: function(data) {
             if (data) {
                 if (data.status === 1) {
-                    $('#taracot-update-progress').append('<i class="uk-icon-circle-o"></i> ' + _lang_vars.update_started + '<p>' + _lang_vars.update_progress + ':</p><div class="uk-panel uk-panel-box taracot-update-progress-box"><div id="taracot_updater_messages" class="uk-list uk-list-line"></div></div>');
+                    $('#taracot-update-progress').append('<i class="uk-icon-check"></i> ' + _lang_vars.update_started + '<p>' + _lang_vars.update_progress + ':</p><div class="uk-scrollable-box taracot-update-progress-box"><div id="taracot_updater_messages" class="uk-list uk-list-line"></div></div>');
                     setTimeout(check_update_status, 1000);
                 } else {
                     var err = data.error || _lang_vars.ajax_failed;
