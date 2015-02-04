@@ -73,7 +73,6 @@ var mongo_url = config.mongo.url,
         });
     };
 
-console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
 console.log("This script will UNINSTALL modules from your TaracotJS installation. All data will be dropped.\n");
 console.log("A working MongoDB connection is required.");
 console.log("Current MongoDB URL: " + mongo_url + "\n");

@@ -57,7 +57,6 @@ var uninstall = function() {
         });
     });
 };
-console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
 console.log("This script clean up the current database. All data will be lost.\n");
 console.log("Database connection is required.");
 console.log("Current MongoDB URL: " + mongo_url + "\n");

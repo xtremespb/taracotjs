@@ -26,7 +26,6 @@ var mongo_url = program.mongo || config.mongo.url,
 
 async.series([
         function(callback) {
-            console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
             console.log("This script will guide you with TaracotJS basic installation steps.\n");
             console.log("A working MongoDB connection is required.");
             console.log("Current MongoDB URL: " + mongo_url + "\n");
