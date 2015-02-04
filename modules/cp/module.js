@@ -2,7 +2,7 @@ module.exports = function(app) {
 
     var updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
         modules_url = 'https://taracot.org/source/taracotjs',
-        proxy_url = 'http://10.206.247.66:8080', // Set undefined if no proxy
+        proxy_url = '', // Set undefined if no proxy
         request = require("request"),
         router = app.get('express').Router(),
         os = require('os'),

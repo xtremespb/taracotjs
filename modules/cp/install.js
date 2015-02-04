@@ -1,7 +1,7 @@
 module.exports = function(db, ensure_indexes, config) {
     var is = {
             name: 'cp',
-            version: '0.5.29',
+            version: '0.5.30',
             collections: function(_callback) {
                 // Create collections
                 _callback();
