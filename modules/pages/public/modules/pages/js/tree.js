@@ -56,8 +56,10 @@ var btn_folders_click_handler = function() {
 	});
 };
 
-$('#btn-folders').click(function() {
-	push_state({ mode: 'folders' }, "?mode=folders");
+$('#btn_folders').click(function() {
+	push_state({
+        mode: 'folders'
+    }, "?mode=folders");
 	show_folders();
 });
 

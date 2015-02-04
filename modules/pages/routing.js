@@ -1,6 +1,6 @@
 var routing = {
     prefix: '',
-    cp_id: 'parts',
+    cp_id: 'pages',
     cp_prefix: '/cp/pages/'
 };
 

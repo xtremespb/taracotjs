@@ -1,31 +1,39 @@
 module.exports = function(app) {
+
     // Sort order hash
+
     var sort_cells = {
-        pfolder: 1,
-        pfilename: 1,
-        ptitle: 1,
-        plang: 1
-    };
-    var sort_cell_default = 'pfolder';
-    var sort_cell_default_mode = 1;
+            pfolder: 1,
+            pfilename: 1,
+            plock: 1,
+            ptitle: 1
+        },
+        sort_cell_default = 'pfolder',
+        sort_cell_default_mode = 1;
+
     // Set items per page for this module
+
     var items_per_page = 30;
-    //
-    var router = app.get('express').Router();
-    var ObjectId = require('mongodb').ObjectID;
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
-    var parser = app.get('parser');
+
+    var router = app.get('express').Router(),
+        ObjectId = require('mongodb').ObjectID,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: app.get('path').join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        }),
+        parser = app.get('parser'),
+        async = require('async');
+
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
     };
+
     router.get('/', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+
         if (!req.session.auth || req.session.auth.status < 2) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/cp/pages';
@@ -38,8 +46,10 @@ module.exports = function(app) {
         }, {
             limit: 1
         }).toArray(function(err, items) {
+
             var folders;
             if (!items || !items.length || !items[0].ovalue) {
+                // Set default value for folders
                 folders = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
             } else {
                 folders = items[0].ovalue;
@@ -51,10 +61,12 @@ module.exports = function(app) {
                 locales: JSON.stringify(app.get('config').locales.avail),
                 layouts: JSON.stringify(app.get('config').layouts)
             }, req);
+
             app.get('cp').render(req, res, {
                 body: body,
                 css: '<link rel="stylesheet" href="/modules/pages/css/main.css">' + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">'
             }, i18nm, 'pages', req.session.auth);
+
         });
     });
 
@@ -73,41 +85,32 @@ module.exports = function(app) {
         var query = req.body.query;
         var sort_mode = req.body.sort_mode;
         var sort_cell = req.body.sort_cell;
-        if (typeof skip != 'undefined') {
+        if (typeof skip != 'undefined')
             if (!skip.match(/^[0-9]{1,10}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
-        }
-        if (typeof query != 'undefined') {
+        if (typeof query != 'undefined')
             if (!query.match(/^[\w\sА-Яа-я0-9_\-\.]{3,40}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
-        }
-        // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         var sort = {};
         sort[sort_cell_default] = sort_cell_default_mode;
-        if (typeof sort_cell != 'undefined') {
-            if (typeof sort_cells[sort_cell] != 'undefined') {
-                sort = {};
-                sort[sort_cell] = 1;
-                if (typeof sort_mode != 'undefined' && sort_mode == -1) {
-                    sort[sort_cell] = -1;
-                }
+        if (sort_cells && sort_cells[sort_cell]) {
+            sort = {};
+            sort[sort_cell] = 1;
+            if (typeof sort_mode != 'undefined' && sort_mode == -1) {
+                sort[sort_cell] = -1;
             }
         }
-        // Get pages from MongoDB
         rep.items = [];
         var find_query = {};
         if (query) {
@@ -115,11 +118,12 @@ module.exports = function(app) {
                 $or: [{
                     pfilename: new RegExp(query, 'i')
                 }, {
-                    ptitle: new RegExp(query, 'i')
-                }, {
                     pfolder: new RegExp(query, 'i')
                 }]
             };
+            var tsq = {};
+            tsq["pdata." + req.session.current_locale + '.ptitle'] = new RegExp(query, 'i');
+            find_query.$or.push(tsq);
         }
         app.get('mongodb').collection('pages').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
@@ -128,8 +132,7 @@ module.exports = function(app) {
                     skip: skip,
                     limit: items_per_page
                 }).sort(sort).toArray(function(err, items) {
-                    if (typeof items != 'undefined' && !err) {
-                        // Generate array
+                    if (!err && items && items.length) {
                         for (var i = 0; i < items.length; i++) {
                             var arr = [];
                             arr.push(items[i]._id);
@@ -138,8 +141,9 @@ module.exports = function(app) {
                                 items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
                             }
                             arr.push(items[i].pfolder + items[i].pfilename);
-                            arr.push(items[i].ptitle);
-                            arr.push(items[i].plang);
+                            if (items[i].pdata && items[i].pdata[req.session.current_locale])
+                                arr.push(items[i].pdata[req.session.current_locale].ptitle);
+                            arr.push(items[i].plock);
                             rep.items.push(arr);
                         }
                     }
@@ -166,16 +170,19 @@ module.exports = function(app) {
             return;
         }
         var rep = {
-            items: []
-        }
+                items: []
+            },
+            get_what = {
+                pfilename: 1,
+                pfolder: 1
+            },
+            get_sort = {};
+        get_what['pdata.' + lng + '.ptitle'] = 1;
+        get_sort['pdata.' + lng + '.ptitle'] = 1;
         // Get pages from MongoDB
-        app.get('mongodb').collection('pages').find({
-            "plang": lng
-        }, {
+        app.get('mongodb').collection('pages').find({}, get_what, {
             limit: 1000
-        }).sort({
-            "ptitle": 1
-        }).toArray(function(err, items) {
+        }).sort(get_sort).toArray(function(err, items) {
             if (typeof items != 'undefined' && !err) {
                 // Generate array
                 for (var i = 0; i < items.length; i++) {
@@ -185,7 +192,8 @@ module.exports = function(app) {
                         items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
                     }
                     arr.push(items[i].pfolder + items[i].pfilename);
-                    arr.push(items[i].ptitle);
+                    if (!items[i].pdata[lng]) items[i].pdata[lng] = {};
+                    arr.push(items[i].pdata[lng].ptitle);
                     rep.items.push(arr);
                 }
             }
@@ -210,7 +218,9 @@ module.exports = function(app) {
         app.get('mongodb').collection('pages').find({
             pfilename: ''
         }, {
-            limit: 100
+            pfolder: 1
+        }, {
+            limit: 1000
         }).toArray(function(err, items) {
             rep.root_pages = [];
             if (!err && typeof items != 'undefined') {
@@ -224,97 +234,124 @@ module.exports = function(app) {
     router.post('/data/load', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         var rep = {};
-        var id = req.body.pid;
-        if (id && !id.match(/^[a-f0-9]{24}$/)) {
+        var id = req.body.pid,
+            unlock = req.body.unlock;
+        if (!id || !id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_query");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
-        // Get pages from MongoDB
-        rep.data = {};
-        app.get('mongodb').collection('pages').find({
-            pfilename: ''
-        }, {
-            limit: 100
-        }).toArray(function(err, items) {
-            rep.root_pages = [];
-            if (!err && typeof items != 'undefined') {
-                for (var i = 0; i < items.length; i++) rep.root_pages.push(items[i].pfolder);
-            }
-            app.get('mongodb').collection('pages').find({
-                _id: new ObjectId(id)
-            }, {
-                limit: 1
-            }).toArray(function(err, items) {
-                if (typeof items != 'undefined' && !err) {
-                    if (items.length > 0) {
-                        rep.data = items[0];
-                        // Set lock
-                        if (!rep.data.lock_username) {
-                            rep.data.lock_username = req.session.auth.username;
-                            rep.data.lock_timestamp = Date.now();
-                            app.get('mongodb').collection('pages').update({
-                                _id: new ObjectId(id)
-                            }, {
-                                $set: {
-                                    lock_username: rep.data.lock_username,
-                                    lock_timestamp: rep.data.lock_timestamp
-                                }
-                            }, function(_err) {});
+        var root_pages = [];
+        async.series([
+                function(callback) {
+                    // Get root pages
+                    app.get('mongodb').collection('pages').find({
+                        pfilename: ''
+                    }, {
+                        pfolder: 1
+                    }, {
+                        limit: 1000
+                    }).toArray(function(err, items) {
+                        if (!err && typeof items != 'undefined') {
+                            for (var i = 0; i < items.length; i++) root_pages.push(items[i].pfolder);
                         }
+                        callback();
+                    });
+                },
+                function(callback) {
+                    // Unlock
+                    if (unlock) {
+                        app.get('mongodb').collection('pages').update({
+                            _id: new ObjectId(id)
+                        }, {
+                            $set: {
+                                plock: ''
+                            }
+                        }, function(err) {
+                            return callback();
+                        });
+                    } else {
+                        callback();
+                    }
+                },
+                function(callback) {
+                    // Get page from MongoDB
+                    app.get('mongodb').collection('pages').find({
+                        _id: new ObjectId(id)
+                    }).toArray(function(err, page_data) {
+                        if (err || !page_data || !page_data.length) {
+                            rep.status = 0;
+                            rep.error = i18nm.__("no_results_in_table");
+                            return callback(true);
+                        }
+                        rep.status = 1;
+                        rep.pages_data = page_data[0];
+                        rep.root_pages = root_pages;
+                        return callback();
+                    });
+                },
+                function(callback) {
+                    // Set locking
+                    if (rep.pages_data && !rep.pages_data.plock) {
+                        app.get('mongodb').collection('pages').update({
+                            _id: new ObjectId(id)
+                        }, {
+                            $set: {
+                                plock: req.session.auth.username
+                            }
+                        }, function(err) {
+                            return callback();
+                        });
+                    } else {
+                        callback();
                     }
                 }
-                // Return results
-                rep.status = 1;
-                res.send(JSON.stringify(rep));
-            });
-        });
+            ],
+            function(err) {
+                return res.send(JSON.stringify(rep));
+            }
+        );
     });
 
-    router.post('/data/lock', function(req, res) {
+    router.post('/data/unlock', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        var rep = {};
+        var id = req.body.pid;
+        if (!id || !id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var rep = {};
-        var id = req.body.pid;
-        var lock_username = req.body.username;
-        if ((id && !id.match(/^[a-f0-9]{24}$/)) || lock_username.length > 80) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_query");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var data = {};
-        if (!lock_username) lock_username = '';
-        data.lock_username = '';
-        if (lock_username) data.lock_timestamp = 1000;
-        app.get('mongodb').collection('pages').update({
-            _id: new ObjectId(id)
-        }, {
-            $set: data
-        }, function(_err) {
-            if (_err) {
-                rep.status = 0;
-                rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
-            }
-            rep.status = 1;
             return res.send(JSON.stringify(rep));
-        });
+        }
+        async.series([
+                function(callback) {
+                    // Unlock
+                    app.get('mongodb').collection('pages').update({
+                        _id: new ObjectId(id)
+                    }, {
+                        $set: {
+                            plock: undefined
+                        }
+                    }, function(err) {
+                        return callback();
+                    });
+                }
+            ],
+            function(err) {
+                return res.send(JSON.stringify(rep));
+            }
+        );
     });
 
     router.post('/data/save', function(req, res) {
@@ -330,252 +367,167 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
-        var ptitle = req.body.ptitle,
-            pfilename = req.body.pfilename,
-            pfolder = req.body.pfolder,
-            pfolder_id = req.body.pfolder_id,
-            plang = req.body.plang,
-            plangcopy = req.body.plangcopy,
-            playout = req.body.playout,
-            pkeywords = req.body.pkeywords,
-            pdesc = req.body.pdesc,
-            pcontent = req.body.pcontent,
-            id = req.body.pid,
-            current_timestamp = req.body.current_timestamp;
-        if (typeof id != 'undefined' && id) {
-            if (!id.match(/^[a-f0-9]{24}$/)) {
+        // Fields validation
+        var pages_data = req.body.save_data;
+        if (!pages_data) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        if (pages_data._id)
+            if (!pages_data._id.match(/^[a-f0-9]{24}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
-        }
-        var _plang = app.get('config').locales.avail[0];
-        for (var i = 0; i < app.get('config').locales.avail.length; i++) {
-            if (plang == app.get('config').locales.avail[i]) {
-                _plang = app.get('config').locales.avail[i];
-            }
-        }
-        plang = _plang;
-        var _playout = app.get('config').layouts.default;
-        for (var j = 0; j < app.get('config').layouts.avail.length; j++) {
-            if (playout == app.get('config').layouts.avail[j]) {
-                _playout = app.get('config').layouts.avail[j];
-            }
-        }
-        playout = _playout;
-        // Check form fields
-        if (!ptitle || !ptitle.length || ptitle.length > 100) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_ptitle");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        if (!pfolder_id.match(/^[A-Za-z0-9_\-\.]{1,20}$/)) {
+        if (!pages_data.pfolder_id || !pages_data.pfolder_id.match(/^[A-Za-z0-9_\-\.]{1,20}$/)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_folder");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
-        if (!pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
+        if (pages_data.pfilename && (!pages_data.pfilename || !pages_data.pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/))) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_pfilename");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
-        // Save
-
-        app.get('mongodb').collection('menu').find({
-            lang: plang
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            var search_data = parser.words(parser.html2text(pcontent), ptitle);
-            if (id) {
-                app.get('mongodb').collection('menu').find({
-                    lang: plang
-                }, {
-                    limit: 1
-                }).toArray(function(err, items) {
-                    var menu_source, menu_uikit, menu_uikit_offcanvas, menu_raw, menu_id;
-                    if (!err && items && items.length && items[0].menu_source && items[0].menu_raw && items[0].menu_uikit) {
-                        menu_source = items[0].menu_source;
-                        menu_raw = items[0].menu_raw;
-                        menu_uikit = items[0].menu_uikit;
-                        menu_uikit_offcanvas = items[0].menu_uikit_offcanvas;
-                    }
+        if (!pages_data.pfilename) pages_data.pfilename = '';
+        if (!pages_data.pdata || typeof pages_data.pdata != 'object') {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        for (var pd in pages_data.pdata) {
+            if (!pages_data.pdata[pd].ptitle || pages_data.pdata[pd].ptitle.length > 100) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
+            }
+            var _plang = app.get('config').locales.avail[0];
+            for (var i = 0; i < app.get('config').locales.avail.length; i++)
+                if (pages_data.pdata[pd].plang == app.get('config').locales.avail[i])
+                    _plang = app.get('config').locales.avail[i];
+            pages_data.pdata[pd].plang = _plang;
+            var _playout = app.get('config').layouts.default;
+            for (var j = 0; j < app.get('config').layouts.avail.length; j++)
+                if (pages_data.pdata[pd].playout == app.get('config').layouts.avail[j])
+                    _playout = app.get('config').layouts.avail[j];
+            pages_data.pdata[pd].playout = _playout;
+        }
+        var update = {
+            pfilename: pages_data.pfilename,
+            pfolder: pages_data.pfolder,
+            pfolder_id: pages_data.pfolder_id,
+            pdata: {}
+        };
+        for (var l in app.get('config').locales.avail)
+            if (pages_data.pdata[app.get('config').locales.avail[l]]) {
+                var lang = app.get('config').locales.avail[l];
+                update.pdata[lang] = {};
+                try {
+                    update.pdata[lang].ptitle = pages_data.pdata[lang].ptitle;
+                    update.pdata[lang].pkeywords = pages_data.pdata[lang].pkeywords;
+                    update.pdata[lang].pdesc = pages_data.pdata[lang].pdesc;
+                    update.pdata[lang].pcontent = pages_data.pdata[lang].pcontent;
+                } catch (ex) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query") + ' (' + ex + ')';
+                    return res.send(JSON.stringify(rep));
+                }
+            }
+        async.series([
+            function(callback) {
+                if (pages_data._id) {
                     app.get('mongodb').collection('pages').find({
-                        pfilename: pfilename,
-                        pfolder: pfolder,
-                        plang: plang,
-                        _id: {
-                            $ne: new ObjectId(id)
-                        }
+                        _id: new ObjectId(pages_data._id)
                     }, {
-                        limit: 1
+                        plock: 1
                     }).toArray(function(err, items) {
-                        if ((typeof items != 'undefined' && items.length > 0) || err) {
-                            rep.status = 0;
-                            rep.error = i18nm.__("page_exists");
-                            rep.err_fields.push('pfilename');
-                            res.send(JSON.stringify(rep));
-                            return;
-                        }
-                        app.get('mongodb').collection('pages').find({
-                            _id: new ObjectId(id)
-                        }, {
-                            limit: 1
-                        }).toArray(function(err, items) {
-                            if (typeof items != 'undefined' && !err) {
-                                if (items.length > 0) {
-                                    var update = {
-                                        ptitle: ptitle,
-                                        pfilename: pfilename,
-                                        pfolder: pfolder,
-                                        pfolder_id: pfolder_id,
-                                        plang: plang,
-                                        playout: playout,
-                                        pkeywords: pkeywords,
-                                        pdesc: pdesc,
-                                        pcontent: pcontent,
-                                        lock_username: '',
-                                        lock_timestamp: 0,
-                                        last_modified: Date.now()
-                                    };
-                                    if (items[0].lock_username && items[0].lock_username != req.session.auth.username) {
-                                        rep.status = 0;
-                                        rep.lock_username = items[0].lock_username;
-                                        rep.lock_timestamp = items[0].lock_timestamp;
-                                        rep.locked = 1;
-                                        return res.send(JSON.stringify(rep));
-                                    }
-                                    if (items[0].last_modified && items[0].last_modified != current_timestamp) {
-                                        rep.status = 0;
-                                        rep.outdated = 1;
-                                        rep.current_timestamp = items[0].last_modified;
-                                        return res.send(JSON.stringify(rep));
-                                    }
-                                    app.get('mongodb').collection('pages').update({
-                                        _id: new ObjectId(id)
-                                    }, update, function(_err) {
-                                        rep.status = 1;
-                                        res.send(JSON.stringify(rep));
-                                        if (!_err) {
-                                            var data1 = app.get('mongodb').collection('search_index').find({
-                                                space: 'pages',
-                                                item_id: id
-                                            }).toArray(function(si_err, si_items) {
-                                                if (err) return;
-                                                var url = pfolder + '/' + pfilename;
-                                                url = url.replace(/(\/+)/, '/');
-                                                var data = {
-                                                    swords: search_data.words,
-                                                    sdesc: search_data.desc,
-                                                    stitle: ptitle,
-                                                    slang: plang,
-                                                    surl: url
-                                                };
-                                                if (si_items && si_items.length) {
-                                                    app.get('mongodb').collection('search_index').update({
-                                                        item_id: id
-                                                    }, {
-                                                        $set: data
-                                                    }, function() {});
-                                                } else {
-                                                    data.item_id = id;
-                                                    data.space = 'pages';
-                                                    app.get('mongodb').collection('search_index').insert(data, function() {});
-                                                }
-                                            });
-                                        }
-                                    });
-                                    if (menu_source) {
-                                        var url_old = items[0].pfolder;
-                                        if (url_old != '/') url_old += '/';
-                                        url_old += items[0].pfilename;
-                                        if (items[0].pfolder != '/') {
-                                            url_old = url_old.replace(/\/$/, '');
-                                        }
-                                        var url_new = pfolder;
-                                        if (url_new != '/') url_new += '/';
-                                        url_new += pfilename;
-                                        if (pfolder != '/') {
-                                            url_new = url_new.replace(/\/$/, '');
-                                        }
-                                        var rx1 = new RegExp('href=\"' + url_old + '\"');
-                                        var rx2 = new RegExp('>' + url_old + '<');
-                                        menu_source = menu_source.replace(rx1, 'href="' + url_new + '"').replace(rx2, '>' + url_new + '<');
-                                        menu_raw = menu_raw.replace(rx1, 'href="' + url_new + '"');
-                                        menu_uikit = menu_uikit.replace(rx1, 'href="' + url_new + '"');
-                                        menu_uikit_offcanvas = menu_uikit_offcanvas.replace(rx1, 'href="' + url_new + '"');
-                                        var data = {
-                                            lang: plang,
-                                            menu_source: menu_source,
-                                            menu_raw: menu_raw,
-                                            menu_uikit: menu_uikit,
-                                            menu_uikit_offcanvas: menu_uikit_offcanvas
-                                        };
-                                        app.get('mongodb').collection('menu').update({
-                                            lang: plang
-                                        }, data, function() {});
-                                    }
-                                    return;
-                                }
-                            } else {
+                        if (items && items.length)
+                            if (items[0].plock && items[0].plock != req.session.auth.username) {
                                 rep.status = 0;
-                                rep.error = i18nm.__("id_not_found");
-                                res.send(JSON.stringify(rep));
+                                rep.error = i18nm.__("locked_by") + ': ' + items[0].plock;
+                                return callback(true);
                             }
-                        });
+                        callback();
                     });
-                });
-            } else {
-                var data1 = app.get('mongodb').collection('pages').find({
-                    pfilename: pfilename,
-                    pfolder: pfolder,
-                    plang: plang,
+                } else {
+                    callback();
+                }
+            },
+            function(callback) {
+                var query = {
+                    pfilename: pages_data.pfilename,
+                    pfolder: pages_data.pfolder
+                };
+                if (pages_data._id)
+                    query._id = {
+                        $ne: new ObjectId(pages_data._id)
+                    };
+                app.get('mongodb').collection('pages').find(query, {
+                    pfilename: 1
                 }, {
                     limit: 1
                 }).toArray(function(err, items) {
-                    if ((typeof items != 'undefined' && items.length > 0) || err) {
+                    if (err || (items && items.length)) {
                         rep.status = 0;
                         rep.error = i18nm.__("page_exists");
-                        rep.err_fields.push('pfilename');
-                        res.send(JSON.stringify(rep));
-                        return;
+                        return callback(true);
                     }
-                    app.get('mongodb').collection('pages').insert({
-                        ptitle: ptitle,
-                        pfilename: pfilename,
-                        pfolder: pfolder,
-                        pfolder_id: pfolder_id,
-                        plang: plang,
-                        playout: playout,
-                        pkeywords: pkeywords,
-                        pdesc: pdesc,
-                        pcontent: pcontent,
-                        last_modified: Date.now()
-                    }, function(_err, _items) {
-                        if (!_err) {
-                            var url = pfolder + '/' + pfilename;
-                            url = url.replace(/(\/+)/, '/');
-                            var data = {
-                                swords: search_data.words,
-                                slang: plang,
-                                sdesc: search_data.desc,
-                                stitle: ptitle,
-                                surl: url,
-                                item_id: _items[0]._id.toHexString(),
-                                space: 'pages'
-                            };
-                            app.get('mongodb').collection('search_index').insert(data, function() {});
-                        }
-                        rep.status = 1;
-                        res.send(JSON.stringify(rep));
+                    callback();
+                });
+            },
+            function(callback) {
+                var update_query = {
+                    pfilename: pages_data.pfilename,
+                    pfolder: pages_data.pfolder,
+                };
+                if (pages_data._id)
+                    update_query = {
+                        _id: new ObjectId(pages_data._id)
+                    };
+                app.get('mongodb').collection('pages').update(update_query, update, {
+                    safe: false,
+                    upsert: true
+                }, function(err, result) {
+                    if (err) return callback(true);
+                    if (result && result._id) pages_data._id = result._id;
+                    return callback();
+                });
+            },
+            function(callback) {
+                var search_data = [];
+                for (var pd in pages_data.pdata)
+                    search_data.push({
+                        pr: parser.words(parser.html2text(pages_data.pdata[pd].pcontent), pages_data.pdata[pd].ptitle),
+                        title: pages_data.pdata[pd].ptitle,
+                        lang: pd,
+                        desc: pages_data.pdata[pd].pdesc
                     });
+                async.eachSeries(search_data, function(pd, _callback) {
+                    var data = {
+                        swords: pd.pr.words,
+                        sdesc: pd.pr.desc,
+                        stitle: pd.title,
+                        slang: pd.lang,
+                        item_id: pages_data._id,
+                        surl: (pages_data.pfolder + '/' + pages_data.pfilename).replace(/(\/+)/, '/'),
+                        space: 'pages'
+                    };
+                    app.get('mongodb').collection('search_index').update({
+                        item_id: pages_data._id,
+                        slang: pd.lang
+                    }, data, {
+                        upsert: true,
+                        safe: false
+                    }, function() {
+                        _callback();
+                    });
+                }, function(err) {
+                    callback();
                 });
             }
-
+        ], function(err) {
+            return res.send(JSON.stringify(rep));
         });
     });
 

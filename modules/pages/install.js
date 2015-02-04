@@ -1,8 +1,9 @@
 module.exports = function(db, ensure_indexes, config) {
     var async = require('async'),
+        ObjectId = require('mongodb').ObjectID,
         is = {
             name: 'pages',
-            version: '0.5.29',
+            version: '0.5.35',
             collections: function(_callback) {
                 // Create collections
                 async.series([
@@ -27,8 +28,14 @@ module.exports = function(db, ensure_indexes, config) {
                 // Create indexes
                 async.series([
                     function(callback) {
-                        ensure_indexes('pages', ['pfolder', 'pfilename', 'plang', 'ptitle'], null, null, function() {
-                            callback();
+                        ensure_indexes('pages', ['pfolder', 'pfilename', 'ptitle'], null, null, function() {
+                            async.eachSeries(config.locales.avail, function(lng, __callback) {
+                                ensure_indexes('pages', ['pdata.' + lng + '.ptitle'], null, null, function() {
+                                    __callback();
+                                });
+                            }, function(err) {
+                                callback();
+                            });
                         });
                     },
                     function(callback) {
@@ -46,15 +53,24 @@ module.exports = function(db, ensure_indexes, config) {
                 async.series([
                         function(callback) {
                             db.collection('pages').insert({
-                                ptitle: 'Default page',
-                                pfolder: '/',
-                                pfilename: '',
-                                plang: 'en',
-                                playout: config.layouts.default,
-                                pfolder_id: 'j1_1',
-                                pkeywords: 'sample, keywords, here',
-                                pdesc: 'This is the sample page',
-                                pcontent: 'The installation is complete ;-)'
+                                "_id": new ObjectId('54d23755b91e307022edb199'),
+                                "pfilename": "",
+                                "pfolder": "/",
+                                "pfolder_id": "j1_1",
+                                "pdata": {
+                                    "en": {
+                                        "ptitle": "Default page",
+                                        "pkeywords": "sample, keywords, here",
+                                        "pdesc": "This is the sample page",
+                                        "pcontent": "<p>Congratulations! The installation is complete.</p>\n\n<p>Get started the administration of your TaracotJS installation: <a href=\"/cp\">control panel</a> (username &quot;admin&quot;, password &quot;admin&quot; without quotes by default).</p>\n\n<p>You can get more info on using TaracotJS here:</p>\n\n<ul>\n\t<li><a href=\"https://taracot.org\">official website</a></li>\n\t<li><a href=\"https://github.com/xtremespb/taracotjs\">sources at GitHub</a></li>\n\t<li><a href=\"https://demo.taracot.org\">demo website</a></li>\n</ul>\n\n<p>Please don&#39;t hesitate to post any comments or bugs at GitHub website.</p>\n"
+                                    },
+                                    "ru": {
+                                        "ptitle": "Главная страница",
+                                        "pkeywords": "образец, ключевых, слов",
+                                        "pdesc": "Тестовая страница",
+                                        "pcontent": "<p>Поздравляем! Установка TaracotJS успешно выполнена.</p>\n\n<p>Начните управление Вашим сайтом, зайдя в <a href=\"/cp\">панель управления</a> (имя пользователя &quot;admin&quot;, пароль &quot;admin&quot; без кавычек по умолчанию).</p>\n\n<p>Больше информации о системе:</p>\n\n<ul>\n\t<li><a href=\"https://taracot.org\">официальный веб-сайт</a></li>\n\t<li><a href=\"https://github.com/xtremespb/taracotjs\">исходный код на GitHub</a></li>\n\t<li><a href=\"https://demo.taracot.org\">демонстрационный сайт</a></li>\n</ul>\n\n<p>Пожалуйста, не стесняйтесь отправлять Ваши замечания, пожалания и баги на GitHub.</p>\n"
+                                    }
+                                }
                             }, function(err) {
                                 if (err) return callback(err);
                                 callback();
@@ -62,29 +78,13 @@ module.exports = function(db, ensure_indexes, config) {
                         },
                         function(callback) {
                             db.collection('search_index').insert({
-                                "item_id": "54c0ef39c00ad59027af778a",
-                                "sdesc": "The installation is complete ;-)",
-                                "slang": "en",
-                                "space": "pages",
+                                "swords": "congratulations the installation complete get started administration your taracotjs control panel username admin password without quotes default you can more info using here official website httpstaracotorg sources github httpsgithubcomxtremespbtaracotjs demo httpsdemotaracotorg please don't hesitate post any comments bugs page",
+                                "sdesc": "",
                                 "stitle": "Default page",
+                                "slang": "en",
+                                "item_id": "54d23755b91e307022edb199",
                                 "surl": "/",
-                                "swords": "installation complete default page"
-                            }, function(err) {
-                                if (err) return callback(err);
-                                callback();
-                            });
-                        },
-                        function(callback) {
-                            db.collection('pages').insert({
-                                ptitle: 'Главная страница',
-                                pfolder: '/',
-                                pfilename: '',
-                                plang: 'ru',
-                                playout: config.layouts.default,
-                                pfolder_id: 'j1_1',
-                                pkeywords: 'образец, ключевых, слов',
-                                pdesc: 'Тестовая страница',
-                                pcontent: 'Инсталляция успешно выполнена ;-)'
+                                "space": "pages"
                             }, function(err) {
                                 if (err) return callback(err);
                                 callback();
@@ -92,12 +92,12 @@ module.exports = function(db, ensure_indexes, config) {
                         },
                         function(callback) {
                             db.collection('search_index').insert({
-                                "swords": "инсталляция успешно выполнена главная страница",
-                                "sdesc": "Инсталляция успешно выполнена ;-)",
+                                "swords": "поздравляем установка taracotjs успешно выполнена начните управление вашим сайтом зайдя панель управления имя пользователя admin пароль без кавычек умолчанию больше информации системе официальный веб-сайт httpstaracotorg исходный код github httpsgithubcomxtremespbtaracotjs демонстрационный сайт httpsdemotaracotorg пожалуйста стесняйтесь отправлять ваши замечания пожалания баги главная страница",
+                                "sdesc": "",
                                 "stitle": "Главная страница",
                                 "slang": "ru",
+                                "item_id": "54d23755b91e307022edb199",
                                 "surl": "/",
-                                "item_id": "54c0ef39c00ad59027af778b",
                                 "space": "pages"
                             }, function(err) {
                                 if (err) return callback(err);
