@@ -24,9 +24,10 @@ module.exports = function(app) {
                 desc = _desc;
             }
             var _desc_str = _desc.join(' ');
+            if (_desc_str.indexOf('!{root.') > -1) _desc_str = _desc_str.substring(0, _desc_str.indexOf('!{root.'));
             return {
                 words: words.join(' '),
-                desc: _desc_str.substring(0, _desc_str.indexOf('!{root.'))
+                desc: _desc_str
             };
         },
         stem_all: function(words) {
