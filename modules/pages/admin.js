@@ -59,7 +59,8 @@ module.exports = function(app) {
                 folders: folders,
                 auth: req.session.auth,
                 locales: JSON.stringify(app.get('config').locales.avail),
-                layouts: JSON.stringify(app.get('config').layouts)
+                layouts: JSON.stringify(app.get('config').layouts),
+                current_locale: req.session.current_locale
             }, req);
 
             app.get('cp').render(req, res, {

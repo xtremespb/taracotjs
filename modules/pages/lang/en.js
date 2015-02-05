@@ -72,12 +72,15 @@
 	"root_page": "Root page",
 	"root_page_hint": "Root page is a default page for selected folder. There could be just one root page per folder.",
 	"control_panel": "Control panel",
-	"parts": "Parts",
 	"invalid_pfilename": "Invalid filename",
 	"mode_folders": "Folders",
 	"mode_pages": "Pages",
 	"locked_by": "Locked by",
 	"document_locked": "Document is locked",
 	"document_locked_desc": "Document is currently locked by another user. If you unlock this document, another user won't be able to save his changes.",
-	"unlock_document": "Unlock document"
+	"unlock_document": "Unlock document",
+	"document_unsaved": "Unsaved document",
+	"document_unsaved_desc": "There is an unsaved document has been kept in memory. This happend because you have changed the page without clicking either &quot;Save&quot; or &quot;Cancel&quot; buttons.",
+	"document_unsaved_title": "Document title",
+	"restore_document": "Restore document"
 }

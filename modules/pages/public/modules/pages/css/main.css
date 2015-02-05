@@ -56,3 +56,6 @@ th.taracot_table_sortable {
 .taracot-page-language-switchbox {
 	padding: 5px;
 }
+#document_unsaved_title {
+	font-weight: bold;
+}

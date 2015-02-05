@@ -16,9 +16,6 @@
         </div>&nbsp;&nbsp;
         <button class="uk-button" id="btn_folders"><i class="uk-icon-folder-o"></i>
             <span class="uk-hidden-small">&nbsp;!{root.lang.__('folders')}</span>
-        </button>&nbsp;
-        <button class="uk-button" id="btn_parts"><i class="uk-icon-th"></i>
-            <span class="uk-hidden-small">&nbsp;!{root.lang.__('parts')}</span>
         </button>
     </div>
     <div class="uk-form uk-float-right">
@@ -182,6 +179,21 @@
         </div>
     </div>
 </div>
+<div id="dlg_unsaved" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <h1 class="uk-modal-header">!{root.lang.__('document_unsaved')}</h1>
+        <div>
+            <p>!{root.lang.__('document_unsaved_desc')}</p>
+            <p>!{root.lang.__('document_unsaved_title')}: <span id="document_unsaved_title"></span>
+            </p>
+        </div>
+        <div class="uk-margin-top uk-modal-footer">
+            <button class="uk-button uk-button-success" id="btn_restore">!{root.lang.__('restore_document')}</button>
+            <button class="uk-button uk-modal-close" type="button" id="btn_dont_restore">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
 <div id="taracot_pages_folders" class="uk-hidden">
     <h2>!{root.lang.__('folders')}</h2>
     <div id="taracot_folders_controls" class="uk-margin-bottom">
@@ -243,6 +255,7 @@ var _lang_vars = {
 var locales = !{
         root.locales
     },
+    current_locale = "!{root.current_locale}",
     current_username = "!{root.auth.username}",
     layouts = !{
         root.layouts
@@ -260,11 +273,11 @@ for (var i = 0; i < layouts.avail.length; i++) {
 <script src="/js/ckeditor/ckeditor.js"></script>
 <script src="/js/ckeditor/adapters/jquery.js"></script>
 <script src="/js/jstree/jstree.min.js"></script>
-
+<!--
 <script src="/js/jstorage.js"></script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/modules/pages/js/tree.js"></script>
 <script src="/modules/pages/js/main.js"></script>
-
-<!--<script src="/modules/pages/js/pages.min.js"></script>-->
+-->
+<script src="/modules/pages/js/pages.min.js"></script>

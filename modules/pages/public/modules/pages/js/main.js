@@ -6,11 +6,13 @@ var ckeditor,
     current_folder,
     _lang_change_no_action,
     _history_handler_disable = false,
-    auto_save_timer;
+    auto_save_timer,
+    auto_save_interval_ms = 30000;
 
 var folders_edit_dlg = UIkit.modal("#taracot_pages_folders_edit_dlg"),
     folders_select_dlg = UIkit.modal("#taracot_pages_folders_select_dlg"),
-    dlg_lock = UIkit.modal("#dlg_lock");
+    dlg_lock = UIkit.modal("#dlg_lock"),
+    dlg_unsaved = UIkit.modal("#dlg_unsaved");
 
 $.loadingIndicator();
 
@@ -144,12 +146,14 @@ Auto-save functions
 var auto_save_data = function() {
     generate_pages_data();
     $.jStorage.set("_taracot_pages_autosave", pages_data);
+    $.jStorage.set("_taracot_root_pages_autosave", root_pages);
     auto_save_timer = setTimeout(auto_save_data, 5000);
 };
 
 var clear_autosave = function() {
     if (auto_save_timer) window.clearTimeout(auto_save_timer);
     $.jStorage.set("_taracot_pages_autosave", false);
+    $.jStorage.set("_taracot_root_pages_autosave", false);
 };
 
 /*******************************************************************
@@ -247,7 +251,7 @@ var edit_item = function(id, unlock) {
                 current_folder = data.pages_data.pfolder || '';
                 if (data.root_pages) root_pages = data.root_pages;
                 $('#pfolder').change();
-                auto_save_timer = setTimeout(auto_save_data, 5000);
+                auto_save_timer = setTimeout(auto_save_data, auto_save_interval_ms);
             } else {
                 if (!data) data = {};
                 UIkit.notify({
@@ -434,10 +438,6 @@ $('#btn_edit_cancel').click(function() {
     });
 });
 
-$('#btn_parts').click(function() {
-    location.href = '/cp/parts/';
-});
-
 $('#pfolder').change(function() {
     $('#taracot-pagetype-root').removeClass('uk-hidden');
     for (var i = 0; i < root_pages.length; i++) {
@@ -478,6 +478,33 @@ $('#btn_unlock').click(function() {
     edit_item(pages_data._id, true);
 });
 
+$('#btn_restore').click(function() {
+    pages_data = $.jStorage.get("_taracot_pages_autosave") || {};
+    root_pages = $.jStorage.get("_taracot_root_pages_autosave") || [];
+    clear_autosave();
+    $('#taracot_pages_list').addClass('uk-hidden');
+    $('#taracot_pages_edit').removeClass('uk-hidden');
+    $('#taracot_pages_lang_' + locales[0] + ' > a').click();
+    var current_lang = locales[0];
+    $('.taracot-page-edit-form-control').each(field_cleanup);
+    $('.taracot-page-edit-form-control-core').each(field_cleanup);
+    $('#plang').val(locales[0]);
+    $('#playout').val(layouts.default);
+    $('#pfolder').val('');
+    show_data(pages_data.pdata[current_lang]);
+    show_data_core(pages_data);
+    current_folder = pages_data.pfolder || '';
+    if (pages_data.root_pages) root_pages = pages_data.root_pages;
+    $('#pfolder').change();
+    auto_save_timer = setTimeout(auto_save_data, auto_save_interval_ms);
+    dlg_unsaved.hide();
+});
+
+$('#btn_dont_restore').click(function() {
+    clear_autosave();
+    dlg_unsaved.hide();
+});
+
 /*******************************************************************
 
  document.ready
@@ -500,6 +527,11 @@ $(document).ready(function() {
     $('#pfolder').attr('readonly', true);
     folders_data = folders_preload;
     init_ckeditor();
+    if ($.jStorage.get("_taracot_pages_autosave")) {
+        $('#document_unsaved_title').html('&mdash;');
+        if ($.jStorage.get("_taracot_pages_autosave").pdata[current_locale]) $('#document_unsaved_title').html($.jStorage.get("_taracot_pages_autosave").pdata[current_locale].ptitle || '&mdash;');
+        return dlg_unsaved.show();
+    }
     // History handler
     bind_history();
     history_handler();
