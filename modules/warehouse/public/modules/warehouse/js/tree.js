@@ -56,8 +56,10 @@ var btn_categories_click_handler = function() {
 	});
 };
 
-$('#btn-categories').click(function() {
-	push_state({ mode: 'categories' }, "?mode=categories");
+$('#btn_categories').click(function() {
+	push_state({
+        mode: 'categories'
+    }, "?mode=categories");
 	show_categories();
 });
 
@@ -65,7 +67,7 @@ $('#btn-tree-new').click(function() {
 	$('#fname').removeClass('uk-form-danger');
 	var sel = jstree_categories.jstree(true).get_selected();
 	if (!sel || !sel.length) return;
-	$('#taracot_warehouse_categories_edit_h1').html(_lang_vars.new_category);
+	$('#taracot_warehouse_categories_edit_h1').html(_lang_vars.new_folder);
 	$('.taracot-categories-edit-control').each(function() {
 		$(this).val('');
 	});
@@ -79,7 +81,7 @@ $('#btn-tree-edit').click(function() {
 	var sel = jstree_categories.jstree(true).get_selected();
 	if (!sel || !sel.length) return;
 	if (jstree_categories.jstree(true).get_parent(sel) == '#') return;
-	$('#taracot_warehouse_categories_edit_h1').html(_lang_vars.edit_category);
+	$('#taracot_warehouse_categories_edit_h1').html(_lang_vars.edit_folder);
 	$('.taracot-categories-edit-control').each(function() {
 		$(this).val('');
 	});
@@ -134,7 +136,7 @@ $('#btn-tree-save').click(function() {
 					timeout: 2000,
 					pos: 'top-center'
 				});
-				show_warehouse();
+				show_pages();
 			} else {
 				var _err = _lang_vars.ajax_failed;
 				if (data.error) {
@@ -167,7 +169,7 @@ $('#btn-tree-save').click(function() {
 });
 
 $('#btn-tree-cancel').click(function() {
-	if (confirm(_lang_vars.confirm_categories_edit_cancel)) show_warehouse();
+	if (confirm(_lang_vars.confirm_categories_edit_cancel)) show_pages();
 });
 
 $('#btn-tree-clear').click(function() {
@@ -199,7 +201,7 @@ $('#btn_categories_edit_save').click(function() {
 	if (!check_directory($('#fname').val())) {
 		$('#fname').addClass('uk-form-danger');
 		UIkit.notify({
-			message: _lang_vars.invalid_category,
+			message: _lang_vars.invalid_folder,
 			status: 'danger',
 			timeout: 2000,
 			pos: 'top-center'
@@ -216,12 +218,12 @@ $('#btn_categories_edit_save').click(function() {
 	} else {
 		var cn = jstree_categories.jstree(true).create_node(sel, {
 			text: $('#fname').val(),
-			type: 'category'
+			type: 'folder'
 		});
 		if (!cn) {
 			$('#fname').addClass('uk-form-danger');
 			UIkit.notify({
-				message: _lang_vars.duplicate_category,
+				message: _lang_vars.duplicate_folder,
 				status: 'danger',
 				timeout: 2000,
 				pos: 'top-center'
@@ -251,10 +253,10 @@ var init_jstree = function(data, root) {
 				"valid_children": ["root"]
 			},
 			'root': {
-				"valid_children": ['category']
+				"valid_children": ['folder']
 			},
-			'category': {
-				"valid_children": ['category']
+			'folder': {
+				"valid_children": ['folder']
 			}
 		}
 	});
@@ -318,10 +320,10 @@ var init_jstree_select = function(data, root) {
 				"valid_children": ["root"]
 			},
 			'root': {
-				"valid_children": ['category']
+				"valid_children": ['folder']
 			},
-			'category': {
-				"valid_children": ['category']
+			'folder': {
+				"valid_children": ['folder']
 			}
 		}
 	});
@@ -353,7 +355,7 @@ var jstree_changed_handler = function(e, data) {
 	}
 };
 
-$('#btn-select-category').click(function() {
+$('#btn-select-folder').click(function() {
 	init_jstree_select();
 	categories_select_dlg.show();
 	$('#btn_categories_select').attr('disabled', true);

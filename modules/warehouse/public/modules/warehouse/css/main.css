@@ -31,6 +31,34 @@ th.taracot_table_sortable {
 	font-size: 90%;
 	color: #666;
 }
+.taracot-edit-panel {
+	border: 1px solid #ccc;
+	border-top: 0;
+	background: #fff;
+	margin-bottom: 30px;
+}
+#taracot_form_lang_tabs {
+	background: #ddd;
+	border-bottom: 1px solid #aaa;
+}
+#taracot_form_lang_tabs > li > a:hover {
+	background: #ccc;
+}
+#taracot_form_lang_tabs > li.uk-active {
+	background: #aaa;
+}
+#taracot_form_lang_tabs > li.uk-active > a:hover {
+	background: #fff;
+}
+#taracot_form_lang_tabs > li.uk-disabled > a {
+	color: #222;
+}
+.taracot-page-language-switchbox {
+	padding: 5px;
+}
+#document_unsaved_title {
+	font-weight: bold;
+}
 #files_grid {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;

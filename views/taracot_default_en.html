@@ -61,13 +61,12 @@
         </div>
     </div>
     <script>
-    var _u = ".taracot_menu_item_" + $(location).attr("pathname").replace(/\/$/, "").replace(/\//g, "_").replace(/^_/, "").replace(/[^a-zA-Z0-9_\-]/g, "");
+    var _u = ".taracot_menu_item_" + ($(location).attr("pathname").split(/\//)[1] || '').replace(/\/$/, "").replace(/\//g, "_").replace(/^_/, "").replace(/[^a-zA-Z0-9_\-]/g, ""),
+        _taracot_auth_username = "!{root.auth.username}";
     if ($(_u)) {
         $(_u).addClass("uk-active");
-        var _r = $(_u).attr("rel");
-        if (_r) $("." + _r).addClass("uk-active");
+        if ($(_u).attr("rel")) $("." + _r).addClass("uk-active");
     }
-    var _taracot_auth_username = "!{root.auth.username}";
     </script>
 </body>
 

@@ -1,16 +1,20 @@
 module.exports = function(app) {
+
     // Sort order hash
+
     var sort_cells = {
             pcategory: 1,
             pfilename: 1,
-            ptitle: 1,
-            plang: 1
+            plock: 1,
+            ptitle: 1
         },
         sort_cell_default = 'pcategory',
         sort_cell_default_mode = 1;
+
     // Set items per page for this module
+
     var items_per_page = 30;
-    //
+
     var router = app.get('express').Router(),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
@@ -20,25 +24,31 @@ module.exports = function(app) {
             devMode: app.get('config').locales.dev_mode
         }),
         parser = app.get('parser'),
+        async = require('async'),
+        util = require('util'),
         crypto = require('crypto'),
         fs = require("fs-extra"),
-        gm = false;
+        gm;
+
     if (app.get('config').graphicsmagick) {
         gm = require('gm');
     }
-    var util = require('util');
+
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
     };
+
     router.get('/', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+
         if (!req.session.auth || req.session.auth.status < 2) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/cp/warehouse';
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
+
         app.get('mongodb').collection('warehouse_conf').find({
             $or: [{
                 conf: 'items'
@@ -74,6 +84,7 @@ module.exports = function(app) {
             }).toArray(function(err, items) {
                 var categories;
                 if (!items || !items.length || !items[0].ovalue) {
+                    // Set default value for categories
                     categories = '[{"id":"j1_1","text":"/","data":null,"parent":"#","type":"root"}]';
                 } else {
                     categories = items[0].ovalue;
@@ -81,24 +92,27 @@ module.exports = function(app) {
                 var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'warehouse_control', {
                     lang: i18nm,
                     categories: categories,
+                    auth: req.session.auth,
+                    locales: JSON.stringify(app.get('config').locales.avail),
+                    layouts: JSON.stringify(app.get('config').layouts),
+                    current_locale: req.session.current_locale,
                     whitems: JSON.stringify(whitems),
                     whcollections: JSON.stringify(whcollections),
-                    whcurs: JSON.stringify(whcurs),
-                    auth: req.session.auth,
-                    current_locale: req.session.current_locale,
-                    locales: JSON.stringify(app.get('config').locales.avail)
+                    whcurs: JSON.stringify(whcurs)
                 }, req);
+
                 app.get('cp').render(req, res, {
                     body: body,
                     css: '<link rel="stylesheet" href="/modules/warehouse/css/main.css">' + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">'
                 }, i18nm, 'warehouse', req.session.auth);
+
             });
         });
     });
 
     /*
 
-    warehouse
+    Pages
 
     */
 
@@ -111,41 +125,32 @@ module.exports = function(app) {
         var query = req.body.query;
         var sort_mode = req.body.sort_mode;
         var sort_cell = req.body.sort_cell;
-        if (typeof skip != 'undefined') {
+        if (typeof skip != 'undefined')
             if (!skip.match(/^[0-9]{1,10}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
-        }
-        if (typeof query != 'undefined') {
+        if (typeof query != 'undefined')
             if (!query.match(/^[\w\sА-Яа-я0-9_\-\.]{3,40}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+                return res.send(JSON.stringify(rep));
             }
-        }
-        // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         var sort = {};
         sort[sort_cell_default] = sort_cell_default_mode;
-        if (typeof sort_cell != 'undefined') {
-            if (typeof sort_cells[sort_cell] != 'undefined') {
-                sort = {};
-                sort[sort_cell] = 1;
-                if (typeof sort_mode != 'undefined' && sort_mode == -1) {
-                    sort[sort_cell] = -1;
-                }
+        if (sort_cells && sort_cells[sort_cell]) {
+            sort = {};
+            sort[sort_cell] = 1;
+            if (typeof sort_mode != 'undefined' && sort_mode == -1) {
+                sort[sort_cell] = -1;
             }
         }
-        // Get warehouse from MongoDB
         rep.items = [];
         var find_query = {};
         if (query) {
@@ -153,11 +158,12 @@ module.exports = function(app) {
                 $or: [{
                     pfilename: new RegExp(query, 'i')
                 }, {
-                    ptitle: new RegExp(query, 'i')
-                }, {
                     pcategory: new RegExp(query, 'i')
                 }]
             };
+            var tsq = {};
+            tsq["pdata." + req.session.current_locale + '.ptitle'] = new RegExp(query, 'i');
+            find_query.$or.push(tsq);
         }
         app.get('mongodb').collection('warehouse').find(find_query).count(function(err, items_count) {
             if (!err && items_count > 0) {
@@ -166,8 +172,7 @@ module.exports = function(app) {
                     skip: skip,
                     limit: items_per_page
                 }).sort(sort).toArray(function(err, items) {
-                    if (typeof items != 'undefined' && !err) {
-                        // Generate array
+                    if (!err && items && items.length) {
                         for (var i = 0; i < items.length; i++) {
                             var arr = [];
                             arr.push(items[i]._id);
@@ -176,8 +181,9 @@ module.exports = function(app) {
                                 items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
                             }
                             arr.push(items[i].pcategory + items[i].pfilename);
-                            arr.push(items[i].ptitle);
-                            arr.push(items[i].plang);
+                            if (items[i].pdata && items[i].pdata[req.session.current_locale])
+                                arr.push(items[i].pdata[req.session.current_locale].ptitle);
+                            arr.push(items[i].plock);
                             rep.items.push(arr);
                         }
                     }
@@ -193,170 +199,127 @@ module.exports = function(app) {
         }); // count
     });
 
-    router.post('/data/list/all', function(req, res) {
-        var lng = req.session.current_locale;
-        i18nm.setLocale(lng);
-        // Check authorization
-        if (!req.session.auth || req.session.auth.status < 2) {
-            rep.status = 0;
-            rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var rep = {
-                items: []
-            }
-            // Get warehouse from MongoDB
-        app.get('mongodb').collection('warehouse').find({
-            "plang": lng
-        }, {
-            limit: 1000
-        }).sort({
-            "ptitle": 1
-        }).toArray(function(err, items) {
-            if (typeof items != 'undefined' && !err) {
-                // Generate array
-                for (var i = 0; i < items.length; i++) {
-                    var arr = [];
-                    if (items[i].pcategory != '/') {
-                        items[i].pfilename = '/' + items[i].pfilename;
-                        items[i].pfilename = items[i].pfilename.replace(/\/$/, '');
-                    }
-                    arr.push(items[i].pcategory + items[i].pfilename);
-                    arr.push(items[i].ptitle);
-                    rep.items.push(arr);
-                }
-            }
-            // Return results
-            rep.status = 1;
-            res.send(JSON.stringify(rep));
-        }); // data
-
-    });
-
-    router.post('/data/rootcat', function(req, res) {
-        i18nm.setLocale(req.session.current_locale);
-        var rep = {};
-        // Check authorization
-        if (!req.session.auth || req.session.auth.status < 2) {
-            rep.status = 0;
-            rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        // Get warehouse from MongoDB
-        app.get('mongodb').collection('warehouse').find({
-            pfilename: ''
-        }, {
-            limit: 100
-        }).toArray(function(err, items) {
-            rep.root_warehouse = [];
-            if (!err && typeof items != 'undefined') {
-                for (var i = 0; i < items.length; i++) rep.root_warehouse.push(items[i].pcategory);
-            }
-            rep.status = 1;
-            res.send(JSON.stringify(rep));
-        });
-    });
-
     router.post('/data/load', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
         var rep = {};
-        var id = req.body.pid;
-        if (id && !id.match(/^[a-f0-9]{24}$/)) {
+        var id = req.body.pid,
+            unlock = req.body.unlock;
+        if (!id || !id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_query");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
-        // Get warehouse from MongoDB
-        rep.data = {};
-        app.get('mongodb').collection('warehouse').find({
-            pfilename: ''
-        }, {
-            limit: 100
-        }).toArray(function(err, items) {
-            rep.root_warehouse = [];
-            if (!err && typeof items != 'undefined') {
-                for (var i = 0; i < items.length; i++) rep.root_warehouse.push(items[i].pcategory);
-            }
-            app.get('mongodb').collection('warehouse').find({
-                _id: new ObjectId(id)
-            }, {
-                limit: 1
-            }).toArray(function(err, items) {
-                if (typeof items != 'undefined' && !err) {
-                    if (items.length > 0) {
-                        rep.data = items[0];
-                        // Set lock
-                        if (!rep.data.lock_username) {
-                            rep.data.lock_username = req.session.auth.username;
-                            rep.data.lock_timestamp = Date.now();
-                            app.get('mongodb').collection('warehouse').update({
-                                _id: new ObjectId(id)
-                            }, {
-                                $set: {
-                                    lock_username: rep.data.lock_username,
-                                    lock_timestamp: rep.data.lock_timestamp
-                                }
-                            }, function(_err) {});
+        var root_pages = [];
+        async.series([
+                function(callback) {
+                    // Get root pages
+                    app.get('mongodb').collection('warehouse').find({
+                        pfilename: ''
+                    }, {
+                        pcategory: 1
+                    }, {
+                        limit: 1000
+                    }).toArray(function(err, items) {
+                        if (!err && typeof items != 'undefined') {
+                            for (var i = 0; i < items.length; i++) root_pages.push(items[i].pcategory);
                         }
+                        callback();
+                    });
+                },
+                function(callback) {
+                    // Unlock
+                    if (unlock) {
+                        app.get('mongodb').collection('warehouse').update({
+                            _id: new ObjectId(id)
+                        }, {
+                            $set: {
+                                plock: ''
+                            }
+                        }, function(err) {
+                            return callback();
+                        });
+                    } else {
+                        callback();
+                    }
+                },
+                function(callback) {
+                    // Get page from MongoDB
+                    app.get('mongodb').collection('warehouse').find({
+                        _id: new ObjectId(id)
+                    }).toArray(function(err, page_data) {
+                        if (err || !page_data || !page_data.length) {
+                            rep.status = 0;
+                            rep.error = i18nm.__("no_results_in_table");
+                            return callback(true);
+                        }
+                        rep.status = 1;
+                        rep.warehouse_data = page_data[0];
+                        rep.root_pages = root_pages;
+                        return callback();
+                    });
+                },
+                function(callback) {
+                    // Set locking
+                    if (rep.warehouse_data && !rep.warehouse_data.plock) {
+                        app.get('mongodb').collection('warehouse').update({
+                            _id: new ObjectId(id)
+                        }, {
+                            $set: {
+                                plock: req.session.auth.username
+                            }
+                        }, function(err) {
+                            return callback();
+                        });
+                    } else {
+                        callback();
                     }
                 }
-                // Return results
-                rep.status = 1;
-                res.send(JSON.stringify(rep));
-            });
-        });
+            ],
+            function(err) {
+                return res.send(JSON.stringify(rep));
+            }
+        );
     });
 
-    router.post('/data/lock', function(req, res) {
+    router.post('/data/unlock', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        var rep = {};
+        var id = req.body.pid;
+        if (!id || !id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
         // Check authorization
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var rep = {};
-        var id = req.body.pid;
-        var lock_username = req.body.username;
-        if (!id) {
-            rep.status = 1;
             return res.send(JSON.stringify(rep));
         }
-        if ((id && !id.match(/^[a-f0-9]{24}$/)) || lock_username.length > 80) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_query");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var data = {};
-        if (!lock_username) lock_username = '';
-        data.lock_username = '';
-        if (lock_username) data.lock_timestamp = 1000;
-        app.get('mongodb').collection('warehouse').update({
-            _id: new ObjectId(id)
-        }, {
-            $set: data
-        }, function(_err) {
-            if (_err) {
-                rep.status = 0;
-                rep.error = i18nm.__("invalid_query");
-                res.send(JSON.stringify(rep));
-                return;
+        async.series([
+                function(callback) {
+                    // Unlock
+                    app.get('mongodb').collection('warehouse').update({
+                        _id: new ObjectId(id)
+                    }, {
+                        $set: {
+                            plock: undefined
+                        }
+                    }, function(err) {
+                        return callback();
+                    });
+                }
+            ],
+            function(err) {
+                return res.send(JSON.stringify(rep));
             }
-            rep.status = 1;
-            return res.send(JSON.stringify(rep));
-        });
+        );
     });
 
     router.post('/data/save', function(req, res) {
@@ -372,351 +335,244 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
-        var ptitle = req.body.ptitle,
-            pshortdesc = req.body.pshortdesc,
-            pfilename = req.body.pfilename,
-            pcategory = req.body.pcategory,
-            pcategory_id = req.body.pcategory_id,
-            plang = req.body.plang,
-            plangcopy = req.body.plangcopy,
-            pkeywords = req.body.pkeywords,
-            pdesc = req.body.pdesc,
-            pcontent = req.body.pcontent,
-            id = req.body.pid,
-            pimages = req.body.pimages,
-            pchars = req.body.pchars,
-            pamount = req.body.pamount,
-            pamount_unlimited = 0,
-            pprice = req.body.pprice,
-            pweight = req.body.pweight,
-            pcurs = req.body.pcurs,
-            current_timestamp = req.body.current_timestamp;
-        if (req.body.pamount_unlimited != '0') pamount_unlimited = 1;
-        if (pimages && !util.isArray(pimages)) {
+        // Fields validation
+        var warehouse_data = req.body.save_data;
+        if (!warehouse_data) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_query");
             return res.send(JSON.stringify(rep));
         }
-        if (pimages) {
-            for (var im = 0; im < pimages.length; im++) {
-                if (!pimages[im].match(/^[a-f0-9]{32}$/)) {
-                    rep.status = 0;
-                    rep.error = i18nm.__("invalid_query");
-                    return res.send(JSON.stringify(rep));
-                }
+        if (warehouse_data._id)
+            if (!warehouse_data._id.match(/^[a-f0-9]{24}$/)) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
             }
-        } else {
-            pimages = [];
+        if (!warehouse_data.pcategory_id || !warehouse_data.pcategory_id.match(/^[A-Za-z0-9_\-\.]{1,20}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_folder");
+            return res.send(JSON.stringify(rep));
         }
-        if (pchars) {
-            for (var pc = 0; pc < pchars.length; pc++) {
-                if (!pchars[pc].id || !pchars[pc].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
-                    rep.status = 0;
-                    rep.error = i18nm.__("invalid_query");
-                    return res.send(JSON.stringify(rep));
-                }
-                if (parseFloat(pchars[pc].val) == pchars[pc].val) {
-                    pchars[pc].val = parseFloat(pchars[pc].val);
-                } else {
-                    if (pchars[pc].val) {
-                        pchars[pc].val = pchars[pc].val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
-                    } else {
-                        pchars[pc].val = '';
-                    }
-                }
-            }
-        } else {
-            pchars = [];
+        if (!warehouse_data.pfilename || !warehouse_data.pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_pfilename");
+            return res.send(JSON.stringify(rep));
         }
-        if (typeof id != 'undefined' && id) {
-            if (!id.match(/^[a-f0-9]{24}$/)) {
+        if (!warehouse_data.pimages) warehouse_data.pimages = [];
+        if (!util.isArray(warehouse_data.pimages)) {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        for (var im = 0; im < warehouse_data.pimages.length; im++) {
+            if (!warehouse_data.pimages[im].match(/^[a-f0-9]{32}$/)) {
                 rep.status = 0;
                 rep.error = i18nm.__("invalid_query");
                 return res.send(JSON.stringify(rep));
             }
         }
-        var _plang = app.get('config').locales.avail[0];
-        for (var i = 0; i < app.get('config').locales.avail.length; i++) {
-            if (plang == app.get('config').locales.avail[i]) {
-                _plang = app.get('config').locales.avail[i];
-            }
-        }
-        plang = _plang;
-        // Check form fields
-        if (!ptitle || !ptitle.length || ptitle.length > 100) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_ptitle");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        if (pshortdesc && pshortdesc.length > 1024) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_pshortdesc");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        if (!pcategory_id.match(/^[A-Za-z0-9_\-\.]{1,20}$/)) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_category");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        if (!pfilename.match(/^[A-Za-z0-9_\-\.]{0,80}$/)) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_pfilename");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        if (!pamount || parseInt(pamount) != pamount || pamount < 0) {
+        if (!warehouse_data.pamount || parseInt(warehouse_data.pamount) != warehouse_data.pamount || warehouse_data.pamount < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_amount");
             return res.send(JSON.stringify(rep));
         }
-        pamount = parseInt(pamount);
-        if (!pprice || parseFloat(pprice) != pprice || pprice < 0) {
+        warehouse_data.pamount = parseInt(warehouse_data.pamount);
+        if (!warehouse_data.pprice || parseFloat(warehouse_data.pprice) != warehouse_data.pprice || warehouse_data.pprice < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
-        pprice = parseFloat(pprice);
-        if (!pweight || parseFloat(pweight) != pweight || pweight < 0) {
+        warehouse_data.pprice = parseFloat(warehouse_data.pprice);
+        if (!warehouse_data.pweight || parseFloat(warehouse_data.pweight) != warehouse_data.pweight || warehouse_data.pweight < 0) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_weight");
             return res.send(JSON.stringify(rep));
         }
-        pweight = parseFloat(pweight);
-        if (!pcurs || !pcurs.match(/^[a-z0-9]{1,20}$/i)) {
+        warehouse_data.pweight = parseFloat(warehouse_data.pweight);
+        if (!warehouse_data.pcurs || !warehouse_data.pcurs.match(/^[a-z0-9]{1,20}$/i)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_price");
             return res.send(JSON.stringify(rep));
         }
+        if (warehouse_data.pamount_unlimited == '1') {
+            warehouse_data.pamount_unlimited = 1;
+        } else {
+            warehouse_data.pamount_unlimited = 0;
+        }
+        // Validate language-related data
+        if (!warehouse_data.pdata || typeof warehouse_data.pdata != 'object') {
+            rep.status = 0;
+            rep.error = i18nm.__("invalid_query");
+            return res.send(JSON.stringify(rep));
+        }
+        for (var pd in warehouse_data.pdata) {
 
-        // Save
-
-        app.get('mongodb').collection('menu').find({
-            lang: plang
-        }, {
-            limit: 1
-        }).toArray(function(err, items) {
-            var search_data = parser.words(parser.html2text(pshortdesc + "\n\n" + pcontent), ptitle);
-            if (id) {
-                app.get('mongodb').collection('menu').find({
-                    lang: plang
-                }, {
-                    limit: 1
-                }).toArray(function(err, items) {
-                    var menu_source, menu_uikit, menu_uikit_offcanvas, menu_raw, menu_id;
-                    if (!err && items && items.length && items[0].menu_source && items[0].menu_raw && items[0].menu_uikit) {
-                        menu_source = items[0].menu_source;
-                        menu_raw = items[0].menu_raw;
-                        menu_uikit = items[0].menu_uikit;
-                        menu_uikit_offcanvas = items[0].menu_uikit_offcanvas;
+            if (!warehouse_data.pdata[pd].pchars) warehouse_data.pdata[pd].pchars = [];
+            if (!util.isArray(warehouse_data.pdata[pd].pchars)) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
+            }
+            for (var pc = 0; pc < warehouse_data.pdata[pd].pchars.length; pc++) {
+                if (!warehouse_data.pdata[pd].pchars[pc].id || !warehouse_data.pdata[pd].pchars[pc].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query");
+                    return res.send(JSON.stringify(rep));
+                }
+                if (parseFloat(warehouse_data.pdata[pd].pchars[pc].val) == warehouse_data.pdata[pd].pchars[pc].val) {
+                    warehouse_data.pdata[pd].pchars[pc].val = parseFloat(warehouse_data.pdata[pd].pchars[pc].val);
+                } else {
+                    if (warehouse_data.pdata[pd].pchars[pc].val) {
+                        warehouse_data.pdata[pd].pchars[pc].val = warehouse_data.pdata[pd].pchars[pc].val.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                    } else {
+                        warehouse_data.pdata[pd].pchars[pc].val = '';
                     }
-                    app.get('mongodb').collection('warehouse').find({
-                        pfilename: pfilename,
-                        plang: plang,
-                        _id: {
-                            $ne: new ObjectId(id)
-                        }
-                    }, {
-                        limit: 1
-                    }).toArray(function(err, items) {
-                        if ((typeof items != 'undefined' && items.length > 0) || err) {
-                            rep.status = 0;
-                            rep.error = i18nm.__("page_exists");
-                            rep.err_fields.push('pfilename');
-                            res.send(JSON.stringify(rep));
-                            return;
-                        }
-                        app.get('mongodb').collection('warehouse').find({
-                            _id: new ObjectId(id)
-                        }, {
-                            limit: 1
-                        }).toArray(function(err, items) {
-                            if (typeof items != 'undefined' && !err) {
-                                if (items.length > 0) {
-                                    var update = {
-                                        ptitle: ptitle,
-                                        pshortdesc: pshortdesc,
-                                        pfilename: pfilename,
-                                        pcategory: pcategory,
-                                        pcategory_id: pcategory_id,
-                                        plang: plang,
-                                        pkeywords: pkeywords,
-                                        pdesc: pdesc,
-                                        pimages: pimages,
-                                        pchars: pchars,
-                                        pcontent: pcontent,
-                                        pamount: pamount,
-                                        pamount_unlimited: pamount_unlimited,
-                                        pprice: pprice,
-                                        pweight: pweight,
-                                        pcurs: pcurs,
-                                        lock_username: '',
-                                        lock_timestamp: 0,
-                                        last_modified: Date.now()
-                                    };
-                                    if (items[0].lock_username && items[0].lock_username != req.session.auth.username) {
-                                        rep.status = 0;
-                                        rep.lock_username = items[0].lock_username;
-                                        rep.lock_timestamp = items[0].lock_timestamp;
-                                        rep.locked = 1;
-                                        return res.send(JSON.stringify(rep));
-                                    }
-                                    if (items[0].last_modified && items[0].last_modified != current_timestamp) {
-                                        rep.status = 0;
-                                        rep.outdated = 1;
-                                        rep.current_timestamp = items[0].last_modified;
-                                        return res.send(JSON.stringify(rep));
-                                    }
-                                    app.get('mongodb').collection('warehouse').update({
-                                        _id: new ObjectId(id)
-                                    }, update, function(_err) {
-                                        rep.status = 1;
-                                        res.send(JSON.stringify(rep));
-                                        if (!_err) {
-                                            // Update amount for all items with the same filename
-                                            app.get('mongodb').collection('warehouse').update({
-                                                pfilename: pfilename
-                                            }, {
-                                                $set: {
-                                                    pamount: pamount,
-                                                    pamount_unlimited: pamount_unlimited
-                                                }
-                                            }, {
-                                                multi: true
-                                            }, function() {});
-                                            var data1 = app.get('mongodb').collection('search_index').find({
-                                                space: 'warehouse',
-                                                item_id: id
-                                            }).toArray(function(si_err, si_items) {
-                                                if (err) return;
-                                                var url = '/catalog/item/' + pfilename;
-                                                url = url.replace(/(\/+)/, '/');
-                                                var data = {
-                                                    swords: search_data.words,
-                                                    sdesc: pshortdesc,
-                                                    stitle: ptitle,
-                                                    slang: plang,
-                                                    surl: url
-                                                };
-                                                if (si_items && si_items.length) {
-                                                    app.get('mongodb').collection('search_index').update({
-                                                        item_id: id
-                                                    }, {
-                                                        $set: data
-                                                    }, function() {});
-                                                } else {
-                                                    data.item_id = id;
-                                                    data.space = 'warehouse';
-                                                    app.get('mongodb').collection('search_index').insert(data, function() {});
-                                                }
-                                            });
-                                        }
-                                    });
-                                    if (menu_source) {
-                                        var url_old = items[0].pcategory;
-                                        if (url_old != '/') url_old += '/';
-                                        url_old += items[0].pfilename;
-                                        if (items[0].pcategory != '/') {
-                                            url_old = url_old.replace(/\/$/, '');
-                                        }
-                                        var url_new = pcategory;
-                                        if (url_new != '/') url_new += '/';
-                                        url_new += pfilename;
-                                        if (pcategory != '/') {
-                                            url_new = url_new.replace(/\/$/, '');
-                                        }
-                                        var rx1 = new RegExp('href=\"' + url_old + '\"');
-                                        var rx2 = new RegExp('>' + url_old + '<');
-                                        menu_source = menu_source.replace(rx1, 'href="' + url_new + '"').replace(rx2, '>' + url_new + '<');
-                                        menu_raw = menu_raw.replace(rx1, 'href="' + url_new + '"');
-                                        menu_uikit = menu_uikit.replace(rx1, 'href="' + url_new + '"');
-                                        menu_uikit_offcanvas = menu_uikit_offcanvas.replace(rx1, 'href="' + url_new + '"');
-                                        var data = {
-                                            lang: plang,
-                                            menu_source: menu_source,
-                                            menu_raw: menu_raw,
-                                            menu_uikit: menu_uikit,
-                                            menu_uikit_offcanvas: menu_uikit_offcanvas
-                                        };
-                                        app.get('mongodb').collection('menu').update({
-                                            lang: plang
-                                        }, data, function() {});
-                                    }
-                                    return;
-                                }
-                            } else {
-                                rep.status = 0;
-                                rep.error = i18nm.__("id_not_found");
-                                res.send(JSON.stringify(rep));
-                            }
-                        });
-                    });
-                });
-            } else {
-                var data1 = app.get('mongodb').collection('warehouse').find({
-                    plang: plang,
-                    pfilename: pfilename
-                }, {
-                    limit: 1
-                }).toArray(function(err, items) {
-                    if ((typeof items != 'undefined' && items.length > 0) || err) {
-                        rep.status = 0;
-                        rep.error = i18nm.__("page_exists");
-                        rep.err_fields.push('pfilename');
-                        res.send(JSON.stringify(rep));
-                        return;
-                    }
-                    app.get('mongodb').collection('warehouse').insert({
-                        ptitle: ptitle,
-                        pshortdesc: pshortdesc,
-                        pfilename: pfilename,
-                        pcategory: pcategory,
-                        pcategory_id: pcategory_id,
-                        plang: plang,
-                        pkeywords: pkeywords,
-                        pdesc: pdesc,
-                        pimages: pimages,
-                        pamount: pamount,
-                        pamount_unlimited: pamount_unlimited,
-                        pprice: pprice,
-                        pweight: pweight,
-                        pcurs: pcurs,
-                        pcontent: pcontent,
-                        last_modified: Date.now()
-                    }, function(_err, _items) {
-                        if (!_err) {
-                            // Update amount for all items with the same filename
-                            app.get('mongodb').collection('warehouse').update({
-                                pfilename: pfilename
-                            }, {
-                                $set: {
-                                    pamount: pamount,
-                                    pamount_unlimited: pamount_unlimited
-                                }
-                            }, {
-                                multi: true
-                            }, function() {});
-                            var url = pcategory + '/' + pfilename;
-                            url = url.replace(/(\/+)/, '/');
-                            var data = {
-                                swords: search_data.words,
-                                slang: plang,
-                                sdesc: search_data.desc,
-                                stitle: ptitle,
-                                surl: url,
-                                item_id: _items[0]._id.toHexString(),
-                                space: 'warehouse'
-                            };
-                            app.get('mongodb').collection('search_index').insert(data, function() {});
-                        }
-                        rep.status = 1;
-                        res.send(JSON.stringify(rep));
-                    });
-                });
+                }
             }
 
+            if (!warehouse_data.pdata[pd].ptitle || warehouse_data.pdata[pd].ptitle.length > 100) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
+            }
+            if (!warehouse_data.pdata[pd].pshortdesc || warehouse_data.pdata[pd].pshortdesc.length > 100) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
+            }
+            var _plang = app.get('config').locales.avail[0];
+            for (var i = 0; i < app.get('config').locales.avail.length; i++)
+                if (warehouse_data.pdata[pd].plang == app.get('config').locales.avail[i])
+                    _plang = app.get('config').locales.avail[i];
+            warehouse_data.pdata[pd].plang = _plang;
+            var _playout = app.get('config').layouts.default;
+            for (var j = 0; j < app.get('config').layouts.avail.length; j++)
+                if (warehouse_data.pdata[pd].playout == app.get('config').layouts.avail[j])
+                    _playout = app.get('config').layouts.avail[j];
+            warehouse_data.pdata[pd].playout = _playout;
+        }
+        var update = {
+            pfilename: warehouse_data.pfilename,
+            pcategory: warehouse_data.pcategory,
+            pcategory_id: warehouse_data.pcategory_id,
+            pimages: warehouse_data.pimages,
+            pamount: warehouse_data.pamount,
+            pamount_unlimited: warehouse_data.pamount_unlimited,
+            pprice: warehouse_data.pprice,
+            pweight: warehouse_data.pweight,
+            pcurs: warehouse_data.pcurs,
+            pdata: {}
+        };
+        for (var l in app.get('config').locales.avail)
+            if (warehouse_data.pdata[app.get('config').locales.avail[l]]) {
+                var lang = app.get('config').locales.avail[l];
+                update.pdata[lang] = {};
+                try {
+                    update.pdata[lang].ptitle = warehouse_data.pdata[lang].ptitle;
+                    update.pdata[lang].pshortdesc = warehouse_data.pdata[lang].pshortdesc;
+                    update.pdata[lang].pkeywords = warehouse_data.pdata[lang].pkeywords;
+                    update.pdata[lang].pdesc = warehouse_data.pdata[lang].pdesc;
+                    update.pdata[lang].pcontent = warehouse_data.pdata[lang].pcontent;
+                    update.pdata[lang].pchars = warehouse_data.pdata[lang].pchars;
+                } catch (ex) {
+                    rep.status = 0;
+                    rep.error = i18nm.__("invalid_query") + ' (' + ex + ')';
+                    return res.send(JSON.stringify(rep));
+                }
+            }
+        async.series([
+            function(callback) {
+                if (warehouse_data._id) {
+                    app.get('mongodb').collection('warehouse').find({
+                        _id: new ObjectId(warehouse_data._id)
+                    }, {
+                        plock: 1
+                    }).toArray(function(err, items) {
+                        if (items && items.length)
+                            if (items[0].plock && items[0].plock != req.session.auth.username) {
+                                rep.status = 0;
+                                rep.error = i18nm.__("locked_by") + ': ' + items[0].plock;
+                                return callback(true);
+                            }
+                        callback();
+                    });
+                } else {
+                    callback();
+                }
+            },
+            function(callback) {
+                var query = {
+                    pfilename: warehouse_data.pfilename
+                };
+                if (warehouse_data._id)
+                    query._id = {
+                        $ne: new ObjectId(warehouse_data._id)
+                    };
+                app.get('mongodb').collection('warehouse').find(query, {
+                    pfilename: 1
+                }, {
+                    limit: 1
+                }).toArray(function(err, items) {
+                    if (err || (items && items.length)) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("page_exists");
+                        return callback(true);
+                    }
+                    callback();
+                });
+            },
+            function(callback) {
+                var update_query = {
+                    pfilename: warehouse_data.pfilename,
+                    pcategory: warehouse_data.pcategory,
+                };
+                if (warehouse_data._id)
+                    update_query = {
+                        _id: new ObjectId(warehouse_data._id)
+                    };
+                app.get('mongodb').collection('warehouse').update(update_query, update, {
+                    safe: false,
+                    upsert: true
+                }, function(err, result) {
+                    if (err) return callback(true);
+                    if (result && result._id) warehouse_data._id = result._id;
+                    return callback();
+                });
+            },
+            function(callback) {
+                var search_data = [];
+                for (var pd in warehouse_data.pdata)
+                    search_data.push({
+                        pr: parser.words(parser.html2text(warehouse_data.pdata[pd].pcontent), warehouse_data.pdata[pd].ptitle),
+                        title: warehouse_data.pdata[pd].ptitle,
+                        lang: pd,
+                        desc: warehouse_data.pdata[pd].pdesc
+                    });
+                async.eachSeries(search_data, function(pd, _callback) {
+                    var data = {
+                        swords: pd.pr.words,
+                        sdesc: pd.pr.desc,
+                        stitle: pd.title,
+                        slang: pd.lang,
+                        item_id: warehouse_data._id,
+                        surl: '/catalog/item' + (warehouse_data.pcategory + '/' + warehouse_data.pfilename).replace(/(\/+)/, '/').replace(/\s/g,''),
+                        space: 'warehouse'
+                    };
+                    app.get('mongodb').collection('search_index').update({
+                        item_id: warehouse_data._id,
+                        slang: pd.lang
+                    }, data, {
+                        upsert: true,
+                        safe: false
+                    }, function() {
+                        _callback();
+                    });
+                }, function(err) {
+                    callback();
+                });
+            }
+        ], function(err) {
+            return res.send(JSON.stringify(rep));
         });
     });
 

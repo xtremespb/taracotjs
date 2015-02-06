@@ -1,31 +1,32 @@
 module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
-        order_id: 1,
-        item_id: 1,
-        order_timestamp: 1,
-        order_status: 1,
-        sum_total: 1
-    };
-    var sort_cell_default = 'order_timestamp';
-    var sort_cell_default_mode = -1;
+            order_id: 1,
+            item_id: 1,
+            order_timestamp: 1,
+            order_status: 1,
+            sum_total: 1
+        },
+        sort_cell_default = 'order_timestamp',
+        sort_cell_default_mode = -1;
     // Set items per page for this module
     var items_per_page = 30;
     //
-    var router = app.get('express').Router();
-    var ObjectId = require('mongodb').ObjectID;
-    var gaikan = require('gaikan');
-    var path = require('path');
-    var async = require('async');
-    var mailer = app.get('mailer');
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
-    var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"];
-    var pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
+    var router = app.get('express').Router(),
+        ObjectId = require('mongodb').ObjectID,
+        gaikan = require('gaikan'),
+        path = require('path'),
+        async = require('async'),
+        mailer = app.get('mailer'),
+        merge = require('merge'), original, cloned,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: app.get('path').join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        }),
+        countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"],
+        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
 
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
@@ -215,12 +216,14 @@ module.exports = function(app) {
                     });
             if (cart_query.length) {
                 app.get('mongodb').collection('warehouse').find({
-                    $or: cart_query,
-                    plang: req.session.current_locale
+                    $or: cart_query
                 }).toArray(function(wh_err, whitems) {
                     rep.data.warehouse_titles = {};
                     if (whitems)
-                        for (var i = 0; i < whitems.length; i++) rep.data.warehouse_titles[whitems[i].pfilename] = whitems[i].ptitle;
+                        for (var i = 0; i < whitems.length; i++) {
+                            if (whitems[i].pdata[req.session.current_locale]) whitems[i] = merge(whitems[i], whitems[i].pdata[req.session.current_locale]);
+                            rep.data.warehouse_titles[whitems[i].pfilename] = whitems[i].ptitle;
+                        }
                     if (items[0].locked_by && items[0].locked_by != req.session.auth._id) {
                         app.get('mongodb').collection('users').find({
                             _id: new ObjectId(items[0].locked_by)
@@ -286,12 +289,13 @@ module.exports = function(app) {
                 status: 0
             }));
         app.get('mongodb').collection('warehouse').find({
-            pfilename: sku,
-            plang: req.session.current_locale
+            pfilename: sku
         }).toArray(function(wh_err, whitems) {
             var title = i18nm.__('unknown_sku');
-            if (!wh_err && whitems && whitems.length)
+            if (!wh_err && whitems && whitems.length){
+                if (whitems[0].pdata[req.session.current_locale]) whitems[0] = merge(whitems[0], whitems[0].pdata[req.session.current_locale]);
                 title = whitems[0].ptitle;
+            }
             return res.send(JSON.stringify({
                 status: 1,
                 title: title
@@ -321,6 +325,7 @@ module.exports = function(app) {
             ship_comment = req.body.ship_comment,
             ship_track = req.body.ship_track,
             cart_data = req.body.cart_data || [];
+
         // Validation
         if (!id || !id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
@@ -393,8 +398,11 @@ module.exports = function(app) {
                 ship_track = '';
             }
             var cart_data_f = {};
-            for (var key in cart_data)
+            for (var key in cart_data) {
+                if (key) key = key.replace(/\s/g, '');
+                if (cart_data[key]) cart_data[key] = cart_data[key].replace(/\s/g, '');
                 if (key.match(/^[A-Za-z0-9_\-\.]{1,80}$/)) cart_data_f[key] = parseInt(cart_data[key]) || 1;
+            }
             app.get('mongodb').collection('warehouse_orders').find({
                 _id: new ObjectId(id)
             }, {

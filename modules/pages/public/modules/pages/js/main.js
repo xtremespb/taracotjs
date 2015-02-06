@@ -147,7 +147,7 @@ var auto_save_data = function() {
     generate_pages_data();
     $.jStorage.set("_taracot_pages_autosave", pages_data);
     $.jStorage.set("_taracot_root_pages_autosave", root_pages);
-    auto_save_timer = setTimeout(auto_save_data, 5000);
+    auto_save_timer = setTimeout(auto_save_data, auto_save_interval_ms);
 };
 
 var clear_autosave = function() {
@@ -186,7 +186,7 @@ $('#btn_add_item').click(function() {
                 }
             }
             $('#ptitle').focus();
-            auto_save_timer = setTimeout(auto_save_data, 5000);
+            auto_save_timer = setTimeout(auto_save_data, auto_save_interval_ms);
         },
         error: function() {
             $('#ptitle').focus();

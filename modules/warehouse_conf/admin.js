@@ -167,7 +167,7 @@ module.exports = function(app) {
                 if (misc[mi].id && (misc[mi].id == 'weight_units')) {
                     uim.id = misc[mi].id;
                     for (l = 0; l < app.get('config').locales.avail.length; l++) {
-                        var lim = misc[mi][app.get('config').locales[l]];
+                        var lim = misc[mi][app.get('config').locales.avail[l]];
                         if (lim) {
                             lim = lim.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
                             uim[app.get('config').locales.avail[l]] = lim;

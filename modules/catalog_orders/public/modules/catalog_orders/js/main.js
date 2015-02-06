@@ -267,9 +267,9 @@ $('#taracot-edit-btn-save').click(function() {
         return $('#order_save_error').show();
     }
     $('#order_cart_body').children().each(function() {
-        var sku = $(this).children(':first').attr('rel'),
+        var sku = String($(this).children(':first').attr('rel')),
             amount = parseInt($('#cart_item_' + sku).val()) || 1;
-        cart_data[sku] = amount;
+        cart_data[sku + ' '] = amount + ' ';
     });
     $('#taracot-modal-edit-wrap').addClass('uk-hidden');
     $('#taracot-modal-edit-loading').removeClass('uk-hidden');

@@ -8,7 +8,9 @@ module.exports = function(app) {
         fs = require('fs'),
         parser = app.get('parser'),
         async = require('async'),
-        mailer = app.get('mailer');
+        mailer = app.get('mailer'),
+        merge = require('merge'),
+        original, cloned;
 
     var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
         cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
@@ -62,7 +64,9 @@ module.exports = function(app) {
 
     var catalog_config = require('./config');
     if (catalog_config)
-        for (var attrname in catalog_config) { app.get('config')[attrname] = catalog_config[attrname]; }
+        for (var attrname in catalog_config) {
+            app.get('config')[attrname] = catalog_config[attrname];
+        }
 
     router.post('/ajax/cancel', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
@@ -272,15 +276,16 @@ module.exports = function(app) {
                 });
                 // Get requested warehouse items
                 app.get('mongodb').collection('warehouse').find({
-                    $or: warehouse_query,
-                    plang: _locale
+                    $or: warehouse_query
                 }).toArray(function(wh_err, whitems) {
                     var moment = require('moment');
                     moment.locale(_locale);
                     var whitems_hash = {};
                     if (whitems && whitems.length)
-                        for (var wi = 0; wi < whitems.length; wi++)
+                        for (var wi = 0; wi < whitems.length; wi++) {
+                            if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                             whitems_hash[whitems[wi].pfilename] = whitems[wi].ptitle;
+                        }
                     for (var key in cart)
                         rep.cart_data.push({
                             title: whitems_hash[key] || key,
@@ -367,7 +372,7 @@ module.exports = function(app) {
                 var total_cart_items_count = 0,
                     catalog_cart = req.session.catalog_cart || [];
                 if (catalog_cart.length)
-                        for (var cct = 0; cct < catalog_cart.length; cct++) total_cart_items_count += parseInt(catalog_cart[cct].amount);
+                    for (var cct = 0; cct < catalog_cart.length; cct++) total_cart_items_count += parseInt(catalog_cart[cct].amount);
                 var warehouse_categories = _default_folders_hash,
                     bread = get_bread(warehouse_categories, '', req, true);
                 var out_html = orders(gaikan, {
@@ -493,8 +498,7 @@ module.exports = function(app) {
             });
             // Find warehouse items in cart
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query,
-                plang: _locale
+                $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
                 var subtotal = 0,
                     total_weight = 0,
@@ -502,6 +506,7 @@ module.exports = function(app) {
                 if (whitems) {
                     var cart = {};
                     for (var wi = 0; wi < whitems.length; wi++) {
+                        if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
@@ -546,14 +551,15 @@ module.exports = function(app) {
                         });
                     }, function(update_err) {
                         app.get('mongodb').collection('warehouse').find({
-                            $or: warehouse_query,
-                            plang: _locale
+                            $or: warehouse_query
                         }).toArray(function(uc_err, ucitems) {
                             var fail = false;
                             if (uc_err || update_err || !ucitems) fail = true;
                             if (ucitems && !fail)
-                                for (var uci = 0; uci < ucitems.length; uci++)
+                                for (var uci = 0; uci < ucitems.length; uci++) {
+                                    if (ucitems[uci].pdata[req.session.current_locale]) ucitems[uci] = merge(ucitems[uci], ucitems[uci].pdata[req.session.current_locale]);
                                     if (ucitems[uci].pamount < 0) fail = true;
+                                }
                             if (fail) {
                                 // Something went wrong, we need to rollback the transaction
                                 async.each(update_items, function(item, callback) {
@@ -789,8 +795,7 @@ module.exports = function(app) {
                 pfilename: catalog_cart[ca].sku
             });
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query,
-                plang: _locale
+                $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
                 var checkout_html = '';
                 var subtotal = 0,
@@ -799,6 +804,7 @@ module.exports = function(app) {
                     total_amount = 0;
                 if (whitems && whitems.length) {
                     for (var wi = 0; wi < whitems.length; wi++) {
+                        if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
@@ -972,14 +978,14 @@ module.exports = function(app) {
                 }));
             }
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query,
-                plang: _locale
+                $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
                 if (wh_err) return res.send(JSON.stringify({
                     status: 0
                 }));
                 var cart = [];
                 for (var wi = 0; wi < whitems.length; wi++) {
+                    if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                     var amount = cart_values_hash[whitems[wi].pfilename];
                     if (parseInt(whitems[wi].pamount) != -1 && amount > parseInt(whitems[wi].pamount)) {
                         amount = parseInt(whitems[wi].pamount);
@@ -1063,8 +1069,7 @@ module.exports = function(app) {
                 pfilename: catalog_cart[ca].sku
             });
             app.get('mongodb').collection('warehouse').find({
-                $or: warehouse_query,
-                plang: _locale
+                $or: warehouse_query
             }).toArray(function(wh_err, whitems) {
                 var cart_html = '',
                     whitems_length = 0;
@@ -1072,6 +1077,7 @@ module.exports = function(app) {
                     var subtotal = 0;
                     whitems_length = whitems.length;
                     for (var wi = 0; wi < whitems.length; wi++) {
+                        if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                         var amount = 0;
                         for (var cc = 0; cc < catalog_cart.length; cc++)
                             if (catalog_cart[cc].sku == whitems[wi].pfilename) amount = catalog_cart[cc].amount || 0;
@@ -1199,13 +1205,13 @@ module.exports = function(app) {
                 warehouse_categories = folders_make_hash(warehouse_categories);
                 // Rock and roll
                 app.get('mongodb').collection('warehouse').find({
-                    pfilename: sku,
-                    plang: _locale
+                    pfilename: sku
                 }, {
                     limit: 1
                 }).toArray(function(wh_err, whitems) {
                     if (wh_err || !whitems || !whitems.length) return next();
                     var whitem = whitems[0];
+                    if (whitem.pdata[req.session.current_locale]) whitem = merge(whitem, whitem.pdata[req.session.current_locale]);
                     var current_cat_title = folders_find_title_by_path(warehouse_categories, '/' + whitem.pcategory, req) || i18nm.__('module_name'),
                         _current_path = folders_find_path(warehouse_categories, whitem.pcategory_id).reverse(),
                         current_path = '',
@@ -1325,9 +1331,7 @@ module.exports = function(app) {
         if (!param.match(/^[a-zA-Z_0-9\-\/]+$/)) return next(); // invalid characters
         var current_cat = url_parts.join('/');
         if (current_cat) current_cat = current_cat.replace(/\/$/, '');
-        var find_query = {
-                plang: _locale
-            },
+        var find_query = {},
             sort_query = {};
         var total = 0,
             page = parseInt(req.query.page) || 1,
@@ -1343,15 +1347,9 @@ module.exports = function(app) {
         if (show_all != '1') find_query.pamount = {
             $ne: 0
         };
-        if (sort == 't') sort_query = {
-            ptitle: 1
-        };
-        if (sort == 'u') sort_query = {
-            pprice: 1
-        };
-        if (sort == 'd') sort_query = {
-            pprice: -1
-        };
+        if (sort == 't') sort_query["pdata." + _locale + ".ptitle"] = 1;
+        if (sort == 'u') sort_query.pprice = 1;
+        if (sort == 'd') sort_query.pprice = -1;
         var skip = (page - 1) * items_per_page;
         if (search_query) search_query = search_query.trim().replace(/\"/g, '').replace(/</g, '').replace(/>/g, '');
         if (search_query) {
@@ -1360,17 +1358,19 @@ module.exports = function(app) {
                 query_words = parser.stem_all(query_words);
                 var query_arr = [];
                 for (var i = 0; i < query_words.length; i++) {
-                    var _rex = new RegExp(query_words[i], "i");
+                    var _rex = new RegExp(query_words[i], "i"),
+                        _rxq = {
+                            $regex: _rex
+                        },
+                        _rxa = [],
+                        _rxi1 = {},
+                        _rxi2 = {};
+                    _rxi1["pdata." + _locale + ".ptitle"] = _rxq;
+                    _rxi2["pdata." + _locale + ".pshortdesc"] = _rxq;
+                    _rxa.push(_rxi1);
+                    _rxa.push(_rxi2);
                     query_arr.push({
-                        $or: [{
-                            ptitle: {
-                                $regex: _rex
-                            }
-                        }, {
-                            pshortdesc: {
-                                $regex: _rex
-                            }
-                        }]
+                        $or: _rxa
                     });
                 }
                 find_query.$and = query_arr;
@@ -1478,6 +1478,7 @@ module.exports = function(app) {
                         if (!whc_err) warehouse_count = parseInt(_whcount);
                         if (warehouse_count > 0) { // There is something in the warehouse
                             for (var wi = 0; wi < whitems.length; wi++) {
+                                if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
                                 var title = whitems[wi].ptitle,
                                     thumb = '/modules/catalog/images/placeholder_50.png',
                                     desc = whitems[wi].pshortdesc || '',
@@ -1513,7 +1514,7 @@ module.exports = function(app) {
                                 }, undefined);
                             }
                         } else { // No warehouse items in current category
-
+                            catalog_items_html = i18nm.__('no_items_found');
                         }
                         // Pagination begin
                         var num_pages = Math.ceil(warehouse_count / items_per_page),
