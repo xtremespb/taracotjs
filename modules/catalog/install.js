@@ -3,7 +3,7 @@ module.exports = function(db, ensure_indexes, config) {
         fs = require('fs-extra'),
         is = {
             name: 'catalog',
-            version: '0.5.29',
+            version: '0.5.37',
             collections: function(_callback) {
                 // Create collections
                 async.series([
@@ -46,8 +46,16 @@ module.exports = function(db, ensure_indexes, config) {
                 // Create indexes
                 async.series([
                     function(callback) {
-                        ensure_indexes('warehouse', ['pfolder', 'pfilename', 'plang', 'ptitle'], null, null, function() {
-                            callback();
+                        ensure_indexes('warehouse', ['pfolder', 'pfilename'], null, null, function() {
+                            async.eachSeries(config.locales.avail, function(lng, __callback) {
+                                ensure_indexes('warehouse', ['pdata.' + lng + '.ptitle'], null, null, function() {
+                                    ensure_indexes('warehouse', ['pdata.' + lng + '.pshortdesc'], null, null, function() {
+                                        __callback();
+                                    });
+                                });
+                            }, function(err) {
+                                callback();
+                            });
                         });
                     },
                     function(callback) {
@@ -80,31 +88,51 @@ module.exports = function(db, ensure_indexes, config) {
                 async.series([
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "8Gb Smart Buy Cobra",
-                            "pshortdesc": "Compact and cheap USB stick by Smart Buy",
                             "pfilename": "TDS00001",
                             "pcategory": "/storage/usb_flash",
                             "pcategory_id": "j1_3",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["58b8d5b8ced7332f435668b15b6eb48a"],
-                            "pchars": [{
-                                "id": "capacity_gb",
-                                "val": 8
-                            }, {
-                                "id": "interface",
-                                "val": "USB 2.0"
-                            }, {
-                                "id": "color",
-                                "val": "red"
-                            }],
-                            "pcontent": "<p>Compact and robust USB stick.</p>\n",
                             "pamount": 100,
                             "pamount_unlimited": 0,
                             "pprice": 300,
                             "pweight": 0.02,
-                            "pcurs": "rur"
+                            "pcurs": "rur",
+                            "pdata": {
+                                "ru": {
+                                    "ptitle": "8Gb Smart Buy Cobra",
+                                    "pshortdesc": "Compact and cheap USB stick by Smart Buy",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "<p>Compact and robust USB stick.</p>\n",
+                                    "pchars": [{
+                                        "id": "capacity_gb",
+                                        "val": 8
+                                    }, {
+                                        "id": "interface",
+                                        "val": "USB 2.0"
+                                    }, {
+                                        "id": "color",
+                                        "val": "красный"
+                                    }]
+                                },
+                                "en": {
+                                    "ptitle": "8Gb Smart Buy Cobra",
+                                    "pshortdesc": "Compact and cheap USB stick by Smart Buy",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "<p>Компактная и надежная флешка.</p>\n",
+                                    "pchars": [{
+                                        "id": "capacity_gb",
+                                        "val": 8
+                                    }, {
+                                        "id": "interface",
+                                        "val": "USB 2.0"
+                                    }, {
+                                        "id": "color",
+                                        "val": "red"
+                                    }]
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();
@@ -112,21 +140,33 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "16Gb Silicon Power I-Series",
-                            "pshortdesc": "16Gb Silicon Power I-Series, SP016GBUF2M01V1K, Flash USB, black",
                             "pfilename": "TDS00002",
                             "pcategory": "/storage/usb_flash",
                             "pcategory_id": "j1_3",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["139312b8960a51f7a601e01c9eb39c71", "a438ec7015acf1da5c13cb649c1afcf0"],
                             "pamount": 50,
                             "pamount_unlimited": 0,
                             "pprice": 700,
                             "pweight": 0.1,
                             "pcurs": "rur",
-                            "pcontent": ""
+                            "pdata": {
+                                "ru": {
+                                    "pcontent": "",
+                                    "ptitle": "16Gb Silicon Power I-Series",
+                                    "pshortdesc": "16Gb Silicon Power I-Series, SP016GBUF2M01V1K, USB флешка, черная",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pchars": []
+                                },
+                                "en": {
+                                    "pcontent": "",
+                                    "ptitle": "16Gb Silicon Power I-Series",
+                                    "pshortdesc": "16Gb Silicon Power I-Series, SP016GBUF2M01V1K, Flash USB, black",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pchars": []
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();
@@ -134,21 +174,33 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "32Gb Transcend JetFlash 700",
-                            "pshortdesc": "32Gb Transcend JetFlash 700, TS32GJF700, USB 3.0, Flash USB",
                             "pfilename": "TDS00003",
                             "pcategory": "/storage/usb_flash",
                             "pcategory_id": "j1_3",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["661e84ae052879073ed77cbf720989ad", "c157983ba9c37cde40edf5021517f223", "527fc0f513bc9505c77e2ae4c6656829"],
                             "pamount": 10,
                             "pamount_unlimited": 0,
                             "pprice": 1220,
                             "pweight": 0.04,
                             "pcurs": "rur",
-                            "pcontent": ""
+                            "pdata": {
+                                "ru": {
+                                    "ptitle": "32Gb Transcend JetFlash 700",
+                                    "pshortdesc": "32Gb Transcend JetFlash 700, TS32GJF700, USB 3.0, USB флешка",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                },
+                                "en": {
+                                    "ptitle": "32Gb Transcend JetFlash 700",
+                                    "pshortdesc": "32Gb Transcend JetFlash 700, TS32GJF700, USB 3.0, Flash USB",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();
@@ -156,28 +208,45 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "L-Pro 3.5\" BOX (10 pcs)",
-                            "pshortdesc": "3.5\" double side, high capacity, formatted",
                             "pfilename": "TDS00004",
                             "pcategory": "/storage/floppy",
                             "pcategory_id": "j1_4",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["e686545d51dc3879f85c2a9c9b856568", "1da71e8209a3713ba4eac9f217316193"],
-                            "pchars": [{
-                                "id": "capacity_mb",
-                                "val": 1.44
-                            }, {
-                                "id": "floppy_size",
-                                "val": "3.5&quot;"
-                            }],
-                            "pcontent": "",
                             "pamount": 5,
                             "pamount_unlimited": 0,
                             "pprice": 280,
                             "pweight": 0.3,
-                            "pcurs": "rur"
+                            "pcurs": "rur",
+                            "pdata": {
+                                "ru": {
+                                    "ptitle": "L-Pro 3.5\", коробка (10 шт.)",
+                                    "pshortdesc": "3.5\", двухсторонние, высокой плотности, отформатированные",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": [{
+                                        "id": "capacity_mb",
+                                        "val": 1.44
+                                    }, {
+                                        "id": "floppy_size",
+                                        "val": "3.5&quot;"
+                                    }]
+                                },
+                                "en": {
+                                    "ptitle": "L-Pro 3.5\" BOX (10 pcs)",
+                                    "pshortdesc": "3.5\" double side, high capacity, formatted",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": [{
+                                        "id": "capacity_mb",
+                                        "val": 1.44
+                                    }, {
+                                        "id": "floppy_size",
+                                        "val": "3.5&quot;"
+                                    }]
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();
@@ -185,21 +254,33 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "SDHC 32Gb Class 10 SanDisk Ultra",
-                            "pshortdesc": "SDHC 32Gb Class 10 SanDisk Ultra SDSDU-032G-U46",
                             "pfilename": "TDS00005",
                             "pcategory": "/storage/memory_cards/sd",
                             "pcategory_id": "j1_8",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["f437f67242c5b806e7e09c9b1e8de2fc"],
                             "pamount": 5,
                             "pamount_unlimited": 0,
                             "pprice": 1430,
                             "pweight": 0.2,
                             "pcurs": "rur",
-                            "pcontent": ""
+                            "pdata": {
+                                "ru": {
+                                    "ptitle": "SDHC 32Gb Class 10 SanDisk Ultra",
+                                    "pshortdesc": "SDHC 32Gb Class 10 SanDisk Ultra SDSDU-032G-U46",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                },
+                                "en": {
+                                    "ptitle": "SDHC 32Gb Class 10 SanDisk Ultra",
+                                    "pshortdesc": "SDHC 32Gb Class 10 SanDisk Ultra SDSDU-032G-U46",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();
@@ -207,21 +288,33 @@ module.exports = function(db, ensure_indexes, config) {
                     },
                     function(callback) {
                         db.collection('warehouse').insert({
-                            "ptitle": "Classic NES console",
-                            "pshortdesc": "Basic refurbished NES Nintendo System with controller, all hook-ups, and a new 72-pin",
                             "pfilename": "TDS00006",
                             "pcategory": "/game_console/nes",
                             "pcategory_id": "j1_7",
-                            "plang": "en",
-                            "pkeywords": "",
-                            "pdesc": "",
                             "pimages": ["76cdb7a45539a90a9c28556f1351b958"],
                             "pamount": 0,
                             "pamount_unlimited": 0,
                             "pprice": 3000,
                             "pweight": 1.5,
                             "pcurs": "rur",
-                            "pcontent": ""
+                            "pdata": {
+                                "ru": {
+                                    "ptitle": "Классическая консоль NES",
+                                    "pshortdesc": "Приставка NES, refurbished с контроллерами, аксессуарами, и новым 72-pin разъемом",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                },
+                                "en": {
+                                    "ptitle": "Classic NES console",
+                                    "pshortdesc": "Basic refurbished NES Nintendo System with controller, all hook-ups, and a new 72-pin",
+                                    "pkeywords": "",
+                                    "pdesc": "",
+                                    "pcontent": "",
+                                    "pchars": []
+                                }
+                            }
                         }, function(err) {
                             if (err) return callback(err);
                             callback();

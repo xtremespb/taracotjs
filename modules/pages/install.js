@@ -28,7 +28,7 @@ module.exports = function(db, ensure_indexes, config) {
                 // Create indexes
                 async.series([
                     function(callback) {
-                        ensure_indexes('pages', ['pfolder', 'pfilename', 'ptitle'], null, null, function() {
+                        ensure_indexes('pages', ['pfolder', 'pfilename'], null, null, function() {
                             async.eachSeries(config.locales.avail, function(lng, __callback) {
                                 ensure_indexes('pages', ['pdata.' + lng + '.ptitle'], null, null, function() {
                                     __callback();
