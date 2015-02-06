@@ -350,5 +350,6 @@
 	"view_order": "View order details",
 	"on_website": "on website",
 	"ship_track": "Tracking number",
-	"make_payment": "Pay online"
+	"make_payment": "Pay online",
+	"no_items_found": "Currently no items in current category"
 }

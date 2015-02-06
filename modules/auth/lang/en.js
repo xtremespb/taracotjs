@@ -128,5 +128,8 @@
 	"error": "Error",
 	"invite_required_to_register": "You need an invite to register on this website. Please obtain an invite and try again.",
 	"invalid_invcode": "Invite code is invalid",
-	"invite_already_used": "Invite code is already used by another user. You will need to get another invite code to register."
+	"invite_already_used": "Invite code is already used by another user. You will need to get another invite code to register.",
+	"not_registered": "Don't have an account?",
+	"click_here": "Click here",
+	"to_register": "to register"
 }
