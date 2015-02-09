@@ -12,36 +12,36 @@ module.exports = function(app) {
         merge = require('merge'),
         original, cloned;
 
-    var catalog = gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
-        cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
-        checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/checkout.html'),
-        orders = gaikan.compileFromFile(path.join(__dirname, 'views') + '/orders.html'),
-        catalog_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
-        catalog_item_view = gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
-        pt_li_a = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
-        pt_nav_sub = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_nav_sub.html'),
-        pt_btn_mini = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini.html'),
-        pt_btn_mini_disabled = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini_disabled.html'),
-        pt_btn = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn.html'),
-        pt_btn_disabled = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_disabled.html'),
-        pt_pagination = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html'),
-        pt_page_normal = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html'),
-        pt_page_span = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
-        pt_tn_img = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html'),
-        pt_desc_list = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list.html'),
-        pt_desc_list_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html'),
-        pt_cart = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart.html'),
-        pt_cart_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html'),
-        pt_checkout = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout.html'),
-        pt_checkout_item = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout_item.html'),
-        pt_alert_warning = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html'),
-        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html'),
-        pt_orders = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders.html'),
-        pt_orders_tr = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders_tr.html'),
-        pt_mail_neworder_orders_table_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_html.html'),
-        pt_mail_neworder_orders_table_row_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_row_html.html'),
-        pt_mail_neworder_summary_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_summary_html.html'),
-        pt_mail_neworder_shipping_html = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_shipping_html.html');
+    var catalog = (fs.existsSync(path.join(__dirname, 'views') + '/custom_catalog.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_catalog.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
+        cart = (fs.existsSync(path.join(__dirname, 'views') + '/custom_cart.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_cart.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/cart.html'),
+        checkout = (fs.existsSync(path.join(__dirname, 'views') + '/custom_checkout.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_checkout.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/checkout.html'),
+        orders = (fs.existsSync(path.join(__dirname, 'views') + '/custom_orders.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_orders.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/orders.html'),
+        catalog_item = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_catalog_item.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_catalog_item.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_catalog_item.html'),
+        catalog_item_view = (fs.existsSync(path.join(__dirname, 'views') + '/custom_item.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_item.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/item.html'),
+        pt_li_a = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_li_a.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_li_a.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_li_a.html'),
+        pt_nav_sub = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_nav_sub.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_nav_sub.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_nav_sub.html'),
+        pt_btn_mini = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_btn_mini.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_btn_mini.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini.html'),
+        pt_btn_mini_disabled = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_btn_mini_disabled.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_btn_mini_disabled.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_mini_disabled.html'),
+        pt_btn = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_btn.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_btn.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn.html'),
+        pt_btn_disabled = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_btn_disabled.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_btn_disabled.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_btn_disabled.html'),
+        pt_pagination = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_pagination.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_pagination.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_pagination.html'),
+        pt_page_normal = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_page_normal.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_page_normal.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_normal.html'),
+        pt_page_span = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_page_span.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_page_span.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_page_span.html'),
+        pt_tn_img = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_tn_img.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_tn_img.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_tn_img.html'),
+        pt_desc_list = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_desc_list.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_desc_list.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list.html'),
+        pt_desc_list_item = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_desc_list_item.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_desc_list_item.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_desc_list_item.html'),
+        pt_cart = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_cart.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_cart.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart.html'),
+        pt_cart_item = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_cart_item.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_cart_item.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_cart_item.html'),
+        pt_checkout = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_checkout.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_checkout.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout.html'),
+        pt_checkout_item = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_checkout_item.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_checkout_item.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_checkout_item.html'),
+        pt_alert_warning = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_alert_warning.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_alert_warning.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_alert_warning.html'),
+        pt_select_option = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_select_option.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_select_option.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html'),
+        pt_orders = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_orders.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_orders.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders.html'),
+        pt_orders_tr = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_orders_tr.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_orders_tr.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_orders_tr.html'),
+        pt_mail_neworder_orders_table_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_orders_table_html.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_orders_table_html.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_html.html'),
+        pt_mail_neworder_orders_table_row_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_orders_table_row_html.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_orders_table_row_html.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_orders_table_row_html.html'),
+        pt_mail_neworder_summary_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_summary_html.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_summary_html.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_summary_html.html'),
+        pt_mail_neworder_shipping_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_shipping_html.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_shipping_html.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_shipping_html.html');
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales.avail,
@@ -642,7 +642,7 @@ module.exports = function(app) {
                                             // Send mail to the user
                                             if (req.session.auth.email) {
                                                 var _rows_html = '',
-                                                    _rows_txt = '';;
+                                                    _rows_txt = '';
                                                 for (var key in cart) {
                                                     _rows_html += pt_mail_neworder_orders_table_row_html(gaikan, {
                                                         lang: i18nm,
@@ -1574,23 +1574,23 @@ module.exports = function(app) {
                                     }, undefined);
                                 }
                                 if (page < num_pages) {
-                                    var _p = page + 1;
+                                    var _pg = page + 1;
                                     pgnt += pt_page_normal(gaikan, {
-                                        url: page_url + _p,
-                                        text: 'В»'
+                                        url: page_url + _pg,
+                                        text: '»'
                                     }, undefined);
                                 }
                             } else {
-                                for (var i = 1; i <= num_pages; i++) {
-                                    if (i == page) {
+                                for (var i2 = 1; i2 <= num_pages; i2++) {
+                                    if (i2 == page) {
                                         pgnt += pt_page_span(gaikan, {
                                             class: 'active',
-                                            text: i
+                                            text: i2
                                         }, undefined);
                                     } else {
                                         pgnt += pt_page_normal(gaikan, {
-                                            url: page_url + i,
-                                            text: i
+                                            url: page_url + i2,
+                                            text: i2
                                         }, undefined);
                                     }
                                 }

@@ -1,6 +1,7 @@
 module.exports = function(app) {
 
-    var updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
+    var path = require('path'),
+        updates_url = 'https://taracot.org/source/taracotjs/update_info.json',
         modules_url = 'https://taracot.org/source/taracotjs',
         proxy_url = '', // Set undefined if no proxy
         request = require("request"),
@@ -13,12 +14,12 @@ module.exports = function(app) {
         checksum = require('checksum'),
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
-        pt_updates_table = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_updates_table.html'),
-        pt_updates_tr = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_updates_tr.html');
+        pt_updates_table = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_updates_table.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_updates_table.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_updates_table.html'),
+        pt_updates_tr = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_updates_tr.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_updates_tr.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_updates_tr.html');
 
     router.get('/', function(req, res) {
         if (typeof req.session.auth == 'undefined' || req.session.auth === false || req.session.auth.status < 2) {
@@ -141,7 +142,7 @@ module.exports = function(app) {
                             data: data
                         }, undefined);
                     }
-                    var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'dashboard', {
+                    var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'dashboard', {
                         lang: i18nm,
                         os: os_data,
                         days: JSON.stringify(days),
@@ -219,7 +220,7 @@ module.exports = function(app) {
                         async.eachSeries(outdated_modules, function(module, callback) {
                             cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('downloading_module') + ": " + module);
                             app.set('_cp_updater_messages', cp_updater_messages);
-                            var dest = app.get('path').join(__dirname, '..', app.get('config').dir.tmp, 'taracot_' + module + '.zip'),
+                            var dest = path.join(__dirname, '..', app.get('config').dir.tmp, 'taracot_' + module + '.zip'),
                                 file = fs.createWriteStream(dest);
                             request({
                                 method: 'GET',
@@ -239,8 +240,8 @@ module.exports = function(app) {
                                         if (module_sum != update_last[module].checksum) return callback(i18nm.__('invalid_checksum') + ": " + module);
                                         cp_updater_messages.push('[' + moment(Date.now()).format('LTS') + '] ' + i18nm.__('extracting_module') + ": " + module);
                                         app.set('_cp_updater_messages', cp_updater_messages);
-                                        var extract_path = app.get('path').join(__dirname, '..');
-                                        if (module == 'core') extract_path = app.get('path').join(__dirname, '..', '..');
+                                        var extract_path = path.join(__dirname, '..');
+                                        if (module == 'core') extract_path = path.join(__dirname, '..', '..');
                                         var p;
                                         try {
                                             p = fs.createReadStream(dest).pipe(unzip.Extract({

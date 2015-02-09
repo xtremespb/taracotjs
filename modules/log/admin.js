@@ -9,9 +9,10 @@ module.exports = function(app) {
         fs = require('fs'),
         max_log_items = 100,
         gaikan = require('gaikan'),
-        parts_table = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table.html'),
-        parts_table_tr = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table_tr.html'),
-        parts_stack_btn = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_stack_btn.html');
+        parts_table = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_table.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_table.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table.html'),
+        parts_table_tr = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_table_tr.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_table_tr.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table_tr.html'),
+        parts_stack_btn = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_stack_btn.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_stack_btn.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_stack_btn.html');
+
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name_cp");

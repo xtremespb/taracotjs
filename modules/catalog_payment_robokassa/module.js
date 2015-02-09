@@ -5,21 +5,23 @@
 */
 
 module.exports = function(app) {
-    var i18nm = new(require('i18n-2'))({
+    var path = require('path'),
+        i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
         router = app.get('express').Router(),
         config = app.get('config'),
+        fs = require('fs'),
         crypto = require('crypto'),
         mailer = app.get('mailer'),
         ObjectId = require('mongodb').ObjectID;
 
     var gaikan = require('gaikan'),
-        payment_html = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/payment.html'),
-        pt_payment_btn = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_payment_btn.html');
+        payment_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_payment.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_payment.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/payment.html'),
+        pt_payment_btn = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_payment_btn.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_payment_btn.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_payment_btn.html');
 
     /*
 
@@ -102,10 +104,10 @@ module.exports = function(app) {
                             view_url: config.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + order._id,
                             subj: i18nm.__('your_order_id') + ' ' + order.order_id
                         };
-                        if (!us_err && users && users.length && users[0].email) mailer.send(users[0].email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
+                        if (!us_err && users && users.length && users[0].email) mailer.send(users[0].email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
                         mail_data.subj = i18nm.__('order_id') + ' ' + order.order_id;
                         mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
-                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', app.get('path').join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
+                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
                         return res.send("OK" + InvId);
                     });
                 });

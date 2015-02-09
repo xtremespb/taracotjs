@@ -2,10 +2,15 @@ var config = require('../config'),
     gaikan = require('gaikan'),
     fs = require('fs'),
     async = require('async'),
-    path = require('path');
+    path = require('path'),
+    _default_auth_data = {
+        username: '',
+        email: '',
+        status: 0,
+        realname: ''
+    };
 
 module.exports = function(app) {
-
     var i18nm = new(require('i18n-2'))({
             locales: config.locales.avail,
             directory: path.join(__dirname, 'lang'),
@@ -13,17 +18,11 @@ module.exports = function(app) {
             devMode: config.locales.dev_mode
         }),
         templates = {};
-
     var renderer = {
         render: function(res, layout, data, req) {
             i18nm.setLocale(req.session.current_locale);
             var _layout = (layout || config.layouts.default) + '_' + req.session.current_locale;
-            data.auth = {
-                username: '',
-                email: '',
-                status: 0,
-                realname: ''
-            };
+            data.auth = _default_auth_data;
             data.blocks = {};
             data.blocks_sync = {};
             if (req && req.session && req.session.auth) data.auth = req.session.auth;
@@ -67,16 +66,20 @@ module.exports = function(app) {
             });
         },
         render_file: function(dir, filename, data, req) {
-            var render = gaikan.compileFromFile(dir + '/' + filename + '.html');
-            data.auth = {
-                username: '',
-                email: '',
-                status: 0,
-                realname: ''
-            };
+            var _layout = dir + '/' + filename + '.html',
+                rfn = templates[dir + '/' + filename + '.html'];
+            if (!rfn) {
+                if (fs.existsSync(dir + '/custom_' + filename + '.html')) {
+                    rfn = gaikan.compileFromFile(dir + '/custom_' + filename + '.html');
+                } else {
+                    rfn = gaikan.compileFromFile(_layout);
+                }
+            }
+            if (!rfn) return 'Cannot render layout: ' + filename;
+            data.auth = _default_auth_data;
             if (req && req.session && req.session.auth) data.auth = req.session.auth;
-            var html_data = render(gaikan, data, undefined);
-            return html_data;
+            if (!templates[_layout]) templates[_layout] = rfn;
+            return rfn(gaikan, data, undefined);
         }
     };
 

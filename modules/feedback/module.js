@@ -10,7 +10,9 @@ module.exports = function(app) {
             directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
-        });
+        }),
+        fs = require('fs'),
+        part_mail_fields = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_part_mail_fields.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/part_mail_fields.html');
     router.post('/send', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
         var lng = req.session.current_locale;
@@ -83,7 +85,8 @@ module.exports = function(app) {
                         error: i18nm.__("invalid_form_data")
                     }));
                 var _opt_found = false;
-                for (var o = 0; o< options.length; o++) if (options[o]['value_' + lng] == val) _opt_found = true;
+                for (var o = 0; o < options.length; o++)
+                    if (options[o]['value_' + lng] == val) _opt_found = true;
                 if (!_opt_found)
                     return res.send(JSON.stringify({
                         result: 0,
@@ -97,7 +100,6 @@ module.exports = function(app) {
                 value: val
             });
         }
-        var part_mail_fields = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/part_mail_fields.html');
         var fields_html = '',
             fields_txt = '';
         for (var fa = 0; fa < email_data.length; fa++) {

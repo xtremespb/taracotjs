@@ -18,7 +18,9 @@ module.exports = function(app) {
         path = require('path'),
         async = require('async'),
         mailer = app.get('mailer'),
-        merge = require('merge'), original, cloned,
+        fs = require('fs'),
+        merge = require('merge'),
+        original, cloned,
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
             directory: app.get('path').join(__dirname, 'lang'),
@@ -26,7 +28,7 @@ module.exports = function(app) {
             devMode: app.get('config').locales.dev_mode
         }),
         countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"],
-        pt_select_option = gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
+        pt_select_option = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_select_option.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_select_option.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_select_option.html');
 
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
@@ -292,7 +294,7 @@ module.exports = function(app) {
             pfilename: sku
         }).toArray(function(wh_err, whitems) {
             var title = i18nm.__('unknown_sku');
-            if (!wh_err && whitems && whitems.length){
+            if (!wh_err && whitems && whitems.length) {
                 if (whitems[0].pdata[req.session.current_locale]) whitems[0] = merge(whitems[0], whitems[0].pdata[req.session.current_locale]);
                 title = whitems[0].ptitle;
             }

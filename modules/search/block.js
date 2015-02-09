@@ -7,21 +7,23 @@ module.exports = function(app) {
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
-        search_block_top = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/search_block_top.html'),
-        search_block_li = gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/search_block_li.html');
+        fs = require('fs'),
+        search_block_top = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_search_block_top.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_search_block_top.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/search_block_top.html'),
+        search_block_li = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_search_block_li.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_search_block_li.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/search_block_li.html');
+
     var block = {
         data: function(req, res, callback) {
             i18nm.setLocale(req.session.current_locale);
             var lng = req.session.current_locale,
                 data = {
-                top: search_block_top(gaikan, {
-                    lang: i18nm,
-                    search_query: req.query.query || ''
-                }, undefined),
-                li: search_block_li(gaikan, {
-                    lang: i18nm
-                }, undefined)
-            };
+                    top: search_block_top(gaikan, {
+                        lang: i18nm,
+                        search_query: req.query.query || ''
+                    }, undefined),
+                    li: search_block_li(gaikan, {
+                        lang: i18nm
+                    }, undefined)
+                };
             callback(data);
         }
     };
