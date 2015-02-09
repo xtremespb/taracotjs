@@ -3,7 +3,7 @@ module.exports = function(app) {
     var router = app.get('express').Router(),
         gaikan = require('gaikan'),
         renderer = app.get('renderer'),
-        path = app.get('path'),
+        path = require('path'),
         ObjectId = require('mongodb').ObjectID,
         crypto = require('crypto'),
         fs = require('fs'),
@@ -13,7 +13,7 @@ module.exports = function(app) {
 
     var i18nm = new(require('i18n-2'))({
         locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
+        directory: path.join(__dirname, 'lang'),
         extension: '.js',
         devMode: app.get('config').locales.dev_mode
     });

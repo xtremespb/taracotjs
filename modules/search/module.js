@@ -1,14 +1,14 @@
 module.exports = function(app) {
-    var items_per_page = 30;
-    var router = app.get('express').Router();
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
-    var renderer = app.get('renderer'),
-        path = app.get('path'),
+    var items_per_page = 30,
+        path = require('path'),
+        router = app.get('express').Router(),
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        }),
+        renderer = app.get('renderer'),
         parser = app.get('parser');
     router.get('/', function(req, res) {
         i18nm.setLocale(req.session.current_locale);

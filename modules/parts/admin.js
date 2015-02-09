@@ -1,22 +1,21 @@
 module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
-        pname: 1,
-        lang: 1
-    };
-    var sort_cell_default = 'pname';
-    var sort_cell_default_mode = 1;
-    // Set items per page for this module
-    var items_per_page = 30;
-    //
-    var router = app.get('express').Router();
-    var ObjectId = require('mongodb').ObjectID;
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
+            pname: 1,
+            lang: 1
+        },
+        sort_cell_default = 'pname',
+        sort_cell_default_mode = 1,
+        items_per_page = 30,
+        path = require('path'),
+        router = app.get('express').Router(),
+        ObjectId = require('mongodb').ObjectID,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        });
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
@@ -29,7 +28,7 @@ module.exports = function(app) {
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'parts_control', {
+        var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'parts_control', {
             lang: i18nm,
             locales: JSON.stringify(app.get('config').locales.avail)
         }, req);

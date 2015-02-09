@@ -23,7 +23,7 @@ module.exports = function(app) {
         original, cloned,
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
@@ -75,7 +75,7 @@ module.exports = function(app) {
                     val: countries[c],
                     text: i18nm.__('country_list')[c]
                 }, undefined);
-            var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'catalog_orders_control', {
+            var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'catalog_orders_control', {
                 lang: i18nm,
                 locales: JSON.stringify(app.get('config').locales.avail),
                 order_status_list: JSON.stringify(i18nm.__('order_status_list')),

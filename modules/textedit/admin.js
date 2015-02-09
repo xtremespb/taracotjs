@@ -1,16 +1,16 @@
 module.exports = function(app) {
     app.set('textedit', true);
-    var i18nm = new(require('i18n-2'))({
+    var path = require('path'),
+        i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs-extra'),
         itob = require('./itob'),
         mime = require('mime'),
-        router = app.get('express').Router(),
-        path = app.get('path');
+        router = app.get('express').Router();
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
@@ -56,7 +56,7 @@ module.exports = function(app) {
         } else { // file does exists
             file.name = fn;
         }
-        var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'editor', {
+        var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'editor', {
             lang: i18nm,
             content: content,
             file: JSON.stringify(file),
@@ -125,7 +125,7 @@ module.exports = function(app) {
     var send_error = function(res, msg) {
         var err = i18nm.__('file_loading_error');
         if (msg) err = msg;
-        var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'error', {
+        var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'error', {
             lang: i18nm,
             err: err,
             locales: JSON.stringify(app.get('config').locales.avail)

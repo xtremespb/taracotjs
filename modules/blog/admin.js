@@ -1,9 +1,10 @@
 module.exports = function(app) {
     var router = app.get('express').Router(),
+        path = require('path'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         });
@@ -34,7 +35,7 @@ module.exports = function(app) {
                     if (items[i].oname == 'blog_areas') areas = items[i].ovalue;
                 }
             }
-            var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'blog_cp', {
+            var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'blog_cp', {
                 lang: i18nm,
                 auth: req.session.auth,
                 init_mode: mode,

@@ -1,30 +1,29 @@
 module.exports = function(app) {
     // Sort order hash
     var sort_cells = {
-        invcode: 1,
-        invdate: 1,
-        invused: 1
-    };
-    var sort_cell_default = 'invdate';
-    var sort_cell_default_mode = -1;
-    // Set items per page for this module
-    var items_per_page = 30;
-    //
-    var router = app.get('express').Router();
-    var ObjectId = require('mongodb').ObjectID;
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
-    var crypto = require('crypto');
+            invcode: 1,
+            invdate: 1,
+            invused: 1
+        },
+        path = require('path'),
+        sort_cell_default = 'invdate',
+        sort_cell_default_mode = -1,
+        items_per_page = 30,
+        router = app.get('express').Router(),
+        ObjectId = require('mongodb').ObjectID,
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        }),
+        crypto = require('crypto');
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
         return i18nm.__("module_name");
     };
     router.get('/', function(req, res) {
-    	var _locale = req.session.current_locale;
+        var _locale = req.session.current_locale;
         i18nm.setLocale(_locale);
         if (!req.session.auth || req.session.auth.status < 2) {
             req.session.auth_redirect_host = req.get('host');
@@ -32,7 +31,7 @@ module.exports = function(app) {
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'invites_control', {
+        var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'invites_control', {
             lang: i18nm,
             locales: JSON.stringify(app.get('config').locales.avail),
             current_locale: _locale
@@ -170,7 +169,7 @@ module.exports = function(app) {
             return;
         }
         var invcode = crypto.createHash('md5').update(Date.now() + Math.random().toString()).digest('hex') + crypto.createHash('md5').update(Date.now() + Math.random().toString()).digest('hex'),
-        	invdate = Date.now();
+            invdate = Date.now();
         app.get('mongodb').collection('invites').insert({
             invdate: invdate,
             invcode: invcode,

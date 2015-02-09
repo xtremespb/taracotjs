@@ -1,13 +1,14 @@
 module.exports = function(app) {
-    var router = app.get('express').Router();
-    var gaikan = require('gaikan');
-    var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
-        directory: app.get('path').join(__dirname, 'lang'),
-        extension: '.js',
-        devMode: app.get('config').locales.dev_mode
-    });
-    var Entities = require('html-entities').AllHtmlEntities;
+    var router = app.get('express').Router(),
+        path = require('path'),
+        gaikan = require('gaikan'),
+        i18nm = new(require('i18n-2'))({
+            locales: app.get('config').locales.avail,
+            directory: path.join(__dirname, 'lang'),
+            extension: '.js',
+            devMode: app.get('config').locales.dev_mode
+        }),
+        Entities = require('html-entities').AllHtmlEntities;
     entities = new Entities();
     router.get(/(.*)/, function(req, res, next) {
         var lng = req.session.current_locale;

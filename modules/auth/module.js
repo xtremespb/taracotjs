@@ -1,8 +1,8 @@
 module.exports = function(app) {
     var router = app.get('express').Router(),
+        path = require('path'),
         renderer = app.get('renderer'),
         config = app.get('config'),
-        path = app.get('path'),
         mailer = app.get('mailer'),
         crypto = require('crypto'),
         i18nm = new(require('i18n-2'))({

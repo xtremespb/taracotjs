@@ -1,7 +1,7 @@
 module.exports = function(app) {
     var router = app.get('express').Router(),
         config = app.get('config'),
-        path = app.get('path'),
+        path = require('path'),
         crypto = require('crypto'),
         mailer = app.get('mailer'),
         gaikan = require('gaikan'),
@@ -12,7 +12,7 @@ module.exports = function(app) {
             devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs'),
-        part_mail_fields = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_part_mail_fields.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/part_mail_fields.html');
+        part_mail_fields = fs.existsSync(path.join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_part_mail_fields.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/part_mail_fields.html');
     router.post('/send', function(req, res) {
         res.setHeader('Content-Type', 'application/json');
         var lng = req.session.current_locale;

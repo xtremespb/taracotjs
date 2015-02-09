@@ -9,20 +9,20 @@
 
 /* Load libraries */
 
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var config = require('./config');
-var fs = require('fs');
-var config_auth = require('./config_auth');
-var version = require('./version');
+var express = require('express'),
+    cookieParser = require('cookie-parser'),
+    config = require('./config'),
+    fs = require('fs'),
+    config_auth = require('./config_auth'),
+    version = require('./version');
 config.taracotjs = version.taracotjs;
-var path = require('path');
-var crypto = require('crypto');
-var I18n = require('i18n-2');
-var app = express();
-var session = require('express-session');
-var mongoclient = require('mongodb').MongoClient;
-var redis, redis_client, RedisStore, MongoStore;
+var path = require('path'),
+    crypto = require('crypto'),
+    I18n = require('i18n-2'),
+    app = express(),
+    session = require('express-session'),
+    mongoclient = require('mongodb').MongoClient,
+    redis, redis_client, RedisStore, MongoStore;
 if (config.redis.active) {
     redis = require("redis");
     redis_client = redis.createClient(config.redis.port, config.redis.host, {
@@ -32,16 +32,16 @@ if (config.redis.active) {
 } else {
     MongoStore = require('connect-mongo')(session);
 }
-var gaikan = require('gaikan');
-var cp = require('./modules/cp/cp')(app);
-var auth = require('./core/auth')(app);
-var parser = require('./core/parser')(app);
-var renderer = require('./core/renderer')(app);
-var winston = require('winston');
-var captcha = require('./core/' + config.captcha);
-var multer = require('multer');
-var bodyParser = require('body-parser');
-var mailer = require('./core/mailer')(app);
+var gaikan = require('gaikan'),
+    cp = require('./modules/cp/cp')(app),
+    auth = require('./core/auth')(app),
+    parser = require('./core/parser')(app),
+    renderer = require('./core/renderer')(app),
+    winston = require('winston'),
+    captcha = require('./core/' + config.captcha),
+    multer = require('multer'),
+    bodyParser = require('body-parser'),
+    mailer = require('./core/mailer')(app);
 
 /* Enable trusted proxy */
 
@@ -79,14 +79,13 @@ app.set('express', express);
 app.set('cp', cp);
 app.set('auth-core', auth);
 app.set('captcha', captcha);
-app.set('path', path);
 app.set('renderer', renderer);
 app.set('logger', logger);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', '.html');
 app.set('mailer', mailer);
 app.set('parser', parser);
 app.set('session', session);
+app.set('view engine', '.html');
 app.engine('html', gaikan);
 
 /* Use items */

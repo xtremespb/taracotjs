@@ -1,17 +1,18 @@
 module.exports = function(app) {
     var router = app.get('express').Router(),
+        path = require('path'),
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs'),
         max_log_items = 100,
         gaikan = require('gaikan'),
-        parts_table = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_table.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_table.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table.html'),
-        parts_table_tr = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_table_tr.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_table_tr.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_table_tr.html'),
-        parts_stack_btn = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_stack_btn.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_stack_btn.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_stack_btn.html');
+        parts_table = fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_table.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_table.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_table.html'),
+        parts_table_tr = fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_table_tr.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_table_tr.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_table_tr.html'),
+        parts_stack_btn = fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_stack_btn.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_stack_btn.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_stack_btn.html');
 
     router.get_module_name = function(req) {
         i18nm.setLocale(req.session.current_locale);
@@ -33,7 +34,7 @@ module.exports = function(app) {
         if (!fs.existsSync(app.get('config').log.file.filename)) {
             log_data.log_html = i18nm.__('no_log_file_available_yet');
             return app.get('cp').render(req, res, {
-                body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
+                body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
                 css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
             }, i18nm, 'log', req.session.auth);
         }
@@ -41,7 +42,7 @@ module.exports = function(app) {
             if (err) {
                 log_data.log_html = i18nm.__('cannot_read_log');
                 return app.get('cp').render(req, res, {
-                    body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
+                    body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
                     css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
                 }, i18nm, 'log', req.session.auth);
             }
@@ -74,7 +75,7 @@ module.exports = function(app) {
             }, undefined);
             if (!log_html) log_data.log_html = i18nm.__('no_log_file_available_yet');
             return app.get('cp').render(req, res, {
-                body: app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'log', log_data, req),
+                body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
                 css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
             }, i18nm, 'log', req.session.auth);
         });

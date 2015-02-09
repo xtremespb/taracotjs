@@ -6,19 +6,20 @@ var _timestamp_settings_query = {},
 
 module.exports = function(app) {
     var locales = app.get('config').locales.avail,
+        path = require('path'),
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs'),
-        feedback = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_feedback.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_feedback.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/feedback.html'),
-        field_text = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_text.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_text.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_text.html'),
-        field_textarea = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_textarea.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_textarea.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_textarea.html'),
-        field_select = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_select.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_select.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select.html'),
-        field_select_option = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_select_option.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_select_option.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select_option.html'),
-        field_asterisk = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html');
+        feedback = fs.existsSync(path.join(__dirname, 'views') + '/custom_feedback.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_feedback.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/feedback.html'),
+        field_text = fs.existsSync(path.join(__dirname, 'views') + '/custom_field_text.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_field_text.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/field_text.html'),
+        field_textarea = fs.existsSync(path.join(__dirname, 'views') + '/custom_field_textarea.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_field_textarea.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/field_textarea.html'),
+        field_select = fs.existsSync(path.join(__dirname, 'views') + '/custom_field_select.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_field_select.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/field_select.html'),
+        field_select_option = fs.existsSync(path.join(__dirname, 'views') + '/custom_field_select_option.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_field_select_option.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/field_select_option.html'),
+        field_asterisk = fs.existsSync(path.join(__dirname, 'views') + '/custom_field_asterisk.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_field_asterisk.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/field_asterisk.html');
 
     var block = {
         data_sync: function(_par) {

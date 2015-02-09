@@ -1,8 +1,9 @@
 module.exports = function(app) {
 
-    var i18nm = new(require('i18n-2'))({
+    var path = require('path'),
+        i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
@@ -34,7 +35,7 @@ module.exports = function(app) {
             CKEditorFuncNum = "";
         if (req.query.io) io = true;
         if (req.query.CKEditorFuncNum) CKEditorFuncNum = req.query.CKEditorFuncNum;
-        var body = app.get('renderer').render_file(app.get('path').join(__dirname, 'views'), 'browse', {
+        var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'browse', {
             lang: i18nm,
             io: io,
             CKEditorFuncNum: CKEditorFuncNum,

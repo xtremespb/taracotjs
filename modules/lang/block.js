@@ -1,16 +1,17 @@
 var gaikan = require('gaikan');
 module.exports = function(app) {
     var locales = app.get('config').locales.avail,
+        path = require('path'),
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
-            directory: app.get('path').join(__dirname, 'lang'),
+            directory: path.join(__dirname, 'lang'),
             extension: '.js',
             devMode: app.get('config').locales.dev_mode
         }),
         fs = require('fs'),
-        flags = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_flags.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_flags.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/flags.html'),
-        flags_li = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_flags_li.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/flags_li.html'),
-        langs = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_parts_lang.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_parts_lang.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/parts_lang.html');
+        flags = fs.existsSync(path.join(__dirname, 'views') + '/custom_flags.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_flags.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/flags.html'),
+        flags_li = fs.existsSync(path.join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_flags_li.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/flags_li.html'),
+        langs = fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_lang.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_lang.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_lang.html');
 
     var block = {
         data: function(req, res, callback) {
