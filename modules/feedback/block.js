@@ -1,7 +1,8 @@
 var _timestamp_settings_query = {},
     feedback_cache = {},
     gaikan = require('gaikan'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    cache_timeout = 60000;
 
 module.exports = function(app) {
     var locales = app.get('config').locales.avail,
@@ -17,11 +18,11 @@ module.exports = function(app) {
         field_textarea = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_textarea.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_textarea.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_textarea.html'),
         field_select = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_select.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_select.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select.html'),
         field_select_option = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_select_option.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_select_option.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_select_option.html'),
-        field_asterisk = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html'),
-        fields_html = '';
+        field_asterisk = fs.existsSync(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') ? gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/custom_field_asterisk.html') : gaikan.compileFromFile(app.get('path').join(__dirname, 'views') + '/field_asterisk.html');
 
     var block = {
         data_sync: function(_par) {
+            var fields_html = '';
             if (_par) {
                 _par = _par.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\[/g, '{').replace(/\]/g, '}').replace(/#/g, ',').replace(/\(\(/g, "[").replace(/\)\)/g, "]");
                 _par = '{' + _par + '}';
@@ -36,8 +37,9 @@ module.exports = function(app) {
             i18nm.setLocale(lng);
             if (!(par instanceof Array)) return "Invalid form data";
             var form_data = JSON.stringify(par),
-                form_checksum = crypto.createHash('md5').update(app.get('config').salt + form_data).digest('hex');
-            if (_timestamp_settings_query[lng + form_checksum] && (Date.now() - _timestamp_settings_query[lng + form_checksum] <= 60000) && feedback_cache[lng + form_checksum]) return feedback_cache[lng + form_checksum];
+                form_checksum = crypto.createHash('md5').update(app.get('config').salt + form_data + lng).digest('hex');
+            if (_timestamp_settings_query[form_checksum] && (Date.now() - _timestamp_settings_query[form_checksum] <= cache_timeout) && feedback_cache[form_checksum])
+                return feedback_cache[form_checksum];
             for (var i = 0; i < par.length; i++) {
                 if (par[i].type) {
                     var data = {};
@@ -76,8 +78,8 @@ module.exports = function(app) {
                 captcha: _cap,
                 lang: i18nm
             }, undefined);
-            feedback_cache[lng + form_checksum] = res;
-            _timestamp_settings_query[lng + form_checksum] = Date.now();
+            feedback_cache[form_checksum] = res;
+            _timestamp_settings_query[form_checksum] = Date.now();
             return res;
         }
     };
