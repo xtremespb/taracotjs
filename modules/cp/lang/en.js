@@ -69,5 +69,10 @@
 	"update_in_progress": "Update has been already started. Remove lock file",
 	"cannot_create_lock": "Error while creating lock file",
 	"cannot_remove_lock": "Error while removing lock file",
-	"restarting": "Restarting"
+	"restarting": "Restarting",
+	"reset_system": "Restart system",
+	"system_reset_notice": "The current instance of TaracotJS will exit. Please make sure that you have configured an auto-restart feature on your server (like &quot;forever&quot;), TaracotJS may not start otherwise.",
+	"reset": "Restart",
+	"actions": "Actions",
+	"restart_system": "Restart"
 }
