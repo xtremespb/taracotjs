@@ -163,7 +163,8 @@ $(document).ready(function() {
     };
     var options = {
         responsive: true,
-        animation: false
+        animation: true,
+        bezierCurve : false
     };
     var taracot_statistics;
     if (visitors.length > 1) {
@@ -173,6 +174,8 @@ $(document).ready(function() {
             _mn.push(months[i].month + ' ' + months[i].year);
         }
         $('#h2_stat').append(' (' + _mn.join(', ') + ')');
+        $('#taracot_statistics_wrap').append($('#taracot_statistics'));
+        $('#taracot_statistics').show();
     } else {
         $('#taracot_stats_wrap').html(_lang_vars.no_stats_avail);
     }

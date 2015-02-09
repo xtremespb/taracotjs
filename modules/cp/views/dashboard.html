@@ -15,6 +15,7 @@
     </div>
 </div>
 <h1>!{root.lang.__('taracot_dashboard')}</h1>
+<canvas id="taracot_statistics" class="uk-margin-top" height="100" style="display:none"></canvas>
 <div class="uk-margin-bottom">!{root.lang.__('up_and_running')}</div>
 <ul class="uk-tab" data-uk-tab="{connect:'#dashboard_tabs'}">
     <li><a href="">!{root.lang.__('server')}</a>
@@ -84,7 +85,7 @@
                 <br>
                 <i class="uk-icon uk-icon-square" style="color:#FF4C36"></i>&nbsp;!{root.lang.__('number_of_visitors')}
                 <br>
-                <canvas id="taracot_statistics" class="uk-margin-top" height="100"></canvas>
+                <div id="taracot_statistics_wrap"></div>
                 <div class="uk-margin-top"><small>!{root.lang.__('chart_hint')}</small>
                 </div>
             </div>
