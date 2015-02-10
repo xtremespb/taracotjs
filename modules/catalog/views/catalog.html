@@ -1,6 +1,9 @@
 <div class="uk-grid uk-margin-bottom">
-    <div class="uk-width-1-2">!{root.current_cat_bread.html_uikit}</div>
-    <div class="uk-width-1-2 taracot-catalog-right-links">
+    <div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">!{root.current_cat_bread.html_uikit}</div>
+    <div class="uk-width-large-2-10 uk-hidden-small uk-hidden-medium taracot-catalog-right-links">
+        <a href="/catalog/cart!{root.url_data}" class="uk-button uk-button-small"><span class="uk-badge">!{root.cart_items_count}</span>&nbsp;!{root.lang.__('cart')}</a>&nbsp;<a href="/catalog/orders!{root.url_data}" class="uk-button uk-button-small"><i class="uk-icon-reorder"></i>&nbsp;!{root.lang.__('my_orders')}</a>
+    </div>
+    <div class="uk-width-1-1 uk-hidden-large uk-margin-top">
         <a href="/catalog/cart!{root.url_data}" class="uk-button uk-button-small"><span class="uk-badge">!{root.cart_items_count}</span>&nbsp;!{root.lang.__('cart')}</a>&nbsp;<a href="/catalog/orders!{root.url_data}" class="uk-button uk-button-small"><i class="uk-icon-reorder"></i>&nbsp;!{root.lang.__('my_orders')}</a>
     </div>
 </div>
@@ -22,7 +25,12 @@
                         </li> !{root.filter_sort}
                     </ul>
                 </div>
-                <div class="uk-width-large-3-10 uk-width-medium-1-1 uk-width-small-1-1 taracot-catalog-align-right">
+                <div class="uk-width-large-3-10 uk-width-medium-1-1 uk-width-small-1-1 uk-hidden-small uk-hidden-medium taracot-catalog-align-right">
+                    <ul class="uk-subnav uk-subnav-pill taracot-catalog-subnav-pill">
+                        </li> !{root.filter_show}
+                    </ul>
+                </div>
+                <div class="uk-width-large-3-10 uk-width-medium-1-1 uk-width-small-1-1 uk-hidden-large uk-margin-top">
                     <ul class="uk-subnav uk-subnav-pill taracot-catalog-subnav-pill">
                         </li> !{root.filter_show}
                     </ul>
