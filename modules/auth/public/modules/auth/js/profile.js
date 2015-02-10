@@ -290,11 +290,11 @@ $('#btn_rn_save').click(function() {
             } else {
                 dlg_realname.hide();
                 if (data.realname) {
-                	$('#profile_realname').html(data.realname);
-                	auth_realname = data.realname;
+                    $('#profile_realname').html(data.realname);
+                    auth_realname = data.realname;
                 } else {
-                	$('#profile_realname').html('');
-                	auth_realname = '';
+                    $('#profile_realname').html('');
+                    auth_realname = '';
                 }
                 UIkit.notify({
                     message: _lang_vars.realname_saved,
@@ -436,11 +436,11 @@ var uploader_init = function() {
     });
     uploader.init();
     uploader.bind('FilesAdded', function(up, files) {
-    	uploader.start();
+        uploader.start();
     });
     uploader.bind('Error', function(up, err) {
-    	$.loadingIndicator('hide');
-    	UIkit.notify({
+        $.loadingIndicator('hide');
+        UIkit.notify({
             message: err.message,
             status: 'danger',
             timeout: 2000,
@@ -448,10 +448,10 @@ var uploader_init = function() {
         });
     });
     uploader.bind('UploadProgress', function(up, file) {
-    	$.loadingIndicator('show');
+        $.loadingIndicator('show');
     });
     uploader.bind('FileUploaded', function(upldr, file, object) {
-    	$.loadingIndicator('hide');
+        $.loadingIndicator('hide');
         var data;
         try {
             data = eval(object.response);
@@ -461,16 +461,16 @@ var uploader_init = function() {
         if (data) {
             if (data.result === 0) {
                 if (data.error) {
-                	UIkit.notify({
-			            message: data.error,
-			            status: 'danger',
-			            timeout: 2000,
-			            pos: 'top-center'
-			        });
+                    UIkit.notify({
+                        message: data.error,
+                        status: 'danger',
+                        timeout: 2000,
+                        pos: 'top-center'
+                    });
                 }
             }
             if (data.result == 1 && data.avatar_id) {
-            	$('#profile_avatar').attr('src', '/images/avatars/' + data.avatar_id + '.jpg');
+                $('#profile_avatar').attr('src', '/images/avatars/' + data.avatar_id + '.jpg?rnd=' + Math.random().toString().replace('.', ''));
             }
         }
     });
