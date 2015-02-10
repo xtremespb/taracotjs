@@ -116,6 +116,7 @@ input:focus, textarea:focus, select:focus {
 }
 .taracot-auth-block-login, .taracot-auth-block-register, .taracot-auth-block-profile, .taracot-auth-block-logout, .taracot-lang-block-select {
     color: #eee;
+    margin-top: -2px;
     text-decoration: none;
     background: #333;
     outline: none;
