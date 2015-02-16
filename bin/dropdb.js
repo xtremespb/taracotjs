@@ -30,6 +30,7 @@ var uninstall = function() {
                     async.eachSeries(collections, function(collection, e_callback) {
                         var name = collection.name.replace(/^(\w+)\./, '');
                         if (!name.match(/^system\./)) {
+                            if (name == 'indexes') return e_callback();
                             if (name == 'statistics' && program.keepstats) {
                                 console.log(" [*] skipping statistics, --keepstats is in effect");
                                 return e_callback();
@@ -66,6 +67,8 @@ if (program.silent) {
     program.confirm('Continue? ', function(ok) {
         if (ok) {
             uninstall();
+        } else {
+            process.exit(0);
         }
     });
 }

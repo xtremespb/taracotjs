@@ -8,9 +8,9 @@ var program = require('commander'),
 
 program
     .version(config.taracotjs)
-    .option('-s, --silent', 'Don\'t ask anything (perform silently)')
-    .option('-u, --update', 'Update mode (no default values are created)')
-    .option('-m, --module [module]', 'Install specified module only')
+    .option('-s, --silent', 'don\'t ask anything (perform silently)')
+    .option('-u, --update', 'update mode (no default values are created)')
+    .option('-m, --module [module]', 'install specified module only')
     .parse(process.argv);
 
 var mongo_url = config.mongo.url,
