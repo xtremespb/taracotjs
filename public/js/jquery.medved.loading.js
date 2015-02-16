@@ -1,4 +1,3 @@
-;
 (function($) {
 
     var options = jQuery.extend({}, options),
@@ -17,20 +16,18 @@
 
     var methods = {
         init: function(_options) {
-            $('body').append('<div id="_taracot-loading-modal" class="uk-modal"><div class="uk-modal-dialog uk-modal-dialog-lightbox" style="background:0;box-shadow:0 0 0px rgba(0,0,0,0);position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;width:100px;height:100px;"><div id="_taracot_loader_image"></div></div></div>');
-            _taracot_loading_modal = UIkit.modal("#_taracot-loading-modal", {
-                bgclose: false,
-                keyboard: false
-            });
+            $('body').append('<div id="_taracot_loader_image_wrap" style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.6);z-index:999;width:100%;height:100%;display:none;"><div id="_taracot_loader_image"></div></div>');
             new _image_loader(cImageSrc, _start_animation);
+            $(window).resize(_center_loader);
         },
         show: function() {
-            $('#_taracot-loading-modal').show();
-            _taracot_loading_modal.show();
+            _center_loader();
+            $('#_taracot_loader_image_wrap').show();
+            _disable_scroll();
         },
         hide: function() {
-            _taracot_loading_modal.hide();
-            $('#_taracot-loading-modal').hide();
+            $('#_taracot_loader_image_wrap').hide();
+            _enable_scroll();
         }
     };
 
@@ -69,6 +66,17 @@
         genImage.src = s;
     }
 
+    function _center_loader() {
+        var top = ($(window).height() - $('#_taracot_loader_image').outerHeight()) / 2;
+        var left = ($(window).width() - $('#_taracot_loader_image').outerWidth()) / 2;
+        $('#_taracot_loader_image').css({
+            position: 'absolute',
+            margin: 0,
+            top: (top > 0 ? top : 0) + 'px',
+            left: (left > 0 ? left : 0) + 'px'
+        });
+    }
+
     $.loadingIndicator = function(method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
@@ -78,5 +86,46 @@
             $.error('Method ' + method + ' doesn\'t exists');
         }
     };
+
+    // scroll-related functions
+
+    // left: 37, up: 38, right: 39, down: 40,
+    // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+    var keys = [37, 38, 39, 40];
+
+    function preventDefault(e) {
+        e = e || window.event;
+        if (e.preventDefault)
+            e.preventDefault();
+        e.returnValue = false;
+    }
+
+    function keydown(e) {
+        for (var i = keys.length; i--;) {
+            if (e.keyCode === keys[i]) {
+                preventDefault(e);
+                return;
+            }
+        }
+    }
+
+    function wheel(e) {
+        preventDefault(e);
+    }
+
+    function _disable_scroll() {
+        if (window.addEventListener) {
+            window.addEventListener('DOMMouseScroll', wheel, false);
+        }
+        window.onmousewheel = document.onmousewheel = wheel;
+        document.onkeydown = keydown;
+    }
+
+    function _enable_scroll() {
+        if (window.removeEventListener) {
+            window.removeEventListener('DOMMouseScroll', wheel, false);
+        }
+        window.onmousewheel = document.onmousewheel = document.onkeydown = null;
+    }
 
 })(jQuery);

@@ -24,20 +24,22 @@
         </div>
     </div>
     <br>
-    <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
-        <thead>
-            <tr>
-                <th class="taracot_table_sortable" rel="taracot_table_sortable_pfolder" style="width:150px">!{root.lang.__('folder_and_filename')}
-                    <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i>
+    <div class="uk-width-1-1 uk-overflow-container">
+        <table class="uk-table uk-table-striped uk-table-hover taracot-data-table uk-overflow-container" id="taracot_table">
+            <thead>
+                <tr>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_pfolder" style="width:150px">!{root.lang.__('folder_and_filename')}
+                        <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i>
                     </span>
-                </th>
-                <th class="taracot_table_sortable" rel="taracot_table_sortable_ptitle">!{root.lang.__('ptitle')}</th>
-                <th class="taracot_table_sortable" rel="taracot_table_sortable_ptitle" style="width:120px">!{root.lang.__('locked_by')}</th>
-                <th style="width:122px;text-align:center">!{root.lang.__('actions')}</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+                    </th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_ptitle">!{root.lang.__('ptitle')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_ptitle" style="width:120px">!{root.lang.__('locked_by')}</th>
+                    <th style="width:122px;text-align:center">!{root.lang.__('actions')}</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
     <div class="taracot-loading uk-hidden uk-vertical-align uk-text-center">
         <div class="uk-vertical-align-middle">
             <img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
