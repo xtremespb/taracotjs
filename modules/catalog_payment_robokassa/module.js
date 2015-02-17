@@ -59,6 +59,7 @@ module.exports = function(app) {
             }
             var order = items[0],
                 signature = crypto.createHash('md5').update(config.catalog_payment.robokassa.sMerchantLogin + ':' + order.sum_total + ':' + invid + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+            req.session.catalog_redirect_host = req.get('host');
             return res.redirect(303, config.catalog_payment.robokassa.url + "?MrchLogin=" + config.catalog_payment.robokassa.sMerchantLogin + "&OutSum=" + order.sum_total + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.catalog_payment.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
         });
     });
@@ -125,6 +126,8 @@ module.exports = function(app) {
         var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
+        // Redirect if wrong language loaded
+        if (req.session.catalog_redirect_host && req.session.catalog_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.catalog_redirect_host + '/api/catalog_payment/success?OutSum=' + OutSum + '&InvId=' + InvId + '&SignatureValue=' + SignatureValue);
         var render_data = {
             title: i18nm.__('payment'),
             current_lang: req.session.current_locale,
@@ -179,6 +182,7 @@ module.exports = function(app) {
 
     router.all('/fail', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        if (req.session.catalog_redirect_host && req.session.catalog_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.catalog_redirect_host + '/api/catalog_payment/fail');
         var render_data = {
             title: i18nm.__('payment'),
             current_lang: req.session.current_locale,
