@@ -62,7 +62,7 @@ async.series([
 		},
 		function (callback) {
 			console.log("\nGenerating NGINX configuration file...");
-			var nginx_render = gaikan.compileFromFile('.nginx.template');
+			var nginx_render = gaikan.compileFromFile('nginx.template');
 			var nginx = nginx_render(gaikan, data, undefined);
 			fs.writeFile("./nginx/" + data.pname + '.conf', nginx, function(err) {
 			    if(err) {
@@ -75,7 +75,7 @@ async.series([
 		},
 		function (callback) {
 			console.log("\nGenerating init.d script...");
-			var initd_render = gaikan.compileFromFile('.initd.template');
+			var initd_render = gaikan.compileFromFile('initd.template');
 			var initd = initd_render(gaikan, data, undefined);
 			var filename = data.pname.replace(/\./g, '_');
 			fs.writeFile("./init.d/taracot-" + filename, initd, function(err) {
@@ -89,7 +89,7 @@ async.series([
 		},
 		function (callback) {
 			console.log("\nGenerating monit script...");
-			var monit_render = gaikan.compileFromFile('.monit.template');
+			var monit_render = gaikan.compileFromFile('monit.template');
 			var monit = monit_render(gaikan, data, undefined);
 			var filename = data.pname.replace(/\./g, '_');
 			fs.writeFile("./monit/" + filename + '.monit', monit, function(err) {
