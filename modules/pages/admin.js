@@ -409,13 +409,10 @@ module.exports = function(app) {
                 if (pages_data.pdata[pd].plang == app.get('config').locales.avail[i])
                     _plang = app.get('config').locales.avail[i];
             pages_data.pdata[pd].plang = _plang;
-            // for (var j = 0; j < app.get('config').layouts.avail.length; j++) {
-            //     var _playout = app.get('config').layouts.default;
-            //     if (pages_data.pdata[pd].playout == app.get('config').layouts.avail[j]) {
-            //         _playout = app.get('config').layouts.avail[j];
-            //     }
-            //     pages_data.pdata[pd].playout = _playout;
-            // }
+            var _playout = app.get('config').layouts.default;
+            for (var j = 0; j < app.get('config').layouts.avail.length; j++)
+                if (pages_data.pdata[pd].playout == app.get('config').layouts.avail[j]) _playout = app.get('config').layouts.avail[j];
+            pages_data.pdata[pd].playout = _playout;
         }
         var update = {
             pfilename: pages_data.pfilename,
@@ -439,7 +436,6 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
             }
-        console.log(update);
         async.series([
             function(callback) {
                 if (pages_data._id) {
