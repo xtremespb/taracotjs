@@ -3,7 +3,7 @@ var program = require('commander'),
     config = require('../config'),
     mongoclient = require('mongodb').MongoClient,
     fs = require('fs'),
-    modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user'],
+    modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user', 'lang'],
     db;
 
 program
