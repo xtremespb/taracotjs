@@ -15,7 +15,7 @@ var production_dir = 'C:/xtreme/taracotjs_prod',
     source_dir = path.join(__dirname, '..'),
     dist_files = fs.readdirSync(source_dir),
     modules = fs.readdirSync(source_dir + '/modules'),
-    core_modules = ['settings', 'auth', 'cp', 'pages', 'parts', 'user'];
+    core_modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user', 'lang'];
 
 console.log("Removing and re-creating production, modules and min. version dirs...");
 
