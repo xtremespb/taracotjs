@@ -19,10 +19,10 @@ taracot_spinsleeptime=1000
 
 case "$1" in
   start)
-  exec forever --pidFile /var/run/taracot-!{root.pname}.pid --sourceDir $taracot_dir/bin -l $taracot_dir/logs/!{root.pname}_initd.log -a --minUptime $taracot_minuptime --spinSleepTime $taracot_spinsleeptime start webserver
+  exec forever --pidFile /var/run/taracot-!{root.pname}.pid --sourceDir $taracot_dir/bin -l $taracot_dir/logs/!{root.pname}_initd.log -a --minUptime $taracot_minuptime --spinSleepTime $taracot_spinsleeptime start webserver.js
   ;;
 stop)
-  exec forever stop $taracot_dir/bin/webserver
+  exec forever stop $taracot_dir/bin/webserver.js
   ;;
 *)
   echo "Usage: /etc/init.d/taracot-!{root.pname} {start|stop}"
