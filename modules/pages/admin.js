@@ -409,11 +409,13 @@ module.exports = function(app) {
                 if (pages_data.pdata[pd].plang == app.get('config').locales.avail[i])
                     _plang = app.get('config').locales.avail[i];
             pages_data.pdata[pd].plang = _plang;
-            var _playout = app.get('config').layouts.default;
-            for (var j = 0; j < app.get('config').layouts.avail.length; j++)
-                if (pages_data.pdata[pd].playout == app.get('config').layouts.avail[j])
-                    _playout = app.get('config').layouts.avail[j];
-            pages_data.pdata[pd].playout = _playout;
+            // for (var j = 0; j < app.get('config').layouts.avail.length; j++) {
+            //     var _playout = app.get('config').layouts.default;
+            //     if (pages_data.pdata[pd].playout == app.get('config').layouts.avail[j]) {
+            //         _playout = app.get('config').layouts.avail[j];
+            //     }
+            //     pages_data.pdata[pd].playout = _playout;
+            // }
         }
         var update = {
             pfilename: pages_data.pfilename,
@@ -430,12 +432,14 @@ module.exports = function(app) {
                     update.pdata[lang].pkeywords = pages_data.pdata[lang].pkeywords;
                     update.pdata[lang].pdesc = pages_data.pdata[lang].pdesc;
                     update.pdata[lang].pcontent = pages_data.pdata[lang].pcontent;
+                    update.pdata[lang].playout = pages_data.pdata[lang].playout;
                 } catch (ex) {
                     rep.status = 0;
                     rep.error = i18nm.__("invalid_query") + ' (' + ex + ')';
                     return res.send(JSON.stringify(rep));
                 }
             }
+        console.log(update);
         async.series([
             function(callback) {
                 if (pages_data._id) {
