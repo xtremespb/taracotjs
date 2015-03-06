@@ -3,7 +3,7 @@
 	"blog_post": "New post",
 	"post_title": "Post title",
 	"post_title_hint": "The title should clearly represent the post topic. Give a brief description of your post here.",
-	"module_name_cp": "Blog Configuration",
+	"module_name_cp": "Blog configuration",
 	"mode": "Mode",
 	"module_areas": "Areas",
 	"blog_private": "Private blog",

@@ -75,9 +75,9 @@
             var _id = data[i][0];
             for (var j = 1; j <= options.col_count; j++) {
                 if (j < data[i].length) {
-                    table_data += '<td style="vertical-align:middle">' + options.process_rows[j - 1](data[i][j], _id) + '</td>';
+                    table_data += '<td style="vertical-align:middle">' + options.process_rows[j - 1](data[i][j], _id, data[i]) + '</td>';
                 } else {
-                    table_data += '<td style="vertical-align:middle">' + options.process_rows[j - 1]('', _id) + '</td>';
+                    table_data += '<td style="vertical-align:middle">' + options.process_rows[j - 1]('', _id, data[i]) + '</td>';
                 }
             }
             table_data += '</tr>';
