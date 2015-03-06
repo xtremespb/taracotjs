@@ -1,0 +1,27 @@
+module.exports = function(db, ensure_indexes, config) {
+    var is = {
+            name: 'billing_conf',
+            version: '0.5.63',
+            collections: function(_callback) {
+                // Create collections
+                _callback();
+            },
+            indexes: function(_callback) {
+                // Create indexes
+                _callback();
+            },
+            defaults: function(_callback) {
+                // Create default values
+                _callback();
+            },
+            misc: function(_callback) {
+                // Misc. tasks
+                _callback();
+            },
+            uninstall: function(_callback) {
+                // Uninstall tasks
+                _callback();
+            }
+        };
+    return is;
+};

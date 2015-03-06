@@ -1,0 +1,173 @@
+<!-- Accounts/domains list -->
+<div class="taracot-area" id="billing_area_list">
+    <h1>!{root.lang.__('billing_customers')}</h1>
+    <div class="uk-button-group">
+        <button class="uk-button uk-button-success" id="btn_add_hosting"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('new_hosting_account')}</button>
+        <button class="uk-button uk-button-success" id="btn_add_domain"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('new_domain')}</button>
+    </div>&nbsp;
+    <div class="uk-button-group">
+        <button class="uk-button" id="btn_select_all" data-uk-tooltip title="!{root.lang.__('select_all')}"><i class="uk-icon-square"></i>
+        </button>
+        <button class="uk-button" id="btn_select_none" data-uk-tooltip title="!{root.lang.__('select_none')}"><i class="uk-icon-square-o"></i>
+        </button>
+        <button class="uk-button uk-button-danger" id="btn_delete_selected"><i class="uk-icon-trash-o"></i>
+            <span class="uk-hidden-small">&nbsp;!{root.lang.__('delete_selected')}</span>
+        </button>
+    </div>
+    <div class="uk-form uk-float-right">
+        <div class="uk-form-icon"><i class="uk-icon-search"></i>
+            <input type="text" class="uk-form-width-medium" placeholder="!{root.lang.__('search_field')}" id="taracot_table_filter">
+        </div>
+    </div>
+    <div class="uk-margin-top uk-width-1-1 uk-overflow-container">
+        <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
+            <thead>
+                <tr>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_baccount">!{root.lang.__('account')}
+                        <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i>
+                    </span>
+                    </th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_buser">!{root.lang.__('user')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_bplan">!{root.lang.__('plan_zone')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_bexp">!{root.lang.__('expiration')}</th>
+                    <th style="width:100px;text-align:center">!{root.lang.__('actions')}</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="taracot-loading uk-hidden uk-vertical-align uk-text-center">
+        <div class="uk-vertical-align-middle">
+            <img src="/modules/user/images/loading_36x36.gif" width="36" height="36" style="width:36px;height:36px" alt="">
+        </div>
+    </div>
+    <div id="taracot_table_pagination" class="uk-margin-top"></div>
+</div>
+<!-- Hosting account edit form -->
+<div class="taracot-area" id="billing_area_hosting" style="display:none">
+    <h1 id="billing_h1_hosting"></h1>
+    <div class="uk-alert uk-alert-danger" style="display:none" id="hosting_error"></div>
+    <div class="uk-form">
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="haccount">!{root.lang.__('account')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="haccount" class="uk-form-width-medium taracot-form-hosting-control">
+                <p class="uk-form-help-block">
+                    !{root.lang.__('account_hint')}
+                </p>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="huser">!{root.lang.__('user')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="huser" class="uk-form-width-medium taracot-form-hosting-control">
+                <p class="uk-form-help-block">
+                    !{root.lang.__('user_hint')}
+                </p>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="hplan">!{root.lang.__('plan')}</label>
+            <div class="uk-form-controls">
+                <select id="hplan" class="uk-form-width-large taracot-form-hosting-control"></select>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="hexp">!{root.lang.__('days_remain')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="hexp" class="uk-form-width-smal taracot-form-hosting-control">
+            </div>
+        </div>
+    </div>
+    <div class="uk-margin taracot-btn-margin">
+        <button id="btn_hosting_save" class="uk-button uk-button-success">!{root.lang.__('save')}</button>&nbsp;
+        <button id="btn_hosting_cancel" class="uk-button">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
+<!-- Domain edit form -->
+<div class="taracot-area" id="billing_area_domains" style="display:none">
+    <h1 id="billing_h1_domains"></h1>
+    <div class="uk-alert uk-alert-danger" style="display:none" id="domains_error"></div>
+    <div class="uk-form">
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="daccount">!{root.lang.__('domain')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="daccount" class="uk-form-width-medium taracot-form-domains-control">
+                <p class="uk-form-help-block">
+                    !{root.lang.__('domain_hint')}
+                </p>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="dplan">!{root.lang.__('zone')}</label>
+            <div class="uk-form-controls">
+                <select id="dplan" class="uk-form-width-small taracot-form-domains-control"></select>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="duser">!{root.lang.__('user')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="duser" class="uk-form-width-medium taracot-form-domains-control">
+                <p class="uk-form-help-block">
+                    !{root.lang.__('user_domain_hint')}
+                </p>
+            </div>
+        </div>
+        <div class="uk-form-row">
+            <label class="uk-form-label" for="dexp">!{root.lang.__('expiration_date')}</label>
+            <div class="uk-form-controls">
+                <input type="text" id="dexp" class="uk-form-width-smal taracot-form-domains-control" data-uk-datepicker="{weekstart:!{root.lang.__('weekstart')}, format:'!{root.lang.__('date_format')}', i18n: { months: !{root.lang.__('months')}, weekdays: !{root.lang.__('weekdays')} } }">
+            </div>
+            <p class="uk-form-help-block">
+                !{root.lang.__('date_format_hint')}: !{root.lang.__('date_format')}
+            </p>
+        </div>
+    </div>
+    <div class="uk-margin taracot-btn-margin">
+        <button id="btn_domain_save" class="uk-button uk-button-success">!{root.lang.__('save')}</button>&nbsp;
+        <button id="btn_domain_cancel" class="uk-button">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
+<div id="dlg_lock" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <h1 class="uk-modal-header">!{root.lang.__('document_locked')}</h1>
+        <div>
+            <p>!{root.lang.__('document_locked_desc')}</p>
+            <p>!{root.lang.__('locked_by')}: <span id="document_locked_by"></span>
+            </p>
+        </div>
+        <div class="uk-margin-top uk-modal-footer">
+            <button class="uk-button uk-button-danger" id="btn_unlock">!{root.lang.__('unlock_document')}</button>
+            <button class="uk-button" id="btn_dont_unlock" type="button">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+var _lang_vars = {
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        no_res: "!{root.lang.__('no_results_in_table')}",
+        del_confirm: "!{root.lang.__('delete_confirm')}",
+        delete_err_msg: "!{root.lang.__('delete_err_msg')}",
+        new_hosting_account: "!{root.lang.__('new_hosting_account_h1')}",
+        new_domain: "!{root.lang.__('new_domain_h1')}",
+        edit_hosting_account: "!{root.lang.__('edit_hosting_account_h1')}",
+        edit_domain: "!{root.lang.__('edit_domain_h1')}",
+        form_contains_errors: "!{root.lang.__('form_contains_errors')}",
+        hosting_save_success: "!{root.lang.__('hosting_save_success')}",
+        domains_save_success: "!{root.lang.__('domain_save_success')}"
+    },
+    save_title = $(document).find("title").text(),
+    current_locale = "!{root.current_locale}",
+    current_user = "!{root.current_user}",
+    billing_date_format = "!{root.lang.__('date_format')}",
+    init_hosting = !{
+        root.hosting
+    },
+    init_domains = !{
+        root.domains
+    };
+</script>
+<script src="/js/moment.min.js"></script>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/js/uikit/addons/datepicker.min.js"></script>
+<script src="/modules/billing_accounts/js/billing_accounts_cp.js"></script>

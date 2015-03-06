@@ -1,0 +1,99 @@
+<h1>!{root.lang.__('module_name_cp')}</h1>
+
+<ul class="uk-tab" data-uk-tab="{connect:'#billing_conf_tabs'}">
+    <li><a href="">!{root.lang.__('module_hosting')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_domains')}</a>
+    </li>
+    <li><a href="">!{root.lang.__('module_misc')}</a>
+    </li>
+</ul>
+<ul id="billing_conf_tabs" class="uk-panel uk-panel-box uk-switcher taracot-billing_conf-panel">
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('billing_conf_hosting_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_hosting_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_hosting_plan_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="billing_conf_hosting">
+            <thead>
+                <tr id="billing_conf_hosting_th">
+                    <th style="width:150px">!{root.lang.__('hosting_plan_id')}</th>
+                    <th style="width:150px">!{root.lang.__('hosting_plan_price')}</th>
+                </tr>
+            </thead>
+            <tbody id="billing_conf_hosting_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('billing_conf_domains_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_domains_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_domain_zone_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="billing_conf_domains">
+            <thead>
+                <tr id="billing_conf_domains_th">
+                    <th style="width:150px">!{root.lang.__('domain_zone')}</th>
+                    <th style="width:50px">!{root.lang.__('domain_price_reg')}</th>
+                    <th style="width:50px">!{root.lang.__('domain_price_up')}</th>
+                </tr>
+            </thead>
+            <tbody id="billing_conf_domains_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
+        <div class="uk-margin-top">!{root.lang.__('billing_conf_misc_hint')}</div>
+        <table class="uk-table uk-margin-top" id="billing_conf_misc">
+            <thead>
+                <tr id="billing_conf_misc_th">
+                    <th style="width:150px">!{root.lang.__('par')}</th>
+                </tr>
+            </thead>
+            <tbody id="billing_conf_misc_tb" class="uk-form">
+            </tbody>
+        </table>
+    </li>
+</ul>
+<div class="uk-margin-top">
+    <button class="uk-button" id="btn_save"><i class="uk-icon-save"></i>&nbsp;!{root.lang.__('save_all_changes')}</button>
+</div>
+<script>
+var _lang_vars = {
+    ajax_failed: "!{root.lang.__('ajax_failed')}",
+    save_success: "!{root.lang.__('save_success')}",
+    confirm_delete_descitem: "!{root.lang.__('confirm_delete_descitem')}"
+};
+var locales = !{
+    root.locales
+};
+var init_hosting = !{
+    root.hosting
+};
+var init_domains = !{
+    root.domains
+};
+var init_misc = !{
+    root.misc
+};
+var current_locale = "!{root.current_locale}";
+for (var i = 0; i < locales.length; i++) {
+    $('#billing_conf_hosting_th').append('<th>' + locales[i] + '</th>');
+    $('#billing_conf_misc_th').append('<th>' + locales[i] + '</th>');
+}
+var misc_pars = ["!{root.lang.__('currency')}"];
+for (var mp = 0; mp < misc_pars.length; mp++) {
+    var _app = '';
+    _app += '<td>' + misc_pars[mp] + '</td>';
+    for (var ml = 0; ml < locales.length; ml++) _app += '<td><input type="text" class="uk-width-1-1"></td>';
+    $('#billing_conf_misc_tb').append('<tr>' + _app + '</tr>');
+}
+
+$('#billing_conf_hosting_th').append('<th style="width:100px"></th>');
+$('#billing_conf_domains_th').append('<th style="width:100px"></th>');
+$('#billing_conf_hosting').hide();
+$('#billing_conf_domains').hide();
+</script>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/js/uikit/addons/sortable.min.js"></script>
+<script src="/modules/billing_conf/js/billing_conf_cp.js"></script>

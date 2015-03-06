@@ -1,0 +1,22 @@
+{
+	"module_name_cp": "Billing configuration",
+	"module_hosting": "Hosting plans",
+	"module_domains": "Domain zones",
+	"billing_conf_hosting_hint": "You may add hosting plans here. You will need to sync the defined plans IDs and hosting templates from your hosting control panel.",
+	"btn_hosting_plan_add": "Add hosting plan",
+	"hosting_plan_id": "Plan ID",
+	"hosting_plan_price": "Price",
+	"billing_conf_domains_hint": "You may add domain zones confuguration here.",
+	"btn_domain_zone_add": "Add new zone",
+	"domain_zone": "Zone (com, net, etc.)",
+	"domain_price_reg": "Registration price",
+	"domain_price_up": "Prolongation price",
+	"save_all_changes": "Save all changes",
+	"ajax_failed": "Server request failed",
+	"save_success": "Configuration has been saved successfully",
+	"confirm_delete_descitem": "Are you sure to delete the requested item?",
+	"module_misc": "Misc. parameters",
+	"billing_conf_misc_hint": "Please set additional parameters here.",
+	"par": "Parameter",
+	"currency": "Currency"
+}

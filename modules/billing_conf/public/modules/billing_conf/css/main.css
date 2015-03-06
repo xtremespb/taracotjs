@@ -1,0 +1,65 @@
+.taracot-billing_conf-form-hint {
+    font-size: 90%;
+    color: #666;
+}
+.taracot-billing_conf-panel {
+    border-top: 0;
+    background-color: #fff;
+    padding: 8px;
+}
+.taracot-billing-items-panel {
+    height: 300px;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+.taracot-dlg-item {
+    cursor: pointer;
+    padding: 3px;
+}
+.taracot-dlg-item:hover {
+    background-color: #dedede;
+}
+.taracot-billing-item-notification {
+    padding-top: 3px;
+    padding-left: 8px;
+    margin-top: 1px;
+    margin-bottom: 3px;
+    margin-right: 5px;
+}
+.taracot-billing-item-notification > span > a.uk-close {
+    text-decoration: none;
+    margin-bottom: 3px;
+}
+.uk-sortable-dragged > span > a {
+    display: none;
+}
+.uk-sortable-dragged > td > button {
+    display: none;
+}
+.sortable-dragged-coll {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.3);
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    color: #fff;
+    display: inline-block;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+    text-transform: none;
+    vertical-align: middle;
+    border-radius: 500px;
+    box-sizing: border-box;
+    font-size: 12px;
+    line-height: 18px;
+    min-width: 18px;
+    background-color: #82bb42;
+    background-image: linear-gradient(to bottom, #9fd256, #6fac34);
+    padding-left: 8px;
+    padding-right: 6px;
+    padding-top: 2px;
+}
