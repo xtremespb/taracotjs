@@ -45,14 +45,14 @@
         </div>
     </div>
     <div class="uk-panel uk-panel-box uk-margin-top uk-margin-bottom">
-    <ul data-uk-switcher="{connect:'#billing_profile_toggle'}" class="uk-subnav uk-subnav-pill">
-        <li>
-            <a href="">!{root.lang.__('dont_edit_profile')}</a>
-        </li>
-        <li>
-            <a href="">!{root.lang.__('edit_profile')}</a>
-        </li>
-    </ul>
+        <ul data-uk-switcher="{connect:'#billing_profile_toggle'}" class="uk-subnav uk-subnav-pill">
+            <li>
+                <a href="" id="toggle_profile_dontedit">!{root.lang.__('dont_edit_profile')}</a>
+            </li>
+            <li>
+                <a href="" id="toggle_profile_edit">!{root.lang.__('edit_profile')}</a>
+            </li>
+        </ul>
     </div>
     <ul id="billing_profile_toggle" class="uk-switcher">
         <li></li>
@@ -156,8 +156,8 @@
                         </label>
                         <div class="uk-form-controls">
                             <select id="private" class="uk-form-width-small taracot-form-profile-control taracot-dp-field">
-                                <option value="">!{root.lang.__('dp_show_private')}</option>
-                                <option value="1">!{root.lang.__('dp_hide_private')}</option>
+                                <option value="1">!{root.lang.__('dp_show_private')}</option>
+                                <option value="0">!{root.lang.__('dp_hide_private')}</option>
                             </select>
                             <p class="uk-form-help-block">
                                 !{root.lang.__('dp_private_hint')}
@@ -315,12 +315,18 @@ var _lang_vars = {
     billing_date_format = "!{root.lang.__('date_format')}",
     current_locale = "!{root.current_locale}",
     current_user = "!{root.current_user}",
+    country_list = !{
+        root.country_list
+    },
     init_misc = !{
         root.misc
     },
     current_currency = '';
-for (var im in init_misc) {
+for (var im in init_misc)
     if (init_misc[im].id == 'currency') current_currency = init_misc[im][current_locale];
+for (var ci in country_list) {
+    for (var key in country_list[ci]) break;
+    $('#country').append('<option value="' + key + '">' + country_list[ci][key] + '</option>')
 }
 $('#bfunds_currency').html(current_currency);
 </script>

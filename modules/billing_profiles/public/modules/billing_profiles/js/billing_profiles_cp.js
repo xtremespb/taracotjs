@@ -1,6 +1,41 @@
 $.loadingIndicator();
 var current_id_profile, _history_handler_disable;
 
+var profile_validation = {
+        'n1e': new RegExp('^[A-Za-z\-]{1,30}$'),
+        'n2e': new RegExp('^[A-Za-z\-]{1,30}$'),
+        'n3e': new RegExp('^[A-Z]{1}$'),
+        'n1r': new RegExp('^[А-Яа-я\-]{1,19}$'),
+        'n2r': new RegExp('^[А-Яа-я\-]{1,19}$'),
+        'n3r': new RegExp('^[А-Яа-я\-]{1,24}$'),
+        'passport': new RegExp('^([0-9]{2})(\s)([0-9]{2})(\s)([0-9]{6})(\s)(.*)([0-9]{2})(\.)([0-9]{2})(\.)([0-9]{4})$'),
+        'addr_ru': new RegExp('^([0-9]{6}),(\s)(.*)$'),
+        'email': new RegExp('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$'),
+        'phone': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
+        'fax': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
+        'postcode': new RegExp('^([0-9]{5,6})$'),
+        'city': new RegExp('^([A-Za-z\-\. ]{2,64})$'),
+        'state': new RegExp('^([A-Za-z\-\. ]{2,40})$'),
+        'addr': new RegExp('^(.{2,80})$'),
+        'org_r': new RegExp('^(.{1,80})$'),
+        'org': new RegExp('^(.{1,80})$'),
+        'code': new RegExp('^([0-9]{10})$'),
+        'kpp': new RegExp('^([0-9]{9})$')
+    },
+    profile_validation_org = {
+        'org_r': 1,
+        'org': 1,
+        'code': 1,
+        'kpp': 1
+    },
+    profile_validation_ru = {
+        'n1r': 1,
+        'n2r': 1,
+        'n3r': 1,
+        'passport': 1,
+        'addr_ru': 1
+    };
+
 /*******************************************************************
 
  Medved Table configuration
@@ -107,24 +142,70 @@ var btn_profile_save_handler = function() {
     $('#profile_error').hide();
     // Validation
     var errors = [],
-        bfunds = $.trim($('#bfunds').val());
+        bfunds = $.trim($('#bfunds').val()),
+        profile_data = {};
     if (typeof bfunds == 'undefined' || parseFloat(bfunds).isNaN || !bfunds.match(/^[0-9\.]+$/)) errors.push('#bfunds');
-    $('.taracot-dp-field').each(function() {
-        var id = $(this).attr('id');
-    });
+    if ($('#toggle_profile_edit').parent().hasClass('uk-active'))
+        $('.taracot-dp-field').each(function() {
+            var id = $(this).attr('id'),
+                val = $.trim($(this).val()),
+                _f;
+            // Validate RU/SU-related fields
+            if (profile_validation_ru[id]) {
+                _f = 1;
+                if ($.trim($('#n1r').val()) || $.trim($('#n2r').val()) || $.trim($('#n3r').val()) || $.trim($('#passport').val()) || $.trim($('#addr_ru').val()))
+                    if (val.match(profile_validation[id])) {
+                        profile_data[id] = val;
+                    } else {
+                        errors.push('#' + id);
+                    }
+            }
+            // Validate organziation (RU/SU-related) fields
+            if (profile_validation_org[id]) {
+                _f = 1;
+                if ($.trim($('#org_r').val()) || $.trim($('#org').val()) || $.trim($('#code').val()) || $.trim($('#kpp').val()))
+                    if (val.match(profile_validation[id])) {
+                        profile_data[id] = val;
+                    } else {
+                        errors.push('#' + id);
+                    }
+            }
+            // Convert birth date
+            if (id == 'birth_date') {
+                _f = 1;
+                val = moment(val, billing_date_format).format('DD.MM.YYYY');
+                if (val != 'Invalid date') {
+                    profile_data[id] = val;
+                } else {
+                    errors.push('#' + id);
+                }
+            }
+            // Validate other fields
+            if (!_f)
+                if (val.match(profile_validation[id])) {
+                    profile_data[id] = val;
+                } else {
+                    errors.push('#' + id);
+                }
+        });
     if (errors.length) {
         $(errors[0]).focus();
         var err_msg = _lang_vars.form_contains_errors + ' (',
             err_labels = [];
         for (var error in errors) {
             $(errors[error]).addClass('uk-form-danger');
-            err_labels.push('"' + $(errors[error]).parent().parent().find('label').html() + '"');
+            err_labels.push('"' + $(errors[error]).parent().parent().find('label').text().replace(/\*/, '').trim() + '"');
         }
         err_msg += err_labels.join(', ') + ')';
         $('#profile_error').html(err_msg);
         $('#profile_error').show();
+        $('html,body').animate({
+                scrollTop: $("#profile_error").offset().top - 20
+            },
+            'slow');
         return;
     }
+    return alert(JSON.stringify(profile_data));
     // Save profile account
     $.loadingIndicator('show');
     $.ajax({
@@ -132,6 +213,7 @@ var btn_profile_save_handler = function() {
         url: '/cp/billing_profiles/data/save',
         data: {
             bfunds: bfunds,
+            profile_data: profile_data,
             id: current_id_profile
         },
         dataType: "json",
@@ -180,6 +262,16 @@ var edit_item = function(id) {
         id: id
     }, "?mode=edit&id=" + id);
     $.loadingIndicator('show');
+    $('.taracot-form-profile-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    if (navigator.language) {
+        var _country = navigator.language;
+        if (navigator.language.length > 2) _country = navigator.language.slice(-2);
+        $('#country').val(_country);
+    }
     $.ajax({
         type: 'POST',
         url: '/cp/billing_profiles/data/load',
@@ -193,11 +285,7 @@ var edit_item = function(id) {
                     current_id_profile = data.account._id;
                     $('.taracot-area').hide();
                     $('#billing_area_profile').show();
-                    $('.taracot-form-profile-control').each(function() {
-                        $(this).val('');
-                        $(this).prop("selectedIndex", 0);
-                        $(this).removeClass('uk-form-danger');
-                    });
+                    $('#toggle_profile_dontedit').click();
                     $('#profile_error').hide();
                     $('#profile_edit_username').html(data.account.username);
                     $('#bfunds').val(data.account.billing_funds || '0');
@@ -313,5 +401,5 @@ function isInt(n) {
 }
 
 function isFloat(n) {
-    return n === +n && n !== (n|0);
+    return n === +n && n !== (n | 0);
 }

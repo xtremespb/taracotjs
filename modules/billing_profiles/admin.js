@@ -1,5 +1,4 @@
 // Sort order hash
-
 var sort_cells = {
         username: 1,
         billing_funds: 1
@@ -8,8 +7,10 @@ var sort_cells = {
     sort_cell_default_mode = 1;
 
 // Set items per page for this module
-
 var items_per_page = 30;
+
+// Contry list
+countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"]
 
 module.exports = function(app) {
     var router = app.get('express').Router(),
@@ -50,10 +51,17 @@ module.exports = function(app) {
                         } catch (ex) {}
                 }
             }
+            var country_list = [];
+            for (var c in countries) {
+                var _i = {};
+                _i[countries[c]] = i18nm.__('country_list')[c];
+                country_list.push(_i);
+            }
             var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'billing_profiles_cp', {
                 lang: i18nm,
                 auth: req.session.auth,
                 misc: JSON.stringify(misc),
+                country_list: JSON.stringify(country_list),
                 current_locale: req.session.current_locale,
                 current_user: req.session.auth.username,
                 locales: JSON.stringify(app.get('config').locales.avail)
