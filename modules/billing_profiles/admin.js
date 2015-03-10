@@ -10,13 +10,49 @@ var sort_cells = {
 var items_per_page = 30;
 
 // Contry list
-countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"]
+var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CG", "CD", "CK", "CR", "CI", "HR", "CU", "CY", "CZ", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "GF", "PF", "TF", "GA", "GM", "GE", "DE", "GH", "GI", "GR", "GL", "GD", "GP", "GU", "GT", "GG", "GN", "GW", "GY", "HT", "HM", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR", "IQ", "IE", "IM", "IL", "IT", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KR", "KW", "KG", "LA", "LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MQ", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "MM", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "NF", "MP", "NO", "OM", "PK", "PW", "PS", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "RE", "RO", "RU", "RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "GS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"],
+    profile_fields = ["n1e", "n2e", "n3e", "country", "city", "state", "postcode", "addr", "birth_date", "private", "phone", "fax", "email", "n1r", "n2r", "n3r", "passport", "addr_ru", "org_r", "org", "code", "kpp"],
+    profile_validation = {
+        'n1e': new RegExp(/^[A-Za-z\-]{1,30}$/),
+        'n2e': new RegExp(/^[A-Za-z\-]{1,30}$/),
+        'n3e': new RegExp(/^[A-Z]{1}$/),
+        'n1r': new RegExp(/^[А-Яа-я\-]{1,19}$/),
+        'n2r': new RegExp(/^[А-Яа-я\-]{1,19}$/),
+        'n3r': new RegExp(/^[А-Яа-я\-]{1,24}$/),
+        'passport': new RegExp(/^([0-9]{2})(\s)([0-9]{2})(\s)([0-9]{6})(\s)(.*)([0-9]{2})(\.)([0-9]{2})(\.)([0-9]{4})$/),
+        'addr_ru': new RegExp(/^([0-9]{6}),(\s)(.*)$/),
+        'email': new RegExp(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/),
+        'phone': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
+        'fax': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
+        'postcode': new RegExp(/^([0-9]{5,6})$/),
+        'city': new RegExp(/^([A-Za-z\-\. ]{2,64})$/),
+        'state': new RegExp(/^([A-Za-z\-\. ]{2,40})$/),
+        'addr': new RegExp(/^(.{2,80})$/),
+        'org_r': new RegExp(/^(.{1,80})$/),
+        'org': new RegExp(/^(.{1,80})$/),
+        'code': new RegExp(/^([0-9]{10})$/),
+        'kpp': new RegExp(/^([0-9]{9})$/)
+    },
+    profile_validation_org = {
+        'org_r': 1,
+        'org': 1,
+        'code': 1,
+        'kpp': 1
+    },
+    profile_validation_ru = {
+        'n1r': 1,
+        'n2r': 1,
+        'n3r': 1,
+        'passport': 1,
+        'addr_ru': 1
+    };
 
 module.exports = function(app) {
     var router = app.get('express').Router(),
         path = require('path'),
         ObjectId = require('mongodb').ObjectID,
         async = require('async'),
+        moment = require('moment'),
         i18nm = new(require('i18n-2'))({
             locales: app.get('config').locales.avail,
             directory: path.join(__dirname, 'lang'),
@@ -187,7 +223,9 @@ module.exports = function(app) {
             return res.send(JSON.stringify(rep));
         }
         var bfunds = req.body.bfunds,
-            id = req.body.id;
+            id = req.body.id,
+            profile_data = req.body.profile_data,
+            profile_update = {};
         // Validate
         if (!id || typeof id != 'string' || !id.match(/^[a-f0-9]{24}$/)) {
             rep.status = 0;
@@ -197,15 +235,96 @@ module.exports = function(app) {
         if (typeof bfunds == 'undefined' || parseFloat(bfunds).isNaN) {
             rep.status = 0;
             rep.err_msg = i18nm.__("invalid_funds");
-            rep.err_field = 'exp';
+            rep.err_field = 'bfunds';
             return res.send(JSON.stringify(rep));
         }
         bfunds = parseFloat(bfunds);
+        if (profile_data) {
+            for (var pf in profile_fields) {
+                var fid = profile_fields[pf],
+                    val = profile_data[profile_fields[pf]],
+                    _f = 0;
+                if (val)
+                    val = val.replace(/\"/g, '&quot;').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\t/g, ' ').replace(/[\n\r]/g, ' ');
+                // Validate RU/SU-related fields
+                if (profile_validation_ru[fid]) {
+                    _f = 1;
+                    if (profile_data.n1r || profile_data.n2r || profile_data.n3r || profile_data.passport || profile_data.addr_ru) {
+                        if (val && val.match(profile_validation[fid])) {
+                            profile_update[fid] = val;
+                        } else {
+                            rep.status = 0;
+                            rep.err_msg = i18nm.__("form_data_incorrect");
+                            rep.err_field = profile_fields[pf];
+                            return res.send(JSON.stringify(rep));
+                        }
+                    }
+                }
+                // Validate organziation (RU/SU-related) fields
+                if (profile_validation_org[fid]) {
+                    _f = 1;
+                    if (profile_data.org_r || profile_data.code || profile_data.org || profile_data.kpp) {
+                        if (val && val.match(profile_validation[fid])) {
+                            profile_update[fid] = val;
+                        } else {
+                            rep.status = 0;
+                            rep.err_msg = i18nm.__("form_data_incorrect");
+                            rep.err_field = profile_fields[pf];
+                            return res.send(JSON.stringify(rep));
+                        }
+                    }
+                }
+                // Convert birth date
+                if (fid == 'birth_date') {
+                    _f = 1;
+                    val = moment(val, 'DD.MM.YYYY').format('DD.MM.YYYY');
+                    if (val != 'Invalid date') {
+                        profile_update[fid] = val;
+                    } else {
+                        rep.status = 0;
+                        rep.err_msg = i18nm.__("form_data_incorrect");
+                        rep.err_field = profile_fields[pf];
+                        return res.send(JSON.stringify(rep));
+                    }
+                }
+                // Fax
+                if (fid == 'fax') {
+                    _f = 1;
+                    if (val)
+                        if (val.match(profile_validation[fid])) {
+                            profile_update[fid] = val;
+                        } else {
+                            rep.status = 0;
+                            rep.err_msg = i18nm.__("form_data_incorrect");
+                            rep.err_field = profile_fields[pf];
+                            return res.send(JSON.stringify(rep));
+                        }
+                }
+                // Private
+                if (fid == 'private') {
+                    _f1 = 1;
+                    profile_update.private = 0;
+                    if (profile_data.private == '1') profile_update.private = 1;
+                }
+                // Validate other fields
+                if (!_f) {
+                    if (!val || !val.match(profile_validation[fid])) {
+                        rep.status = 0;
+                        rep.err_msg = i18nm.__("form_data_incorrect");
+                        rep.err_field = profile_fields[pf];
+                        return res.send(JSON.stringify(rep));
+                    } else {
+                        profile_update[fid] = val;
+                    }
+                }
+            }
+        }
         var update = {
             $set: {
                 billing_funds: bfunds
             }
         };
+        if (profile_update.n1e) update.$set.profile_data = profile_update;
         app.get('mongodb').collection('users').update({
             _id: new ObjectId(id)
         }, update, {

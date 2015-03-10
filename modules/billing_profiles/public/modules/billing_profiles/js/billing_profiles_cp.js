@@ -2,25 +2,25 @@ $.loadingIndicator();
 var current_id_profile, _history_handler_disable;
 
 var profile_validation = {
-        'n1e': new RegExp('^[A-Za-z\-]{1,30}$'),
-        'n2e': new RegExp('^[A-Za-z\-]{1,30}$'),
-        'n3e': new RegExp('^[A-Z]{1}$'),
-        'n1r': new RegExp('^[А-Яа-я\-]{1,19}$'),
-        'n2r': new RegExp('^[А-Яа-я\-]{1,19}$'),
-        'n3r': new RegExp('^[А-Яа-я\-]{1,24}$'),
-        'passport': new RegExp('^([0-9]{2})(\s)([0-9]{2})(\s)([0-9]{6})(\s)(.*)([0-9]{2})(\.)([0-9]{2})(\.)([0-9]{4})$'),
-        'addr_ru': new RegExp('^([0-9]{6}),(\s)(.*)$'),
-        'email': new RegExp('^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$'),
+        'n1e': new RegExp(/^[A-Za-z\-]{1,30}$/),
+        'n2e': new RegExp(/^[A-Za-z\-]{1,30}$/),
+        'n3e': new RegExp(/^[A-Z]{1}$/),
+        'n1r': new RegExp(/^[А-Яа-я\-]{1,19}$/),
+        'n2r': new RegExp(/^[А-Яа-я\-]{1,19}$/),
+        'n3r': new RegExp(/^[А-Яа-я\-]{1,24}$/),
+        'passport': new RegExp(/^([0-9]{2})(\s)([0-9]{2})(\s)([0-9]{6})(\s)(.*)([0-9]{2})(\.)([0-9]{2})(\.)([0-9]{4})$/),
+        'addr_ru': new RegExp(/^([0-9]{6}),(\s)(.*)$/),
+        'email': new RegExp(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/),
         'phone': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
         'fax': new RegExp(/^(\+)([0-9]{1,5})(\s)([0-9]{1,6})(\s)([0-9]{1,10})$/),
-        'postcode': new RegExp('^([0-9]{5,6})$'),
-        'city': new RegExp('^([A-Za-z\-\. ]{2,64})$'),
-        'state': new RegExp('^([A-Za-z\-\. ]{2,40})$'),
-        'addr': new RegExp('^(.{2,80})$'),
-        'org_r': new RegExp('^(.{1,80})$'),
-        'org': new RegExp('^(.{1,80})$'),
-        'code': new RegExp('^([0-9]{10})$'),
-        'kpp': new RegExp('^([0-9]{9})$')
+        'postcode': new RegExp(/^([0-9]{5,6})$/),
+        'city': new RegExp(/^([A-Za-z\-\. ]{2,64})$/),
+        'state': new RegExp(/^([A-Za-z\-\. ]{2,40})$/),
+        'addr': new RegExp(/^(.{2,80})$/),
+        'org_r': new RegExp(/^(.{1,80})$/),
+        'org': new RegExp(/^(.{1,80})$/),
+        'code': new RegExp(/^([0-9]{10})$/),
+        'kpp': new RegExp(/^([0-9]{9})$/)
     },
     profile_validation_org = {
         'org_r': 1,
@@ -145,7 +145,7 @@ var btn_profile_save_handler = function() {
         bfunds = $.trim($('#bfunds').val()),
         profile_data = {};
     if (typeof bfunds == 'undefined' || parseFloat(bfunds).isNaN || !bfunds.match(/^[0-9\.]+$/)) errors.push('#bfunds');
-    if ($('#toggle_profile_edit').parent().hasClass('uk-active'))
+    if ($('#toggle_profile_edit').parent().hasClass('uk-active')) {
         $('.taracot-dp-field').each(function() {
             var id = $(this).attr('id'),
                 val = $.trim($(this).val()),
@@ -153,18 +153,19 @@ var btn_profile_save_handler = function() {
             // Validate RU/SU-related fields
             if (profile_validation_ru[id]) {
                 _f = 1;
-                if ($.trim($('#n1r').val()) || $.trim($('#n2r').val()) || $.trim($('#n3r').val()) || $.trim($('#passport').val()) || $.trim($('#addr_ru').val()))
-                    if (val.match(profile_validation[id])) {
+                if ($.trim($('#n1r').val()) || $.trim($('#n2r').val()) || $.trim($('#n3r').val()) || $.trim($('#passport').val()) || $.trim($('#addr_ru').val())) {
+                    if (val && val.match(profile_validation[id])) {
                         profile_data[id] = val;
                     } else {
                         errors.push('#' + id);
                     }
+                }
             }
             // Validate organziation (RU/SU-related) fields
             if (profile_validation_org[id]) {
                 _f = 1;
                 if ($.trim($('#org_r').val()) || $.trim($('#org').val()) || $.trim($('#code').val()) || $.trim($('#kpp').val()))
-                    if (val.match(profile_validation[id])) {
+                    if (val && val.match(profile_validation[id])) {
                         profile_data[id] = val;
                     } else {
                         errors.push('#' + id);
@@ -180,14 +181,27 @@ var btn_profile_save_handler = function() {
                     errors.push('#' + id);
                 }
             }
+            // Fax
+            if (id == 'fax') {
+                _f = 1;
+                if (val)
+                    if (val.match(profile_validation[id])) {
+                        profile_data[id] = val;
+                    } else {
+                        errors.push('#' + id);
+                    }
+            }
             // Validate other fields
             if (!_f)
-                if (val.match(profile_validation[id])) {
+                if (val && val.match(profile_validation[id])) {
                     profile_data[id] = val;
                 } else {
                     errors.push('#' + id);
                 }
         });
+    } else {
+        profile_data = undefined;
+    }
     if (errors.length) {
         $(errors[0]).focus();
         var err_msg = _lang_vars.form_contains_errors + ' (',
@@ -205,7 +219,6 @@ var btn_profile_save_handler = function() {
             'slow');
         return;
     }
-    return alert(JSON.stringify(profile_data));
     // Save profile account
     $.loadingIndicator('show');
     $.ajax({
@@ -231,8 +244,8 @@ var btn_profile_save_handler = function() {
                 var msg = _lang_vars.ajax_failed;
                 if (data.err_msg) msg = data.err_msg;
                 if (data.err_field) {
-                    $('#h' + data.err_field).addClass('uk-form-danger');
-                    $('#h' + data.err_field).focus();
+                    $('#' + data.err_field).addClass('uk-form-danger');
+                    $('#' + data.err_field).focus();
                 }
                 $('#profile_error').html(msg);
                 $('#profile_error').show();
@@ -289,6 +302,11 @@ var edit_item = function(id) {
                     $('#profile_error').hide();
                     $('#profile_edit_username').html(data.account.username);
                     $('#bfunds').val(data.account.billing_funds || '0');
+                    if (data.account.profile_data)
+                        $('.taracot-dp-field').each(function() {
+                            var id = $(this).attr('id');
+                            if (data.account.profile_data[id]) $('#' + id).val(data.account.profile_data[id]);
+                        });
                     $('#bfunds').focus();
                 }
             } else {
