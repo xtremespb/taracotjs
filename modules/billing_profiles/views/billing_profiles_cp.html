@@ -10,11 +10,11 @@
         <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
             <thead>
                 <tr>
-                    <th class="taracot_table_sortable" rel="taracot_table_sortable_buser">!{root.lang.__('user')}
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_username">!{root.lang.__('user')}
                         <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-asc"></i>
                     </span>
                     </th>
-                    <th class="taracot_table_sortable" rel="taracot_table_sortable_bfunds" style="width:100px">!{root.lang.__('funds')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_billing_funds" style="width:100px">!{root.lang.__('funds')}</th>
                     <th style="width:100px;text-align:center">!{root.lang.__('actions')}</th>
                 </tr>
             </thead>
@@ -44,6 +44,7 @@
             </div>
         </div>
     </div>
+    <h2>!{root.lang.__('profile')}</h2>
     <div class="uk-panel uk-panel-box uk-margin-top uk-margin-bottom">
         <ul data-uk-switcher="{connect:'#billing_profile_toggle'}" class="uk-subnav uk-subnav-pill">
             <li>
@@ -299,9 +300,93 @@
             </div>
         </li>
     </ul>
+    <h2>!{root.lang.__('transactions')}&nbsp;<button class="uk-button uk-button-small" id="btn_add_transaction"><i class="uk-icon-plus"></i></button></h2>
+    <table class="uk-table uk-table-hover uk-table-striped uk-table-condensed" id="table_transactions">
+        <thead>
+            <th style="width:150px">!{root.lang.__('time')}</th>
+            <th>!{root.lang.__('transaction')}</th>
+            <th style="width:120px">!{root.lang.__('sum')}</th>
+            <th style="width:80px;text-align:center">!{root.lang.__('actions')}</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
     <div class="uk-margin taracot-btn-margin">
         <button id="btn_profile_save" class="uk-button uk-button-success">!{root.lang.__('save')}</button>&nbsp;
         <button id="btn_profile_cancel" class="uk-button">!{root.lang.__('cancel')}</button>
+    </div>
+</div>
+<div class="uk-modal" id="dlg_trans">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <div class="uk-modal-header">
+            <h1 id="h1_trans"></h1>
+        </div>
+        <div class="uk-alert uk-alert-danger" style="display:none" id="trans_error"></div>
+        <div class="uk-form uk-form-horizontal">
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="private">
+                    !{root.lang.__('trans_type')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <select id="trans_type" class="uk-form-width-large taracot-form-trans-control">
+                        <option value="domain_reg">!{root.lang.__('domain_reg')}</option>
+                        <option value="domain_up">!{root.lang.__('domain_up')}</option>
+                        <option value="hosting_reg">!{root.lang.__('hosting_reg')}</option>
+                        <option value="hosting_up">!{root.lang.__('hosting_up')}</option>
+                        <option value="funds_replenishment">!{root.lang.__('funds_replenishment')}</option>
+                        <option value="other">!{root.lang.__('other')}</option>
+                    </select>
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('trans_type_hint')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="trans_obj">!{root.lang.__('trans_obj')}
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="trans_obj" class="uk-form-width-medium taracot-form-trans-control">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('trans_obj_hint')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="trans_date">!{root.lang.__('trans_date')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="trans_date" class="uk-form-width-small taracot-form-trans-control" data-uk-datepicker="{weekstart:!{root.lang.__('weekstart')}, format:'!{root.lang.__('date_format')}', i18n: { months: !{root.lang.__('months')}, weekdays: !{root.lang.__('weekdays')} } }">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('trans_date_format')}:&nbsp;!{root.lang.__('date_format')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="trans_time">!{root.lang.__('trans_time')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="trans_time" class="uk-form-width-small taracot-form-trans-control" data-uk-timepicker="{format:'!{root.lang.__('time_format_hours')}'}">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('trans_time_format')}:&nbsp;!{root.lang.__('time_format_desc')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="trans_sum">!{root.lang.__('trans_sum')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="trans_sum" class="uk-form-width-small taracot-form-trans-control">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('trans_sum_format')}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="uk-modal-footer">
+            <button id="btn_transaction_save" class="uk-button uk-button-success"><span id="btn_transaction_save_loading" style="display:none"><img src="/modules/billing_profiles/images/loading_16x16.gif" style="width:16px;height:16px;">&nbsp;</span>!{root.lang.__('save')}</button>&nbsp;
+            <button class="uk-button uk-modal-close">!{root.lang.__('cancel')}</button>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
@@ -309,10 +394,17 @@ var _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
         no_res: "!{root.lang.__('no_results_in_table')}",
         form_contains_errors: "!{root.lang.__('form_contains_errors')}",
-        profile_save_success: "!{root.lang.__('profile_save_success')}"
+        profile_save_success: "!{root.lang.__('profile_save_success')}",
+        new_transaction: "!{root.lang.__('new_transaction')}",
+        edit_transaction: "!{root.lang.__('edit_transaction')}",
+        trans_save_success: "!{root.lang.__('trans_save_success')}",
+        no_transaction_records: "!{root.lang.__('no_transaction_records')}",
+        trans_delete_success: "!{root.lang.__('trans_delete_success')}",
+        trans_delete_confirm: "!{root.lang.__('trans_delete_confirm')}"
     },
     save_title = $(document).find("title").text(),
     billing_date_format = "!{root.lang.__('date_format')}",
+    billing_time_format = "!{root.lang.__('time_format')}",
     current_locale = "!{root.current_locale}",
     current_user = "!{root.current_user}",
     country_list = !{
@@ -320,6 +412,14 @@ var _lang_vars = {
     },
     init_misc = !{
         root.misc
+    },
+    transactions_i18n = {
+        domain_reg: "!{root.lang.__('domain_reg')}",
+        domain_up: "!{root.lang.__('domain_up')}",
+        hosting_reg: "!{root.lang.__('hosting_reg')}</option>",
+        hosting_up: "!{root.lang.__('hosting_up')}",
+        funds_replenishment: "!{root.lang.__('funds_replenishment')}",
+        other: "!{root.lang.__('other')}"
     },
     current_currency = '';
 for (var im in init_misc)
@@ -332,5 +432,7 @@ $('#bfunds_currency').html(current_currency);
 </script>
 <script src="/js/moment.min.js"></script>
 <script src="/js/jquery.medved.loading.js"></script>
+<script src="/js/uikit/addons/autocomplete.min.js"></script>
 <script src="/js/uikit/addons/datepicker.min.js"></script>
+<script src="/js/uikit/addons/timepicker.min.js"></script>
 <script src="/modules/billing_profiles/js/billing_profiles_cp.js"></script>

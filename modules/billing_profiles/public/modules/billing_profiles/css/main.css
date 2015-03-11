@@ -35,3 +35,11 @@ th.taracot_table_sortable {
 	color: red;
 	font-weight: bold;
 }
+.billing-trans-badge {
+	width: 17px;
+	height: 17px;
+	line-height: 15px;
+}
+.billing-trans-badge > i {
+	font-size: 9px;
+}

@@ -1,5 +1,5 @@
 $.loadingIndicator();
-var current_id_profile, _history_handler_disable;
+var current_id_profile, current_id_transaction, _history_handler_disable, dlg_trans = new UIkit.modal("#dlg_trans");
 
 var profile_validation = {
         'n1e': new RegExp(/^[A-Za-z\-]{1,30}$/),
@@ -307,6 +307,7 @@ var edit_item = function(id) {
                             var id = $(this).attr('id');
                             if (data.account.profile_data[id]) $('#' + id).val(data.account.profile_data[id]);
                         });
+                    render_transactions(data.account.transactions);
                     $('#bfunds').focus();
                 }
             } else {
@@ -330,6 +331,253 @@ var edit_item = function(id) {
         },
         complete: function() {
             $.loadingIndicator('hide');
+        }
+    });
+};
+
+var btn_add_transaction_handler = function() {
+    current_id_transaction = undefined;
+    $('#h1_trans').html(_lang_vars.new_transaction);
+    $('.taracot-form-trans-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    $('#trans_error').hide();
+    dlg_trans.show();
+    $('#trans_type').focus();
+};
+
+var btn_trans_edit_handler = function() {
+    var id = $(this).attr('id').replace(/btn_trans_edit_/, '');
+    $('#h1_trans').html(_lang_vars.edit_transaction);
+    $('.taracot-form-trans-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    $('#trans_error').hide();
+    $.loadingIndicator('show');
+     $.ajax({
+        type: 'POST',
+        url: '/cp/billing_profiles/data/load_transaction',
+        data: {
+            id: id
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1 && data.transaction) {
+                if (data.transaction.trans_type) $('#trans_type').val(data.transaction.trans_type);
+                if (data.transaction.trans_obj) $('#trans_obj').val(data.transaction.trans_obj);
+                if (data.transaction.trans_timestamp) {
+                    $('#trans_date').val(moment(data.transaction.trans_timestamp).format(billing_date_format));
+                    $('#trans_time').val(moment(data.transaction.trans_timestamp).format(billing_time_format));
+                }
+                if (data.transaction.trans_sum) $('#trans_sum').val(data.transaction.trans_sum);
+                dlg_trans.show();
+                $('#trans_type').focus();
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $.loadingIndicator('hide');
+        }
+    });
+};
+
+var btn_trans_del_handler = function() {
+    var id = $(this).attr('id').replace(/btn_trans_del_/, '');
+    if (!confirm(_lang_vars.trans_delete_confirm + "\n\n" + $(this).parent().parent().children('td').eq(1).html())) return;
+    $.loadingIndicator('show');
+     $.ajax({
+        type: 'POST',
+        url: '/cp/billing_profiles/data/delete_transaction',
+        data: {
+            id: id
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                update_transactions();
+                UIkit.notify({
+                    message: _lang_vars.trans_delete_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $.loadingIndicator('hide');
+        }
+    });
+};
+
+var render_transactions = function(data) {
+    $('#table_transactions > tbody').empty();
+    if (data && data.length) {
+        for (var ti in data) {
+            var badge = '<div class="uk-badge uk-badge-notification uk-badge-success billing-trans-badge"><i class="uk-icon-plus"></i></div>',
+                trans = transactions_i18n[data[ti].trans_type];
+            if (data[ti].trans_sum <= 0) badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+            if (data[ti].trans_obj) trans += ' (' + data[ti].trans_obj + ')';
+            $('#table_transactions > tbody').append('<tr><td>' + moment(data[ti].trans_timestamp).format(billing_date_format + ' ' + billing_time_format) + '</td><td>' + trans + '</td><td>' + badge + '&nbsp;' + data[ti].trans_sum + ' ' + current_currency + '</td><td style="text-align:center"><button class="uk-button uk-button-mini taracot-btn-trans-edit" id="btn_trans_edit_' + data[ti]._id + '"><i class="uk-icon-pencil"></i></button>&nbsp;<button class="uk-button uk-button-mini uk-button-danger taracot-btn-trans-del" id="btn_trans_del_' + data[ti]._id + '"><i class="uk-icon-remove"></i></button></td></tr>');
+        }
+        $('.taracot-btn-trans-edit').click(btn_trans_edit_handler);
+        $('.taracot-btn-trans-del').click(btn_trans_del_handler);
+    } else {
+        $('#table_transactions > tbody').append('<tr><td colspan="4">' + _lang_vars.no_transaction_records + '</td></tr>');
+    }
+};
+
+var update_transactions = function() {
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/cp/billing_profiles/data/list_transactions',
+        data: {
+            id: current_id_profile
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                render_transactions(data.transactions);
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $.loadingIndicator('hide');
+        }
+    });
+};
+
+var btn_transaction_save_handler = function() {
+    $('#trans_error').hide();
+    $('.taracot-form-trans-control').each(function() {
+        $(this).removeClass('uk-form-danger');
+    });
+    var errors = [],
+        trans_sum = $.trim($('#trans_sum').val()),
+        trans_date = $.trim($('#trans_date').val()),
+        trans_time = $.trim($('#trans_time').val()),
+        trans_type = $('#trans_type').val(),
+        trans_obj = $.trim($('#trans_obj').val()),
+        profile_data = {};
+    trans_date = moment(trans_date, billing_date_format).format('DD.MM.YYYY');
+    if (trans_date == 'Invalid date') errors.push('#trans_date');
+    trans_time = moment(trans_time, billing_time_format).format('HH:mm');
+    if (trans_time == 'Invalid time') errors.push('#trans_time');
+    if (typeof trans_sum == 'undefined' || parseFloat(bfunds).isNaN || !trans_sum.match(/^[\-0-9\.]+$/)) errors.push('#trans_sum');
+    if (trans_obj && trans_obj.length > 80) errors.push('#trans_obj');
+    if (errors.length) {
+        $(errors[0]).focus();
+        var err_msg = _lang_vars.form_contains_errors + ' (',
+            err_labels = [];
+        for (var error in errors) {
+            $(errors[error]).addClass('uk-form-danger');
+            err_labels.push('"' + $(errors[error]).parent().parent().find('label').text().replace(/\*/, '').trim() + '"');
+        }
+        err_msg += err_labels.join(', ') + ')';
+        $('#trans_error').html(err_msg);
+        $('#trans_error').show();
+        return;
+    }
+    var timestamp = moment(trans_date + ' ' + trans_time, 'DD.MM.YYYY HH:mm').unix() * 1000;
+    $('#btn_transaction_save_loading').show();
+    $('#btn_transaction_save').attr('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: '/cp/billing_profiles/data/save_transaction',
+        data: {
+            trans_type: trans_type,
+            trans_obj: trans_obj,
+            trans_timestamp: timestamp,
+            trans_sum: trans_sum,
+            id: current_id_transaction,
+            user_id: current_id_profile
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                dlg_trans.hide();
+                update_transactions();
+                UIkit.notify({
+                    message: _lang_vars.trans_save_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                if (data.err_field) {
+                    $('#' + data.err_field).addClass('uk-form-danger');
+                    $('#' + data.err_field).focus();
+                }
+                $('#trans_error').html(msg);
+                $('#trans_error').show();
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $('#btn_transaction_save_loading').hide();
+            $('#btn_transaction_save').attr('disabled', false);
         }
     });
 };
@@ -386,12 +634,17 @@ $(document).ready(function() {
     // Bind handlers
     $('#btn_profile_cancel').click(btn_profile_cancel_handler);
     $('#btn_profile_save').click(btn_profile_save_handler);
+    $('#btn_add_transaction').click(btn_add_transaction_handler);
+    $('#btn_transaction_save').click(btn_transaction_save_handler);
     // Bind Enter key
     $('.taracot-form-profile-control').bind('keypress', function(e) {
         if (submitOnEnter(e)) $('#btn_profile_save').click();
     });
     $('.taracot-form-domains-control').bind('keypress', function(e) {
         if (submitOnEnter(e)) $('#btn_domain_save').click();
+    });
+    $('.taracot-form-trans-control').bind('keypress', function(e) {
+        if (submitOnEnter(e)) $('#btn_transaction_save').click();
     });
     // History handler
     bind_history();

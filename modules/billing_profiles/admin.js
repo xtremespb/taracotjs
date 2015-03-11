@@ -368,7 +368,199 @@ module.exports = function(app) {
             }
             rep.account = users[0];
             rep.account.password = undefined;
+            rep.account.transactions = [];
+            app.get('mongodb').collection('billing_transactions').find({
+                user_id: id
+            }).count(function(err, trans_count) {
+                if (!trans_count) return res.send(JSON.stringify(rep));
+                app.get('mongodb').collection('billing_transactions').find({
+                    user_id: id
+                }).sort({
+                    trans_timestamp: -1
+                }).limit(50).toArray(function(err, transactions) {
+                    if (transactions && transactions.length)
+                        rep.account.transactions = transactions;
+                    res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
+    router.post('/data/list_transactions', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
+        }
+        var id = req.body.id;
+        // Validate
+        if (!id || typeof id != 'string' || !id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_id");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('billing_transactions').find({
+            user_id: id
+        }).count(function(err, trans_count) {
+            if (!trans_count) return res.send(JSON.stringify(rep));
+            app.get('mongodb').collection('billing_transactions').find({
+                user_id: id
+            }).sort({
+                trans_timestamp: -1
+            }).limit(50).toArray(function(err, transactions) {
+                if (transactions && transactions.length)
+                    rep.transactions = transactions;
+                res.send(JSON.stringify(rep));
+            });
+        });
+    });
+
+    router.post('/data/load_transaction', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var id = req.body.id;
+        // Validate
+        if (!id || typeof id != 'string' || !id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_id");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('billing_transactions').find({
+            _id: new ObjectId(id)
+        }).toArray(function(err, transactions) {
+            if (transactions && transactions.length) {
+                rep.transaction = transactions[0];
+            } else {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("unknown_transaction");
+                return res.send(JSON.stringify(rep));
+            }
+            res.send(JSON.stringify(rep));
+        });
+    });
+
+    router.post('/data/save_transaction', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var trans_type = req.body.trans_type,
+            trans_obj = req.body.trans_obj || '',
+            trans_timestamp = req.body.trans_timestamp,
+            trans_sum = req.body.trans_sum,
+            id = req.body.id,
+            user_id = req.body.user_id;
+        // Validate
+        if (id)
+            if (typeof id != 'string' || !id.match(/^[a-f0-9]{24}$/)) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("invalid_id");
+                return res.send(JSON.stringify(rep));
+            }
+        if (trans_obj && (typeof user_id != 'string' || trans_obj.length > 80)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_trans_obj");
+            return res.send(JSON.stringify(rep));
+        }
+        if (!user_id || typeof user_id != 'string' || !user_id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_user_id");
+            return res.send(JSON.stringify(rep));
+        }
+        if (!trans_type || (trans_type != 'domain_reg' && trans_type != 'domain_up' && trans_type != 'hosting_reg' && trans_type != 'hosting_up' && trans_type != 'funds_replenishment' && trans_type != 'other')) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_transaction");
+            rep.err_field = 'trans_type';
+            return res.send(JSON.stringify(rep));
+        }
+        if (typeof trans_sum == 'undefined' || parseFloat(trans_sum).isNaN) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_sum");
+            rep.err_field = 'trans_sum';
+            return res.send(JSON.stringify(rep));
+        }
+        if (!trans_timestamp || parseInt(trans_sum).isNaN) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_timestamp");
+            rep.err_field = 'trans_date';
+            return res.send(JSON.stringify(rep));
+        }
+        trans_sum = parseFloat(trans_sum);
+        trans_timestamp = parseInt(trans_timestamp);
+        trans_obj = trans_obj.replace(/\"/g, '&quot;').replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace(/\t/g, ' ').replace(/[\n\r]/g, ' ');
+        var update = {
+            trans_type: trans_type,
+            trans_obj: trans_obj,
+            trans_timestamp: trans_timestamp,
+            trans_sum: trans_sum,
+            user_id: user_id
+        };
+        var query = {};
+        if (id) {
+            query._id = new ObjectId(id);
+        } else {
+            query.trans_type = trans_type;
+            query.trans_obj = trans_obj;
+        }
+        app.get('mongodb').collection('billing_transactions').update(query, update, {
+            safe: false,
+            upsert: true
+        }, function(err, result) {
+            if (err) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("database_error");
+                return res.send(JSON.stringify(rep));
+            }
+            res.send(JSON.stringify(rep));
+        });
+    });
+
+    router.post('/data/delete_transaction', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 2) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var id = req.body.id;
+        // Validate
+        if (!id || typeof id != 'string' || !id.match(/^[a-f0-9]{24}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_id");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('billing_transactions').remove({
+            _id: new ObjectId(id)
+        }, function(err) {
+            if (err) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("unknown_transaction");
+                return res.send(JSON.stringify(rep));
+            }
+            res.send(JSON.stringify(rep));
         });
     });
 

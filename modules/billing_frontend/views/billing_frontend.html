@@ -1,0 +1,63 @@
+<div class="uk-grid">
+    <div class="uk-width-large-1-2 uk-width-medium-1-2 uk-width-small-1-1">
+        <h1>!{root.lang.__('module_name')}</h1>
+    </div>
+    <div class="uk-width-large-1-2 uk-width-medium-1-2 uk-width-small-1-1 taracot-billing-funds-wrap">
+        <span class="uk-hidden-small uk-float-right">!{root.lang.__('funds')}: <span class="uk-badge taracot-billing-funds">0</span></span>
+        <span class="uk-hidden-large uk-hidden-medium">!{root.lang.__('funds')} <span class="uk-badge taracot-billing-funds">0</span></span>
+    </div>
+</div>
+<ul class="uk-tab uk-margin-top" data-uk-tab="{connect:'#taracot_billing_tabs'}">
+    <li>
+        <a href="">!{root.lang.__('hosting')}</a>
+    </li>
+    <li>
+        <a href="">!{root.lang.__('domains')}</a>
+    </li>
+    <li>
+        <a href="">!{root.lang.__('profile')}</a>
+    </li>
+    <li>
+        <a href="">!{root.lang.__('payment')}</a>
+    </li>
+    <li>
+        <a href="">!{root.lang.__('history')}</a>
+    </li>
+</ul>
+<ul id="taracot_billing_tabs" class="uk-panel uk-panel-box uk-switcher taracot_billing_tabs_panel">
+    <li>
+        <p class="taracot-billing-tabs-hint">!{root.lang.__('hosting_accounts_hint')}</p>
+        <button class="uk-button uk-button-small uk-button-success" id="btn_hosting_add"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_hosting_add')}</button>
+        <div class="uk-margin-top">
+            <table class="uk-table uk-table-striped uk-table-hover" id="taracot_billing_table_hosting">
+                <thead>
+                    <th>
+                        !{root.lang.__('hosting_account')}
+                    </th>
+                    <th style="width:150px">
+                        !{root.lang.__('hosting_plan')}
+                    </th>
+                    <th style="width:80px">
+                        !{root.lang.__('hosting_days')}
+                    </th>
+                    <th style="width:30px">
+                    </th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </li>
+    <li>
+        <p class="taracot-billing-tabs-hint">!{root.lang.__('domain_names_hint')}</p>
+    </li>
+    <li>
+        <p class="taracot-billing-tabs-hint">!{root.lang.__('customer_profile_hint')}</p>
+    </li>
+    <li>
+        <p class="taracot-billing-tabs-hint">!{root.lang.__('payment_hint')}</p>
+    </li>
+    <li>
+        <p class="taracot-billing-tabs-hint">!{root.lang.__('transaction_history_hint')}</p>
+    </li>
+</ul>
