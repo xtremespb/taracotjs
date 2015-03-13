@@ -426,7 +426,7 @@ for (var im in init_misc)
     if (init_misc[im].id == 'currency') current_currency = init_misc[im][current_locale];
 for (var ci in country_list) {
     for (var key in country_list[ci]) break;
-    $('#country').append('<option value="' + key + '">' + country_list[ci][key] + '</option>')
+    $('#country').append('<option value="' + key + '">' + country_list[ci][key] + '</option>');
 }
 $('#bfunds_currency').html(current_currency);
 </script>

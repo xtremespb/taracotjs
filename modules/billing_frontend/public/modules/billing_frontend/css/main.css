@@ -4,5 +4,39 @@
 .taracot_billing_tabs_panel {
     border-top: 0;
     background-color: #fff;
-    padding: 8px;
+    padding: 15px;
+}
+.uk-form-help-block {
+	color: #666;
+	font-size: 80%;
+}
+.taracot-extra-small-text-field {
+	width:50px;
+}
+.taracot-semi-small-text-field {
+	width:80px;
+}
+.taracot-h1-hint-margin {
+	margin-bottom: 40px;
+	color: #666;
+}
+.taracot-red-asterisk {
+	color: red;
+	font-weight: bold;
+}
+.uk-notify {
+	z-index: 5000;
+}
+.uk-notify-message {
+	text-align: center;
+	color: #fff;
+}
+.uk-notify-message-danger {
+	background: red;
+}
+.uk-notify-message-success {
+	background: green;
+}
+.dlg_hosting_up_info {
+	font-weight: bold;
 }

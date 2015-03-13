@@ -451,7 +451,7 @@ var render_transactions = function(data) {
     if (data && data.length) {
         for (var ti in data) {
             var badge = '<div class="uk-badge uk-badge-notification uk-badge-success billing-trans-badge"><i class="uk-icon-plus"></i></div>',
-                trans = transactions_i18n[data[ti].trans_type];
+                trans = transactions_i18n[transactions_i18n[data[ti].trans_type]];
             if (data[ti].trans_sum <= 0) badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
             if (data[ti].trans_obj) trans += ' (' + data[ti].trans_obj + ')';
             $('#table_transactions > tbody').append('<tr><td>' + moment(data[ti].trans_timestamp).format(billing_date_format + ' ' + billing_time_format) + '</td><td>' + trans + '</td><td>' + badge + '&nbsp;' + data[ti].trans_sum + ' ' + current_currency + '</td><td style="text-align:center"><button class="uk-button uk-button-mini taracot-btn-trans-edit" id="btn_trans_edit_' + data[ti]._id + '"><i class="uk-icon-pencil"></i></button>&nbsp;<button class="uk-button uk-button-mini uk-button-danger taracot-btn-trans-del" id="btn_trans_del_' + data[ti]._id + '"><i class="uk-icon-remove"></i></button></td></tr>');
