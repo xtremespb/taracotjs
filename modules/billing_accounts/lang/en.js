@@ -51,5 +51,11 @@
 	"document_locked": "Item is locked",
 	"document_locked_desc": "Item is currently being edit by another user. You will need to wait until the document is saved.",
 	"locked_by": "Locked by",
-	"unlock_document": "Unlock item"
+	"unlock_document": "Unlock item",
+	"ns0": "First name server/IP address",
+	"ns_ip_addr": "IP address",
+	"ns0_hint": "IP address is only required when NS is a part of domain name being registered",
+	"ns1": "Second name server/IP address",
+	"invalid_nameserver": "Invalid name server(s)",
+	"invalid_nameserver_ip": "Invalid name server IP address"
 }

@@ -238,6 +238,10 @@ module.exports = function(app) {
             buser = req.body.buser,
             bexp = req.body.bexp,
             btype = req.body.btype,
+            bns0 = req.body.bns0 || '',
+            bns1 = req.body.bns1 || '',
+            bns0_ip = req.body.bns0_ip || '',
+            bns1_ip = req.body.bns1_ip || '',
             id = req.body.id;
         // Validate
         if (id)
@@ -258,13 +262,38 @@ module.exports = function(app) {
                 rep.err_field = 'account';
                 return res.send(JSON.stringify(rep));
             }
-        if (btype == 'd')
+        if (btype == 'd') {
             if (!baccount || typeof baccount != 'string' || !baccount.match(/^[A-ZА-Яа-яa-z0-9_\-]{2,63}$/)) {
                 rep.status = 0;
                 rep.err_msg = i18nm.__("invalid_account");
                 rep.err_field = 'account';
                 return res.send(JSON.stringify(rep));
             }
+            if (!bns0 || typeof bns0 != 'string' || !bns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("invalid_nameserver");
+                rep.err_field = 'ns0';
+                return res.send(JSON.stringify(rep));
+            }
+            if (!bns1 || typeof bns1 != 'string' || !bns1.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("invalid_nameserver");
+                rep.err_field = 'ns1';
+                return res.send(JSON.stringify(rep));
+            }
+            if (bns0_ip && (typeof bns0_ip != 'string' || !bns0_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("invalid_nameserver_ip");
+                rep.err_field = 'ns0_ip';
+                return res.send(JSON.stringify(rep));
+            }
+            if (bns1_ip && (typeof bns1_ip != 'string' || !bns1_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("invalid_nameserver_ip");
+                rep.err_field = 'ns0_ip';
+                return res.send(JSON.stringify(rep));
+            }
+        }
         if (!buser || typeof buser != 'string' || !buser.match(/^[A-Za-z0-9_\-]{3,20}$/)) {
             rep.status = 0;
             rep.err_msg = i18nm.__("invalid_user");
@@ -331,11 +360,14 @@ module.exports = function(app) {
             }
             var check_query = {
                 baccount: baccount,
-                btype: btype
+                btype: btype,
             };
-            if (id) check_query._id = {
-                $ne: new ObjectId(id)
-            };
+            if (btype == 'd') check_query.bplan = bplan;
+            if (id) {
+                check_query._id = {
+                    $ne: new ObjectId(id)
+                };
+            }
             app.get('mongodb').collection('billing_accounts').find(check_query).toArray(function(err, acts) {
                 if (err || (acts && acts.length)) {
                     rep.status = 0;
@@ -361,8 +393,14 @@ module.exports = function(app) {
                         } else {
                             query.baccount = baccount;
                             query.btype = btype;
+                            if (btype == 'd') query.bplan = bplan;
                         }
-                        res.send(JSON.stringify(rep));
+                        if (btype == 'd') {
+                            update.bns0 = bns0;
+                            update.bns1 = bns1;
+                            update.bns0_ip = bns0_ip;
+                            update.bns1_ip = bns1_ip;
+                        }
                         app.get('mongodb').collection('billing_accounts').update(query, update, {
                             safe: false,
                             upsert: true

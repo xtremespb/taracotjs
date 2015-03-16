@@ -267,11 +267,19 @@ var btn_domain_save_handler = function() {
         daccount = $.trim($('#daccount').val()),
         duser = $.trim($('#duser').val()),
         dplan = $.trim($('#dplan').val()),
-        dexp = $.trim($('#dexp').val());
+        dexp = $.trim($('#dexp').val()),
+        dns0 = $.trim($('#dns0').val()),
+        dns1 = $.trim($('#dns1').val()),
+        dns0_ip = $.trim($('#dns0_ip').val()),
+        dns1_ip = $.trim($('#dns1_ip').val());
     if (!daccount.match(/^[A-Za-zА-Яа-я0-9\-]{3,20}$/)) errors.push('#daccount');
     if (!duser.match(/^[A-Za-z0-9_\-]{3,20}$/)) errors.push('#duser');
     if (!dplan) errors.push('#dplan');
     if (!dexp) errors.push('#dexp');
+    if (dns0_ip && !dns0_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/)) errors.push('#dns0_ip');
+    if (dns1_ip && !dns1_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/)) errors.push('#dns1_ip');
+    if (!dns0 || !dns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) errors.push('#dns0');
+    if (!dns1 || !dns1.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) errors.push('#dns1');
     dexp = moment(dexp, billing_date_format).unix() * 1000;
     if (dexp < 0) errors.push('#dexp');
     if (errors.length) {
@@ -285,7 +293,7 @@ var btn_domain_save_handler = function() {
         err_msg += err_labels.join(', ') + ')';
         $('#domains_error').html(err_msg);
         $('#domains_error').show();
-        // return;
+        return;
     }
     // Save domains account
     $.loadingIndicator('show');
@@ -298,6 +306,10 @@ var btn_domain_save_handler = function() {
             buser: duser,
             bplan: dplan,
             bexp: dexp,
+            bns0: dns0,
+            bns1: dns1,
+            bns0_ip: dns0_ip,
+            bns1_ip: dns1_ip,
             id: current_id_domains
         },
         dataType: "json",
@@ -386,6 +398,10 @@ var edit_item = function(id) {
                         $('#duser').val(data.account.buser_save);
                         $('#dplan').val(data.account.bplan);
                         $('#dexp').val(moment(parseInt(data.account.bexp)).format(billing_date_format));
+                        $('#dns0').val(data.account.bns0 || '');
+                        $('#dns0_ip').val(data.account.bns0_ip || '');
+                        $('#dns1').val(data.account.bns1 || '');
+                        $('#dns1_ip').val(data.account.bns1_ip || '');
                         $('#daccount').focus();
                     }
                     if (data.account.block && data.account.block != current_user) {

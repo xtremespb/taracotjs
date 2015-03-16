@@ -28,6 +28,7 @@
     "moment": "^2.8.3",
     "mongodb": "~1.4.5",
     "multer": "~0.1.0",
+    "node-whois": "^2.1.0",
     "nodemailer": "~1.0.2",
     "nodemailer-sendmail-transport": "~0.1.2",
     "redis": "~0.10.2",

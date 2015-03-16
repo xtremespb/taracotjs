@@ -404,7 +404,8 @@
             <h2>!{root.lang.__('prolongation_hosting_account')}</h2>
         </div>
         <div class="uk-alert uk-alert-danger" style="display:none" id="hosting_up_error"></div>
-        <p>!{root.lang.__('dh_username')}: <span id="current_hosting_up_account" class="dlg_hosting_up_info"></span>, !{root.lang.__('dh_plan_small')}: <span id="current_hosting_up_plan" class="dlg_hosting_up_info"></span></p>
+        <p>!{root.lang.__('dh_username')}: <span id="current_hosting_up_account" class="dlg_hosting_up_info"></span>, !{root.lang.__('dh_plan_small')}: <span id="current_hosting_up_plan" class="dlg_hosting_up_info"></span>
+        </p>
         <div class="uk-form">
             <div class="uk-form-row">
                 <div class="uk-margin-top uk-hidden-large uk-hidden-medium"></div>
@@ -429,6 +430,77 @@
         </div>
     </div>
 </div>
+<div class="uk-modal" id="dlg_domain_add">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h2>!{root.lang.__('add_domain')}</h2>
+        </div>
+        <div class="uk-alert uk-alert-danger" style="display:none" id="domain_add_error"></div>
+        <div class="uk-form">
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="dd_username">!{root.lang.__('dd_username')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="dd_username" class="uk-form-width-medium taracot-domain-add-control">&nbsp;<span id="dd_username_zone"></span>
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('dd_username_hint')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-grid uk-form-row">
+                <div class="uk-width-large-3-4 uk-width-medium-3-4 uk-width-small-1-1">
+                    <label class="uk-form-label" for="dd_plan">!{root.lang.__('dd_plan')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                    </label>
+                    <div class="uk-form-controls">
+                        <select id="dd_plan" class="uk-form-width-large taracot-domain-add-control taracot-domain-add-calc-field" style="z-index:9000"></select>
+                        <p class="uk-form-help-block">
+                            !{root.lang.__('dd_plan_hint')}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <p>!{root.lang.__('name_servers')}&nbsp;<span class="taracot-red-asterisk">*</span></p>
+            <div class="uk-accordion" data-uk-accordion>
+                <h3 class="uk-accordion-title">!{root.lang.__('default_ns')}</h3>
+                <div class="uk-accordion-content">!{root.lang.__('default_ns_hint')}</div>
+                <h3 class="uk-accordion-title">!{root.lang.__('custom_ns')}</h3>
+                <div class="uk-accordion-content">
+                    <div class="uk-form-row">
+                        <label class="uk-form-label" for="dd_ns0">!{root.lang.__('dd_ns0')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                        </label>
+                        <div class="uk-form-controls">
+                            <input type="text" id="dd_ns0" class="uk-form-width-medium taracot-domain-add-control">&nbsp;
+                            <input type="text" id="dd_ns0_ip" class="uk-form-width-small taracot-domain-add-control" placeholder="!{root.lang.__('dd_ns_ip')}">
+                            <p class="uk-form-help-block">
+                                !{root.lang.__('dd_ns_hint')}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label" for="dd_ns1">!{root.lang.__('dd_ns1')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                        </label>
+                        <div class="uk-form-controls">
+                            <input type="text" id="dd_ns1" class="uk-form-width-medium taracot-domain-add-control">&nbsp;
+                            <input type="text" id="dd_ns1_ip" class="uk-form-width-small taracot-domain-add-control" placeholder="!{root.lang.__('dd_ns_ip')}">
+                            <p class="uk-form-help-block">
+                                !{root.lang.__('dd_ns_hint')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-margin-top uk-margin-bottom uk-panel uk-panel-box">
+                <p>
+                    <i class="uk-icon-info"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_domain_add_cost">0</span>
+                </p>
+            </div>
+        </div>
+        <div class="uk-modal-footer">
+            <button id="btn_domain_create" class="uk-button uk-button-success taracot-domain-add-btn"><span id="btn_domain_create_loading" style="display:none"><img src="/modules/billing_frontend/images/loading_16x16.gif" style="width:16px;height:16px;">&nbsp;</span>!{root.lang.__('regiser_domain_btn')}</button>&nbsp;
+            <button class="uk-button uk-modal-close taracot-domain-add-btn">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
 var _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
@@ -436,10 +508,16 @@ var _lang_vars = {
         form_contains_errors: "!{root.lang.__('form_contains_errors')}",
         profile_save_success: "!{root.lang.__('profile_save_success')}",
         per_month: "!{root.lang.__('per_month')}",
+        per_year: "!{root.lang.__('per_year')}",
         hosting_add_success: "!{root.lang.__('hosting_add_success')}",
-        hosting_prolong_success: "!{root.lang.__('hosting_prolong_success')}"
+        hosting_prolong_success: "!{root.lang.__('hosting_prolong_success')}",
+        domain_add_success: "!{root.lang.__('domain_add_success')}"
     },
     current_locale = "!{root.current_locale}",
+    init_ns0 = "!{root.default_ns0}",
+    init_ns1 = "!{root.default_ns1}",
+    init_ns0_ip = "!{root.default_ns0_ip}",
+    init_ns1_ip = "!{root.default_ns1_ip}",
     init_hosting = !{
         root.hosting
     },
@@ -485,4 +563,5 @@ $('.taracot-billing-funds').html(init_funds);
 <script src="/js/moment.min.js"></script>
 <script src="/js/helper.js"></script>
 <script src="/js/uikit/addons/notify.min.js"></script>
+<script src="/js/uikit/addons/accordion.min.js"></script>
 <script src="/modules/billing_frontend/js/billing_frontend.js"></script>

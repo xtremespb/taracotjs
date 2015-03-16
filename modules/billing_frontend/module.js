@@ -42,6 +42,7 @@ module.exports = function(app) {
         async = require('async'),
         renderer = app.get('renderer'),
         moment = require('moment'),
+        logger = app.get('logger'),
         config = app.get('config'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
@@ -57,8 +58,10 @@ module.exports = function(app) {
         for (var attrname in billing_frontend_config) {
             config[attrname] = billing_frontend_config[attrname];
         }
-    var billing_api;
+    var billing_api, whois_api, domain_api;
     if (config.billing_frontend && config.billing_frontend.hosting_api) billing_api = require('./api/' + config.billing_frontend.hosting_api)(app);
+    if (config.billing_frontend && config.billing_frontend.domain_api) domain_api = require('./api/' + config.billing_frontend.domain_api)(app);
+    whois_api = require('./api/' + config.billing_frontend.whois_api)(app);
     // Routing
     router.get('/', function(req, res) {
         if (!req.session.auth || req.session.auth.status < 1) {
@@ -130,6 +133,10 @@ module.exports = function(app) {
                         transactions: JSON.stringify(transactions),
                         current_locale: req.session.current_locale,
                         country_list: JSON.stringify(country_list),
+                        default_ns0: config.billing_frontend.default_ns0,
+                        default_ns1: config.billing_frontend.default_ns1,
+                        default_ns0_ip: config.billing_frontend.default_ns0_ip,
+                        default_ns1_ip: config.billing_frontend.default_ns1_ip,
                         data: data
                     }, req);
                     data.content = render;
@@ -326,6 +333,13 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
                 // Validation is finished
+                var account_data = {
+                    funds: 0,
+                    account: baccount,
+                    plan: bplan,
+                    days: bexp_add * 30,
+                    cost: -(bexp_add * _bcost)
+                };
                 async.series([
                     function(callback) {
                         // Check funds
@@ -344,13 +358,13 @@ module.exports = function(app) {
                     function(callback) {
                         // Checking if user not exists in system
                         billing_api.user_exists(baccount, function(api_res) {
-                            if (api_res == -1) {
+                            if (api_res.status == -1) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("ajax_failed");
                                 rep.err_field = 'dh_username';
-                                return callback(true); // Error
+                                return callback('[BILLING] Request to hosting control panel failed. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
                             }
-                            if (api_res == 1) {
+                            if (api_res.status == 1) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("hosting_account_exists");
                                 rep.err_field = 'dh_username';
@@ -360,25 +374,43 @@ module.exports = function(app) {
                         });
                     },
                     function(callback) {
-                        // Trying to create an user
-                        billing_api.create_user(baccount, bpwd, bplan, function(api_res) {
-                            if (api_res == -1) {
+                        // Trying to create an user in hosting cotnrol panel
+                        billing_api.user_create(baccount, bpwd, bplan, function(api_res) {
+                            if (api_res.status == -1) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("ajax_failed");
                                 rep.err_field = 'dh_username';
-                                return callback(true); // Error
+                                return callback('[BILLING] Request to hosting control panel failed. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
                             }
-                            if (api_res == 3) {
+                            if (api_res.status == 3) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("password_not_allowed");
                                 rep.err_field = 'dh_password';
                                 return callback(true); // Error
                             }
-                            if (api_res == 2) {
+                            if (api_res.status == 2) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("hosting_manager_failure");
                                 rep.err_field = 'dh_username';
-                                return callback(true); // Error
+                                return callback('[BILLING] Hosting manager failure. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Creating a record in billing_accounts
+                        app.get('mongodb').collection('billing_accounts').insert({
+                            btype: 'h',
+                            buser: new ObjectId(req.session.auth._id),
+                            buser_save: req.session.auth.username,
+                            baccount: baccount,
+                            bplan: bplan,
+                            bexp: account_data.days
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_accounts failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + err);
                             }
                             callback();
                         });
@@ -391,12 +423,27 @@ module.exports = function(app) {
                             $inc: {
                                 billing_funds: -(bexp_add * _bcost)
                             }
-                        }, function(err) {
+                        }, function(err, result) {
                             if (err) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("database_error");
-                                return callback(true);
+                                return callback('[BILLING] Decreasing funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
                             }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking funds after decrease
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Checking funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.funds = users[0].billing_funds;
                             callback();
                         });
                     },
@@ -404,7 +451,7 @@ module.exports = function(app) {
                         // Adding log record
                         app.get('mongodb').collection('billing_transactions').insert({
                             trans_type: 'hosting_reg',
-                            trans_obj: 'baccount',
+                            trans_obj: baccount,
                             trans_timestamp: Date.now(),
                             trans_sum: -(bexp_add * _bcost),
                             user_id: req.session.auth._id
@@ -412,12 +459,14 @@ module.exports = function(app) {
                             if (err) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("database_error");
-                                return callback(true);
+                                return callback('[BILLING] Insert into billing_transactions failed: ' + req.session.auth._id + ', error: ' + err);
                             }
                             callback();
                         });
                     }
                 ], function(err) {
+                    if (err && typeof err == 'string') logger.log('error', err);
+                    if (!err) rep.account = account_data;
                     return res.send(JSON.stringify(rep));
                 });
             });
@@ -450,17 +499,17 @@ module.exports = function(app) {
             rep.err_field = 'dh_months';
             return res.send(JSON.stringify(rep));
         }
-        bexp_add = bexp_add * 30;
         app.get('mongodb').collection('billing_accounts').find({
             baccount: baccount,
             btype: 'h',
             buser: new ObjectId(req.session.auth._id)
         }).toArray(function(err, accounts) {
-            if (err || !accounts || !accounts.length) {
+            if (err || !accounts || !accounts.length || accounts[0].buser != req.session.auth._id) {
                 rep.status = 0;
                 rep.err_msg = i18nm.__("hosting_account_doesnt_exists");
                 return res.send(JSON.stringify(rep));
             }
+            var bplan = accounts[0].bplan;
             // Validation is finished
             var account = accounts[0];
             app.get('mongodb').collection('billing_conf').find({
@@ -476,7 +525,383 @@ module.exports = function(app) {
                                 hosting = JSON.parse(db[i].data);
                             } catch (ex) {}
                     }
+                var _bplan, _bcost;
+                for (var hi in hosting)
+                    if (hosting[hi].id == bplan) {
+                        _bplan = hosting[hi].id;
+                        _bcost = hosting[hi].price;
+                    }
+                if (!_bplan) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("form_data_incorrect");
+                    rep.err_field = 'dh_plan';
+                    return res.send(JSON.stringify(rep));
+                }
+                var account_data = {
+                    funds: 0,
+                    account: baccount,
+                    plan: bplan,
+                    days: bexp_add * 30,
+                    cost: -(bexp_add * _bcost)
+                };
+                async.series([
+                    function(callback) {
+                        // Check funds
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length || !users[0].billing_funds || users[0].billing_funds < bexp_add * _bcost) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("insufficient_funds");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking if user exists in system
+                        billing_api.user_exists(baccount, function(api_res) {
+                            if (api_res.status == -1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("ajax_failed");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Request to hosting control panel failed. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
+                            }
+                            if (api_res.status != 1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("hosting_account_doesnt_exists");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
+                            return callback();
+                        });
+                    },
+                    function(callback) {
+                        // Trying to turn on the user in hosting cotnrol panel
+                        billing_api.user_action(baccount, 'resume', function(api_res) {
+                            if (api_res.status == -1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("ajax_failed");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Request to hosting control panel failed. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
+                            }
+                            if (api_res.status == 2) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("hosting_manager_failure");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Hosting manager failure. User ID: ' + req.session.auth._id + ', error: ' + api_res.error + ', response: ' + api_res.body);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Update the record in billing_accounts
+                        app.get('mongodb').collection('billing_accounts').update({
+                            btype: 'h',
+                            baccount: baccount
+                        }, {
+                            $inc: {
+                                bexp: bexp_add * 30
+                            }
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_accounts failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Decreasung funds
+                        app.get('mongodb').collection('users').update({
+                            _id: new ObjectId(req.session.auth._id)
+                        }, {
+                            $inc: {
+                                billing_funds: -(bexp_add * _bcost)
+                            }
+                        }, function(err, result) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Decreasing funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking funds after decrement
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Checking funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.funds = users[0].billing_funds;
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking days after increment
+                        app.get('mongodb').collection('billing_accounts').find({
+                            btype: 'h',
+                            baccount: baccount
+                        }).toArray(function(err, accounts) {
+                            if (!accounts || !accounts.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Checking billing account failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.days = accounts[0].bexp;
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Adding log record
+                        app.get('mongodb').collection('billing_transactions').insert({
+                            trans_type: 'hosting_up',
+                            trans_obj: baccount,
+                            trans_timestamp: Date.now(),
+                            trans_sum: -(bexp_add * _bcost),
+                            user_id: req.session.auth._id
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_transactions failed: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    }
+                ], function(err) {
+                    if (err && typeof err == 'string') logger.log('error', err);
+                    if (!err) rep.account = account_data;
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
+    router.post('/ajax/create/domain', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+                status: 1
+            },
+            baccount = req.body.baccount,
+            bplan = req.body.bplan,
+            bns0 = req.body.bns0 || '',
+            bns1 = req.body.bns1 || '',
+            bns0_ip = req.body.bns0_ip || '',
+            bns1_ip = req.body.bns1_ip || '';
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        // Validate fields
+        if (!baccount || typeof baccount != 'string' || !baccount.match(/^[A-Za-z0-9_\-]{3,12}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'dd_username';
+            return res.send(JSON.stringify(rep));
+        }
+        if (!bns0 || typeof bns0 != 'string' || !bns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver");
+            rep.err_field = 'dd_ns0';
+            return res.send(JSON.stringify(rep));
+        }
+        if (!bns1 || typeof bns1 != 'string' || !bns1.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver");
+            rep.err_field = 'dd_ns1';
+            return res.send(JSON.stringify(rep));
+        }
+        if (bns0_ip && (typeof bns0_ip != 'string' || !bns0_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver_ip");
+            rep.err_field = 'dd_ns0_ip';
+            return res.send(JSON.stringify(rep));
+        }
+        if (bns1_ip && (typeof bns1_ip != 'string' || !bns1_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver_ip");
+            rep.err_field = 'dd_ns0_ip';
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('billing_conf').find({
+            $or: [{
+                conf: 'domains'
+            }]
+        }).toArray(function(err, db) {
+            var domains = [];
+            if (!err && db && db.length)
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'domains' && db[i].data)
+                        try {
+                            hosting = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+
+            var _bplan, _bcost;
+            for (var hi in hosting)
+                if (hosting[hi].id == bplan) {
+                    _bplan = hosting[hi].id;
+                    _bcost = hosting[hi].reg;
+                }
+            if (!_bplan) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("form_data_incorrect");
+                rep.err_field = 'dh_plan';
                 return res.send(JSON.stringify(rep));
+            }
+            app.get('mongodb').collection('billing_accounts').find({
+                baccount: baccount,
+                bplan: bplan,
+                btype: 'd'
+            }).toArray(function(err, accounts) {
+                if (err || (accounts && accounts.length)) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("domain_exists");
+                    rep.err_field = 'dd_username';
+                    return res.send(JSON.stringify(rep));
+                }
+                // Validation is finished
+                var account_data = {
+                        funds: 0,
+                        account: baccount,
+                        plan: bplan,
+                        days: moment().add(1, 'year').unix() * 1000,
+                        cost: -_bcost
+                    },
+                    profile_data = {};
+                async.series([
+                    function(callback) {
+                        // Check funds
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length || !users[0].billing_funds || users[0].billing_funds < _bcost) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("insufficient_funds");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
+                            if (!users || !users.length || !users[0].profile_data) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("profile_missing");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
+                            profile_data = users[0].profile_data;
+                            if (!profile_data.n1e || ((bplan == 'ru' || bplan == 'su') && !profile_data.n1r)) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("profile_missing");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking if domain not registered (via WHOIS API)
+                        whois_api.query(baccount + '.' + bplan, function(err, data) {
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Trying to register domain name at registrator
+                        var data = {
+                            ns0: bns0,
+                            ns1: bns1,
+                            ns0_ip: bns0_ip,
+                            ns1_ip: bns1_ip,
+                            profile: profile_data
+                        };
+                        domain_api.register_domain(baccount, bplan, data, req, function(api_data) {
+                            console.log(JSON.stringify(api_data));
+                            rep.status = 0;
+                            callback(true);
+                        });
+                    },
+                    function(callback) {
+                        // Creating a record in billing_accounts
+                        app.get('mongodb').collection('billing_accounts').insert({
+                            btype: 'd',
+                            buser: new ObjectId(req.session.auth._id),
+                            buser_save: req.session.auth.username,
+                            baccount: baccount,
+                            bplan: bplan,
+                            bexp: account_data.days
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_accounts failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Decreasung funds
+                        app.get('mongodb').collection('users').update({
+                            _id: new ObjectId(req.session.auth._id)
+                        }, {
+                            $inc: {
+                                billing_funds: -_bcost
+                            }
+                        }, function(err, result) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Decreasing funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking funds after decrease
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                rep.err_field = 'dh_username';
+                                return callback('[BILLING] Checking funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.funds = users[0].billing_funds;
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Adding log record
+                        app.get('mongodb').collection('billing_transactions').insert({
+                            trans_type: 'domain_reg',
+                            trans_obj: baccount,
+                            trans_timestamp: Date.now(),
+                            trans_sum: -_bcost,
+                            user_id: req.session.auth._id
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_transactions failed: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    }
+                ], function(err) {
+                    if (err && typeof err == 'string') logger.log('error', err);
+                    rep.account = account_data;
+                    return res.send(JSON.stringify(rep));
+                });
             });
         });
     });
