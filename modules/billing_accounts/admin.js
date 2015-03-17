@@ -306,6 +306,7 @@ module.exports = function(app) {
             rep.err_field = 'exp';
             return res.send(JSON.stringify(rep));
         }
+        bexp = parseInt(bexp);
         app.get('mongodb').collection('billing_conf').find({
             $or: [{
                 conf: 'hosting'
@@ -401,7 +402,9 @@ module.exports = function(app) {
                             update.bns0_ip = bns0_ip;
                             update.bns1_ip = bns1_ip;
                         }
-                        app.get('mongodb').collection('billing_accounts').update(query, update, {
+                        app.get('mongodb').collection('billing_accounts').update(query, {
+                            $set: update
+                        }, {
                             safe: false,
                             upsert: true
                         }, function(err, result) {

@@ -11,8 +11,18 @@ var hosting_plan_hash = {},
         bgclose: false,
         keyboard: false
     }),
+    dlg_domain_up = new UIkit.modal("#dlg_domain_up", {
+        bgclose: false,
+        keyboard: false
+    }),
+    dlg_domain_ns = new UIkit.modal("#dlg_domain_ns", {
+        bgclose: false,
+        keyboard: false
+    }),
     current_hosting_up_plan,
     current_hosting_up_account,
+    current_domain_up_plan,
+    current_domain_up_account,
     init_domains_count = 0,
     init_hosting_count = 0,
     profile_validation = {
@@ -279,6 +289,7 @@ var btn_hosting_account_create_handler = function() {
                 $('.taracot-btn-hosting-up').click(taracot_btn_hosting_up_handler);
                 var trans_type = transactions_i18n.hosting_reg + ' (' + data.account.account + ')',
                     trans_badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+                if (!init_hosting_count) $('#taracot_billing_table_hosting > tbody').html('');
                 $('#taracot_billing_table_transactions > tbody').prepend('<tr><td>' + moment(Date.now()).format('L LT') + '</td><td>' + trans_type + '</td><td>' + trans_badge + '&nbsp;' + data.account.cost + ' ' + init_misc_hash.currency + '</td></tr>');
                 $('.taracot-billing-funds').html(data.account.funds);
                 dlg_hosting_add.hide();
@@ -434,12 +445,10 @@ var btn_domain_create_handler = function() {
         dataType: "json",
         success: function(data) {
             if (data && data.status == 1) {
-                var btn_domain_up = '';
-                $('#taracot_billing_table_domains > tbody').append('<tr><td>' + data.account.account + '.' + data.account.plan + '</td><td style="text-align:center" id="billing_de_' + data.account.account + '">' + moment(data.account.days).format('L') + '</td><td>' + btn_domain_up + '</td></tr>');
-                // $('.taracot-btn-domain-up').unbind();
-                // $('.taracot-btn-domain-up').click(taracot_btn_domain_up_handler);
+                $('#taracot_billing_table_domains > tbody').append('<tr><td>' + data.account.account + '.' + data.account.plan + '</td><td style="text-align:center" id="billing_de_' + data.account.account + '">' + moment(data.account.days).format('L') + '</td><td></td></tr>');
                 var trans_type = transactions_i18n.domain_reg + ' (' + data.account.account + '.' + data.account.plan + ')',
                     trans_badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+                if (!init_domains_count) $('#taracot_billing_table_domains > tbody').html('');
                 $('#taracot_billing_table_transactions > tbody').prepend('<tr><td>' + moment(Date.now()).format('L LT') + '</td><td>' + trans_type + '</td><td>' + trans_badge + '&nbsp;' + data.account.cost + ' ' + init_misc_hash.currency + '</td></tr>');
                 $('.taracot-billing-funds').html(data.account.funds);
                 dlg_domain_add.hide();
@@ -471,6 +480,160 @@ var btn_domain_create_handler = function() {
     });
 };
 
+var taracot_btn_domain_up_handler = function() {
+    var id = $(this).attr('id').replace(/_hd_/, '');
+    current_domain_up_account = id.split(/_/)[0];
+    current_domain_up_plan = id.split(/_/)[1];
+    $('#domain_up_error').hide();
+    dlg_domain_up.show();
+    for (var sp in init_domains)
+        if (init_domains[sp].id == current_domain_up_plan) {
+            $('#current_domain_up_info').html('<b>' + current_domain_up_account + '.' + current_domain_up_plan + '</b>, ' + _lang_vars.renew_cost + ': ' + init_domains[sp].up + ' ' + init_misc_hash.currency + ' (' + _lang_vars.per_year + ')');
+            $('#dlg_domain_up_cost').html(init_domains[sp].up + ' ' + init_misc_hash.currency);
+        }
+};
+
+var btn_domain_account_update_handler = function() {
+    $('.taracot-domain-up-btn').attr('disabled', true);
+    $('#btn_domain_account_update_loading').show();
+    $.ajax({
+        type: 'POST',
+        url: '/customer/ajax/prolong/domain',
+        data: {
+            baccount: current_domain_up_account,
+            bplan: current_domain_up_plan
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                $('#billing_exp_' + data.account.account + '_' + data.account.plan).html(moment(data.account.days).format('L'));
+                var trans_type = transactions_i18n.domain_up + ' (' + data.account.account + ')',
+                    trans_badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+                $('#taracot_billing_table_transactions > tbody').prepend('<tr><td>' + moment(Date.now()).format('L LT') + '</td><td>' + trans_type + '</td><td>' + trans_badge + '&nbsp;' + data.account.cost + ' ' + init_misc_hash.currency + '</td></tr>');
+                $('.taracot-billing-funds').html(data.account.funds);
+                $('#_hd_' + data.account.account + '_' + data.account.plan).hide();
+                dlg_domain_up.hide();
+                UIkit.notify({
+                    message: _lang_vars.domain_prolong_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                if (data.err_field) {
+                    $('#' + data.err_field).addClass('uk-form-danger');
+                    $('#' + data.err_field).focus();
+                }
+                $('#domain_up_error').html(msg);
+                $('#domain_up_error').fadeIn(500);
+            }
+        },
+        error: function() {
+            $('#domain_up_error').html(_lang_vars.ajax_failed);
+            $('#domain_up_error').fadeIn(500);
+        },
+        complete: function() {
+            $('.taracot-domain-up-btn').attr('disabled', false);
+            $('#btn_domain_account_update_loading').hide();
+        }
+    });
+};
+
+var taracot_btn_domain_ns_handler = function() {
+    var id = $(this).attr('id').replace(/_hn_/, '');
+    current_domain_ns_account = id.split(/_/)[0];
+    current_domain_ns_plan = id.split(/_/)[1];
+    $('.taracot-domain-ns-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    $('#domain_ns_error').hide();
+    $('#dlg_domain_ns_domain').html(current_domain_ns_account + '.' + current_domain_ns_plan);
+    for (var ni in init_accounts)
+        if (init_accounts[ni].baccount == current_domain_ns_account && init_accounts[ni].bplan == current_domain_ns_plan) {
+            $('#ns_ns0').val(init_accounts[ni].bns0 || '');
+            $('#ns_ns1').val(init_accounts[ni].bns1 || '');
+            $('#ns_ns0_ip').val(init_accounts[ni].bns0_ip || '');
+            $('#ns_ns1_ip').val(init_accounts[ni].bns1_ip || '');
+        }
+    dlg_domain_ns.show();
+    $('#ns_ns0').focus();
+};
+
+var btn_domain_ns_handler = function() {
+    $('.taracot-domain-ns-control').each(function() {
+        $(this).removeClass('uk-form-danger');
+    });
+    $('#domain_ns_error').hide();
+    // Validation
+    var errors = [],
+        domain_data = {
+            baccount: current_domain_ns_account,
+            bplan: current_domain_ns_plan,
+            bns0: $.trim($('#ns_ns0').val()),
+            bns0_ip: $.trim($('#ns_ns0_ip').val()),
+            bns1: $.trim($('#ns_ns1').val()),
+            bns1_ip: $.trim($('#ns_ns1_ip').val()),
+        };
+    if (domain_data.bns0_ip && !domain_data.bns0_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/)) errors.push('#ns_ns0_ip');
+    if (domain_data.bns1_ip && !domain_data.bns1_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/)) errors.push('#ns_ns1_ip');
+    if (!domain_data.bns0 || !domain_data.bns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) errors.push('#ns_ns0');
+    if (!domain_data.bns1 || !domain_data.bns1.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) errors.push('#ns_ns1');
+    if (errors.length) {
+        $(errors[0]).focus();
+        var err_msg = _lang_vars.form_contains_errors + ' (',
+            err_labels = [];
+        for (var error in errors) {
+            $(errors[error]).addClass('uk-form-danger');
+            err_labels.push('"' + $(errors[error]).parent().parent().find('label').text().replace(/\*/, '').trim() + '"');
+        }
+        err_msg += err_labels.join(', ') + ')';
+        $('#domain_ns_error').html(err_msg);
+        $('#domain_ns_error').fadeIn(500);
+        return;
+    }
+    $('.taracot-domain-ns-btn').attr('disabled', true);
+    $('#btn_domain_ns_loading').show();
+    $.ajax({
+        type: 'POST',
+        url: '/customer/ajax/domain/ns',
+        data: domain_data,
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                $('#_hn_' + current_domain_ns_account + '_' + current_domain_ns_plan).hide();
+                dlg_domain_ns.hide();
+                UIkit.notify({
+                    message: _lang_vars.domain_ns_success,
+                    status: 'success',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                if (data.err_field) {
+                    $('#' + data.err_field).addClass('uk-form-danger');
+                    $('#' + data.err_field).focus();
+                }
+                $('#domain_ns_error').html(msg);
+                $('#domain_ns_error').fadeIn(500);
+            }
+        },
+        error: function() {
+            $('#domain_ns_error').html(_lang_vars.ajax_failed);
+            $('#domain_ns_error').fadeIn(500);
+        },
+        complete: function() {
+            $('.taracot-domain-ns-btn').attr('disabled', false);
+            $('#btn_domain_ns_loading').hide();
+        }
+    });
+};
+
 /*******************************************************************
 
  document.ready
@@ -496,8 +659,13 @@ $(document).ready(function() {
             $('#taracot_billing_table_hosting > tbody').append('<tr><td>' + init_accounts[ai].baccount + '</td><td style="text-align:center">' + hosting_plan_hash[init_accounts[ai].bplan] + '</td><td style="text-align:center" id="billing_days_' + init_accounts[ai].baccount + '">' + init_accounts[ai].bexp + '</td><td>' + btn_host_up + '</td></tr>');
         }
         if (init_accounts[ai].btype == 'd') {
+            var tdiff = moment(parseInt(init_accounts[ai].bexp)).unix() - moment().unix(),
+                btn_domain_up = '';
+            if (tdiff < 2592000 && tdiff > -604800) btn_domain_up = '<button class="uk-button uk-button-mini uk-button-success taracot-btn-domain-up" id="_hd_' + init_accounts[ai].baccount + '_' + init_accounts[ai].bplan + '"><i class="uk-icon-plus"></i></button>&nbsp;';
+            if (init_accounts[ai].bchanged && moment().unix() - moment(init_accounts[ai].bchanged).unix() > 43200)
+                btn_domain_up += '<button class="uk-button uk-button-mini uk-button-primary taracot-btn-domain-ns" id="_hn_' + init_accounts[ai].baccount + '_' + init_accounts[ai].bplan + '"><i class="uk-icon-cog"></i></button>';
             init_domains_count++;
-            $('#taracot_billing_table_domains > tbody').append('<tr><td>' + init_accounts[ai].baccount + '.' + init_accounts[ai].bplan + '</td><td style="text-align:center">' + moment(parseInt(init_accounts[ai].bexp)).format('L') + '</td><td></td></tr>');
+            $('#taracot_billing_table_domains > tbody').append('<tr><td>' + init_accounts[ai].baccount + '.' + init_accounts[ai].bplan + '</td><td style="text-align:center" id="billing_exp_' + init_accounts[ai].baccount + '_' + init_accounts[ai].bplan + '">' + moment(parseInt(init_accounts[ai].bexp)).format('L') + '</td><td>' + btn_domain_up + '</td></tr>');
         }
     }
     if (!init_hosting_count) $('#taracot_billing_table_hosting > tbody').html('<tr><td colspan="4">' + _lang_vars.no_records + '</td></tr>');
@@ -522,6 +690,8 @@ $(document).ready(function() {
         var id = $(this).attr('id');
         if (init_profile_data[id]) $('#' + id).val(init_profile_data[id]);
     });
+    if ($('#birth_date').val())
+        $('#birth_date').val(moment($('#birth_date').val(), 'DD.MM.YYYY').format(billing_date_format));
     // Set handlers
     $('#btn_billing_profile_save').click(btn_billing_profile_save_handler);
     $('#btn_hosting_add').click(btn_hosting_add_handler);
@@ -533,16 +703,11 @@ $(document).ready(function() {
     $('#btn_domain_add').click(btn_domain_add_handler);
     $('#dd_plan').change(dd_plan_change);
     $('#btn_domain_create').click(btn_domain_create_handler);
+    $('.taracot-btn-domain-up').click(taracot_btn_domain_up_handler);
+    $('#btn_domain_account_update').click(btn_domain_account_update_handler);
+    $('.taracot-btn-domain-ns').click(taracot_btn_domain_ns_handler);
+    $('#btn_domain_ns').click(btn_domain_ns_handler);
     // Bind Enter key
-    $('.taracot-form-profile-control').bind('keypress', function(e) {
-        if (submitOnEnter(e) && $('#btn_billing_profile_save').is(':enabled')) {
-            $('html,body').animate({
-                    scrollTop: $("#btn_billing_profile_save").offset().top - 20
-                },
-                'slow');
-            $('#btn_billing_profile_save').click();
-        }
-    });
     $('.taracot-hosting-add-control').bind('keypress', function(e) {
         if (submitOnEnter(e) && $('#btn_hosting_account_create').is(':enabled'))
             $('#btn_hosting_account_create').click();

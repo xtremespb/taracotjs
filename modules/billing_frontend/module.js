@@ -284,6 +284,7 @@ module.exports = function(app) {
             rep.err_field = 'dh_username';
             return res.send(JSON.stringify(rep));
         }
+        baccount = baccount.toLowerCase();
         if (!bpwd || typeof bpwd != 'string' || bpwd.length < 8 || bpwd.length > 80) {
             rep.status = 0;
             rep.err_msg = i18nm.__("form_data_incorrect");
@@ -493,6 +494,7 @@ module.exports = function(app) {
             rep.err_field = 'dh_username';
             return res.send(JSON.stringify(rep));
         }
+        baccount = baccount.toLowerCase();
         if (!bexp_add || bexp_add.isNaN || bexp_add < 0) {
             rep.status = 0;
             rep.err_msg = i18nm.__("form_data_incorrect");
@@ -705,12 +707,13 @@ module.exports = function(app) {
             return res.send(JSON.stringify(rep));
         }
         // Validate fields
-        if (!baccount || typeof baccount != 'string' || !baccount.match(/^[A-Za-z0-9_\-]{3,12}$/)) {
+        if (!baccount || typeof baccount != 'string' || !baccount.match(/^[a-z0-9\-]{2,63}$/)) {
             rep.status = 0;
             rep.err_msg = i18nm.__("form_data_incorrect");
             rep.err_field = 'dd_username';
             return res.send(JSON.stringify(rep));
         }
+        baccount = baccount.toLowerCase();
         if (!bns0 || typeof bns0 != 'string' || !bns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
             rep.status = 0;
             rep.err_msg = i18nm.__("invalid_nameserver");
@@ -812,6 +815,12 @@ module.exports = function(app) {
                     function(callback) {
                         // Checking if domain not registered (via WHOIS API)
                         whois_api.query(baccount + '.' + bplan, function(err, data) {
+                            if (data != 1 && !config.billing_frontend.ignore_whois_errors) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("domain_already_registered");
+                                rep.err_field = 'dh_username';
+                                return callback(true); // Error
+                            }
                             callback();
                         });
                     },
@@ -825,9 +834,12 @@ module.exports = function(app) {
                             profile: profile_data
                         };
                         domain_api.register_domain(baccount, bplan, data, req, function(api_data) {
-                            console.log(JSON.stringify(api_data));
-                            rep.status = 0;
-                            callback(true);
+                            if (api_data.status != 1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("domain_registration_error");
+                                return callback('[BILLING] Request to domain registration API failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + JSON.stringify(api_data.body));
+                            }
+                            callback();
                         });
                     },
                     function(callback) {
@@ -838,7 +850,12 @@ module.exports = function(app) {
                             buser_save: req.session.auth.username,
                             baccount: baccount,
                             bplan: bplan,
-                            bexp: account_data.days
+                            bns0: bns0,
+                            bns1: bns1,
+                            bns0_ip: bns0_ip,
+                            bns1_ip: bns1_ip,
+                            bexp: account_data.days,
+                            bchanged: Date.now()
                         }, function(err) {
                             if (err) {
                                 rep.status = 0;
@@ -900,6 +917,344 @@ module.exports = function(app) {
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
                     rep.account = account_data;
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
+    router.post('/ajax/prolong/domain', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+                status: 1
+            },
+            baccount = req.body.baccount,
+            bplan = req.body.bplan;
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        // Validate fields
+        if (!bplan || !baccount || typeof baccount != 'string' || !baccount.match(/^[a-z0-9\-]{2,63}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            return res.send(JSON.stringify(rep));
+        }
+        baccount = baccount.toLowerCase();
+        app.get('mongodb').collection('billing_conf').find({
+            $or: [{
+                conf: 'domains'
+            }]
+        }).toArray(function(err, db) {
+            var domains = [];
+            if (!err && db && db.length)
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'domains' && db[i].data)
+                        try {
+                            domains = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            var _bplan, _bcost;
+            for (var hi in domains)
+                if (domains[hi].id == bplan) {
+                    _bplan = domains[hi].id;
+                    _bcost = domains[hi].up;
+                }
+            if (!_bplan) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("form_data_incorrect");
+                return res.send(JSON.stringify(rep));
+            }
+            app.get('mongodb').collection('billing_accounts').find({
+                baccount: baccount,
+                bplan: bplan,
+                btype: 'd',
+                buser: new ObjectId(req.session.auth._id)
+            }).toArray(function(err, accounts) {
+                if (err || !accounts || !accounts.length || accounts[0].buser != req.session.auth._id) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("domain_account_doesnt_exists");
+                    return res.send(JSON.stringify(rep));
+                }
+                var account = accounts[0],
+                    account_data = {
+                        funds: 0,
+                        account: baccount,
+                        plan: bplan,
+                        days: 0,
+                        cost: -_bcost
+                    },
+                    tdiff = moment(account.bexp).unix() - moment().unix();
+                // Check if domain name expiration date is not less than 30 days and no more than 7
+                if (tdiff > 2592000 || tdiff < -604800) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("form_data_incorrect");
+                    return res.send(JSON.stringify(rep));
+                }
+                // Validation is finished
+                async.series([
+                    function(callback) {
+                        // Check funds
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length || !users[0].billing_funds || users[0].billing_funds < _bcost) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("insufficient_funds");
+                                return callback(true); // Error
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Trying to renew domain name at registrator
+                        domain_api.renew_domain(baccount, bplan, function(api_data) {
+                            if (api_data.status != 1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("domain_renew_error");
+                                return callback('[BILLING] Request to domain renew API failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + JSON.stringify(api_data.body));
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Update the record in billing_accounts
+                        app.get('mongodb').collection('billing_accounts').update({
+                            btype: 'd',
+                            baccount: baccount,
+                            bplan: bplan
+                        }, {
+                            $inc: {
+                                bexp: 31556926000 // 1 year
+                            },
+                            $set: {
+                                bchanged: Date.now()
+                            }
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Update of billing_accounts failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + '.' + bplan + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Decreasung funds
+                        app.get('mongodb').collection('users').update({
+                            _id: new ObjectId(req.session.auth._id)
+                        }, {
+                            $inc: {
+                                billing_funds: -_bcost
+                            }
+                        }, function(err, result) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Decreasing funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking funds after decrement
+                        app.get('mongodb').collection('users').find({
+                            _id: new ObjectId(req.session.auth._id)
+                        }).toArray(function(err, users) {
+                            if (!users || !users.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Checking funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.funds = users[0].billing_funds;
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Checking days after increment
+                        app.get('mongodb').collection('billing_accounts').find({
+                            btype: 'd',
+                            baccount: baccount,
+                            bplan: bplan
+                        }).toArray(function(err, accounts) {
+                            if (!accounts || !accounts.length) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Checking billing account failed. User ID: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            account_data.days = accounts[0].bexp;
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Adding log record
+                        app.get('mongodb').collection('billing_transactions').insert({
+                            trans_type: 'domain_up',
+                            trans_obj: baccount + '.' + bplan,
+                            trans_timestamp: Date.now(),
+                            trans_sum: -_bcost,
+                            user_id: req.session.auth._id
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Insert into billing_transactions failed: ' + req.session.auth._id + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    }
+                ], function(err) {
+                    if (err && typeof err == 'string') logger.log('error', err);
+                    if (!err) rep.account = account_data;
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+        });
+    });
+
+    router.post('/ajax/domain/ns', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+                status: 1
+            },
+            baccount = req.body.baccount,
+            bplan = req.body.bplan,
+            bns0 = req.body.bns0 || '',
+            bns1 = req.body.bns1 || '',
+            bns0_ip = req.body.bns0_ip || '',
+            bns1_ip = req.body.bns1_ip || '';
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        // Validate fields
+        if (!baccount || typeof baccount != 'string' || !baccount.match(/^[a-z0-9\-]{2,63}$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'ns_username';
+            return res.send(JSON.stringify(rep));
+        }
+        baccount = baccount.toLowerCase();
+        if (!bns0 || typeof bns0 != 'string' || !bns0.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver");
+            rep.err_field = 'ns_ns0';
+            return res.send(JSON.stringify(rep));
+        }
+        if (!bns1 || typeof bns1 != 'string' || !bns1.match(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/)) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver");
+            rep.err_field = 'ns_ns1';
+            return res.send(JSON.stringify(rep));
+        }
+        if (bns0_ip && (typeof bns0_ip != 'string' || !bns0_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver_ip");
+            rep.err_field = 'ns_ns0_ip';
+            return res.send(JSON.stringify(rep));
+        }
+        if (bns1_ip && (typeof bns1_ip != 'string' || !bns1_ip.match(/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/))) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_nameserver_ip");
+            rep.err_field = 'ns_ns0_ip';
+            return res.send(JSON.stringify(rep));
+        }
+        // Validate fields
+        if (!bplan || typeof bplan != 'string') {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            return res.send(JSON.stringify(rep));
+        }
+        app.get('mongodb').collection('billing_conf').find({
+            $or: [{
+                conf: 'domains'
+            }]
+        }).toArray(function(err, db) {
+            var domains = [];
+            if (!err && db && db.length)
+                for (var i = 0; i < db.length; i++) {
+                    if (db[i].conf == 'domains' && db[i].data)
+                        try {
+                            domains = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                }
+            var _bplan, _bcost;
+            for (var hi in domains)
+                if (domains[hi].id == bplan) {
+                    _bplan = domains[hi].id;
+                    _bcost = domains[hi].up;
+                }
+            if (!_bplan) {
+                rep.status = 0;
+                rep.err_msg = i18nm.__("form_data_incorrect");
+                return res.send(JSON.stringify(rep));
+            }
+            app.get('mongodb').collection('billing_accounts').find({
+                baccount: baccount,
+                bplan: bplan,
+                btype: 'd',
+                buser: new ObjectId(req.session.auth._id)
+            }).toArray(function(err, accounts) {
+                if (err || !accounts || !accounts.length || accounts[0].buser != req.session.auth._id) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("domain_account_doesnt_exists");
+                    return res.send(JSON.stringify(rep));
+                }
+                var account = accounts[0];
+                if (account.bchanged && Date.now() - account.bchanged < 43200000) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("form_data_incorrect");
+                    return res.send(JSON.stringify(rep));
+                }
+                if (account.bns0 == bns0 && account.bns1 == bns1 && account.bns0_ip == bns0_ip && account.bns1_ip == bns1_ip) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("ns_unchanged");
+                    return res.send(JSON.stringify(rep));
+                }
+                // Validation is finished
+                async.series([
+                    function(callback) {
+                        // Trying to change domain NS
+                        var data = {
+                            ns0: bns0,
+                            ns1: bns1,
+                            ns0_ip: bns0_ip,
+                            ns1_ip: bns1_ip
+                        };
+                        domain_api.change_ns(baccount, bplan, data, function(api_data) {
+                            if (api_data.status != 1) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("domain_ns_change_error");
+                                return callback('[BILLING] API Request to change domain NS failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + ', error: ' + JSON.stringify(api_data.body));
+                            }
+                            callback();
+                        });
+                    },
+                    function(callback) {
+                        // Update the record in billing_accounts
+                        app.get('mongodb').collection('billing_accounts').update({
+                            btype: 'd',
+                            baccount: baccount,
+                            bplan: bplan
+                        }, {
+                            $set: {
+                                bchanged: Date.now()
+                            }
+                        }, function(err) {
+                            if (err) {
+                                rep.status = 0;
+                                rep.err_msg = i18nm.__("database_error");
+                                return callback('[BILLING] Update of billing_accounts failed. User ID: ' + req.session.auth._id + ', account: ' + baccount + '.' + bplan + ', error: ' + err);
+                            }
+                            callback();
+                        });
+                    }
+                ], function(err) {
+                    if (err && typeof err == 'string') logger.log('error', err);
                     return res.send(JSON.stringify(rep));
                 });
             });

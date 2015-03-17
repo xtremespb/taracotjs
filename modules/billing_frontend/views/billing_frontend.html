@@ -58,7 +58,7 @@
                     <th style="width:130px;text-align:center">
                         !{root.lang.__('expiration_date')}
                     </th>
-                    <th style="width:30px;text-align:center">
+                    <th style="width:60px;text-align:center">
                     </th>
                 </thead>
                 <tbody>
@@ -388,7 +388,7 @@
             </div>
             <div class="uk-margin-top uk-margin-bottom uk-panel uk-panel-box">
                 <p>
-                    <i class="uk-icon-info"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_hosting_add_cost">0</span>
+                    <i class="uk-icon-info-circle"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_hosting_add_cost">0</span>
                 </p>
             </div>
         </div>
@@ -420,7 +420,7 @@
             </div>
             <div class="uk-margin-top uk-margin-bottom uk-panel uk-panel-box">
                 <p>
-                    <i class="uk-icon-info"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_hosting_up_cost">0</span>
+                    <i class="uk-icon-info-circle"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_hosting_up_cost">0</span>
                 </p>
             </div>
         </div>
@@ -459,7 +459,8 @@
                     </div>
                 </div>
             </div>
-            <p>!{root.lang.__('name_servers')}&nbsp;<span class="taracot-red-asterisk">*</span></p>
+            <p>!{root.lang.__('name_servers')}&nbsp;<span class="taracot-red-asterisk">*</span>
+            </p>
             <div class="uk-accordion" data-uk-accordion>
                 <h3 class="uk-accordion-title">!{root.lang.__('default_ns')}</h3>
                 <div class="uk-accordion-content">!{root.lang.__('default_ns_hint')}</div>
@@ -491,13 +492,72 @@
             </div>
             <div class="uk-margin-top uk-margin-bottom uk-panel uk-panel-box">
                 <p>
-                    <i class="uk-icon-info"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_domain_add_cost">0</span>
+                    <i class="uk-icon-info-circle"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_domain_add_cost">0</span>
                 </p>
             </div>
         </div>
         <div class="uk-modal-footer">
             <button id="btn_domain_create" class="uk-button uk-button-success taracot-domain-add-btn"><span id="btn_domain_create_loading" style="display:none"><img src="/modules/billing_frontend/images/loading_16x16.gif" style="width:16px;height:16px;">&nbsp;</span>!{root.lang.__('regiser_domain_btn')}</button>&nbsp;
             <button class="uk-button uk-modal-close taracot-domain-add-btn">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
+<div class="uk-modal" id="dlg_domain_up">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h2>!{root.lang.__('renew_domain')}</h2>
+        </div>
+        <div class="uk-alert uk-alert-danger" style="display:none" id="domain_up_error"></div>
+        <p>
+            !{root.lang.__('dd_username')}: <span id="current_domain_up_info"></span>
+        </p>
+        <div class="uk-form">
+            <div class="uk-margin-top uk-margin-bottom uk-panel uk-panel-box">
+                <p>
+                    <i class="uk-icon-info-circle"></i>&nbsp;!{root.lang.__('total_cost_of_service')}: <span id="dlg_domain_up_cost">0</span>
+                </p>
+            </div>
+        </div>
+        <div class="uk-modal-footer">
+            <button id="btn_domain_account_update" class="uk-button uk-button-success taracot-domain-up-btn"><span id="btn_domain_account_update_loading" style="display:none"><img src="/modules/billing_frontend/images/loading_16x16.gif" style="width:16px;height:16px;">&nbsp;</span>!{root.lang.__('prolong')}</button>&nbsp;
+            <button class="uk-button uk-modal-close taracot-domain-up-btn">!{root.lang.__('cancel')}</button>
+        </div>
+    </div>
+</div>
+<div class="uk-modal" id="dlg_domain_ns">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h2>!{root.lang.__('ns_domain')}: <span id="dlg_domain_ns_domain"></span></h2>
+            <p>!{root.lang.__('ns_domain_hint')}</p>
+        </div>
+        <div class="uk-alert uk-alert-danger" style="display:none" id="domain_ns_error"></div>
+        <div class="uk-form">
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="ns_ns0">!{root.lang.__('ns_ns0')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="ns_ns0" class="uk-form-width-medium taracot-domain-ns-control">&nbsp;
+                    <input type="text" id="ns_ns0_ip" class="uk-form-width-small taracot-domain-ns-control" placeholder="!{root.lang.__('ns_ns_ip')}">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('ns_ns_hint')}
+                    </p>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="ns_ns1">!{root.lang.__('ns_ns1')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <input type="text" id="ns_ns1" class="uk-form-width-medium taracot-domain-ns-control">&nbsp;
+                    <input type="text" id="ns_ns1_ip" class="uk-form-width-small taracot-domain-ns-control" placeholder="!{root.lang.__('ns_ns_ip')}">
+                    <p class="uk-form-help-block">
+                        !{root.lang.__('ns_ns_hint')}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="uk-modal-footer">
+            <button id="btn_domain_ns" class="uk-button uk-button-success taracot-domain-ns-btn"><span id="btn_domain_ns_loading" style="display:none"><img src="/modules/billing_frontend/images/loading_16x16.gif" style="width:16px;height:16px;">&nbsp;</span>!{root.lang.__('update_ns_btn')}</button>&nbsp;
+            <button class="uk-button uk-modal-close taracot-domain-ns-btn">!{root.lang.__('cancel')}</button>
         </div>
     </div>
 </div>
@@ -511,7 +571,10 @@ var _lang_vars = {
         per_year: "!{root.lang.__('per_year')}",
         hosting_add_success: "!{root.lang.__('hosting_add_success')}",
         hosting_prolong_success: "!{root.lang.__('hosting_prolong_success')}",
-        domain_add_success: "!{root.lang.__('domain_add_success')}"
+        domain_add_success: "!{root.lang.__('domain_add_success')}",
+        renew_cost: "!{root.lang.__('renew_cost')}",
+        domain_prolong_success: "!{root.lang.__('domain_prolong_success')}",
+        domain_ns_success: "!{root.lang.__('domain_ns_success')}"
     },
     current_locale = "!{root.current_locale}",
     init_ns0 = "!{root.default_ns0}",
