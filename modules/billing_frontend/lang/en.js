@@ -334,6 +334,7 @@
 	"profile_save_success": "Profile data has been saved",
 	"unauth": "Unauthorized",
 	"invalid_request": "Invalid request",
+	"invalid_value": "Invalid payment value",
 	"database_error": "Cannot update database record, please try again later",
 	"trans_time": "Time",
 	"trans_type": "Transaction",
@@ -407,5 +408,10 @@
 	"ns_domain_hint": "Note: you can update name servers every 12 hours",
 	"domain_ns_success": "New name servers are set",
 	"domain_ns_change_error": "Error while sending NS change request",
-	"ns_unchanged": "Name servers are not changed"
+	"ns_unchanged": "Name servers are not changed",
+	"payment_sum": "Value",
+	"payment_sum_hint": "Example: 10.45",
+	"payment_sys": "Payment system",
+	"payment_sys_hint": "Choose the appropriate payment system",
+	"continue": "Continue"
 }

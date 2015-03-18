@@ -18,5 +18,9 @@
 	"module_misc": "Misc. parameters",
 	"billing_conf_misc_hint": "Please set additional parameters here.",
 	"par": "Parameter",
-	"currency": "Currency"
+	"currency": "Currency",
+	"module_payment": "Payment systems",
+	"payment_plan_id": "System ID",
+	"btn_payment_system_add": "Add payment system plugin",
+	"billing_conf_payment_hint": "Configure your payment system plugins available for user"
 }

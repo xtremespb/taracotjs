@@ -28,11 +28,14 @@ module.exports = function(app) {
                 conf: 'domains'
             }, {
                 conf: 'misc'
+            }, {
+                conf: 'payment'
             }]
         }).toArray(function(err, db) {
             var hosting = [],
                 domains = [],
-                misc = [];
+                misc = [],
+                payment = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'hosting' && db[i].data)
@@ -47,6 +50,10 @@ module.exports = function(app) {
                         try {
                             misc = JSON.parse(db[i].data);
                         } catch (ex) {}
+                    if (db[i].conf == 'payment' && db[i].data)
+                        try {
+                            payment = JSON.parse(db[i].data);
+                        } catch (ex) {}
                 }
             }
             var body = app.get('renderer').render_file(path.join(__dirname, 'views'), 'billing_conf_cp', {
@@ -54,6 +61,7 @@ module.exports = function(app) {
                 auth: req.session.auth,
                 hosting: JSON.stringify(hosting),
                 domains: JSON.stringify(domains),
+                payment: JSON.stringify(payment),
                 misc: JSON.stringify(misc),
                 current_locale: req.session.current_locale,
                 locales: JSON.stringify(app.get('config').locales.avail)
@@ -80,6 +88,8 @@ module.exports = function(app) {
             hosting_update = [],
             domains = req.body.domains,
             domains_update = [],
+            payment = req.body.payment,
+            payment_update = [],
             misc = req.body.misc,
             misc_update = [];
         if (hosting && util.isArray(hosting)) {
@@ -116,6 +126,22 @@ module.exports = function(app) {
                 }
             }
         }
+        if (payment && util.isArray(payment)) {
+            for (var p = 0; p < payment.length; p++) {
+                var pi = {};
+                if (payment[p].id && payment[p].id.match(/^[a-z0-9\-_]{1,50}$/i)) {
+                    pi.id = payment[p].id;
+                    for (l = 0; l < app.get('config').locales.avail.length; l++) {
+                        var lp = payment[p][app.get('config').locales.avail[l]];
+                        if (lp) {
+                            lp = lp.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
+                            pi[app.get('config').locales.avail[l]] = lp;
+                        }
+                    }
+                    payment_update.push(pi);
+                }
+            }
+        }
         if (misc && util.isArray(misc)) {
             for (var mi = 0; mi < misc.length; mi++) {
                 var uim = {};
@@ -142,6 +168,9 @@ module.exports = function(app) {
             }, {
                 conf: 'misc',
                 data: JSON.stringify(misc_update)
+            }, {
+                conf: 'payment',
+                data: JSON.stringify(payment_update)
             }], function(err) {
                 if (err) {
                     rep.status = 0;

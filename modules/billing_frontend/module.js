@@ -62,6 +62,11 @@ module.exports = function(app) {
     if (config.billing_frontend && config.billing_frontend.hosting_api) billing_api = require('./api/' + config.billing_frontend.hosting_api)(app);
     if (config.billing_frontend && config.billing_frontend.domain_api) domain_api = require('./api/' + config.billing_frontend.domain_api)(app);
     whois_api = require('./api/' + config.billing_frontend.whois_api)(app);
+    var payment_systems = config.billing_frontend.payment_api.replace(/\s/gm, '').split(/,/);
+    for (var ps in payment_systems) {
+        var _m = require(path.join(__dirname, 'api', payment_systems[ps]))(app);
+        if (_m) app.use('/customer/' + payment_systems[ps] + '/', _m);
+    }
     // Routing
     router.get('/', function(req, res) {
         if (!req.session.auth || req.session.auth.status < 1) {
@@ -78,10 +83,13 @@ module.exports = function(app) {
                 conf: 'domains'
             }, {
                 conf: 'misc'
+            }, {
+                conf: 'payment'
             }]
         }).toArray(function(err, db) {
             var hosting = [],
                 domains = [],
+                payment = [],
                 misc = [];
             if (!err && db && db.length) {
                 for (var i = 0; i < db.length; i++) {
@@ -92,6 +100,10 @@ module.exports = function(app) {
                     if (db[i].conf == 'domains' && db[i].data)
                         try {
                             domains = JSON.parse(db[i].data);
+                        } catch (ex) {}
+                    if (db[i].conf == 'payment' && db[i].data)
+                        try {
+                            payment = JSON.parse(db[i].data);
                         } catch (ex) {}
                     if (db[i].conf == 'misc' && db[i].data)
                         try {
@@ -127,6 +139,7 @@ module.exports = function(app) {
                         hosting: JSON.stringify(hosting),
                         domains: JSON.stringify(domains),
                         accounts: JSON.stringify(accounts),
+                        payment: JSON.stringify(payment),
                         misc: JSON.stringify(misc),
                         funds: req.session.auth.billing_funds || 0,
                         profile_data: JSON.stringify(req.session.auth.profile_data || {}),
@@ -1257,6 +1270,65 @@ module.exports = function(app) {
                     if (err && typeof err == 'string') logger.log('error', err);
                     return res.send(JSON.stringify(rep));
                 });
+            });
+        });
+    });
+
+    router.post('/ajax/payment/do', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+                status: 1
+            },
+            sum = req.body.sum,
+            sys = req.body.sys;
+        // Check authorization
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        // Validate fields
+        if (!sys || typeof sys != 'string') {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'payment_sys';
+            return res.send(JSON.stringify(rep));
+        }
+        if (typeof sum == 'undefined' || !sum.match(/^[0-9\.]+$/) || parseFloat(sum).isNaN || parseFloat(sum) < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("invalid_value");
+            rep.err_field = 'payment_sum';
+            return res.send(JSON.stringify(rep));
+        }
+        sum = parseFloat(sum);
+        // Get unique order ID
+        app.get('mongodb').collection('counters').findAndModify({
+            _id: 'billing_payment'
+        }, [], {
+            $inc: {
+                seq: 1
+            }
+        }, {
+            new: true
+        }, function(err, counters) {
+            var order_id;
+            if (err || !counters || !counters.seq) order_id = Date.now();
+            if (counters.seq) order_id = counters.seq;
+            // Insert a new order into warehouse_orders collection
+            app.get('mongodb').collection('billing_payment').insert({
+                user_id: req.session.auth._id,
+                order_id: order_id,
+                order_timestamp: Date.now(),
+                order_status: 0,
+                order_sum: sum
+            }, function(err) {
+                if (err) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("database_error");
+                    return res.send(JSON.stringify(rep));
+                }
+                rep.inv = order_id;
+                return res.send(JSON.stringify(rep));
             });
         });
     });

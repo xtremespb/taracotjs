@@ -5,6 +5,8 @@
     </li>
     <li><a href="">!{root.lang.__('module_domains')}</a>
     </li>
+    <li><a href="">!{root.lang.__('module_payment')}</a>
+    </li>
     <li><a href="">!{root.lang.__('module_misc')}</a>
     </li>
 </ul>
@@ -43,6 +45,21 @@
         </table>
     </li>
     <li>
+        <div class="uk-margin-top">!{root.lang.__('billing_conf_payment_hint')}</div>
+        <div class="uk-margin-top uk-margin-bottom">
+            <button id="btn_payment_add" class="uk-button uk-button-small"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_payment_system_add')}</button>
+        </div>
+        <table class="uk-table uk-margin-top" id="billing_conf_payment">
+            <thead>
+                <tr id="billing_conf_payment_th">
+                    <th style="width:150px">!{root.lang.__('payment_plan_id')}</th>
+                </tr>
+            </thead>
+            <tbody id="billing_conf_payment_tb">
+            </tbody>
+        </table>
+    </li>
+    <li>
         <div class="uk-margin-top">!{root.lang.__('billing_conf_misc_hint')}</div>
         <table class="uk-table uk-margin-top" id="billing_conf_misc">
             <thead>
@@ -60,26 +77,30 @@
 </div>
 <script>
 var _lang_vars = {
-    ajax_failed: "!{root.lang.__('ajax_failed')}",
-    save_success: "!{root.lang.__('save_success')}",
-    confirm_delete_descitem: "!{root.lang.__('confirm_delete_descitem')}"
-};
-var locales = !{
-    root.locales
-};
-var init_hosting = !{
-    root.hosting
-};
-var init_domains = !{
-    root.domains
-};
-var init_misc = !{
-    root.misc
-};
-var current_locale = "!{root.current_locale}";
+        ajax_failed: "!{root.lang.__('ajax_failed')}",
+        save_success: "!{root.lang.__('save_success')}",
+        confirm_delete_descitem: "!{root.lang.__('confirm_delete_descitem')}"
+    },
+    locales = !{
+        root.locales
+    },
+    init_hosting = !{
+        root.hosting
+    },
+    init_domains = !{
+        root.domains
+    },
+    init_payment = !{
+        root.payment
+    },
+    init_misc = !{
+        root.misc
+    },
+    current_locale = "!{root.current_locale}";
 for (var i = 0; i < locales.length; i++) {
     $('#billing_conf_hosting_th').append('<th>' + locales[i] + '</th>');
     $('#billing_conf_misc_th').append('<th>' + locales[i] + '</th>');
+    $('#billing_conf_payment_th').append('<th>' + locales[i] + '</th>');
 }
 var misc_pars = ["!{root.lang.__('currency')}"];
 for (var mp = 0; mp < misc_pars.length; mp++) {
@@ -91,8 +112,10 @@ for (var mp = 0; mp < misc_pars.length; mp++) {
 
 $('#billing_conf_hosting_th').append('<th style="width:100px"></th>');
 $('#billing_conf_domains_th').append('<th style="width:100px"></th>');
+$('#billing_conf_payment_th').append('<th style="width:100px"></th>');
 $('#billing_conf_hosting').hide();
 $('#billing_conf_domains').hide();
+$('#billing_conf_payment').hide();
 </script>
 <script src="/js/jquery.medved.loading.js"></script>
 <script src="/js/uikit/addons/sortable.min.js"></script>

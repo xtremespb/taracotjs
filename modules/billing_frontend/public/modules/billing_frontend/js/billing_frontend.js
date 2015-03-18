@@ -634,6 +634,63 @@ var btn_domain_ns_handler = function() {
     });
 };
 
+var btn_billing_payment_save_handler = function() {
+    $('#payment_error').hide();
+    $('.taracot-form-payment-control').each(function() {
+        $(this).removeClass('uk-form-danger');
+    });
+    var errors = [],
+        payment_sum = $.trim($('#payment_sum').val()),
+        payment_sys = $('#payment_sys').val();
+    if (typeof payment_sum == 'undefined' || parseFloat(payment_sum).isNaN || !payment_sum.match(/^[0-9\.]+$/) || parseFloat(payment_sum) < 1) errors.push('#payment_sum');
+    if (errors.length) {
+        $(errors[0]).focus();
+        var err_msg = _lang_vars.form_contains_errors + ' (',
+            err_labels = [];
+        for (var error in errors) {
+            $(errors[error]).addClass('uk-form-danger');
+            err_labels.push('"' + $(errors[error]).parent().parent().find('label').text().replace(/\*/, '').trim() + '"');
+        }
+        err_msg += err_labels.join(', ') + ')';
+        $('#payment_error').html(err_msg);
+        $('#payment_error').fadeIn(500);
+        return;
+    }
+    $('#btn_billing_payment_save').attr('disabled', true);
+    $('#btn_billing_payment_save_loading').show();
+    $.ajax({
+        type: 'POST',
+        url: '/customer/ajax/payment/do',
+        data: {
+            sum: payment_sum,
+            sys: payment_sys
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                location.href = '/customer/' + payment_sys + '/invoice/' + data.inv;
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                if (data.err_field) {
+                    $('#' + data.err_field).addClass('uk-form-danger');
+                    $('#' + data.err_field).focus();
+                }
+                $('#payment_error').html(msg);
+                $('#payment_error').fadeIn(500);
+                $('#btn_billing_payment_save').attr('disabled', false);
+                $('#btn_billing_payment_save_loading').hide();
+            }
+        },
+        error: function() {
+            $('#payment_error').html(_lang_vars.ajax_failed);
+            $('#payment_error').fadeIn(500);
+            $('#btn_billing_payment_save').attr('disabled', false);
+            $('#btn_billing_payment_save_loading').hide();
+        }
+    });
+};
+
 /*******************************************************************
 
  document.ready
@@ -652,6 +709,8 @@ $(document).ready(function() {
         $('#dh_plan').append('<option value="' + init_hosting[sp].id + '">' + init_hosting[sp][current_locale] + ' (' + init_hosting[sp].price + ' ' + init_misc_hash.currency + ' ' + _lang_vars.per_month + ')</option>');
     for (var sd in init_domains)
         $('#dd_plan').append('<option value="' + init_domains[sd].id + '">' + init_domains[sd].id.toUpperCase() + ' (' + init_domains[sd].reg + ' ' + init_misc_hash.currency + ' ' + _lang_vars.per_year + ')</option>');
+    for (var ps in init_payment)
+        $('#payment_sys').append('<option value="' + init_payment[ps].id + '">' + init_payment[ps][current_locale] + '</option>');
     for (var ai in init_accounts) {
         var btn_host_up = '<button class="uk-button uk-button-mini uk-button-success taracot-btn-hosting-up" id="_ha_' + init_accounts[ai].baccount + '_' + init_accounts[ai].bplan + '"><i class="uk-icon-plus"></i></button>';
         if (init_accounts[ai].btype == 'h') {
@@ -692,6 +751,12 @@ $(document).ready(function() {
     });
     if ($('#birth_date').val())
         $('#birth_date').val(moment($('#birth_date').val(), 'DD.MM.YYYY').format(billing_date_format));
+    $('.taracot-form-payment-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+    });
+    $('#btn_billing_payment_save').attr('disabled', false);
+    $('#btn_billing_payment_save_loading').hide();
     // Set handlers
     $('#btn_billing_profile_save').click(btn_billing_profile_save_handler);
     $('#btn_hosting_add').click(btn_hosting_add_handler);
@@ -707,6 +772,7 @@ $(document).ready(function() {
     $('#btn_domain_account_update').click(btn_domain_account_update_handler);
     $('.taracot-btn-domain-ns').click(taracot_btn_domain_ns_handler);
     $('#btn_domain_ns').click(btn_domain_ns_handler);
+    $('#btn_billing_payment_save').click(btn_billing_payment_save_handler);
     // Bind Enter key
     $('.taracot-hosting-add-control').bind('keypress', function(e) {
         if (submitOnEnter(e) && $('#btn_hosting_account_create').is(':enabled'))

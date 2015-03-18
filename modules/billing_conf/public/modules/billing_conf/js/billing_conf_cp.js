@@ -27,6 +27,20 @@ $('#btn_domains_add').click(function() {
     });
 });
 
+$('#btn_payment_add').click(function() {
+    var tr = '<tr class="uk-form"><td><input type="text" class="uk-width-1-1"></td>';
+    for (var i = 0; i < locales.length; i++) tr += '<td><input type="text" class="uk-width-1-1"></td>';
+    tr += '<td style="width:40px"><button class="uk-button uk-button-danger taracot-billing_conf-payment-delete"><i class="uk-icon-trash-o"></i></button>&nbsp;<button class="uk-button taracot-btn-payment-sort"><i class="uk-icon uk-icon-unsorted"></i></button></td></tr>';
+    $('#billing_conf_payment_tb').append(tr);
+    $('.taracot-billing_conf-payment-delete').unbind();
+    $('.taracot-billing_conf-payment-delete').click(btn_taracot_payment_delete_handler);
+    $('#billing_conf_payment').show();
+    UIkit.sortable($('#billing_conf_payment_tb'), {
+        dragCustomClass: 'uk-form',
+        handleClass: 'taracot-btn-payment-sort'
+    });
+});
+
 var btn_taracot_hosting_delete_handler = function() {
     if (confirm(_lang_vars.confirm_delete_descitem)) $(this).parent().parent().remove();
     if ($('#billing_conf_hosting tr').length > 1) {
@@ -45,6 +59,15 @@ var btn_taracot_domains_delete_handler = function() {
     }
 };
 
+var btn_taracot_payment_delete_handler = function() {
+    if (confirm(_lang_vars.confirm_delete_descitem)) $(this).parent().parent().remove();
+    if ($('#billing_conf_payment tr').length > 1) {
+        $('#billing_conf_payment').show();
+    } else {
+        $('#billing_conf_payment').hide();
+    }
+};
+
 var taracot_billing_colitem_del_handler = function() {
     $(this).parent().parent().remove();
 };
@@ -53,6 +76,7 @@ $('#btn_save').click(function() {
     $.loadingIndicator('show');
     var hosting = _get_hosting_array(),
         domains = _get_domains_array(),
+        payment = _get_payment_array(),
         misc = _get_misc_array();
     $.ajax({
         type: 'POST',
@@ -60,6 +84,7 @@ $('#btn_save').click(function() {
         data: {
             hosting: hosting,
             domains: domains,
+            payment: payment,
             misc: misc
         },
         dataType: "json",
@@ -131,6 +156,24 @@ var _get_domains_array = function() {
     return domains;
 };
 
+var _get_payment_array = function() {
+    var payment = [],
+        _cnt = 0,
+        _ai = {};
+    $('#billing_conf_payment_tb  > tr > td').each(function() {
+        if (_cnt === 0) _ai.id = $(this).children().first().val();
+        if (_cnt > 0 && _cnt <= locales.length) _ai[locales[_cnt - 1]] = $(this).children().first().val();
+        if (_cnt > locales.length) {
+            payment.push(_ai);
+            _cnt = 0;
+            _ai = {};
+            return;
+        }
+        _cnt++;
+    });
+    return payment;
+};
+
 var _get_misc_array = function() {
     var misc = [],
         _cnt = 0,
@@ -159,6 +202,8 @@ $(document).ready(function() {
         for (var s = 0; s < init_hosting.length; s++) $('#btn_hosting_add').click();
     if (init_domains)
         for (var d = 0; d < init_domains.length; d++) $('#btn_domains_add').click();
+    if (init_payment)
+        for (var p = 0; p < init_payment.length; p++) $('#btn_payment_add').click();
     var _cnt = 0,
         _gc = 0;
     $('#billing_conf_hosting_tb  > tr > td').each(function() {
@@ -196,9 +241,26 @@ $(document).ready(function() {
     });
     _cnt = 0;
     _gc = 0;
+    $('#billing_conf_payment_tb  > tr > td').each(function() {
+        var _ai = init_payment[_gc];
+        if (_ai) {
+            if (!_ai.price) _ai.price = '';
+            if (_cnt === 0) $(this).children().first().val(_ai.id);
+            if (_cnt > 0 && _cnt <= locales.length) $(this).children().first().val(_ai[locales[_cnt - 1]]);
+        }
+        if (_cnt > locales.length) {
+            _cnt = 0;
+            _gc++;
+            return;
+        }
+        _cnt++;
+    });
+    _cnt = 0;
+    _gc = 0;
     $('#billing_conf_misc_tb  > tr > td').each(function() {
         var _ai = init_misc[_gc];
-        if (_ai) if (_cnt > 0 && _cnt <= locales.length) $(this).children().first().val(_ai[locales[_cnt - 1]]);
+        if (_ai)
+            if (_cnt > 0 && _cnt <= locales.length) $(this).children().first().val(_ai[locales[_cnt - 1]]);
         if (_cnt > locales.length) {
             _cnt = 0;
             _gc++;
