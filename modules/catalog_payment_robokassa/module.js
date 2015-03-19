@@ -77,7 +77,8 @@ module.exports = function(app) {
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
         app.get('mongodb').collection('warehouse_orders').find({
-            order_id: InvId
+            order_id: InvId,
+            order_status: 0
         }, {
             limit: 1
         }).toArray(function(err, items) {

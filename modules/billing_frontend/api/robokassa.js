@@ -78,14 +78,15 @@ module.exports = function(app) {
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
         app.get('mongodb').collection('billing_payment').find({
-            order_id: InvId
+            order_id: InvId,
+            order_status: 0
         }, {
             limit: 1
         }).toArray(function(err, items) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
                 signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
-            if (signature != SignatureValue) return res.send("Invalid signature");
+            if (signature != SignatureValue) return res.send("Invalid signature " + signature);
             app.get('mongodb').collection('billing_payment').update({
                     order_id: InvId
                 }, {
@@ -96,7 +97,7 @@ module.exports = function(app) {
                 function(err) {
                     if (err) return res.send("Cannot update billing_payment collection");
                     app.get('mongodb').collection('users').update({
-                            user: new ObjectId(items[0]._id)
+                            _id: new ObjectId(order.user_id)
                         }, {
                             $inc: {
                                 billing_funds: order.order_sum
@@ -130,7 +131,7 @@ module.exports = function(app) {
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         // Redirect if wrong language loaded
-        if (req.session.catalog_redirect_host && req.session.catalog_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.catalog_redirect_host + '/api/catalog_payment/success?OutSum=' + OutSum + '&InvId=' + InvId + '&SignatureValue=' + SignatureValue);
+        if (req.session.billing_frontend_payment_redirect_host && req.session.billing_frontend_payment_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.billing_frontend_payment_redirect_host + '/customer/robokassa/success?rnd=' + Math.random().toString().replace('.', ''));
         var render_data = {
             title: i18nm.__('payment'),
             current_lang: req.session.current_locale,
@@ -185,7 +186,7 @@ module.exports = function(app) {
 
     router.all('/fail', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
-        if (req.session.catalog_redirect_host && req.session.catalog_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.catalog_redirect_host + '/api/catalog_payment/fail');
+        if (req.session.billing_frontend_payment_redirect_host && req.session.billing_frontend_payment_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.billing_frontend_payment_redirect_host + '/customer/robokassa/fail?rnd=' + Math.random().toString().replace('.', ''));
         var render_data = {
             title: i18nm.__('payment'),
             current_lang: req.session.current_locale,
