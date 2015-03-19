@@ -51,12 +51,12 @@ module.exports = function(grunt) {
         uglify: {
             module_auth_cp: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/jquery.placeholder.js', 'modules/auth/public/modules/auth/js/auth_cp.js' ]
+                    'modules/auth/public/modules/auth/js/auth_cp.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/tooltip.min.js', 'public/js/jquery.placeholder.js', 'modules/auth/public/modules/auth/js/auth_cp.js' ]
                 }
             },
             module_auth_user: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_user.min.js': [ 'modules/auth/public/modules/auth/js/auth_user.js', 'public/js/helper.js' ]
+                    'modules/auth/public/modules/auth/js/auth_user.min.js': [ 'modules/auth/public/modules/auth/js/auth_user.js', 'public/js/helper.js', 'public/js/uikit/addons/tooltip.min.js' ]
                 }
             },
             module_auth_password: {
@@ -66,12 +66,12 @@ module.exports = function(grunt) {
             },
             module_auth_register: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_register.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'modules/auth/public/modules/auth/js/register.js' ]
+                    'modules/auth/public/modules/auth/js/auth_register.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/pwd.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/auth/public/modules/auth/js/register.js' ]
                 }
             },
             module_auth_reset: {
                 files: {
-                    'modules/auth/public/modules/auth/js/auth_reset.min.js': [ 'public/js/helper.js', 'modules/auth/public/modules/auth/js/reset.js' ]
+                    'modules/auth/public/modules/auth/js/auth_reset.min.js': [ 'public/js/helper.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/auth/public/modules/auth/js/reset.js' ]
                 }
             },
             module_auth_profile: {
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
             },
             admin: {
                 files: {
-                    'public/js/admin.min.js': [ 'public/js/json2.js', 'public/js/jquery.min.js', 'public/js/jquery.history.min.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/uikit.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/helper.js' ]
+                    'public/js/admin.min.js': [ 'public/js/json2.js', 'public/js/jquery.min.js', 'public/js/jquery.history.min.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/uikit.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/uikit/addons/tooltip.min.js', 'public/js/helper.js' ]
                 }
             },
             module_files: {
@@ -116,7 +116,7 @@ module.exports = function(grunt) {
             },
             module_browse: {
                 files: {
-                    'modules/browse/public/modules/browse/js/browse.min.js': 'modules/browse/public/modules/browse/js/main.js'
+                    'modules/browse/public/modules/browse/js/browse.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'modules/browse/public/modules/browse/js/main.js' ]
                 }
             },
             module_settings: {
@@ -151,7 +151,7 @@ module.exports = function(grunt) {
             },
             module_blog_post: {
                 files: {
-                    'modules/blog/public/modules/blog/js/blog_post.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/wysibb/jquery.wysibb.min.js', 'public/js/helper.js', 'modules/blog/public/modules/blog/js/blog_post.js' ]
+                    'modules/blog/public/modules/blog/js/blog_post.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/wysibb/jquery.wysibb.min.js', 'public/js/helper.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/blog/public/modules/blog/js/blog_post.js' ]
                 }
             },
             module_blog_cp: {
@@ -161,42 +161,42 @@ module.exports = function(grunt) {
             },
             module_blog_view: {
                 files: {
-                    'modules/blog/public/modules/blog/js/blog_view.min.js': [ 'public/js/jquery.medved.loading.js', 'modules/blog/public/modules/blog/js/blog_comment.js' ]
+                    'modules/blog/public/modules/blog/js/blog_view.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/blog/public/modules/blog/js/blog_comment.js' ]
                 }
             },
             module_social: {
                 files: {
-                    'modules/social/public/modules/social/js/social.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/jquery.history.min.js', 'public/js/moment.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/social/public/modules/social/js/jquery.typing.min.js', 'modules/social/public/modules/social/js/social.js' ]
+                    'modules/social/public/modules/social/js/social.min.js': [ 'public/js/jquery.medved.loading.js', 'public/js/uikit/addons/tooltip.min.js', 'public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/jquery.history.min.js', 'public/js/moment.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/social/public/modules/social/js/jquery.typing.min.js', 'modules/social/public/modules/social/js/social.js' ]
                 }
             },
             module_catalog_frontend: {
                 files: {
-                    'modules/catalog/public/modules/catalog/js/frontend.min.js': [ 'public/js/helper.js', 'modules/catalog/public/modules/catalog/js/frontend.js' ]
+                    'modules/catalog/public/modules/catalog/js/frontend.min.js': [ 'public/js/helper.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/catalog/public/modules/catalog/js/frontend.js' ]
                 }
             },
             module_catalog_frontend_cart: {
                 files: {
-                    'modules/catalog/public/modules/catalog/js/frontend_cart.min.js': [ 'modules/catalog/public/modules/catalog/js/frontend_cart.js' ]
+                    'modules/catalog/public/modules/catalog/js/frontend_cart.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'modules/catalog/public/modules/catalog/js/frontend_cart.js' ]
                 }
             },
             module_catalog_frontend_checkout: {
                 files: {
-                    'modules/catalog/public/modules/catalog/js/frontend_checkout.min.js': [ 'modules/catalog/public/modules/catalog/js/frontend_checkout.js' ]
+                    'modules/catalog/public/modules/catalog/js/frontend_checkout.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'modules/catalog/public/modules/catalog/js/frontend_checkout.js' ]
                 }
             },
             module_catalog_frontend_item: {
                 files: {
-                    'modules/catalog/public/modules/catalog/js/frontend_item.min.js': [ 'public/js/magnific/magnific.min.js', 'modules/catalog/public/modules/catalog/js/frontend_item.js' ]
+                    'modules/catalog/public/modules/catalog/js/frontend_item.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'public/js/magnific/magnific.min.js', 'modules/catalog/public/modules/catalog/js/frontend_item.js' ]
                 }
             },
             module_catalog_frontend_orders: {
                 files: {
-                    'modules/catalog/public/modules/catalog/js/frontend_orders.min.js': [ 'public/js/helper.js', 'public/js/jquery.history.min.js', 'modules/catalog/public/modules/catalog/js/frontend_orders.js' ]
+                    'modules/catalog/public/modules/catalog/js/frontend_orders.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'public/js/helper.js', 'public/js/jquery.history.min.js', 'modules/catalog/public/modules/catalog/js/frontend_orders.js' ]
                 }
             },
             module_catalog_orders: {
                 files: {
-                    'modules/catalog_orders/public/modules/catalog_orders/js/catalog_orders.min.js': [ 'modules/catalog_orders/public/modules/catalog_orders/js/main.js' ]
+                    'modules/catalog_orders/public/modules/catalog_orders/js/catalog_orders.min.js': [ 'public/js/uikit/addons/tooltip.min.js', 'modules/catalog_orders/public/modules/catalog_orders/js/main.js' ]
                 }
             },
             module_warehouse: {
@@ -221,7 +221,7 @@ module.exports = function(grunt) {
             },
             feedback    : {
                 files: {
-                    'modules/feedback/public/modules/feedback/js/feedback.min.js': [ 'public/js/helper.js', 'modules/feedback/public/modules/feedback/js/main.js' ]
+                    'modules/feedback/public/modules/feedback/js/feedback.min.js': [ 'public/js/helper.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/feedback/public/modules/feedback/js/main.js' ]
                 }
             }
         }
