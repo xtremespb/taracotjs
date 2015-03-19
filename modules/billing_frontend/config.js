@@ -9,6 +9,7 @@ var config = {
         "default_ns1": "ns2.re-hash.org",
         "default_ns0_ip": "",
         "default_ns1_ip": "",
+        "hosting_panel_url": "https://cp.re-hash.org/ispmgr",
         "ispmanager": {
             "url": "https://cp.re-hash.org/ispmgr",
             "login": "",

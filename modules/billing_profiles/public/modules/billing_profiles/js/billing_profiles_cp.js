@@ -24,7 +24,6 @@ var profile_validation = {
     },
     profile_validation_org = {
         'org_r': 1,
-        'org': 1,
         'code': 1,
         'kpp': 1
     },
@@ -164,7 +163,7 @@ var btn_profile_save_handler = function() {
             // Validate organziation (RU/SU-related) fields
             if (profile_validation_org[id]) {
                 _f = 1;
-                if ($.trim($('#org_r').val()) || $.trim($('#org').val()) || $.trim($('#code').val()) || $.trim($('#kpp').val()))
+                if ($.trim($('#org_r').val()) || $.trim($('#code').val()) || $.trim($('#kpp').val()))
                     if (val && val.match(profile_validation[id])) {
                         profile_data[id] = val;
                     } else {
@@ -190,6 +189,16 @@ var btn_profile_save_handler = function() {
                     } else {
                         errors.push('#' + id);
                     }
+            }
+            // Organization
+            if (id == 'org') {
+                _f = 1;
+                if (val || $.trim($('#org_r').val()));
+                if (val.match(profile_validation[id])) {
+                    profile_data[id] = val;
+                } else {
+                    errors.push('#' + id);
+                }
             }
             // Validate other fields
             if (!_f)
@@ -307,6 +316,8 @@ var edit_item = function(id) {
                             var id = $(this).attr('id');
                             if (data.account.profile_data[id]) $('#' + id).val(data.account.profile_data[id]);
                         });
+                    if ($('#birth_date').val())
+                        $('#birth_date').val(moment($('#birth_date').val(), 'DD.MM.YYYY').format(billing_date_format));
                     render_transactions(data.account.transactions);
                     $('#bfunds').focus();
                 }
@@ -358,7 +369,7 @@ var btn_trans_edit_handler = function() {
     });
     $('#trans_error').hide();
     $.loadingIndicator('show');
-     $.ajax({
+    $.ajax({
         type: 'POST',
         url: '/cp/billing_profiles/data/load_transaction',
         data: {
@@ -405,7 +416,7 @@ var btn_trans_del_handler = function() {
     var id = $(this).attr('id').replace(/btn_trans_del_/, '');
     if (!confirm(_lang_vars.trans_delete_confirm + "\n\n" + $(this).parent().parent().children('td').eq(1).html())) return;
     $.loadingIndicator('show');
-     $.ajax({
+    $.ajax({
         type: 'POST',
         url: '/cp/billing_profiles/data/delete_transaction',
         data: {
@@ -452,7 +463,10 @@ var render_transactions = function(data) {
         for (var ti in data) {
             var badge = '<div class="uk-badge uk-badge-notification uk-badge-success billing-trans-badge"><i class="uk-icon-plus"></i></div>',
                 trans = transactions_i18n[data[ti].trans_type];
-            if (data[ti].trans_sum <= 0) badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+            if (data[ti].trans_sum <= 0) {
+                badge = '<div class="uk-badge uk-badge-notification uk-badge-danger billing-trans-badge"><i class="uk-icon-minus"></i></div>';
+                data[ti].trans_sum = -data[ti].trans_sum;
+            }
             if (data[ti].trans_obj) trans += ' (' + data[ti].trans_obj + ')';
             $('#table_transactions > tbody').append('<tr><td>' + moment(data[ti].trans_timestamp).format(billing_date_format + ' ' + billing_time_format) + '</td><td>' + trans + '</td><td>' + badge + '&nbsp;' + data[ti].trans_sum + ' ' + current_currency + '</td><td style="text-align:center"><button class="uk-button uk-button-mini taracot-btn-trans-edit" id="btn_trans_edit_' + data[ti]._id + '"><i class="uk-icon-pencil"></i></button>&nbsp;<button class="uk-button uk-button-mini uk-button-danger taracot-btn-trans-del" id="btn_trans_del_' + data[ti]._id + '"><i class="uk-icon-remove"></i></button></td></tr>');
         }

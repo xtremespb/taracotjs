@@ -41,3 +41,6 @@
 .dlg_hosting_up_info {
 	font-weight: bold;
 }
+.uk-tab > li > a {
+	color: #666;
+}

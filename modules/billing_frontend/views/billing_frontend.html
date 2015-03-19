@@ -9,25 +9,25 @@
 </div>
 <ul class="uk-tab uk-margin-top" data-uk-tab="{connect:'#taracot_billing_tabs'}">
     <li>
-        <a href="" data-uk-tooltip="{delay:500,pos:'bottom-left'}" title="!{root.lang.__('hosting_accounts_hint')}">!{root.lang.__('hosting')}</a>
+        <a href="" data-uk-tooltip="{delay:1500,pos:'bottom-left'}" title="!{root.lang.__('hosting_accounts_hint')}"><i class="uk-icon-cube"></i>&nbsp;!{root.lang.__('hosting')}</a>
     </li>
     <li>
-        <a href="" data-uk-tooltip="{delay:500,pos:'bottom-left'}" title="!{root.lang.__('domain_names_hint')}">!{root.lang.__('domains')}</a>
+        <a href="" data-uk-tooltip="{delay:1500,pos:'bottom-left'}" title="!{root.lang.__('domain_names_hint')}"><i class="uk-icon-globe"></i>&nbsp;!{root.lang.__('domains')}</a>
     </li>
     <li>
-        <a href="" data-uk-tooltip="{delay:500,pos:'bottom-left'}" title="!{root.lang.__('customer_profile_hint')}">!{root.lang.__('profile')}</a>
+        <a href="" data-uk-tooltip="{delay:1500,pos:'bottom-left'}" title="!{root.lang.__('customer_profile_hint')}"><i class="uk-icon-user"></i>&nbsp;!{root.lang.__('profile')}</a>
     </li>
     <li>
-        <a href="" data-uk-tooltip="{delay:500,pos:'bottom-left'}" title="!{root.lang.__('payment_hint')}">!{root.lang.__('payment')}</a>
+        <a href="" data-uk-tooltip="{delay:1500,pos:'bottom-left'}" title="!{root.lang.__('payment_hint')}"><i class="uk-icon-credit-card"></i>&nbsp;!{root.lang.__('payment')}</a>
     </li>
     <li>
-        <a href="" data-uk-tooltip="{delay:500,pos:'bottom-left'}" title="!{root.lang.__('transaction_history_hint')}">!{root.lang.__('history')}</a>
+        <a href="" data-uk-tooltip="{delay:1500,pos:'bottom-left'}" title="!{root.lang.__('transaction_history_hint')}"><i class="uk-icon-history"></i>&nbsp;!{root.lang.__('history')}</a>
     </li>
 </ul>
 <ul id="taracot_billing_tabs" class="uk-panel uk-panel-box uk-switcher taracot_billing_tabs_panel">
     <li>
         <button class="uk-button uk-button-small uk-button-success" id="btn_hosting_add"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_hosting_add')}</button>
-        <div class="uk-margin-top">
+        <div class="uk-margin-top uk-overflow-container">
             <table class="uk-table uk-table-striped uk-table-hover" id="taracot_billing_table_hosting">
                 <thead>
                     <th>
@@ -49,7 +49,7 @@
     </li>
     <li>
         <button class="uk-button uk-button-small uk-button-success" id="btn_domain_add"><i class="uk-icon-plus"></i>&nbsp;!{root.lang.__('btn_domain_add')}</button>
-        <div class="uk-margin-top">
+        <div class="uk-margin-top uk-overflow-container">
             <table class="uk-table uk-table-striped uk-table-hover" id="taracot_billing_table_domains">
                 <thead>
                     <th>
@@ -343,7 +343,7 @@
         </div>
     </li>
     <li>
-        <div>
+        <div class="uk-overflow-container">
             <table class="uk-table uk-table-striped uk-table-hover" id="taracot_billing_table_transactions">
                 <thead>
                     <th style="width:150px">

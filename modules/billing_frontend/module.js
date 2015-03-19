@@ -23,7 +23,6 @@ var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR
     },
     profile_validation_org = {
         'org_r': 1,
-        'org': 1,
         'code': 1,
         'kpp': 1
     },
@@ -42,6 +41,7 @@ module.exports = function(app) {
         async = require('async'),
         renderer = app.get('renderer'),
         moment = require('moment'),
+        mailer = app.get('mailer'),
         logger = app.get('logger'),
         config = app.get('config'),
         ObjectId = require('mongodb').ObjectID,
@@ -200,7 +200,7 @@ module.exports = function(app) {
             // Validate organziation (RU/SU-related) fields
             if (profile_validation_org[fid]) {
                 _f = 1;
-                if (profile_data.org_r || profile_data.code || profile_data.org || profile_data.kpp) {
+                if (profile_data.org_r || profile_data.code || profile_data.kpp) {
                     if (val && val.match(profile_validation[fid])) {
                         profile_update[fid] = val;
                     } else {
@@ -223,6 +223,19 @@ module.exports = function(app) {
                     rep.err_field = profile_fields[pf];
                     return res.send(JSON.stringify(rep));
                 }
+            }
+            // Organization
+            if (fid == 'org') {
+                _f = 1;
+                if (val || profile_data.org_r)
+                    if (val.match(profile_validation[fid])) {
+                        profile_update[fid] = val;
+                    } else {
+                        rep.status = 0;
+                        rep.err_msg = i18nm.__("form_data_incorrect");
+                        rep.err_field = profile_fields[pf];
+                        return res.send(JSON.stringify(rep));
+                    }
             }
             // Fax
             if (fid == 'fax') {
@@ -480,8 +493,21 @@ module.exports = function(app) {
                     }
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
-                    if (!err) rep.account = account_data;
-                    return res.send(JSON.stringify(rep));
+                    if (!err) {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            username: baccount,
+                            password: bpwd,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            days: bexp_add * 30,
+                            subj: i18nm.__('mail_hosting_add')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_add_html', 'mail_hosting_add_txt', mail_data, req);
+                    }
+                    res.send(JSON.stringify(rep));
+                    return;
                 });
             });
         });
@@ -695,8 +721,20 @@ module.exports = function(app) {
                     }
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
-                    if (!err) rep.account = account_data;
-                    return res.send(JSON.stringify(rep));
+                    if (!err) {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            username: baccount,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            days: bexp_add * 30,
+                            subj: i18nm.__('mail_hosting_up')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_up_html', 'mail_hosting_up_txt', mail_data, req);
+                    }
+                    res.send(JSON.stringify(rep));
+                    return;
                 });
             });
         });
@@ -914,7 +952,7 @@ module.exports = function(app) {
                         // Adding log record
                         app.get('mongodb').collection('billing_transactions').insert({
                             trans_type: 'domain_reg',
-                            trans_obj: baccount,
+                            trans_obj: baccount + '.' + bplan,
                             trans_timestamp: Date.now(),
                             trans_sum: -_bcost,
                             user_id: req.session.auth._id
@@ -930,6 +968,16 @@ module.exports = function(app) {
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
                     rep.account = account_data;
+                    if (!err) {
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_add')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_add_html', 'mail_domain_add_txt', mail_data, req);
+                    }
                     return res.send(JSON.stringify(rep));
                 });
             });
@@ -1120,8 +1168,19 @@ module.exports = function(app) {
                     }
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
-                    if (!err) rep.account = account_data;
-                    return res.send(JSON.stringify(rep));
+                    if (!err) {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_up')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_up_html', 'mail_domain_up_txt', mail_data, req);
+                    }
+                    res.send(JSON.stringify(rep));
+                    return;
                 });
             });
         });
@@ -1255,7 +1314,11 @@ module.exports = function(app) {
                             bplan: bplan
                         }, {
                             $set: {
-                                bchanged: Date.now()
+                                bchanged: Date.now(),
+                                bns0: bns0,
+                                bns1: bns1,
+                                bns0_ip: bns0_ip,
+                                bns1_ip: bns1_ip
                             }
                         }, function(err) {
                             if (err) {
@@ -1268,7 +1331,22 @@ module.exports = function(app) {
                     }
                 ], function(err) {
                     if (err && typeof err == 'string') logger.log('error', err);
-                    return res.send(JSON.stringify(rep));
+                    if (!err) {
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            ns1: bns0,
+                            ns2: bns1,
+                            ns1_ip: bns0_ip,
+                            ns2_ip: bns1_ip,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_ns')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_ns_html', 'mail_domain_ns_txt', mail_data, req);
+                    }
+                    res.send(JSON.stringify(rep));
+                    return;
                 });
             });
         });

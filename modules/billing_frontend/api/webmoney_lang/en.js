@@ -11,5 +11,10 @@
 	"payment_success_msg": "The payment was successful, thank you!",
 	"return": "Return to customer panel",
 	"your_order_id": "Your order ID",
-	"order_id": "Order ID"
+	"order_id": "Order ID",
+	"mail_funds_replenishment_success": "Your account replenishment was successful (payment system is WebMoney).",
+	"mail_funds_repl_amount": "Replenishment amount",
+	"mail_customer_go_text": "Go to your customer panel",
+	"mail_panel_link_text": "click here",
+	"mail_funds_subj": "Funds replenishment"
 }

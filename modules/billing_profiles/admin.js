@@ -34,7 +34,6 @@ var countries = ["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR
     },
     profile_validation_org = {
         'org_r': 1,
-        'org': 1,
         'code': 1,
         'kpp': 1
     },
@@ -262,7 +261,7 @@ module.exports = function(app) {
                 // Validate organziation (RU/SU-related) fields
                 if (profile_validation_org[fid]) {
                     _f = 1;
-                    if (profile_data.org_r || profile_data.code || profile_data.org || profile_data.kpp) {
+                    if (profile_data.org_r || profile_data.code || profile_data.kpp) {
                         if (val && val.match(profile_validation[fid])) {
                             profile_update[fid] = val;
                         } else {
@@ -290,6 +289,19 @@ module.exports = function(app) {
                 if (fid == 'fax') {
                     _f = 1;
                     if (val)
+                        if (val.match(profile_validation[fid])) {
+                            profile_update[fid] = val;
+                        } else {
+                            rep.status = 0;
+                            rep.err_msg = i18nm.__("form_data_incorrect");
+                            rep.err_field = profile_fields[pf];
+                            return res.send(JSON.stringify(rep));
+                        }
+                }
+                // Organization
+                if (fid == 'org') {
+                    _f = 1;
+                    if (val || profile_data.org_r)
                         if (val.match(profile_validation[fid])) {
                             profile_update[fid] = val;
                         } else {
