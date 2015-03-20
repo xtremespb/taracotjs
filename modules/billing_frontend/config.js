@@ -5,6 +5,7 @@ var config = {
         "ignore_whois_errors": 1,
         "domain_api": "regru",
         "payment_api": "robokassa, webmoney",
+        "order_ttl": 604800, // Time before an outdated order gets removed - 7 days by default
         "default_ns0": "ns1.re-hash.org",
         "default_ns1": "ns2.re-hash.org",
         "default_ns0_ip": "",

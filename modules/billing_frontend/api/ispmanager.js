@@ -1,9 +1,8 @@
 var _debug_proxy_url = 'http://10.206.247.66:8080',
     request = require('request');
 
-module.exports = function(app) {
-    var config = app.get('config'),
-        ispmanager = {
+module.exports = function(config) {
+    var ispmanager = {
             user_exists: function(username, callback) {
                 request({
                     url: config.billing_frontend.ispmanager.url + '?authinfo=' + config.billing_frontend.ispmanager.login + ':' + config.billing_frontend.ispmanager.pwd + '&out=text&func=user.edit&elid=' + username,

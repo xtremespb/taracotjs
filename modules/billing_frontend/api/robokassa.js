@@ -61,7 +61,7 @@ module.exports = function(app) {
             var order = items[0],
                 signature = crypto.createHash('md5').update(config.catalog_payment.robokassa.sMerchantLogin + ':' + order.sum_total + ':' + invid + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             req.session.billing_frontend_payment_redirect_host = req.get('host');
-            return res.redirect(303, config.catalog_payment.robokassa.url + "?MrchLogin=" + config.catalog_payment.robokassa.sMerchantLogin + "&OutSum=" + order.order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.catalog_payment.robokassa.sIncCurrLabel + "&shp_locale=" + req.session.current_locale + "&shp_host=" + req.get('host') + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
+            return res.redirect(303, config.catalog_payment.robokassa.url + "?MrchLogin=" + config.catalog_payment.robokassa.sMerchantLogin + "&OutSum=" + order.order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.catalog_payment.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
         });
     });
 
@@ -72,13 +72,10 @@ module.exports = function(app) {
     */
 
     router.all('/process', function(req, res) {
-        i18nm.setLocale(req.session.current_locale);
         var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
             InvId = parseInt(req.body.InvId || req.query.InvId),
-            SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue),
-            shp_locale = String(req.body.shp_locale || req.query.shp_locale),
-            shp_host = String(req.body.shp_host || req.query.shp_host);
-        if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue || shp_locale.length > 2 || shp_host > 100) return res.send("Invalid parameters");
+            SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
+        if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
         app.get('mongodb').collection('billing_payment').find({
             order_id: InvId,
             order_status: 0
@@ -87,8 +84,9 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2 + ':' + shp_locale + ':' + shp_host).digest('hex').toUpperCase();
-            if (signature != SignatureValue) return res.send("Invalid signature " + signature);
+                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
+            if (signature != SignatureValue) return res.send("Invalid signature");
+            i18nm.setLocale(order.order_locale);
             app.get('mongodb').collection('billing_payment').update({
                     order_id: InvId
                 }, {
@@ -114,7 +112,33 @@ module.exports = function(app) {
                                 trans_sum: order.order_sum,
                                 user_id: order.user_id
                             }, function() {
-                                return res.send("OK" + InvId);
+                                app.get('mongodb').collection('billing_conf').find({
+                                    $or: [{
+                                        conf: 'misc'
+                                    }]
+                                }).toArray(function(err, db) {
+                                    var misc = [];
+                                    for (var i = 0; i < db.length; i++)
+                                        if (!err && db && db.length)
+                                            if (db[i].conf == 'misc' && db[i].data)
+                                                try {
+                                                    misc = JSON.parse(db[i].data);
+                                                } catch (ex) {}
+                                    var currency = '';
+                                    for (var mi in misc)
+                                        if (misc[mi].id == 'currency')
+                                            currency = misc[mi][order.order_locale];
+                                    var customer_url = app.get('config').protocol + '://' + order.order_host + '/customer?rnd=' + Math.random().toString().replace('.', ''),
+                                        mail_data = {
+                                            lang: i18nm,
+                                            site_title: app.get('settings').site_title,
+                                            customer_url: customer_url,
+                                            amount: order.order_sum + ' ' + currency,
+                                            subj: i18nm.__('mail_funds_subj')
+                                        };
+                                    mailer.send(order.order_email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'payment_views'), 'mail_funds_html', 'mail_funds_txt', mail_data, req);
+                                    return res.send("OK" + InvId);
+                                });
                             });
                         });
                 });
@@ -131,9 +155,7 @@ module.exports = function(app) {
         i18nm.setLocale(req.session.current_locale);
         var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
             InvId = parseInt(req.body.InvId || req.query.InvId),
-            SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue),
-            shp_locale = String(req.body.shp_locale || req.query.shp_locale),
-            shp_host = String(req.body.shp_host || req.query.shp_host);
+            SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         // Redirect if wrong language loaded
         if (req.session.billing_frontend_payment_redirect_host && req.session.billing_frontend_payment_redirect_host != req.get('host')) return res.redirect(303, app.get('config').protocol + '://' + req.session.billing_frontend_payment_redirect_host + '/customer/robokassa/success?rnd=' + Math.random().toString().replace('.', ''));
         var render_data = {
@@ -141,7 +163,7 @@ module.exports = function(app) {
             current_lang: req.session.current_locale,
             page_title: i18nm.__('payment')
         };
-        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || OutSum.isNaN || OutSum < 0 || !SignatureValue  || shp_locale.length > 2 || shp_host > 100) {
+        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || OutSum.isNaN || OutSum < 0 || !SignatureValue) {
             render_data.content = payment_html(gaikan, {
                 title: i18nm.__('payment_error'),
                 msg: i18nm.__('invalid_order_id')
@@ -162,7 +184,7 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1 + ':' + shp_locale + ':' + shp_host).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             if (signature != SignatureValue.toUpperCase()) {
                 render_data.content = payment_html(gaikan, {
                     title: i18nm.__('payment_error'),

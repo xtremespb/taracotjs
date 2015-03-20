@@ -59,7 +59,7 @@ module.exports = function(app) {
             config[attrname] = billing_frontend_config[attrname];
         }
     var billing_api, whois_api, domain_api;
-    if (config.billing_frontend && config.billing_frontend.hosting_api) billing_api = require('./api/' + config.billing_frontend.hosting_api)(app);
+    if (config.billing_frontend && config.billing_frontend.hosting_api) billing_api = require('./api/' + config.billing_frontend.hosting_api)(config);
     if (config.billing_frontend && config.billing_frontend.domain_api) domain_api = require('./api/' + config.billing_frontend.domain_api)(app);
     whois_api = require('./api/' + config.billing_frontend.whois_api)(app);
     var payment_systems = config.billing_frontend.payment_api.replace(/\s/gm, '').split(/,/);
@@ -153,7 +153,15 @@ module.exports = function(app) {
                         data: data
                     }, req);
                     data.content = render;
-                    app.get('renderer').render(res, undefined, data, req);
+                    app.get('mongodb').collection('users').update({
+                        _id: new ObjectId(req.session.auth._id)
+                    }, {
+                        $set: {
+                            locale: req.session.current_locale
+                        }
+                    }, function() {
+                        app.get('renderer').render(res, undefined, data, req);
+                    });
                 });
             });
         });
@@ -1398,7 +1406,10 @@ module.exports = function(app) {
                 order_id: order_id,
                 order_timestamp: Date.now(),
                 order_status: 0,
-                order_sum: sum
+                order_sum: sum,
+                order_email: req.session.auth.email,
+                order_locale: req.session.current_locale,
+                order_host: req.get('host')
             }, function(err) {
                 if (err) {
                     rep.status = 0;

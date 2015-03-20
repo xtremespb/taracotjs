@@ -111,7 +111,7 @@ module.exports = function(app) {
                             arr.push(items[i].username);
                             arr.push(items[i].realname);
                             arr.push(items[i].email);
-                            arr.push(items[i].status);
+                            arr.push(parseInt(items[i].status));
                             rep.items.push(arr);
                         }
                     }
