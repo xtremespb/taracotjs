@@ -52,6 +52,7 @@ module.exports = function(app) {
                 limit: 1
             }).toArray(function(err, items) {
                 if (!err && typeof items != 'undefined' && items && items.length && !err) {
+                    if (!items[0].pdata) items[0].pdata = {};
                     if (!items[0].pdata[lng]) items[0].pdata[lng] = {};
                     var pfolder_id = items[0].pfolder_id || 'j1_1',
                         bread = folders_find_path(folders_make_hash(folders), pfolder_id).reverse(),
