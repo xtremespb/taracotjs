@@ -1,5 +1,9 @@
 <h1>!{root.subj}</h1>
-<p>!{root.lang.__('mail_expiration_notice')}</p>
+<p>!{root.lang.__('mail_some_items_are_expired')}</p>
 <p>
-    !{root.lang.__('mail_panel_go_text')}: <a href="!{root.panel_url}">!{root.lang.__('mail_panel_link_text')}</a> (!{root.lang.__('mail_hosting_account_required')})
+    !{root.hosting_items}
+    !{root.domain_items}
+</p>
+<p>
+    !{root.lang.__('mail_customer_panel_go_text')}: <a href="!{root.panel_url}">!{root.lang.__('mail_customer_panel_link_text')}</a>
 </p>

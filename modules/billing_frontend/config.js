@@ -11,15 +11,19 @@ var config = {
         "default_ns0_ip": "",
         "default_ns1_ip": "",
         "hosting_panel_url": "https://cp.re-hash.org/ispmgr",
+        "customer_panel_url": {
+            "en": "https://en.re-hash.ru/customer",
+            "ru": "https://re-hash.ru/customer"
+        },
         "ispmanager": {
             "url": "https://cp.re-hash.org/ispmgr",
             "login": "",
             "pwd": ""
         },
         "regru": {
-        	"folder_name": "re-hash.ru",
-        	"username": "test",
-        	"password": "test"
+            "folder_name": "re-hash.ru",
+            "username": "test",
+            "password": "test"
         },
         "robokassa": {
             "url": "http://test.robokassa.ru/Index.aspx",

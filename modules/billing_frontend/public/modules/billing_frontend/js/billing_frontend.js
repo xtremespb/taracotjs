@@ -114,8 +114,10 @@ var get_domain_add_total = function() {
 };
 
 var dd_plan_change = function() {
-    $('#dd_username_zone').html('.' + $('#dd_plan').val().toUpperCase());
-    $('#dlg_domain_add_cost').html(get_domain_add_total() + ' ' + init_misc_hash.currency);
+    if ($('#dd_plan').val()) {
+        $('#dd_username_zone').html('.' + $('#dd_plan').val().toUpperCase());
+        $('#dlg_domain_add_cost').html(get_domain_add_total() + ' ' + init_misc_hash.currency);
+    }
 };
 
 var btn_billing_profile_save_handler = function() {
@@ -175,11 +177,11 @@ var btn_billing_profile_save_handler = function() {
         if (id == 'org') {
             _f = 1;
             if (val || $.trim($('#org_r').val()));
-                if (val.match(profile_validation[id])) {
-                    profile_data[id] = val;
-                } else {
-                    errors.push('#' + id);
-                }
+            if (val.match(profile_validation[id])) {
+                profile_data[id] = val;
+            } else {
+                errors.push('#' + id);
+            }
         }
         // Validate other fields
         if (!_f)

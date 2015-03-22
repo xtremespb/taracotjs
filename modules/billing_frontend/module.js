@@ -807,20 +807,20 @@ module.exports = function(app) {
                 for (var i = 0; i < db.length; i++) {
                     if (db[i].conf == 'domains' && db[i].data)
                         try {
-                            hosting = JSON.parse(db[i].data);
+                            domains = JSON.parse(db[i].data);
                         } catch (ex) {}
                 }
 
             var _bplan, _bcost;
-            for (var hi in hosting)
-                if (hosting[hi].id == bplan) {
-                    _bplan = hosting[hi].id;
-                    _bcost = hosting[hi].reg;
+            for (var hi in domains)
+                if (domains[hi].id == bplan) {
+                    _bplan = domains[hi].id;
+                    _bcost = domains[hi].reg;
                 }
             if (!_bplan) {
                 rep.status = 0;
                 rep.err_msg = i18nm.__("form_data_incorrect");
-                rep.err_field = 'dh_plan';
+                rep.err_field = 'dd_plan';
                 return res.send(JSON.stringify(rep));
             }
             app.get('mongodb').collection('billing_accounts').find({
@@ -852,20 +852,20 @@ module.exports = function(app) {
                             if (!users || !users.length || !users[0].billing_funds || users[0].billing_funds < _bcost) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("insufficient_funds");
-                                rep.err_field = 'dh_username';
+                                rep.err_field = 'dd_username';
                                 return callback(true); // Error
                             }
                             if (!users || !users.length || !users[0].profile_data) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("profile_missing");
-                                rep.err_field = 'dh_username';
+                                rep.err_field = 'dd_username';
                                 return callback(true); // Error
                             }
                             profile_data = users[0].profile_data;
                             if (!profile_data.n1e || ((bplan == 'ru' || bplan == 'su') && !profile_data.n1r)) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("profile_missing");
-                                rep.err_field = 'dh_username';
+                                rep.err_field = 'dd_username';
                                 return callback(true); // Error
                             }
                             callback();
@@ -877,7 +877,7 @@ module.exports = function(app) {
                             if (data != 1 && !config.billing_frontend.ignore_whois_errors) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("domain_already_registered");
-                                rep.err_field = 'dh_username';
+                                rep.err_field = 'dd_username';
                                 return callback(true); // Error
                             }
                             callback();
@@ -949,7 +949,7 @@ module.exports = function(app) {
                             if (!users || !users.length) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("database_error");
-                                rep.err_field = 'dh_username';
+                                rep.err_field = 'dd_username';
                                 return callback('[BILLING] Checking funds failed. User ID: ' + req.session.auth._id + ', error: ' + err);
                             }
                             account_data.funds = users[0].billing_funds;
@@ -981,7 +981,7 @@ module.exports = function(app) {
                             lang: i18nm,
                             site_title: app.get('settings').site_title,
                             domain_name: baccount + '.' + bplan,
-                            panel_url: config.billing_frontend.hosting_panel_url,
+                            panel_url: config.billing_frontend.domains_panel_url,
                             subj: i18nm.__('mail_domain_add')
                         };
                         mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_add_html', 'mail_domain_add_txt', mail_data, req);

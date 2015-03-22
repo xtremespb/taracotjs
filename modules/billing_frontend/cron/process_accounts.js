@@ -9,8 +9,10 @@ var async = require('../../../node_modules/async'),
     exp_domains = [],
     users_hash = {},
     path = require('path'),
-    nodemailer = require('../../../node_modules/nodemailer'),
-    sendmailTransport = require('../../../node_modules/nodemailer-sendmail-transport'),
+    settings,
+    fs = require('fs'),
+    moment = require('../../../node_modules/moment'),
+    mailer = require('../../../core/mailer'),
     Entities = require('../../../node_modules/html-entities').AllHtmlEntities,
     i18nm = new(require('../../../node_modules/i18n-2'))({
         locales: config.locales.avail,
@@ -22,9 +24,6 @@ var async = require('../../../node_modules/async'),
 if (billing_frontend_config)
     for (var attrname in billing_frontend_config)
         config[attrname] = billing_frontend_config[attrname];
-
-if (config.mailer.transport == 'smtp') transporter = nodemailer.createTransport(config.mailer.smtp);
-if (config.mailer.transport == 'sendmail') transporter = nodemailer.createTransport(sendmailTransport(config.mailer.sendmail));
 
 async.series([
     // Connect to the database
@@ -122,7 +121,8 @@ async.series([
             for (var di in db)
                 users_hash[db[di]._id.toHexString()] = {
                     username: db[di].username,
-                    email: db[di].email
+                    email: db[di].email,
+                    locale: db[di].locale || config.locales.avail[0]
                 };
             callback();
         });
@@ -146,6 +146,71 @@ async.series([
                 account: exp_domains[hi].id,
                 exp: exp_domains[hi].exp
             });
+        }
+        callback();
+    },
+    // Retrieve site settings
+    function(callback) {
+        mongodb.collection('settings').find().toArray(function(err, items) {
+            if (!err && items && items.length) {
+                for (var i in items) {
+                    if (!settings[items[i].olng]) settings[items[i].olng] = {};
+                    settings[items[i].olng][items[i].oname] = items[i].ovalue;
+                }
+            }
+            callback();
+        });
+    },
+    // Send expiration mails
+    function(callback) {
+        var mail_expiration_notice_html = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_html.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_html.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/mail_expiration_notice_html.html'),
+            pt_mail_expiration_notice_item_head_html = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_item_head_html.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_item_head_html.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/parts_mail_expiration_notice_item_head_html.html'),
+            pt_mail_expiration_notice_item_html = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_html.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_html.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/parts_mail_expiration_notice_html.html');
+        var domain_items = '',
+            hosting_items = '';
+        for (var uh in users_hash) {
+            var user = users_hash[uh];
+            i18nm.setLocale(user.locale);
+            moment.locale(user.locale);
+            for (var hi in user.hosting)
+                hosting_items += pt_mail_expiration_notice_item_html(gaikan, {
+                    lang: i18nm,
+                    item: user.hosting[hi].account,
+                    value: user.hosting[hi].exp
+                });
+            for (var di in user.domains)
+                domain_items += pt_mail_expiration_notice_item_html(gaikan, {
+                    lang: i18nm,
+                    item: user.hosting[hi].account,
+                    value: moment(user.hosting[hi].exp).format('L')
+                });
+            if (hosting_items)
+                hosting_items = pt_mail_expiration_notice_item_head_html(gaikan, {
+                    lang: i18nm,
+                    items: hosting_items,
+                    col1: i18nm.__('mail_hosting_account'),
+                    col2: i18nm.__('mail_days_remain'),
+                    item_type_text: i18nm.__('mail_hosting_accounts')
+                });
+            if (domain_items)
+                domain_items = pt_mail_expiration_notice_item_head_html(gaikan, {
+                    lang: i18nm,
+                    items: domain_items,
+                    col1: i18nm.__('mail_domain_name'),
+                    col2: i18nm.__('expiration_date'),
+                    item_type_text: i18nm.__('mail_domain_names')
+                });
+            var site_title = '';
+            if (settings[user.locale]) site_title = settings[user.locale].site_title;
+            var subj = i18nm.__('mail_expiration_notification'),
+                mail_body = mail_expiration_notice_html(gaikan, {
+                    lang: i18nm,
+                    subj: subj,
+                    hosting_items: hosting_items,
+                    domain_items: domain_items,
+                    panel_url: config.billing_frontend.customer_panel_url[user.locale]
+                });
+            mailer.send(user.email, subj, path.join(__dirname, 'views'), 'mail_hosting_add_html', 'mail_hosting_add_txt', mail_data, req);
         }
         callback();
     }
