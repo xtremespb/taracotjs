@@ -1,7 +1,7 @@
 module.exports = function(db, ensure_indexes, config) {
     var is = {
             name: 'billing_accounts',
-            version: '0.5.63',
+            version: '0.5.82',
             collections: function(_callback) {
                 // Create collections
                 _callback();
