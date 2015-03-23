@@ -45,8 +45,8 @@ if (config.mailer.transport == 'sendmail') transporter = nodemailer.createTransp
 
 var logger = new(winston.Logger)({
     transports: [
-        new(winston.transports.Console)(config.billing_frontend.log.console),
-        new(winston.transports.File)(config.billing_frontend.log.file)
+        new(winston.transports.Console)(config.log.console),
+        new(winston.transports.File)(config.log.file)
     ]
 });
 
@@ -329,7 +329,6 @@ async.series([
                 if (transporter) {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) return ae_callback(error);
-                        logger.info("Sent mail to: " + user.email);
                         return ae_callback();
                     });
                 } else {
@@ -340,11 +339,11 @@ async.series([
             });
         }
     ],
-    function(err, callback) {
+    function(err) {
         if (err) {
             logger.error('[ERROR] ' + err);
             return process.exit(1);
         }
         logger.info('Script finished');
-        return process.exit(0);
+        process.exit(0);
     });

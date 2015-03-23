@@ -193,12 +193,12 @@ var btn_profile_save_handler = function() {
             // Organization
             if (id == 'org') {
                 _f = 1;
-                if (val || $.trim($('#org_r').val()));
-                if (val.match(profile_validation[id])) {
-                    profile_data[id] = val;
-                } else {
-                    errors.push('#' + id);
-                }
+                if (val || $.trim($('#org_r').val()))
+                    if (val.match(profile_validation[id])) {
+                        profile_data[id] = val;
+                    } else {
+                        errors.push('#' + id);
+                    }
             }
             // Validate other fields
             if (!_f)

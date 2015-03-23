@@ -433,5 +433,13 @@
 	"mail_domain_name_servers_has_been_changed": "Request to change the name servers has been sent. Note: this could take up to 24 hours.",
 	"mail_new_ns1": "First name server",
 	"mail_new_ns2": "Second name server",
-	"mail_domain_ns": "Change domain NS"
+	"mail_domain_ns": "Change domain NS",
+	"mail_domain_names": "Domain names",
+	"mail_expiration_notification": "Services expiration notice",
+	"mail_some_items_are_expired": "Some of your hosting accounts and/or domain names are going to expire. You will need to perform the prolongation in order to avoid the service disabling.",
+	"mail_customer_panel_go_text": "Go to customer panel",
+	"mail_customer_panel_link_text": "click here",
+	"mail_hosting_account": "Hosting account",
+	"mail_days_remain": "Days remaining",
+	"mail_hosting_accounts": "Hosting accounts"
 }

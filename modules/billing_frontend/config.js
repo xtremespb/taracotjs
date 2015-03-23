@@ -11,9 +11,23 @@ var config = {
         "default_ns0_ip": "",
         "default_ns1_ip": "",
         "hosting_panel_url": "https://cp.re-hash.org/ispmgr",
+        "site_url": "https://re-hash.ru",
         "customer_panel_url": {
             "en": "https://en.re-hash.ru/customer",
             "ru": "https://re-hash.ru/customer"
+        },
+        "log": {
+            "console": {
+                "level": "info",
+                "colorize": true
+            },
+            "file": {
+                "level": "info",
+                "filename": "../../../logs/billing_process_accounts.log",
+                "json": true,
+                "maxsize": 1048576,
+                "maxFiles": 3
+            }
         },
         "ispmanager": {
             "url": "https://cp.re-hash.org/ispmgr",
