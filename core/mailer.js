@@ -1,6 +1,6 @@
-var config = require('../config');
-var nodemailer = require('nodemailer');
-var sendmailTransport = require('nodemailer-sendmail-transport');
+var config = require('../config'),
+    nodemailer = require('nodemailer'),
+    sendmailTransport = require('nodemailer-sendmail-transport');
 
 module.exports = function(app) {
     var transporter,
@@ -40,7 +40,7 @@ module.exports = function(app) {
                     }
                 });
             } else {
-                callback('No transporter defined');
+                if (callback) callback('No transporter defined');
             }
         }
     };
