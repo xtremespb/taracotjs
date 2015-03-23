@@ -15,7 +15,7 @@ var production_dir = 'C:/xtreme/taracotjs_prod',
     source_dir = path.join(__dirname, '..'),
     dist_files = fs.readdirSync(source_dir),
     modules = fs.readdirSync(source_dir + '/modules'),
-    non_full_modules = ['billing_accounts', 'billing_conf', 'billing_frontend', 'billing_profiles'],
+    // non_full_modules = ['billing_accounts', 'billing_conf', 'billing_frontend', 'billing_profiles'],
     core_modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user', 'lang'];
 
 console.log("Removing and re-creating production, modules and min. version dirs...");
@@ -50,8 +50,8 @@ dev_archive.bulk([{
 }]);
 dev_output.on('close', function() {
     // Remove modules from non_full_modules array
-    for (var nfm in non_full_modules)
-        fs.removeSync(production_dir + '/modules/' + non_full_modules[nfm]);
+    // for (var nfm in non_full_modules)
+    //     fs.removeSync(production_dir + '/modules/' + non_full_modules[nfm]);
     // Remove all unminified files
     console.log("Removing all uminified JS files from modules...");
     fs.removeSync(production_dir + '/Gruntfile.js');
