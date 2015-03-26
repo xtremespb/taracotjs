@@ -83,7 +83,8 @@ $('#btn_load_menu').click(function() {
 $('#btn_menu_save').click(function() {
 	taracot_ajax_progress_indicator('body', true);
 	var menu_source = $('#menu_nest').html();
-	var menu_uikit = '<nav class="uk-navbar">' + walk_nest_uikit($('#menu_nest')) + '</nav>';
+	//var menu_uikit = '<nav class="uk-navbar">' + walk_nest_uikit($('#menu_nest')) + '</nav>';
+	var menu_uikit = walk_nest_uikit($('#menu_nest'));
 	var menu_uikit_offcanvas = walk_nest_uikit_offcanvas($('#menu_nest'));
 	var menu_raw = walk_nest_raw($('#menu_nest'));
 	$.ajax({

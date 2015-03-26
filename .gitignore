@@ -4,3 +4,5 @@ tmp/*.zip
 modules/bastra/*
 npm-debug.log
 grunt_process.cmd
+views/re_hash*
+public/re-hash/*
