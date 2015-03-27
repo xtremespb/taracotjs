@@ -1,4 +1,4 @@
-var _debug_proxy_url = 'http://10.206.247.66:8080',
+var _debug_proxy_url = '',
     request = require('request');
 
 module.exports = function(config) {
