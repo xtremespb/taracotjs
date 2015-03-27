@@ -10,6 +10,7 @@ module.exports = function(app) {
         }),
         fs = require('fs'),
         flags = fs.existsSync(path.join(__dirname, 'views') + '/custom_flags.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_flags.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/flags.html'),
+        flags_submenu = fs.existsSync(path.join(__dirname, 'views') + '/custom_flags_submenu.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_flags_submenu.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/flags_submenu.html'),
         flags_li = fs.existsSync(path.join(__dirname, 'views') + '/custom_part_mail_fields.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_flags_li.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/flags_li.html'),
         langs = fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_lang.html') ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_lang.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_lang.html');
 
@@ -36,10 +37,12 @@ module.exports = function(app) {
                 });
             }
             var html_output = flags(gaikan, flags_data, undefined),
+                html_output_submenu = flags_submenu(gaikan, flags_data, undefined),
                 html_output_li = flags_li(gaikan, flags_data, undefined),
                 data = {
                     top: html_output,
-                    li: html_output_li
+                    li: html_output_li,
+                    submenu: html_output_submenu
                 };
             callback(data);
         }

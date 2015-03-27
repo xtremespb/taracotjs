@@ -254,7 +254,7 @@ var walk_nest_uikit = function(ul, cd, pnt) {
 		var id = 'taracot_menu_item_' + url.replace(/\//g, '_').replace(/^_/, '').replace(/[^a-zA-Z0-9_\-]/g, '');
 		var nxul = $(this).children('ul.uk-nestable-list');
 		if (nxul.html()) {
-			ddc = ' data-uk-dropdown';
+			ddc = ' data-uk-dropdown={mode:\'click\'}';
 			pc = ' class="uk-parent"';
 		}
 		res += '<li class="' + id + '"' + pc + ddc + pr + '><a href="' + url + '">' + text + '</a>';
