@@ -371,7 +371,7 @@
 	"hosting_account_doesnt_exists": "Hosting account does not exists",
 	"domain_exists": "Domain name already exists",
 	"domain_doesnt_exists": "Domain name does not exists",
-	"password_not_allowed": "The password you've specified is not allowed in system or is too weak. Please user the combination of upper- and lowercase characters and numbers.",
+	"password_not_allowed": "The password you've specified is not allowed in system or is too weak. Please use the combination of upper- and lowercase characters and numbers.",
 	"hosting_manager_failure": "The hosting management system has failed to create an account. Please try again in several minutes or contact system administrator.",
 	"insufficient_funds": "The funds are insufficient",
 	"add_domain": "Register new domain",
