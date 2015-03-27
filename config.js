@@ -6,8 +6,7 @@ var config = {
     "layouts": {
         "default": "taracot_default",
         "avail": [
-            "taracot_default",
-            "test"
+            "taracot_default"
         ]
     },
     "locales": {
