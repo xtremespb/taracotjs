@@ -1,2 +1,3 @@
 {
+	"module_name": "Portfolio"
 }

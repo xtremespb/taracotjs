@@ -6,3 +6,5 @@ npm-debug.log
 grunt_process.cmd
 views/re_hash*
 public/re-hash/*
+modules/portfolio/data/*
+modules/portfolio/public/modules/portfolio/images/*
