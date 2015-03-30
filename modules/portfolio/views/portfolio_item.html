@@ -1,0 +1,30 @@
+<h1>!{root.text}</h1>
+<ul class="uk-breadcrumb">
+    <li><a href="/portfolio">!{root.lang.__('portfolio')}</a></li>
+    <li class="uk-active"><span>!{root.cat}</span></li>
+</ul>
+<div class="uk-grid">
+    <div class="uk-width-large-8-10 uk-width-medium 6-10 uk-small-1-1">
+        <div class="uk-panel uk-panel-box"><i>!{root.lang.__('task')}:</i> !{root.task}</div>
+        <div class="taracot-portfolio-item-desc-wrap">
+            <div class="uk-margin-top">!{root.comp}</div>
+            <div class="uk-margin-top uk-container-center">
+                !{root.screenshots_large}
+            </div>
+            <ul class="uk-thumbnav taracot-portfolio-screenshots-small-wrap">
+                !{root.screenshots_small}
+            </ul>
+        </div>
+    </div>
+    <div class="uk-width-large-2-10 uk-width-medium 4-10 uk-small-1-1">
+        <p>
+            <b>!{root.lang.__('year')}:</b>
+            <br>!{root.year}
+        </p>
+        <p>
+            <b>!{root.lang.__('members')}:</b>
+            <br>!{root.responsive}
+        </p>
+    </div>
+</div>
+<script src="/js/uikit/addons/lightbox.min.js"></script>
