@@ -72,10 +72,10 @@ module.exports = function(app) {
     */
 
     router.all('/process', function(req, res) {
-        var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
+        var OutSum = req.body.OutSum || req.query.OutSum,
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
-        if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
+        if (!OutSum || parseFloat(OutSum).isNAN || parseFloat(OutSum) < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
         app.get('mongodb').collection('billing_payment').find({
             order_id: InvId,
             order_status: 0
@@ -85,9 +85,6 @@ module.exports = function(app) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
                 signature = crypto.createHash('md5').update(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass2).digest('hex').toUpperCase();
-            console.log(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass2);
-            console.log(signature);
-            console.log(SignatureValue);
             if (signature != SignatureValue) return res.send("Invalid signature");
             i18nm.setLocale(order.order_locale);
             app.get('mongodb').collection('billing_payment').update({
@@ -156,7 +153,7 @@ module.exports = function(app) {
 
     router.all('/success', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
-        var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
+        var OutSum = req.body.OutSum || req.query.OutSum,
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         // Redirect if wrong language loaded
@@ -166,7 +163,7 @@ module.exports = function(app) {
             current_lang: req.session.current_locale,
             page_title: i18nm.__('payment')
         };
-        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || OutSum.isNaN || OutSum < 0 || !SignatureValue) {
+        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || parseFloat(OutSum).isNaN || parseFloat(OutSum) < 0 || !SignatureValue) {
             render_data.content = payment_html(gaikan, {
                 title: i18nm.__('payment_error'),
                 msg: i18nm.__('invalid_order_id')
@@ -188,9 +185,6 @@ module.exports = function(app) {
             }
             var order = items[0],
                 signature = crypto.createHash('md5').update(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass1).digest('hex').toUpperCase();
-            console.log(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass1);
-            console.log(signature);
-            console.log(SignatureValue.toUpperCase());
             if (signature != SignatureValue.toUpperCase()) {
                 render_data.content = payment_html(gaikan, {
                     title: i18nm.__('payment_error'),

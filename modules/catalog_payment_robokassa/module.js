@@ -72,10 +72,10 @@ module.exports = function(app) {
 
     router.all('/process', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
-        var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
+        var OutSum = req.body.OutSum || req.query.OutSum,
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
-        if (!OutSum || OutSum.isNAN || OutSum < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
+        if (!OutSum || parseFloat(OutSum).isNAN || parseFloat(OutSum) < 0 || !InvId || InvId.isNAN || InvId < 0 || !SignatureValue) return res.send("Invalid parameters");
         app.get('mongodb').collection('warehouse_orders').find({
             order_id: InvId,
             order_status: 0
@@ -84,7 +84,7 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(OutSum + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
             if (signature != SignatureValue) return res.send("Invalid signature");
             app.get('mongodb').collection('warehouse_orders').update({
                     order_id: InvId
@@ -124,7 +124,7 @@ module.exports = function(app) {
 
     router.all('/success', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
-        var OutSum = parseFloat(req.body.OutSum || req.query.OutSum),
+        var OutSum = req.body.OutSum || req.query.OutSum,
             InvId = parseInt(req.body.InvId || req.query.InvId),
             SignatureValue = String(req.body.SignatureValue || req.query.SignatureValue);
         // Redirect if wrong language loaded
@@ -134,7 +134,7 @@ module.exports = function(app) {
             current_lang: req.session.current_locale,
             page_title: i18nm.__('payment')
         };
-        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || OutSum.isNaN || OutSum < 0 || !SignatureValue) {
+        if (!InvId || InvId.isNaN || InvId < 1 || !OutSum || parseFloat(OutSum).isNaN || parseFloat(OutSum) < 0 || !SignatureValue) {
             render_data.content = payment_html(gaikan, {
                 title: i18nm.__('payment_error'),
                 msg: i18nm.__('invalid_order_id')
@@ -155,7 +155,7 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(OutSum + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             if (signature != SignatureValue.toUpperCase()) {
                 render_data.content = payment_html(gaikan, {
                     title: i18nm.__('payment_error'),
