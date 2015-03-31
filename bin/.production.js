@@ -16,7 +16,7 @@ var production_dir = 'C:/xtreme/taracotjs_prod',
     dist_files = fs.readdirSync(source_dir),
     modules = fs.readdirSync(source_dir + '/modules'),
     // non_full_modules = ['billing_accounts', 'billing_conf', 'billing_frontend', 'billing_profiles'],
-    core_modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user', 'lang'];
+    core_modules = ['settings', 'search', 'auth', 'cp', 'pages', 'parts', 'user', 'lang', 'menu'];
 
 console.log("Removing and re-creating production, modules and min. version dirs...");
 
@@ -90,23 +90,28 @@ dev_output.on('close', function() {
             glob(production_dir + "/modules/*/*.js", {}, function(err, js_files) {
                 if (err) throw (err);
                 for (var c in js_files) {
-                    var result = uglifyjs.minify(js_files[c]);
-                    fs.writeFileSync(js_files[c], result.code);
+                    if (!js_files[c].match(/config\.js/)) {
+                        var result = uglifyjs.minify(js_files[c]);
+                        fs.writeFileSync(js_files[c], result.code);
+                    }
                 }
                 console.log("Processing bin/ JS files...");
                 glob(production_dir + "/bin/*.js", {}, function(err, js_files) {
                     if (err) throw (err);
                     for (var c in js_files) {
-                        var result = uglifyjs.minify(js_files[c]);
-                        fs.writeFileSync(js_files[c], result.code);
+                        if (!js_files[c].match(/config\.js/)) {
+                            var result = uglifyjs.minify(js_files[c]);
+                            fs.writeFileSync(js_files[c], result.code);
+                        }
                     }
                     console.log("Processing core/ JS files...");
                     glob(production_dir + "/core/*.js", {}, function(err, js_files) {
                         if (err) throw (err);
-                        for (var c in js_files) {
-                            var result = uglifyjs.minify(js_files[c]);
-                            fs.writeFileSync(js_files[c], result.code);
-                        }
+                        for (var c in js_files)
+                            if (!js_files[c].match(/config\.js/)) {
+                                var result = uglifyjs.minify(js_files[c]);
+                                fs.writeFileSync(js_files[c], result.code);
+                            }
                     });
                     console.log("Minifiying app.js...");
                     new compressor.minify({

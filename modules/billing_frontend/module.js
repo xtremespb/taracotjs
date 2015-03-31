@@ -53,11 +53,12 @@ module.exports = function(app) {
         });
 
     // Load configuration and API
-    var billing_frontend_config = require('./config');
+    var billing_frontend_config;
+    if (fs.existsSync('config.js')) billing_frontend_config = require('./config');
+    if (!billing_frontend_config && fs.existsSync('dist_config.js')) billing_frontend_config = require('./dist_config');
     if (billing_frontend_config)
-        for (var attrname in billing_frontend_config) {
+        for (var attrname in billing_frontend_config)
             config[attrname] = billing_frontend_config[attrname];
-        }
     var billing_api, whois_api, domain_api;
     if (config.billing_frontend && config.billing_frontend.hosting_api) billing_api = require('./api/' + config.billing_frontend.hosting_api)(config);
     if (config.billing_frontend && config.billing_frontend.domain_api) domain_api = require('./api/' + config.billing_frontend.domain_api)(app);
@@ -873,8 +874,8 @@ module.exports = function(app) {
                     },
                     function(callback) {
                         // Checking if domain not registered (via WHOIS API)
-                        whois_api.query(baccount + '.' + bplan, function(err, data) {
-                            if (data != 1 && !config.billing_frontend.ignore_whois_errors) {
+                        whois_api.query(baccount + '.' + bplan, function(data) {
+                            if (data != 1 && config.billing_frontend.ignore_whois_errors != 1) {
                                 rep.status = 0;
                                 rep.err_msg = i18nm.__("domain_already_registered");
                                 rep.err_field = 'dd_username';
@@ -981,7 +982,7 @@ module.exports = function(app) {
                             lang: i18nm,
                             site_title: app.get('settings').site_title,
                             domain_name: baccount + '.' + bplan,
-                            panel_url: config.billing_frontend.domains_panel_url,
+                            panel_url: config.billing_frontend.hosting_panel_url,
                             subj: i18nm.__('mail_domain_add')
                         };
                         mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_add_html', 'mail_domain_add_txt', mail_data, req);

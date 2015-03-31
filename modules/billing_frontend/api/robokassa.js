@@ -59,9 +59,9 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(config.catalog_payment.robokassa.sMerchantLogin + ':' + order.sum_total + ':' + invid + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(config.billing_frontend.robokassa.sMerchantLogin + ':' + order.order_sum + ':' + invid + ':' + config.billing_frontend.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             req.session.billing_frontend_payment_redirect_host = req.get('host');
-            return res.redirect(303, config.catalog_payment.robokassa.url + "?MrchLogin=" + config.catalog_payment.robokassa.sMerchantLogin + "&OutSum=" + order.order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.catalog_payment.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
+            return res.redirect(303, config.billing_frontend.robokassa.url + "?MrchLogin=" + config.billing_frontend.robokassa.sMerchantLogin + "&OutSum=" + order.order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + ' ' + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.billing_frontend.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
         });
     });
 
@@ -84,7 +84,10 @@ module.exports = function(app) {
         }).toArray(function(err, items) {
             if (err || !items || !items.length) return res.send('Invalid order');
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass2).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass2).digest('hex').toUpperCase();
+            console.log(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass2);
+            console.log(signature);
+            console.log(SignatureValue);
             if (signature != SignatureValue) return res.send("Invalid signature");
             i18nm.setLocale(order.order_locale);
             app.get('mongodb').collection('billing_payment').update({
@@ -184,7 +187,10 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(order.sum_total + ':' + order.order_id + ':' + config.catalog_payment.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+                signature = crypto.createHash('md5').update(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+            console.log(OutSum + ':' + InvId + ':' + config.billing_frontend.robokassa.sMerchantPass1);
+            console.log(signature);
+            console.log(SignatureValue.toUpperCase());
             if (signature != SignatureValue.toUpperCase()) {
                 render_data.content = payment_html(gaikan, {
                     title: i18nm.__('payment_error'),

@@ -69,7 +69,7 @@ module.exports = function(app) {
             var _layout = dir + '/' + filename + '.html',
                 rfn = templates[dir + '/' + filename + '.html'];
             if (!rfn) {
-                if (fs.existsSync(dir + '/custom_' + filename + '.html')) {
+                if (fs.existsSync(path.join(dir, '/custom_' + filename + '.html'))) {
                     rfn = gaikan.compileFromFile(dir + '/custom_' + filename + '.html');
                 } else {
                     rfn = gaikan.compileFromFile(_layout);

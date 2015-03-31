@@ -1,13 +1,13 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          taracot-demo
+# Provides:          taracot-!{root.pname}
 # Required-Start:
 # Required-Stop:
 # Should-Start:
 # Default-Start:     2 3 4 5
 # Default-Stop:
-# Short-Description: Scritp used to start TaracotJS instance
+# Short-Description: Script used to start TaracotJS instance
 ### END INIT INFO
 
 . /lib/lsb/init-functions
@@ -25,7 +25,7 @@ stop)
   exec forever stop $taracot_dir/bin/webserver.js
   ;;
 *)
-  echo "Usage: /etc/init.d/taracot-!{root.pname} {start|stop}"
+  echo "Usage: /etc/init.d/taracot_!{root.pname} {start|stop}"
   exit 1
   ;;
 esac

@@ -1,23 +1,38 @@
+var async = require('async');
+
 module.exports = function(db, ensure_indexes, config) {
     var is = {
         name: 'billing_profiles',
         version: '0.5.89',
         collections: function(_callback) {
             // Create collections
-            _callback();
+            async.series([
+                function(callback) {
+                    db.createCollection('billing_transactions', function(err, collection) {
+                        if (err) return callback(err);
+                        callback();
+                    });
+                }
+            ], function(err) {
+                if (err) return _callback(err);
+                _callback();
+            });
+
         },
         indexes: function(_callback) {
             // Create indexes
             ensure_indexes('users', ['billing_funds'], null, null, function() {
-                _callback();
+                ensure_indexes('billing_transactions', ['user_id'], null, null, function() {
+                    _callback();
+                });
             });
         },
         defaults: function(_callback) {
             db.collection('counters').remove({
-                "_id": "warehouse_orders"
+                "_id": "billing_payment"
             }, function() {
                 db.collection('counters').insert({
-                    "_id": "warehouse_orders",
+                    "_id": "billing_payment",
                     "seq": 0
                 }, function(err) {
                     if (err) return _callback(err);
