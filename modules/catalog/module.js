@@ -62,7 +62,9 @@ module.exports = function(app) {
 
     // Load configuration
 
-    var catalog_config = require('./config');
+    var catalog_config;
+    if (fs.existsSync('config.js')) catalog_config = require('./config');
+    if (!catalog_config && fs.existsSync('dist_config.js')) catalog_config = require('./dist_config');
     if (catalog_config)
         for (var attrname in catalog_config) {
             app.get('config')[attrname] = catalog_config[attrname];

@@ -61,7 +61,7 @@ module.exports = function(app) {
 
     router.get('/:id', function(req, res, next) {
         var id = req.params.id;
-        if (!id || !id.match(/^[a-z0-9]{1,32}$/)) return res.status(404) && next();
+        if (!id || !id.match(/^[a-z\-_0-9]{1,32}$/)) return res.status(404) && next();
         i18nm.setLocale(req.session.current_locale);
         fs.readJson(path.join(__dirname, 'data', 'portfolio_' + req.session.current_locale + '.json'), function(err, pf) {
             if (err) return res.status(404) && next();
