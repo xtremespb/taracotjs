@@ -4,7 +4,7 @@ var crypto = require('crypto'),
 module.exports = function(db, ensure_indexes, config) {
     var is = {
             name: 'auth',
-            version: '0.5.41',
+            version: '0.5.91',
             collections: function(_callback) {
                 // Create collections
                 async.series([

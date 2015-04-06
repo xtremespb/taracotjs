@@ -55,7 +55,11 @@ dev_output.on('close', function() {
     // Remove all unminified files
     console.log("Removing all uminified JS files from modules...");
     fs.removeSync(production_dir + '/Gruntfile.js');
-
+    // console.log("Removing non-dev modules...");
+    // fs.removeSync(production_dir + '/modules/billing_accounts');
+    // fs.removeSync(production_dir + '/modules/billing_conf');
+    // fs.removeSync(production_dir + '/modules/billing_frontend');
+    // fs.removeSync(production_dir + '/modules/billing_profiles');
     for (var m in modules) {
         var module = modules[m],
             js_files = [];
@@ -161,6 +165,7 @@ dev_output.on('close', function() {
                         core_output.on('close', function() {
                             checksum.file(modules_dir + '/taracot_core.zip_', function(err, core_sum) {
                                 async.eachSeries(modules, function(module, callback) {
+                                    // if (!module.match(/^billing_/)) {
                                     console.log("Re-creating temp dir...");
                                     fs.removeSync(modules_dir_tmp);
                                     fs.ensureDir(modules_dir_tmp);
@@ -179,6 +184,9 @@ dev_output.on('close', function() {
                                         callback();
                                     });
                                     core_archive.finalize();
+                                    // } else {
+                                    //     callback();
+                                    // }
                                 }, function(err) {
                                     if (err) return console.log(err);
                                     console.log("Gathering version information...");

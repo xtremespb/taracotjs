@@ -378,7 +378,9 @@ app.use(function(err, req, res, next) {
     if (res.statusCode != 404) console.log("\n" + err.stack + "\n");
     var site_title = 'TaracotJS';
     if (app.get('settings') && app.get('settings').site_title) site_title = app.get('settings').site_title;
-    res.render('error', {
+    var error_template = 'error';
+    if (fs.existsSync(__dirname, 'views', 'custom_error.html')) error_template = 'custom_error';
+    res.render(error_template, {
         site_title: site_title,
         data: _data,
         err: err
