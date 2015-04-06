@@ -44,6 +44,7 @@ module.exports = function(app) {
         mailer = app.get('mailer'),
         logger = app.get('logger'),
         config = app.get('config'),
+        fs =    require('fs'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
             locales: config.locales.avail,
@@ -54,8 +55,8 @@ module.exports = function(app) {
 
     // Load configuration and API
     var billing_frontend_config;
-    if (fs.existsSync('config.js')) billing_frontend_config = require('./config');
-    if (!billing_frontend_config && fs.existsSync('dist_config.js')) billing_frontend_config = require('./dist_config');
+    if (fs.existsSync(path.join(__dirname, 'config.js'))) billing_frontend_config = require('./config');
+    if (!billing_frontend_config && fs.existsSync(path.join(__dirname, 'dist_config.js'))) billing_frontend_config = require('./dist_config');
     if (billing_frontend_config)
         for (var attrname in billing_frontend_config)
             config[attrname] = billing_frontend_config[attrname];

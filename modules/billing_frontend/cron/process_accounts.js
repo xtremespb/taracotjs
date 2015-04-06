@@ -1,26 +1,27 @@
-var async = require('../../../node_modules/async'),
-    mongoclient = require('../../../node_modules/mongodb').MongoClient,
-    ObjectId = require('../../../node_modules/mongodb').ObjectID,
+var path = require('path'),
+	async = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'async')),
+    mongoclient = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'mongodb')).MongoClient,
+    ObjectId = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'mongodb')).ObjectID,
     mongodb,
-    gaikan = require('../../../node_modules/gaikan'),
-    config = require('../../../config'),
-    billing_frontend_config = require('../config'),
+    gaikan = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'gaikan')),
+    config = require(path.join(__dirname, '..', '..', '..', 'config')),
+    billing_frontend_config,
     exp_hosting = [],
     exp_domains = [],
     users_hash = {},
     path = require('path'),
     settings = {},
-    fs = require('fs'),
-    moment = require('../../../node_modules/moment'),
-    winston = require('../../../node_modules/winston'),
-    nodemailer = require('nodemailer'),
-    sendmailTransport = require('nodemailer-sendmail-transport'),
+    fs = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'fs-extra')),
+    moment = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'moment')),
+    winston = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'winston')),
+    nodemailer = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'nodemailer')),
+    sendmailTransport = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'nodemailer-sendmail-transport')),
     transporter,
     hosting_api,
-    Entities = require('html-entities').AllHtmlEntities,
+    Entities = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'html-entities')).AllHtmlEntities,
     entities = new Entities(),
-    Entities = require('../../../node_modules/html-entities').AllHtmlEntities,
-    i18nm = new(require('../../../node_modules/i18n-2'))({
+    Entities = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'html-entities')).AllHtmlEntities,
+    i18nm = new(require(path.join(__dirname, '..', '..', '..', 'node_modules', 'i18n-2')))({
         locales: config.locales.avail,
         directory: path.join(__dirname, '..', 'lang'),
         extension: '.js',
@@ -33,6 +34,9 @@ var async = require('../../../node_modules/async'),
     mail_expiration_notice_txt = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_txt.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_txt.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/mail_expiration_notice_txt.html'),
     pt_mail_expiration_notice_item_head_txt = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_item_head_txt.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_parts_mail_expiration_notice_item_head_txt.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/parts_mail_expiration_notice_item_head_txt.html'),
     pt_mail_expiration_notice_item_txt = (fs.existsSync(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_txt.html')) ? gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/custom_mail_expiration_notice_txt.html') : gaikan.compileFromFile(path.join(__dirname, '..', 'views') + '/mail_expiration_notice_txt.html');
+
+if (fs.existsSync(path.join(__dirname, '..', 'config.js'))) billing_frontend_config = require(path.join(__dirname, '..', 'config'));
+if (fs.existsSync(path.join(__dirname, '..', 'dist_config.js'))) billing_frontend_config = require(path.join(__dirname, '..', 'dist_config'));
 
 if (billing_frontend_config)
     for (var attrname in billing_frontend_config)
@@ -52,7 +56,7 @@ var logger = new(winston.Logger)({
 
 logger.exitOnError = false;
 
-logger.info("Staring...");
+logger.info("Starting...");
 
 async.series([
         // Connect to the database

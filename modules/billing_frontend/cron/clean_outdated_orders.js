@@ -1,11 +1,18 @@
-var async = require('../../../node_modules/async'),
-    mongoclient = require('../../../node_modules/mongodb').MongoClient,
+var path = require('path'),
+    fs = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'fs-extra')),
+    async = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'async')),
+    mongoclient = require(path.join(__dirname, '..', '..', '..', 'node_modules', 'mongodb')).MongoClient,
     mongodb,
-    config = require('../../../config'),
-    billing_frontend_config = require('../config');
+    config = require(path.join(__dirname, '..', '..', '..', 'config')),
+    billing_frontend_config;
+
+if (fs.existsSync(path.join(__dirname, '..', 'config.js'))) billing_frontend_config = require(path.join(__dirname, '..', 'config'));
+if (fs.existsSync(path.join(__dirname, '..', 'dist_config.js'))) billing_frontend_config = require(path.join(__dirname, '..', 'dist_config'));
+
 if (billing_frontend_config)
     for (var attrname in billing_frontend_config)
         config[attrname] = billing_frontend_config[attrname];
+
 async.series([
     // Connect to the database
     function(callback) {
@@ -25,9 +32,9 @@ async.series([
                 $lt: (Date.now() - config.billing_frontend.order_ttl * 1000)
             }
         }, function(err, num) {
-        	if (err) return callback('Cannot remove entries from database: ' + err);
-        	console.log('Entries removed: ' + num);
-        	return callback();
+            if (err) return callback('Cannot remove entries from database: ' + err);
+            console.log('Entries removed: ' + num);
+            return callback();
         });
     }
 ], function(err) {

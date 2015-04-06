@@ -3,7 +3,7 @@ var async = require('async');
 module.exports = function(db, ensure_indexes, config) {
     var is = {
         name: 'billing_conf',
-        version: '0.5.89',
+        version: '0.5.91',
         collections: function(_callback) {
             // Create collections
             async.series([
