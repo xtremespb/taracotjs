@@ -42,10 +42,13 @@ if (billing_frontend_config)
     for (var attrname in billing_frontend_config)
         config[attrname] = billing_frontend_config[attrname];
 
-hosting_api = require('../api/' + config.billing_frontend.hosting_api)(config);
+hosting_api = require(path.join(__dirname, '..', 'api', config.billing_frontend.hosting_api))(config);
 
 if (config.mailer.transport == 'smtp') transporter = nodemailer.createTransport(config.mailer.smtp);
 if (config.mailer.transport == 'sendmail') transporter = nodemailer.createTransport(sendmailTransport(config.mailer.sendmail));
+
+if (config && config.billing_frontend && config.billing_frontend.log && config.billing_frontend.log.file)
+	config.billing_frontend.log.file.filename = path.join(__dirname, '..', '..', '..', 'logs', config.billing_frontend.log.file.filename);
 
 var logger = new(winston.Logger)({
     transports: [

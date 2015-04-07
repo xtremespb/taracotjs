@@ -23,7 +23,7 @@ var config = {
             },
             "file": {
                 "level": "info",
-                "filename": "../../../logs/billing_process_accounts.log",
+                "filename": "billing_process_accounts.log",
                 "json": true,
                 "maxsize": 1048576,
                 "maxFiles": 3
