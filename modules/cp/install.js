@@ -1,7 +1,8 @@
 module.exports = function(db, ensure_indexes, config) {
-    var is = {
+    var async = require('async'),
+        is = {
             name: 'cp',
-            version: '0.5.47',
+            version: '0.5.99',
             collections: function(_callback) {
                 // Create collections
                 async.series([
