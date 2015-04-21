@@ -1,0 +1,106 @@
+<div id="support_area_list" class="support-area">
+	<h1>!{root.lang.__('module_name')}</h1>
+	<div class="uk-margin-bottom">
+		<button class="uk-button uk-button-success" id="btn_new_ticket">!{root.lang.__('new_ticket')}</button>
+	</div>
+	<table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
+		<thead>
+			<tr>
+				<th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}</th>
+				<th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
+				<th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
+				<th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
+				<th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}
+					<span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div id="taracot_table_pagination" class="uk-margin-top"></div>
+</div>
+<div id="support_area_new_ticket" style="display:none" class="support-area">
+	<h1>!{root.lang.__('new_ticket')}</h1>
+	<div class="uk-margin-bottom">
+		!{root.lang.__('new_ticket_hint')}
+	</div>
+	<div class="uk-alert uk-alert-danger" id="ticket_error" style="display:none"></div>
+	<div class="uk-form uk-form-horizontal">
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="ticket_subj">
+				!{root.lang.__('ticket_subj')}&nbsp;<span class="taracot-red-asterisk">*</span>
+			</label>
+			<div class="uk-form-controls">
+				<input type="text" id="ticket_subj" class="uk-form-width-large taracot-form-ticket-control">
+				<p class="uk-form-help-block">
+					!{root.lang.__('ticket_subj_hint')}
+				</p>
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="ticket_prio">
+				!{root.lang.__('ticket_prio')}&nbsp;<span class="taracot-red-asterisk">*</span>
+			</label>
+			<div class="uk-form-controls">
+				<select id="ticket_prio" class="uk-form-width-small taracot-form-ticket-control">
+					<option value="1">!{root.lang.__('ticket_prio_low')}</option>
+					<option value="2">!{root.lang.__('ticket_prio_medium')}</option>
+					<option value="3">!{root.lang.__('ticket_prio_high')}</option>
+				</select>
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="ticket_msg">
+				!{root.lang.__('ticket_msg')}&nbsp;<span class="taracot-red-asterisk">*</span>
+			</label>
+			<div class="uk-form-controls">
+				<textarea id="ticket_msg" rows="5" class="uk-form-width-large taracot-form-ticket-control"></textarea>
+				<p class="uk-form-help-block">
+					!{root.lang.__('ticket_msg_hint')}
+				</p>
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<label class="uk-form-label" for="ticket_attach">
+				!{root.lang.__('ticket_attach')}&nbsp;<span class="taracot-red-asterisk">*</span>
+			</label>
+			<div class="uk-form-controls">
+				<div class="taracot-attach-filename uk-margin-bottom" style="display:none">
+				</div>
+				<div>
+					<button class="uk-button uk-button-mini" id="btn_file_new_attach">!{root.lang.__('btn_attach_file')}</button>&nbsp;<button class="uk-button uk-button-mini uk-button-danger" id="btn_file_new_del" style="display:none">!{root.lang.__('btn_remove_file')}</button>
+				</div>
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<label class="uk-form-label">
+			</label>
+			<div class="uk-form-controls">
+				<div class="uk-margin-top">
+					<button class="uk-button uk-button-success" id="btn_ticket_create">
+						<span id="btn_ticket_create_loading" style="display:none"><img src="/modules/support/images/loading_16x16.gif" style="width:16px;height:16px">&nbsp;</span>
+						!{root.lang.__('create_ticket')}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="support_area_view_ticket" style="display:none" class="support-area">
+	<h1>!{root.lang.__('view_ticket_id')}&nbsp;<span id="support_h1_ticket_id"></span></h1>
+</div>
+<script>
+var _lang_vars = {
+	ajax_failed: "!{root.lang.__('ajax_failed')}",
+	no_res: "!{root.lang.__('no_results_in_table')}",
+	form_contains_errors: "!{root.lang.__('form_contains_errors')}",
+	ticket_create_success: "!{root.lang.__('ticket_create_success')}",
+	upload_failed: "!{root.lang.__('upload_failed')}"
+};
+</script>
+<script src="/js/plupload/plupload.full.min.js"></script>
+<script src="/js/jquery.medved.loading.js"></script>
+<script src="/js/jquery.medved.table.js"></script>
+<script src="/js/uikit/addons/notify.min.js"></script>
+<script src="/modules/support/js/support_frontend.js"></script>

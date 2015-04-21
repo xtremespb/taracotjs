@@ -1,0 +1,28 @@
+.uk-notify {
+	z-index: 5000;
+}
+.uk-notify-message {
+	text-align: center;
+	color: #fff;
+}
+.uk-notify-message-danger {
+	background: red;
+}
+.uk-notify-message-success {
+	background: green;
+}
+.taracot-red-asterisk {
+	color: red;
+	font-weight: bold;
+}
+.uk-form-help-block {
+	font-size: 80%;
+	color: #666;
+}
+.taracot-filename-error {
+	color: red;
+	font-weight: bold;
+}
+#taracot_table > tbody > tr {
+	cursor: pointer;
+}
