@@ -13,7 +13,8 @@
         sort_cell: '', // Default sorting column
         taracot_table_url: '', // URL to load the data from
         error_message: 'Server request failed',
-        process_rows: [] // Processing functions for each row
+        process_rows: [], // Processing functions for each row
+        row_click_handler: undefined
     }, options);
 
     /* System variables, do not modify */
@@ -59,7 +60,7 @@
     };
 
     var taracot_tableitem_delete_handler = function() {
-       delete_item([$(this).attr('id').replace('taracot-btndel-', '')]);
+        delete_item([$(this).attr('id').replace('taracot-btndel-', '')]);
     };
 
     /* Render the table rows */
@@ -71,8 +72,8 @@
             return;
         }
         for (var i = 0; i < data.length; i++) {
-            var table_data = '<tr>';
-            var _id = data[i][0];
+            var _id = data[i][0],
+                table_data = '<tr rel="' + _id + '">';
             for (var j = 1; j <= options.col_count; j++) {
                 if (j < data[i].length) {
                     table_data += '<td style="vertical-align:middle">' + options.process_rows[j - 1](data[i][j], _id, data[i]) + '</td>';
@@ -86,6 +87,10 @@
             $('.taracot-tableitem-edit').click(taracot_tableitem_edit_handler);
             $('.taracot-tableitem-delete').unbind();
             $('.taracot-tableitem-delete').click(taracot_tableitem_delete_handler);
+        }
+        if (options.row_click_handler) {
+            $('#' + table_id + ' > tbody > tr').unbind();
+            $('#' + table_id + ' > tbody > tr').click(options.row_click_handler);
         }
     };
 
