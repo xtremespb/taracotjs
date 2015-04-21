@@ -1,3 +1,5 @@
+var fs = require('fs-extra');
+
 module.exports = function(db, ensure_indexes, config) {
     var is = {
         name: 'support',
@@ -22,7 +24,7 @@ module.exports = function(db, ensure_indexes, config) {
             });
         },
         misc: function(_callback) {
-            // Misc. tasks
+            // Other things to do
             _callback();
         },
         uninstall: function(_callback) {

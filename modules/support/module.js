@@ -6,7 +6,8 @@ var sort_cells = {
         ticket_date: 1
     },
     sort_cell_default = 'ticket_date',
-    sort_cell_default_mode = -1;
+    sort_cell_default_mode = -1,
+    support_upload_file_mb = 10;
 
 // Set items per page for this module
 var items_per_page = 30;
@@ -20,7 +21,7 @@ module.exports = function(app) {
         moment = require('moment'),
         mailer = app.get('mailer'),
         config = app.get('config'),
-        fs = require('fs'),
+        fs = require('fs-extra'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
             locales: config.locales.avail,
@@ -32,7 +33,7 @@ module.exports = function(app) {
     router.get('/', function(req, res) {
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect_host = req.get('host');
-            req.session.auth_redirect = '/customer';
+            req.session.auth_redirect = '/support';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
@@ -209,7 +210,7 @@ module.exports = function(app) {
         });
     });
 
-	router.post('/ajax/upload', function(req, res) {
+    router.post('/ajax/upload', function(req, res) {
         var rep = {
             status: 1
         };
@@ -228,11 +229,10 @@ module.exports = function(app) {
         if (!req.files || !req.files.file) {
             rep.status = 0;
             rep.error = i18nm.__("no_file_sent");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         var file = req.files.file;
-        if (file.size > app.get('config').max_upload_file_mb * 1048576) {
+        if (file.size > support_upload_file_mb * 1048576) {
             rep.status = 0;
             rep.error = i18nm.__("file_too_big");
             res.send(JSON.stringify(rep));
@@ -253,14 +253,59 @@ module.exports = function(app) {
                     status: 0,
                     error: i18nm.__("invalid_ticket")
                 });
-
-            return res.send(JSON.stringify(rep));
+            var ticket = items[0];
+            fs.move(app.get('config').dir.tmp + '/' + file.name, path.join(__dirname, 'files', id + '_' + file.name), function(err) {
+                if (err) return res.send({
+                    status: 0,
+                    error: err
+                });
+                app.get('mongodb').collection('support').update({
+                    _id: new ObjectId(ticket._id)
+                }, {
+                    $set: {
+                        attachment: id + '_' + file.name
+                    }
+                }, function(err) {
+                    if (err)
+                        return res.send({
+                            status: 0,
+                            error: i18nm.__("invalid_ticket")
+                        });
+                    return res.send(JSON.stringify(rep));
+                });
+            });
         });
     });
 
-	// Helper functions
+    router.get('/attachment', function(req, res, next) {
+        var file = req.query.file;
+        if (!file || !check_filename(file) || !req.session.auth || req.session.auth.status < 1) return res.status(404) && next();
+        fs.exists(path.join(__dirname, 'files', file), function(ex) {
+            if (!ex) return res.status(404) && next();
+            var options = {
+                root: path.join(__dirname, 'files'),
+                dotfiles: 'deny',
+                headers: {
+                    'x-timestamp': Date.now(),
+                    'x-sent': true
+                }
+            };
+            if (req.session.auth.status == 2 || (req.session.auth.groups_hash && req.session.auth.groups_hash.support)) {
+                res.sendFile(file, options, function(err) {
+                    if (err) return res.status(404) && next();
+                });
+            } else {
+                var sp = file.split(/_/);
+                if (!sp || !sp.length) return res.status(404) && next();
+                var ticket_id = parseInt(sp[0]);
+                if (!ticket_id || ticket_id.isNaN) return res.status(404) && next();
+            }
+        });
+    });
 
-	var check_filename = function(_fn) {
+    // Helper functions
+
+    var check_filename = function(_fn) {
         if (!_fn) return false; // don't allow null
         var fn = _fn.replace(/^\s+|\s+$/g, '');
         if (!fn || fn.length > 80) return false; // null or too long

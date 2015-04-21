@@ -77,11 +77,12 @@ var init_uploader_new = function() {
                 timeout: 2000,
                 pos: 'top-center'
             });
+        } else {
+            _ticket_create_success();
         }
     });
     uploader_new.bind('UploadComplete', function() {
         uploading = undefined;
-        _ticket_create_success();
         $('#btn_ticket_create_loading').hide();
         $('#btn_ticket_create').attr('disabled', false);
     });
@@ -235,6 +236,11 @@ var table_row_click_handler = function() {
     });
 };
 
+var btn_ticket_create_cancel_handler = function() {
+    $('.support-area').hide();
+    $('#support_area_list').show();
+};
+
 /*******************************************************************
 
  Helper functions
@@ -264,6 +270,7 @@ var _ticket_create_success = function() {
 $(document).ready(function() {
     $('#btn_new_ticket').click(btn_new_ticket_hander);
     $('#btn_ticket_create').click(btn_ticket_create_handler);
+    $('#btn_ticket_create_cancel').click(btn_ticket_create_cancel_handler);
     $('#taracot_table').medvedTable({
         col_count: 5,
         sort_mode: -1,

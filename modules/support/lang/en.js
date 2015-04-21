@@ -30,5 +30,6 @@
 	"upload_failed": "Attachment is not uploaded",
 	"no_file_sent": "No file sent",
 	"file_too_big": "The file is too big",
-	"invalid_filename_syntax": "Invalid file name syntax"
+	"invalid_filename_syntax": "Invalid file name syntax",
+	"create_ticket_cancel": "Cancel"
 }
