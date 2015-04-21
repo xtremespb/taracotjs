@@ -40,7 +40,7 @@ var config = {
         "resave": false,
         "proxy": true,
         "saveUninitialized": true,
-        "unset": "delete"
+        "unset": "destroy"
     },
     "salt": "sl0HcBdMEXWsJpuMFv8yDT1lZYEo7kyMcbKUCNySja0C0sNSEFgVPMDrkFwjhgEd",
     "redis": {

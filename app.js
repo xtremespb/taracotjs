@@ -103,7 +103,9 @@ app.use(multer({
 
 app.use(cookieParser(config.cookie.secret));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 /* Load static */
 
@@ -154,6 +156,9 @@ if (!redis) _store = new MongoStore({
     url: config.mongo.url,
     auto_reconnect: false
 });
+
+// Fix for old settings (should be 'destroy' instead of 'delete')
+if (config.session.unset == 'delete') config.session.unset = 'destroy';
 
 app.use(session({
     store: _store,
