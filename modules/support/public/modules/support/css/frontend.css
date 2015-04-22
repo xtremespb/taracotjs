@@ -26,3 +26,13 @@
 #taracot_table > tbody > tr {
 	cursor: pointer;
 }
+.taracot-support-message-box {
+	border-top: 0;
+	background: #fff;
+}
+#support_attachment {
+	font-size: 80%;
+}
+.taracot-support-btn-margin {
+	margin-top: 30px;
+}

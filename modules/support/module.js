@@ -22,6 +22,7 @@ module.exports = function(app) {
         mailer = app.get('mailer'),
         config = app.get('config'),
         fs = require('fs-extra'),
+        S = require('string'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
             locales: config.locales.avail,
@@ -47,7 +48,9 @@ module.exports = function(app) {
             },
             render = renderer.render_file(path.join(__dirname, 'views'), 'support_frontend', {
                 lang: i18nm,
-                data: data
+                data: data,
+                status_list: JSON.stringify(i18nm.__('status_list')),
+                current_locale: req.session.current_locale
             }, req);
         data.content = render;
         app.get('renderer').render(res, undefined, data, req);
@@ -136,6 +139,7 @@ module.exports = function(app) {
             rep.err_field = 'ticket_subj';
             return res.send(JSON.stringify(rep));
         }
+        ticket_subj = S(ticket_subj).stripTags().s.replace(/\n/g, '<br>');
         if (!ticket_prio || ticket_prio < 1 || ticket_prio > 3) {
             rep.status = 0;
             rep.err_msg = i18nm.__("form_data_incorrect");
@@ -148,6 +152,72 @@ module.exports = function(app) {
             rep.err_field = 'ticket_msg';
             return res.send(JSON.stringify(rep));
         }
+        ticket_msg = S(ticket_msg).stripTags().s.replace(/\n/g, '<br>');
+        app.get('mongodb').collection('counters').findAndModify({
+            _id: 'support'
+        }, [], {
+            $inc: {
+                seq: 1
+            }
+        }, {
+            new: true
+        }, function(err, counters) {
+            var ticket_id;
+            if (err || !counters || !counters.seq) ticket_id = Date.now();
+            if (counters.seq) ticket_id = counters.seq;
+            app.get('mongodb').collection('support').insert({
+                user_id: req.session.auth._id,
+                ticket_id: ticket_id,
+                ticket_date: Date.now(),
+                ticket_status: 1,
+                ticket_subj: ticket_subj,
+                ticket_prio: ticket_prio,
+                ticket_msg: ticket_msg
+            }, function(err) {
+                if (err) {
+                    rep.status = 0;
+                    rep.err_msg = i18nm.__("database_error");
+                    return res.send(JSON.stringify(rep));
+                }
+                rep.ticket_id = ticket_id;
+                return res.send(JSON.stringify(rep));
+            });
+        });
+    });
+
+    router.post('/ajax/ticket/reply', function(req, res) {
+        var rep = {
+            status: 1
+        };
+        if (!req.session.auth || req.session.auth.status < 1) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        i18nm.setLocale(req.session.current_locale);
+        var ticket_subj = req.body.ticket_subj,
+            ticket_prio = parseInt(req.body.ticket_prio),
+            ticket_msg = req.body.ticket_msg;
+        if (!ticket_subj || ticket_subj.length > 100) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'ticket_subj';
+            return res.send(JSON.stringify(rep));
+        }
+        ticket_subj = S(ticket_subj).stripTags().s.replace(/\n/g, '<br>');
+        if (!ticket_prio || ticket_prio < 1 || ticket_prio > 3) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'ticket_prio';
+            return res.send(JSON.stringify(rep));
+        }
+        if (!ticket_msg || ticket_msg.length > 4096) {
+            rep.status = 0;
+            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.err_field = 'ticket_msg';
+            return res.send(JSON.stringify(rep));
+        }
+        ticket_msg = S(ticket_msg).stripTags().s.replace(/\n/g, '<br>');
         app.get('mongodb').collection('counters').findAndModify({
             _id: 'support'
         }, [], {
@@ -238,12 +308,15 @@ module.exports = function(app) {
             res.send(JSON.stringify(rep));
             return;
         }
-        if (!check_filename(file.originalname)) {
+        var ext = path.extname(file.originalname),
+            dn = id + '_' + Date.now();
+        if (!check_filename(file.originalname) || !ext) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_filename_syntax");
             res.send(JSON.stringify(rep));
             return;
         }
+        ext = ext.toLowerCase();
         app.get('mongodb').collection('support').find({
             ticket_id: id,
             user_id: req.session.auth._id
@@ -254,16 +327,17 @@ module.exports = function(app) {
                     error: i18nm.__("invalid_ticket")
                 });
             var ticket = items[0];
-            fs.move(app.get('config').dir.tmp + '/' + file.name, path.join(__dirname, 'files', id + '_' + file.name), function(err) {
+            fs.move(app.get('config').dir.tmp + '/' + file.name, path.join(__dirname, 'files', dn + ext), function(err) {
+                console.log(err);
                 if (err) return res.send({
                     status: 0,
-                    error: err
+                    error: i18nm.__('upload_failed')
                 });
                 app.get('mongodb').collection('support').update({
                     _id: new ObjectId(ticket._id)
                 }, {
                     $set: {
-                        attachment: id + '_' + file.name
+                        attachment: dn + ext
                     }
                 }, function(err) {
                     if (err)
@@ -299,6 +373,15 @@ module.exports = function(app) {
                 if (!sp || !sp.length) return res.status(404) && next();
                 var ticket_id = parseInt(sp[0]);
                 if (!ticket_id || ticket_id.isNaN) return res.status(404) && next();
+                app.get('mongodb').collection('support').find({
+                    ticket_id: ticket_id,
+                    user_id: req.session.auth._id
+                }).toArray(function(err, items) {
+                    if (err || !items || items.length != 1) return res.status(404) && next();
+                    res.sendFile(file, options, function(err) {
+                        if (err) return res.status(404) && next();
+                    });
+                });
             }
         });
     });

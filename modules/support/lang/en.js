@@ -31,5 +31,19 @@
 	"no_file_sent": "No file sent",
 	"file_too_big": "The file is too big",
 	"invalid_filename_syntax": "Invalid file name syntax",
-	"create_ticket_cancel": "Cancel"
+	"create_ticket_cancel": "Cancel",
+	"last_modified": "Last modified",
+	"status_list": [
+		"New",
+		"Processing",
+		"Closed"
+	],
+	"ticket_reply_msg_hint": "Please specify your reply text",
+	"ticket_msg_reply": "Message",
+	"reply_ticket": "Post reply",
+	"ticket_reply_header": "Reply to the ticket",
+	"post_ticket_reply": "Post a reply",
+	"cancel": "Cancel",
+	"back_to_ticket_list": "Back to list",
+	"ticket_reply_success": "ticket_reply_success"
 }
