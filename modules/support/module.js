@@ -32,13 +32,13 @@ module.exports = function(app) {
         });
 
     router.get('/', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/support';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        i18nm.setLocale(req.session.current_locale);
         var data = {
                 title: i18nm.__('module_name'),
                 page_title: i18nm.__('module_name'),
@@ -121,34 +121,34 @@ module.exports = function(app) {
     });
 
     router.post('/ajax/ticket/create', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
         if (!req.session.auth || req.session.auth.status < 1) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("unauth");
+            rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
-        i18nm.setLocale(req.session.current_locale);
         var ticket_subj = req.body.ticket_subj,
             ticket_prio = parseInt(req.body.ticket_prio),
             ticket_msg = req.body.ticket_msg;
         if (!ticket_subj || ticket_subj.length > 100) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.error = i18nm.__("form_data_incorrect");
             rep.err_field = 'ticket_subj';
             return res.send(JSON.stringify(rep));
         }
         ticket_subj = S(ticket_subj).stripTags().s.replace(/\n/g, '<br>');
         if (!ticket_prio || ticket_prio < 1 || ticket_prio > 3) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.error = i18nm.__("form_data_incorrect");
             rep.err_field = 'ticket_prio';
             return res.send(JSON.stringify(rep));
         }
         if (!ticket_msg || ticket_msg.length > 4096) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.error = i18nm.__("form_data_incorrect");
             rep.err_field = 'ticket_msg';
             return res.send(JSON.stringify(rep));
         }
@@ -172,11 +172,12 @@ module.exports = function(app) {
                 ticket_status: 1,
                 ticket_subj: ticket_subj,
                 ticket_prio: ticket_prio,
-                ticket_msg: ticket_msg
+                ticket_msg: ticket_msg,
+                ticket_replies: []
             }, function(err) {
                 if (err) {
                     rep.status = 0;
-                    rep.err_msg = i18nm.__("database_error");
+                    rep.error = i18nm.__("database_error");
                     return res.send(JSON.stringify(rep));
                 }
                 rep.ticket_id = ticket_id;
@@ -186,80 +187,82 @@ module.exports = function(app) {
     });
 
     router.post('/ajax/ticket/reply', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
-        if (!req.session.auth || req.session.auth.status < 1) {
-            rep.status = 0;
-            rep.err_msg = i18nm.__("unauth");
-            return res.send(JSON.stringify(rep));
-        }
-        i18nm.setLocale(req.session.current_locale);
-        var ticket_subj = req.body.ticket_subj,
-            ticket_prio = parseInt(req.body.ticket_prio),
-            ticket_msg = req.body.ticket_msg;
-        if (!ticket_subj || ticket_subj.length > 100) {
-            rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
-            rep.err_field = 'ticket_subj';
-            return res.send(JSON.stringify(rep));
-        }
-        ticket_subj = S(ticket_subj).stripTags().s.replace(/\n/g, '<br>');
-        if (!ticket_prio || ticket_prio < 1 || ticket_prio > 3) {
-            rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
-            rep.err_field = 'ticket_prio';
-            return res.send(JSON.stringify(rep));
-        }
+        if (!req.session.auth || req.session.auth.status < 1) return res.send({
+            status: 0,
+            error: i18nm.__("unauth")
+        });
+        var id = req.body.id,
+            ticket_msg = req.body.ticket_reply_msg;
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
         if (!ticket_msg || ticket_msg.length > 4096) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("form_data_incorrect");
+            rep.error = i18nm.__("form_data_incorrect");
             rep.err_field = 'ticket_msg';
             return res.send(JSON.stringify(rep));
         }
         ticket_msg = S(ticket_msg).stripTags().s.replace(/\n/g, '<br>');
-        app.get('mongodb').collection('counters').findAndModify({
-            _id: 'support'
-        }, [], {
-            $inc: {
-                seq: 1
-            }
-        }, {
-            new: true
-        }, function(err, counters) {
-            var ticket_id;
-            if (err || !counters || !counters.seq) ticket_id = Date.now();
-            if (counters.seq) ticket_id = counters.seq;
-            app.get('mongodb').collection('support').insert({
-                user_id: req.session.auth._id,
-                ticket_id: ticket_id,
-                ticket_date: Date.now(),
-                ticket_status: 1,
-                ticket_subj: ticket_subj,
-                ticket_prio: ticket_prio,
-                ticket_msg: ticket_msg
-            }, function(err) {
-                if (err) {
-                    rep.status = 0;
-                    rep.err_msg = i18nm.__("database_error");
-                    return res.send(JSON.stringify(rep));
+        app.get('mongodb').collection('support').find({
+            _id: new ObjectId(id)
+        }).toArray(function(err, items) {
+            if (err || !items || items.length != 1)
+                return res.send({
+                    status: 0,
+                    error: i18nm.__("invalid_ticket")
+                });
+            var ticket = items[0],
+                has_support_group,
+                reply_date = Date.now();
+            if (req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+            if (ticket.user_id != req.session.auth._id && req.session.auth.status < 2 && !has_support_group)
+                return res.send({
+                    status: 0,
+                    error: i18nm.__("unauth")
+                });
+            app.get('mongodb').collection('support').update({
+                _id: new ObjectId(ticket._id)
+            }, {
+                $set: {
+                    ticket_date: Date.now(),
+                    ticket_status: 2,
+                },
+                $push: {
+                    ticket_replies: {
+                        reply_msg: ticket_msg,
+                        reply_date: reply_date,
+                        reply_user: req.session.auth._id
+                    }
                 }
-                rep.ticket_id = ticket_id;
+            }, function(err) {
+                if (err)
+                    return res.send({
+                        status: 0,
+                        error: i18nm.__("database_error")
+                    });
+                rep.ticket_id = ticket.ticket_id;
+                rep.reply_date = reply_date;
                 return res.send(JSON.stringify(rep));
             });
         });
     });
 
     router.post('/ajax/ticket/load', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
         if (!req.session.auth || req.session.auth.status < 1) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("unauth");
+            rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
-        i18nm.setLocale(req.session.current_locale);
         var id = req.body.id;
         if (!id || !id.match(/^[a-f0-9]{24}$/))
             return res.send({
@@ -276,22 +279,53 @@ module.exports = function(app) {
                     error: i18nm.__("invalid_ticket")
                 });
             rep.ticket = items[0];
-            return res.send(JSON.stringify(rep));
+            var users_query = [{
+                    _id: new ObjectId(rep.ticket.user_id)
+                }],
+                users_hash = {};
+            users_hash[rep.ticket.user_id] = 1;
+            if (rep.ticket.ticket_replies)
+                for (var rt in rep.ticket.ticket_replies)
+                    if (!users_hash[rep.ticket.ticket_replies[rt].reply_user]) {
+                        users_hash[rep.ticket.ticket_replies[rt].reply_user] = 1;
+                        users_query.push({
+                            _id: new ObjectId(rep.ticket.ticket_replies[rt].reply_user)
+                        });
+                    }
+            app.get('mongodb').collection('users').find({
+                $or: users_query
+            }).toArray(function(err, items) {
+                rep.users = {};
+                if (!err && items && items.length)
+                    for (var ui in items)
+                        rep.users[items[ui]._id] = {
+                            username: items[ui].username,
+                            realname: items[ui].realname,
+                            email: items[ui].email
+                        };
+                return res.send(JSON.stringify(rep));
+            });
         });
     });
 
     router.post('/ajax/upload', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
         var rep = {
             status: 1
         };
         if (!req.session.auth || req.session.auth.status < 1) {
             rep.status = 0;
-            rep.err_msg = i18nm.__("unauth");
+            rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
-        i18nm.setLocale(req.session.current_locale);
-        var id = parseInt(req.body.ticket_id);
+        var id = parseInt(req.body.ticket_id),
+            reply_id = parseInt(req.body.reply_id);
         if (!id || id.isNaN || id < 1)
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+        if (reply_id && (reply_id.isNaN || reply_id < 1))
             return res.send({
                 status: 0,
                 error: i18nm.__("invalid_query")
@@ -333,20 +367,40 @@ module.exports = function(app) {
                     status: 0,
                     error: i18nm.__('upload_failed')
                 });
-                app.get('mongodb').collection('support').update({
-                    _id: new ObjectId(ticket._id)
-                }, {
-                    $set: {
-                        attachment: dn + ext
-                    }
-                }, function(err) {
-                    if (err)
-                        return res.send({
-                            status: 0,
-                            error: i18nm.__("invalid_ticket")
-                        });
-                    return res.send(JSON.stringify(rep));
-                });
+                if (reply_id) {
+                    for (var i in ticket.ticket_replies)
+                        if (ticket.ticket_replies[i].reply_date == reply_id)
+                            ticket.ticket_replies[i].attachment = dn + ext;
+                    app.get('mongodb').collection('support').update({
+                        _id: new ObjectId(ticket._id)
+                    }, {
+                        $set: {
+                            ticket_replies: ticket.ticket_replies
+                        }
+                    }, function(err) {
+                        if (err)
+                            return res.send({
+                                status: 0,
+                                error: i18nm.__("database_error")
+                            });
+                        return res.send(JSON.stringify(rep));
+                    });
+                } else {
+                    app.get('mongodb').collection('support').update({
+                        _id: new ObjectId(ticket._id)
+                    }, {
+                        $set: {
+                            attachment: dn + ext
+                        }
+                    }, function(err) {
+                        if (err)
+                            return res.send({
+                                status: 0,
+                                error: i18nm.__("database_error")
+                            });
+                        return res.send(JSON.stringify(rep));
+                    });
+                }
             });
         });
     });

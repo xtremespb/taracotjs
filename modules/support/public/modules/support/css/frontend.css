@@ -30,9 +30,23 @@
 	border-top: 0;
 	background: #fff;
 }
-#support_attachment {
+.taracot-support-attachment {
 	font-size: 80%;
 }
 .taracot-support-btn-margin {
 	margin-top: 30px;
+	margin-bottom: 30px;
+}
+.taracot-support-username {
+	padding-left: 10px;
+	font-size: 80%;
+	font-weight: bold;
+}
+.taracot-support-reply-date {
+	font-weight: normal;
+	font-size: 90%;
+	color: #666;
+}
+.taracot-subj-box {
+	background: #ccc;
 }

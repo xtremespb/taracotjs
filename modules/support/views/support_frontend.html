@@ -98,18 +98,22 @@
     <div class="uk-margin-bottom">
         <div class="uk-badge uk-float-right" id="support_badge_status"></div>&nbsp;!{root.lang.__('last_modified')}:&nbsp;<span id="support_text_last_modified"></span>
     </div>
-    <div class="uk-panel uk-panel-box">
+    <div class="uk-margin-top taracot-support-username">
+    	<i class="uk-icon-user"></i>&nbsp;<span id="support_username_starter"></span>
+    </div>
+    <div class="uk-panel uk-panel-box taracot-subj-box">
         <h3 id="support_h3_subj"></h3>
     </div>
     <div class="uk-panel uk-panel-box taracot-support-message-box" id="support_box_msg">
     </div>
-    <div id="support_attachment">
+    <div id="support_attachment" class="taracot-support-attachment">
         <i class="uk-icon-paperclip"></i>&nbsp;
         <a href="#" id="support_attachment_link"></a>
     </div>
     <div class="taracot-support-btn-margin">
         <button id="btn_ticket_reply_cancel" class="uk-button"><i class="uk-icon-arrow-left"></i>&nbsp;!{root.lang.__('back_to_ticket_list')}</button>&nbsp;<button id="btn_ticket_reply_dlg" class="uk-button">!{root.lang.__('post_ticket_reply')}</button>
     </div>
+    <div id="support_replies"></div>
     <div class="uk-modal" id="dlg_ticket_reply">
         <div class="uk-modal-dialog">
             <div class="uk-modal-header">
