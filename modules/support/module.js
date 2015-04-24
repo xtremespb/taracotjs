@@ -1,11 +1,12 @@
 var sort_cells = {
         ticket_id: 1,
+        user_id: 1,
         ticket_subj: 1,
         ticket_status: 1,
         ticket_prio: 1,
         ticket_date: 1
     },
-    sort_cell_default = 'ticket_date',
+    sort_cell_default = 'ticket_id',
     sort_cell_default_mode = -1,
     support_upload_file_mb = 10;
 
@@ -32,13 +33,13 @@ module.exports = function(app) {
         });
 
     router.get('/', function(req, res) {
-        i18nm.setLocale(req.session.current_locale);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/support';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
+        i18nm.setLocale(req.session.current_locale);
         var data = {
                 title: i18nm.__('module_name'),
                 page_title: i18nm.__('module_name'),
@@ -50,6 +51,35 @@ module.exports = function(app) {
                 lang: i18nm,
                 data: data,
                 status_list: JSON.stringify(i18nm.__('status_list')),
+                prio_list: JSON.stringify(i18nm.__('prio_list')),
+                current_locale: req.session.current_locale
+            }, req);
+        data.content = render;
+        app.get('renderer').render(res, undefined, data, req);
+    });
+
+    router.get('/dashboard', function(req, res) {
+        var has_support_group;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+        if (!req.session.auth || (req.session.auth.status < 2 && !has_support_group)) {
+            req.session.auth_redirect_host = req.get('host');
+            req.session.auth_redirect = '/support';
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+        i18nm.setLocale(req.session.current_locale);
+        var data = {
+                title: i18nm.__('module_dashboard'),
+                page_title: i18nm.__('module_dashboard'),
+                keywords: '',
+                description: '',
+                extra_css: '<link rel="stylesheet" href="/modules/support/css/dashboard.css" type="text/css">'
+            },
+            render = renderer.render_file(path.join(__dirname, 'views'), 'support_dashboard', {
+                lang: i18nm,
+                data: data,
+                status_list: JSON.stringify(i18nm.__('status_list')),
+                prio_list: JSON.stringify(i18nm.__('prio_list')),
                 current_locale: req.session.current_locale
             }, req);
         data.content = render;
@@ -111,6 +141,103 @@ module.exports = function(app) {
                     // Return results
                     rep.status = 1;
                     res.send(JSON.stringify(rep));
+                }); // data
+            } else { // Error or count = 0
+                rep.status = 1;
+                rep.total = '0';
+                res.send(JSON.stringify(rep));
+            }
+        }); // count
+    });
+
+    router.post('/ajax/dashboard/list', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+        if (!req.session.auth || (req.session.auth.status < 2 && !has_support_group)) {
+            req.session.auth_redirect_host = req.get('host');
+            req.session.auth_redirect = '/support';
+            res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            return;
+        }
+        var rep = {
+            ipp: items_per_page
+        };
+        var skip = req.body.skip;
+        var sort_mode = req.body.sort_mode;
+        var sort_cell = req.body.sort_cell;
+        if (typeof skip != 'undefined')
+            if (!skip.match(/^[0-9]{1,10}$/)) {
+                rep.status = 0;
+                rep.error = i18nm.__("invalid_query");
+                return res.send(JSON.stringify(rep));
+            }
+        var sort = {};
+        sort[sort_cell_default] = sort_cell_default_mode;
+        if (sort_cells && sort_cells[sort_cell]) {
+            sort = {};
+            sort[sort_cell] = 1;
+            if (typeof sort_mode != 'undefined' && sort_mode == -1) {
+                sort[sort_cell] = -1;
+            }
+        }
+        rep.items = [];
+        app.get('mongodb').collection('support').find().count(function(err, items_count) {
+            if (!err && items_count > 0) {
+                rep.total = items_count;
+                app.get('mongodb').collection('support').find({}, {
+                    skip: skip,
+                    limit: items_per_page
+                }).sort(sort).toArray(function(err, items) {
+                    if (!err && items && items.length) {
+                        var users_query = [],
+                            users_hash = {};
+                        for (var p in items) {
+                            if (!users_hash[items[p].user_id]) {
+                                users_query.push({
+                                    _id: new ObjectId(items[p].user_id)
+                                });
+                                users_hash[items[p].user_id] = 1;
+                            }
+                            if (items[p].ticket_replies && items[p].ticket_replies.length)
+                                for (var tr in items[p].ticket_replies)
+                                    if (!users_hash[items[p].ticket_replies[tr].reply_user]) {
+                                        users_query.push({
+                                            _id: new ObjectId(items[p].ticket_replies[tr].reply_user)
+                                        });
+                                        users_hash[items[p].ticket_replies[tr].reply_user] = 1;
+                                    }
+                        }
+                        app.get('mongodb').collection('users').find({
+                            $or: users_query
+                        }).toArray(function(err, users) {
+                            var users_db = {};
+                            if (!err && users && users.length)
+                                for (var ui in users)
+                                    users_db[users[ui]._id] = users[ui].username;
+                            for (var i in items) {
+                                var last_reply, reply_count;
+                                if (items[i].ticket_replies && items[i].ticket_replies.length) {
+                                    last_reply = items[i].ticket_replies[items[i].ticket_replies.length - 1].reply_user;
+                                    reply_count = items[i].ticket_replies.length;
+                                }
+                                if (last_reply) last_reply = users_db[last_reply];
+                                var arr = [];
+                                arr.push(items[i]._id);
+                                arr.push(items[i].ticket_id);
+                                arr.push(users_db[items[i].user_id]);
+                                arr.push(last_reply);
+                                arr.push(items[i].ticket_subj);
+                                arr.push(items[i].ticket_status);
+                                arr.push(items[i].ticket_prio);
+                                arr.push(items[i].ticket_date);
+                                arr.push(reply_count);
+                                rep.items.push(arr);
+                            }
+                            // Return results
+                            rep.status = 1;
+                            res.send(JSON.stringify(rep));
+                        });
+                    }
                 }); // data
             } else { // Error or count = 0
                 rep.status = 1;
@@ -226,12 +353,15 @@ module.exports = function(app) {
                     status: 0,
                     error: i18nm.__("unauth")
                 });
+            var ticket_status = ticket.ticket_status;
+            if (ticket.user_id != req.session.auth._id && (req.session.auth.status == 2 || !has_support_group) && ticket_status == 1)
+                ticket_status = 2;
             app.get('mongodb').collection('support').update({
                 _id: new ObjectId(ticket._id)
             }, {
                 $set: {
                     ticket_date: Date.now(),
-                    ticket_status: 2,
+                    ticket_status: ticket_status,
                 },
                 $push: {
                     ticket_replies: {
@@ -263,6 +393,8 @@ module.exports = function(app) {
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
+        var has_support_group;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
         var id = req.body.id;
         if (!id || !id.match(/^[a-f0-9]{24}$/))
             return res.send({
@@ -270,10 +402,9 @@ module.exports = function(app) {
                 error: i18nm.__("invalid_query")
             });
         app.get('mongodb').collection('support').find({
-            _id: new ObjectId(id),
-            user_id: req.session.auth._id
+            _id: new ObjectId(id)
         }).toArray(function(err, items) {
-            if (err || !items || items.length != 1)
+            if (err || !items || items.length != 1 || (req.session.auth._id != items[0].user_id && req.session.auth.status < 2 && !has_support_group))
                 return res.send({
                     status: 0,
                     error: i18nm.__("invalid_ticket")

@@ -1,5 +1,6 @@
 {
 	"module_name": "Support",
+	"module_dashboard": "Support dashboard",
 	"ticket_id": "Ticket ID",
 	"ticket_subj": "Subject",
 	"ticket_status": "Status",
@@ -38,6 +39,11 @@
 		"Processing",
 		"Closed"
 	],
+	"prio_list": [
+		"Low",
+		"Medium",
+		"High"
+	],
 	"ticket_reply_msg_hint": "Please specify your reply text",
 	"ticket_msg_reply": "Message",
 	"reply_ticket": "Post reply",
@@ -45,5 +51,7 @@
 	"post_ticket_reply": "Post a reply",
 	"cancel": "Cancel",
 	"back_to_ticket_list": "Back to list",
-	"ticket_reply_success": "ticket_reply_success"
+	"ticket_reply_success": "Ticket reply has been saved",
+	"ticket_user": "User",
+	"ticket_last_reply": "Reply by"
 }

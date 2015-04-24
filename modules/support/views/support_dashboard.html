@@ -1,18 +1,17 @@
 <div id="support_area_list" class="support-area">
-    <h1>!{root.lang.__('module_name')}</h1>
-    <div class="uk-margin-bottom">
-        <button class="uk-button uk-button-success" id="btn_new_ticket">!{root.lang.__('new_ticket')}</button>
-    </div>
+    <h1>!{root.lang.__('module_dashboard')}</h1>
     <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
         <thead>
             <tr>
-                <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}</th>
+                <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}
+                    <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
+                </th>
+                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_user_id">!{root.lang.__('ticket_user')}</th>
+                <th style="width:120px">!{root.lang.__('ticket_last_reply')}</th>
                 <th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
                 <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
                 <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
-                <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}
-                    <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
-                </th>
+                <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}</th>
             </tr>
         </thead>
         <tbody>
@@ -178,4 +177,4 @@ var _lang_vars = {
 <script src="/js/moment.min.js"></script>
 <script src="/js/helper.js"></script>
 <script src="/js/jquery.history.min.js"></script>
-<script src="/modules/support/js/support_frontend.js"></script>
+<script src="/modules/support/js/support_dashboard.js"></script>

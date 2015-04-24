@@ -1,7 +1,6 @@
 var routing = {
     prefix: '/support',
-    cp_id: 'support',
-    cp_prefix: '/cp/support/'
+    cp_id: ''
 };
 
 module.exports = routing;
