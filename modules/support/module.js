@@ -22,8 +22,11 @@ module.exports = function(app) {
         moment = require('moment'),
         mailer = app.get('mailer'),
         config = app.get('config'),
+        crypto = require('crypto'),
         fs = require('fs-extra'),
         S = require('string'),
+        socketsender = require('../../core/socketsender')(app),
+        redis_client = app.get('redis_client'),
         ObjectId = require('mongodb').ObjectID,
         i18nm = new(require('i18n-2'))({
             locales: config.locales.avail,
@@ -63,7 +66,7 @@ module.exports = function(app) {
         if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
         if (!req.session.auth || (req.session.auth.status < 2 && !has_support_group)) {
             req.session.auth_redirect_host = req.get('host');
-            req.session.auth_redirect = '/support';
+            req.session.auth_redirect = '/support/dashboard';
             res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
@@ -80,7 +83,12 @@ module.exports = function(app) {
                 data: data,
                 status_list: JSON.stringify(i18nm.__('status_list')),
                 prio_list: JSON.stringify(i18nm.__('prio_list')),
-                current_locale: req.session.current_locale
+                current_locale: req.session.current_locale,
+                current_username: req.session.auth.username,
+                current_user: JSON.stringify({
+                    id: req.session.auth._id,
+                    id_hash: crypto.createHash('md5').update(app.get('config').salt + '.' + req.session.auth._id).digest('hex')
+                })
             }, req);
         data.content = render;
         app.get('renderer').render(res, undefined, data, req);
@@ -231,6 +239,7 @@ module.exports = function(app) {
                                 arr.push(items[i].ticket_prio);
                                 arr.push(items[i].ticket_date);
                                 arr.push(reply_count);
+                                arr.push(items[i].locked_by);
                                 rep.items.push(arr);
                             }
                             // Return results
@@ -354,7 +363,7 @@ module.exports = function(app) {
                     error: i18nm.__("unauth")
                 });
             var ticket_status = ticket.ticket_status;
-            if (ticket.user_id != req.session.auth._id && (req.session.auth.status == 2 || !has_support_group) && ticket_status == 1)
+            if ((req.session.auth.status == 2 || has_support_group) && ticket_status == 1)
                 ticket_status = 2;
             app.get('mongodb').collection('support').update({
                 _id: new ObjectId(ticket._id)
@@ -378,7 +387,36 @@ module.exports = function(app) {
                     });
                 rep.ticket_id = ticket.ticket_id;
                 rep.reply_date = reply_date;
-                return res.send(JSON.stringify(rep));
+                // Get list of users and broadcast a message
+                app.get('mongodb').collection('users').find({
+                    $or: [{
+                        status: 2
+                    }, {
+                        groups: {
+                            $regex: 'support'
+                        }
+                    }],
+                }).toArray(function(err, users) {
+                    var _multi = redis_client.multi();
+                    if (!err && users && users.length) {
+                        for (var ui in users)
+                            _multi.get(config.redis.prefix + 'socketio_online_' + users[ui]._id);
+                    }
+                    _multi.exec(function(err, online) {
+                        if (online && online.length)
+                            for (var oi in users)
+                                if (online[oi] && users[oi]._id != req.session.auth._id)
+                                    socketsender.emit(users[oi]._id, 'ticket_changed', {
+                                        ticket_id: ticket._id,
+                                        locked_by: req.session.auth.username,
+                                        ticket_date: Date.now(),
+                                        ticket_status: ticket_status,
+                                        reply_user: req.session.auth.username
+                                    });
+                        return res.send(JSON.stringify(rep));
+                    });
+                });
+                // End of message broadcast
             });
         });
     });
@@ -434,7 +472,46 @@ module.exports = function(app) {
                             realname: items[ui].realname,
                             email: items[ui].email
                         };
-                return res.send(JSON.stringify(rep));
+                if (!rep.ticket.locked_by) {
+                    app.get('mongodb').collection('support').update({
+                        _id: new ObjectId(id)
+                    }, {
+                        $set: {
+                            locked_by: req.session.auth.username
+                        }
+                    }, function(err) {
+                        rep.items = items;
+                        // Get list of users and broadcast a message
+                        app.get('mongodb').collection('users').find({
+                            $or: [{
+                                status: 2
+                            }, {
+                                groups: {
+                                    $regex: 'support'
+                                }
+                            }],
+                        }).toArray(function(err, users) {
+                            var _multi = redis_client.multi();
+                            if (!err && users && users.length) {
+                                for (var ui in users)
+                                    _multi.get(config.redis.prefix + 'socketio_online_' + users[ui]._id);
+                            }
+                            _multi.exec(function(err, online) {
+                                if (online && online.length)
+                                    for (var oi in users)
+                                        if (online[oi] && users[oi]._id != req.session.auth._id)
+                                            socketsender.emit(users[oi]._id, 'ticket_changed', {
+                                                ticket_id: id,
+                                                locked_by: req.session.auth.username
+                                            });
+                                return res.send(JSON.stringify(rep));
+                            });
+                        });
+                        // End of message broadcast
+                    });
+                } else {
+                    return res.send(JSON.stringify(rep));
+                }
             });
         });
     });
@@ -568,6 +645,61 @@ module.exports = function(app) {
                     });
                 });
             }
+        });
+    });
+
+    router.post('/ajax/ticket/unlock', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        var has_support_group;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+        if (!req.session.auth || (req.session.auth.status < 2 && !has_support_group)) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var id = req.body.id;
+        if (!id || !id.match(/^[a-f0-9]{24}$/))
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+        app.get('mongodb').collection('support').update({
+            _id: new ObjectId(id)
+        }, {
+            $set: {
+                locked_by: null
+            }
+        }, function(err) {
+            // Get list of users and broadcast a message
+            app.get('mongodb').collection('users').find({
+                $or: [{
+                    status: 2
+                }, {
+                    groups: {
+                        $regex: 'support'
+                    }
+                }],
+            }).toArray(function(err, users) {
+                var _multi = redis_client.multi();
+                if (!err && users && users.length) {
+                    for (var ui in users)
+                        _multi.get(config.redis.prefix + 'socketio_online_' + users[ui]._id);
+                }
+                _multi.exec(function(err, online) {
+                    if (online && online.length)
+                        for (var oi in users)
+                            if (online[oi] && users[oi]._id != req.session.auth._id)
+                                socketsender.emit(users[oi]._id, 'ticket_changed', {
+                                    ticket_id: id,
+                                    locked_by: undefined
+                                });
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+            // End of message broadcast
         });
     });
 

@@ -53,5 +53,9 @@
 	"back_to_ticket_list": "Back to list",
 	"ticket_reply_success": "Ticket reply has been saved",
 	"ticket_user": "User",
-	"ticket_last_reply": "Reply by"
+	"ticket_last_reply": "Reply by",
+	"ticket_locked": "Ticket is locked",
+	"ticket_locked_by": "The requested ticked is currently being processed by another user",
+	"close": "Close",
+	"steal_lock": "Steal lock"
 }

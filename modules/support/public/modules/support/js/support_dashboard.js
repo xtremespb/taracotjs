@@ -4,9 +4,16 @@ var dlg_ticket_reply = new UIkit.modal("#dlg_ticket_reply", {
         bgclose: false,
         keyboard: false
     }),
+    dlg_locked = new UIkit.modal("#dlg_locked", {
+        bgclose: false,
+        keyboard: false
+    }),
     process_rows = [
-        function(val, id) {
-            return val;
+        function(val, id, data) {
+            var color = 'grey';
+            if (data[9]) color = 'red';
+            var badge = '<i class="uk-icon-circle" style="color:' + color + '"></i>&nbsp;';
+            return badge + val;
         },
         function(val, id) {
             return val || '&mdash;';
@@ -17,7 +24,7 @@ var dlg_ticket_reply = new UIkit.modal("#dlg_ticket_reply", {
             } else {
                 var badge_class = 'uk-badge-success';
                 if (data[2] == data[3]) badge_class = 'uk-badge-warning';
-                return '<span class="uk-badge ' + badge_class + '">' + data[8] + '</span>&nbsp;' + val;
+                return '<span class="taracot-support-td-reply-count uk-badge ' + badge_class + '">' + data[8] + '</span>&nbsp;<span class="taracot-support-td-reply-user">' + val + '</span>';
             }
         },
         function(val, id) {
@@ -106,6 +113,43 @@ var init_uploader_reply = function() {
     });
 };
 
+var _show_ticket = function(data) {
+    push_state({
+        mode: 'view',
+        ticket_id: current_ticket_id
+    }, "?mode=view&ticket_id=" + current_ticket_id);
+    $('#support_replies').html('');
+    $('.support-area').hide();
+    $('#support_area_view_ticket').show();
+    $('#support_h1_ticket_id').html(data.ticket.ticket_id);
+    $('#support_h3_subj').html(data.ticket.ticket_subj);
+    $('#support_box_msg').html(data.ticket.ticket_msg);
+    $('#support_text_last_modified').html(moment(data.ticket.ticket_date).format('LLL'));
+    $('#support_badge_status').html(_lang_vars.status_list[data.ticket.ticket_status - 1]);
+    $('#support_attachment').hide();
+    if (data.ticket.attachment) {
+        $('#support_attachment_link').attr('href', '/support/attachment?file=' + data.ticket.attachment);
+        $('#support_attachment_link').html(data.ticket.attachment);
+        $('#support_attachment').show();
+    }
+    $('#support_username_starter').html(data.users[data.ticket.user_id].realname || data.users[data.ticket.user_id].username);
+    if (data.ticket.ticket_replies && data.ticket.ticket_replies.length) {
+        data.ticket.ticket_replies.sort(function(a, b) {
+            if (a.reply_date > b.reply_date)
+                return -1;
+            if (a.reply_date < b.reply_date)
+                return 1;
+            return 0;
+        });
+        for (var tr in data.ticket.ticket_replies) {
+            var attachment = '';
+            if (data.ticket.ticket_replies[tr].attachment)
+                attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment?file=' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
+            $('#support_replies').append('<div class="uk-margin-top taracot-support-username"><i class="uk-icon-user"></i>&nbsp;' + (data.users[data.ticket.ticket_replies[tr].reply_user].realname || data.users[data.ticket.ticket_replies[tr].reply_user].username) + '&nbsp;<span class="taracot-support-reply-date">[' + moment(data.ticket.ticket_replies[tr].reply_date).format('LLL') + ']</span></div><div class="uk-panel uk-panel-box">' + data.ticket.ticket_replies[tr].reply_msg + '</div>' + attachment);
+        }
+    }
+};
+
 /*******************************************************************
 
  Handlers
@@ -124,41 +168,12 @@ var table_row_click_handler = function(evnt, _id) {
         dataType: "json",
         success: function(data) {
             if (data && data.status == 1) {
-                push_state({
-                    mode: 'view',
-                    ticket_id: id
-                }, "?mode=view&ticket_id=" + id);
                 current_ticket_id = id;
-                $('#support_replies').html('');
-                $('.support-area').hide();
-                $('#support_area_view_ticket').show();
-                $('#support_h1_ticket_id').html(data.ticket.ticket_id);
-                $('#support_h3_subj').html(data.ticket.ticket_subj);
-                $('#support_box_msg').html(data.ticket.ticket_msg);
-                $('#support_text_last_modified').html(moment(data.ticket.ticket_date).format('LLL'));
-                $('#support_badge_status').html(_lang_vars.status_list[data.ticket.ticket_status - 1]);
-                $('#support_attachment').hide();
-                if (data.ticket.attachment) {
-                    $('#support_attachment_link').attr('href', '/support/attachment?file=' + data.ticket.attachment);
-                    $('#support_attachment_link').html(data.ticket.attachment);
-                    $('#support_attachment').show();
+                if (data.ticket.locked_by && data.ticket.locked_by != current_username) {
+                    $('#dlg_locked_user').html(data.ticket.locked_by);
+                    return dlg_locked.show();
                 }
-                $('#support_username_starter').html(data.users[data.ticket.user_id].realname || data.users[data.ticket.user_id].username);
-                if (data.ticket.ticket_replies && data.ticket.ticket_replies.length) {
-                    data.ticket.ticket_replies.sort(function(a, b) {
-                        if (a.reply_date > b.reply_date)
-                            return -1;
-                        if (a.reply_date < b.reply_date)
-                            return 1;
-                        return 0;
-                    });
-                    for (var tr in data.ticket.ticket_replies) {
-                        var attachment = '';
-                        if (data.ticket.ticket_replies[tr].attachment)
-                            attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment?file=' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
-                        $('#support_replies').append('<div class="uk-margin-top taracot-support-username"><i class="uk-icon-user"></i>&nbsp;' + (data.users[data.ticket.ticket_replies[tr].reply_user].realname || data.users[data.ticket.ticket_replies[tr].reply_user].username) + '&nbsp;<span class="taracot-support-reply-date">[' + moment(data.ticket.ticket_replies[tr].reply_date).format('LLL') + ']</span></div><div class="uk-panel uk-panel-box">' + data.ticket.ticket_replies[tr].reply_msg + '</div>' + attachment);
-                    }
-                }
+                _show_ticket(data);
             } else {
                 var msg = _lang_vars.ajax_failed;
                 if (data.err_msg) msg = data.err_msg;
@@ -267,12 +282,24 @@ var btn_ticket_reply_handler = function() {
 };
 
 var btn_ticket_reply_cancel_handler = function() {
-    push_state({
-        mode: 'list'
-    }, "?mode=list");
-    $('.support-area').hide();
-    $('#support_area_list').show();
-    $('#taracot_table').medvedTable('update');
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/support/ajax/ticket/unlock',
+        data: {
+            id: current_ticket_id
+        },
+        dataType: "json",
+        complete: function() {
+            push_state({
+                mode: 'list'
+            }, "?mode=list");
+            $('.support-area').hide();
+            $('#support_area_list').show();
+            $('#taracot_table').medvedTable('update');
+            $.loadingIndicator('hide');
+        }
+    });
 };
 
 /*******************************************************************
@@ -356,6 +383,44 @@ var _ticket_reply_success = function() {
     });
 };
 
+var btn_steal_lock_handler = function() {
+    dlg_locked.hide();
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/support/ajax/ticket/unlock',
+        data: {
+            id: current_ticket_id
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                table_row_click_handler(undefined, current_ticket_id);
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $.loadingIndicator('hide');
+        }
+    });
+};
+
 /*******************************************************************
 
  History API handler
@@ -416,6 +481,7 @@ $(document).ready(function() {
     $('#btn_ticket_reply_dlg').click(btn_ticket_reply_dlg_handler);
     $('#btn_ticket_reply').click(btn_ticket_reply_handler);
     $('#btn_ticket_reply_cancel').click(btn_ticket_reply_cancel_handler);
+    $('#btn_steal_lock').click(btn_steal_lock_handler);
     $('#taracot_table').medvedTable({
         col_count: 7,
         sort_mode: -1,
@@ -424,5 +490,31 @@ $(document).ready(function() {
         process_rows: process_rows,
         error_message: _lang_vars.ajax_failed,
         row_click_handler: table_row_click_handler
+    });
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('set_session', current_user.id, current_user.id_hash);
+    });
+    socket.on('ticket_changed', function(msg) {
+        if (msg.ticket_id) {
+            if ($('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:first > i'))
+                if (msg.locked_by) {
+                    $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:first > i').css('color', 'red');
+                } else {
+                    $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:first > i').css('color', 'grey');
+                }
+            if (msg.ticket_date && $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 6 )'))
+                $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 6 )').html(moment(msg.ticket_date).format('L LT'));
+            if (msg.ticket_status)
+                $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 4 )').html(_lang_vars.status_list[msg.ticket_status - 1]);
+            if (msg.reply_user) {
+                var count = parseInt($('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 2 ) > span.taracot-support-td-reply-count').html()) || 0,
+                    origin_user = $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 1 )').html();
+                count++;
+                var badge_class = 'uk-badge-success';
+                if (msg.reply_user == origin_user) badge_class = 'uk-badge-warning';
+                $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 2 )').html('<span class="taracot-support-td-reply-count uk-badge ' + badge_class + '">' + count + '</span>&nbsp;<span class="taracot-support-td-reply-user">' + msg.reply_user + '</span>');
+            }
+        }
     });
 });

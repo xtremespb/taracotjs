@@ -152,6 +152,13 @@
         </div>
     </div>
 </div>
+<div id="dlg_locked" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header"><h3>!{root.lang.__('ticket_locked')}</h3></div>
+        !{root.lang.__('ticket_locked_by')}:&nbsp;<strong><span id="dlg_locked_user"></span></strong>
+        <div class="uk-modal-footer"><button class="uk-button uk-modal-close taracot-dlg-locked-button">!{root.lang.__('close')}</button>&nbsp;<button id="btn_steal_lock" class="uk-button uk-button-danger taracot-dlg-locked-button">!{root.lang.__('steal_lock')}</button></div>
+    </div>
+</div>
 <script>
 var _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
@@ -168,6 +175,8 @@ var _lang_vars = {
         }
     },
     save_title = $(document).find("title").text(),
+    current_username = "!{root.current_username}",
+    current_user = !{root.current_user},
     current_locale = "!{root.current_locale}";
 </script>
 <script src="/js/plupload/plupload.full.min.js"></script>
@@ -177,4 +186,5 @@ var _lang_vars = {
 <script src="/js/moment.min.js"></script>
 <script src="/js/helper.js"></script>
 <script src="/js/jquery.history.min.js"></script>
+<script src="/js/socket.io.min.js"></script>
 <script src="/modules/support/js/support_dashboard.js"></script>
