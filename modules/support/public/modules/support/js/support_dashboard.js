@@ -40,7 +40,7 @@ var dlg_ticket_reply = new UIkit.modal("#dlg_ticket_reply", {
             return moment(val).format('L LT');
         }
     ],
-    uploader_reply, uploading, current_ticket_id, _history_handler_disable;
+    uploader_reply, uploading, current_ticket_id, current_ticket_data, _history_handler_disable;
 
 var init_uploader_reply = function() {
     uploader_reply = new plupload.Uploader({
@@ -169,6 +169,7 @@ var table_row_click_handler = function(evnt, _id) {
         success: function(data) {
             if (data && data.status == 1) {
                 current_ticket_id = id;
+                current_ticket_data = data;
                 if (data.ticket.locked_by && data.ticket.locked_by != current_username) {
                     $('#dlg_locked_user').html(data.ticket.locked_by);
                     return dlg_locked.show();

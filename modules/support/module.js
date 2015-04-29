@@ -472,7 +472,7 @@ module.exports = function(app) {
                             realname: items[ui].realname,
                             email: items[ui].email
                         };
-                if (!rep.ticket.locked_by) {
+                if (!rep.ticket.locked_by && (has_support_group || req.session.auth.status == 2)) {
                     app.get('mongodb').collection('support').update({
                         _id: new ObjectId(id)
                     }, {

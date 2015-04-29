@@ -1,22 +1,24 @@
 <div id="support_area_list" class="support-area">
     <h1>!{root.lang.__('module_dashboard')}</h1>
-    <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
-        <thead>
-            <tr>
-                <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}
-                    <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
-                </th>
-                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_user_id">!{root.lang.__('ticket_user')}</th>
-                <th style="width:120px">!{root.lang.__('ticket_last_reply')}</th>
-                <th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
-                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
-                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
-                <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div class="uk-overflow-container">
+        <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
+            <thead>
+                <tr>
+                    <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}
+                        <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
+                    </th>
+                    <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_user_id">!{root.lang.__('ticket_user')}</th>
+                    <th style="width:120px">!{root.lang.__('ticket_last_reply')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
+                    <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
+                    <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
+                    <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="taracot-loading uk-hidden uk-vertical-align uk-text-center">
         <div class="uk-vertical-align-middle">
             <img src="/modules/user/images/loading_36x36.gif" width="36" height="36" alt="">
@@ -154,9 +156,13 @@
 </div>
 <div id="dlg_locked" class="uk-modal">
     <div class="uk-modal-dialog">
-        <div class="uk-modal-header"><h3>!{root.lang.__('ticket_locked')}</h3></div>
+        <div class="uk-modal-header">
+            <h3>!{root.lang.__('ticket_locked')}</h3></div>
         !{root.lang.__('ticket_locked_by')}:&nbsp;<strong><span id="dlg_locked_user"></span></strong>
-        <div class="uk-modal-footer"><button class="uk-button uk-modal-close taracot-dlg-locked-button">!{root.lang.__('close')}</button>&nbsp;<button id="btn_steal_lock" class="uk-button uk-button-danger taracot-dlg-locked-button">!{root.lang.__('steal_lock')}</button></div>
+        <div class="uk-modal-footer">
+            <button class="uk-button uk-modal-close taracot-dlg-locked-button">!{root.lang.__('close')}</button>&nbsp;
+            <button id="btn_steal_lock" class="uk-button uk-button-danger taracot-dlg-locked-button">!{root.lang.__('steal_lock')}</button>
+        </div>
     </div>
 </div>
 <script>
@@ -176,7 +182,9 @@ var _lang_vars = {
     },
     save_title = $(document).find("title").text(),
     current_username = "!{root.current_username}",
-    current_user = !{root.current_user},
+    current_user = !{
+        root.current_user
+    },
     current_locale = "!{root.current_locale}";
 </script>
 <script src="/js/plupload/plupload.full.min.js"></script>
