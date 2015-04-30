@@ -36,6 +36,7 @@ module.exports = function(app) {
         });
 
     router.get('/', function(req, res) {
+        console.log(req.session.auth);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/support';
@@ -695,6 +696,66 @@ module.exports = function(app) {
                                 socketsender.emit(users[oi]._id, 'ticket_changed', {
                                     ticket_id: id,
                                     locked_by: undefined
+                                });
+                    return res.send(JSON.stringify(rep));
+                });
+            });
+            // End of message broadcast
+        });
+    });
+
+    router.post('/ajax/ticket/save', function(req, res) {
+        i18nm.setLocale(req.session.current_locale);
+        var rep = {
+            status: 1
+        };
+        var has_support_group;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+        if (!req.session.auth || (req.session.auth.status < 2 && !has_support_group)) {
+            rep.status = 0;
+            rep.error = i18nm.__("unauth");
+            return res.send(JSON.stringify(rep));
+        }
+        var id = req.body.id,
+            status = parseInt(req.body.ticket_status),
+            prio = parseInt(req.body.ticket_prio);
+        if (!id || !id.match(/^[a-f0-9]{24}$/) || !status || status.isNaN || status < 1 || status > 3 || !prio || prio.isNaN || prio < 1 || prio > 3)
+            return res.send({
+                status: 0,
+                error: i18nm.__("invalid_query")
+            });
+        app.get('mongodb').collection('support').update({
+            _id: new ObjectId(id)
+        }, {
+            $set: {
+                ticket_status: status,
+                ticket_prio: prio
+            }
+        }, function(err) {
+            // Get list of users and broadcast a message
+            app.get('mongodb').collection('users').find({
+                $or: [{
+                    status: 2
+                }, {
+                    groups: {
+                        $regex: 'support'
+                    }
+                }],
+            }).toArray(function(err, users) {
+                var _multi = redis_client.multi();
+                if (!err && users && users.length) {
+                    for (var ui in users)
+                        _multi.get(config.redis.prefix + 'socketio_online_' + users[ui]._id);
+                }
+                _multi.exec(function(err, online) {
+                    if (online && online.length)
+                        for (var oi in users)
+                            if (online[oi] && users[oi]._id != req.session.auth._id)
+                                socketsender.emit(users[oi]._id, 'ticket_changed', {
+                                    ticket_id: id,
+                                    locked_by: req.session.auth.username,
+                                    ticket_status: status,
+                                    ticket_prio: prio
                                 });
                     return res.send(JSON.stringify(rep));
                 });

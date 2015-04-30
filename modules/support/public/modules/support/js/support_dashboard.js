@@ -8,6 +8,10 @@ var dlg_ticket_reply = new UIkit.modal("#dlg_ticket_reply", {
         bgclose: false,
         keyboard: false
     }),
+    dlg_edit = new UIkit.modal("#dlg_edit", {
+        bgclose: false,
+        keyboard: false
+    }),
     process_rows = [
         function(val, id, data) {
             var color = 'grey';
@@ -422,6 +426,59 @@ var btn_steal_lock_handler = function() {
     });
 };
 
+var btn_ticket_edit_dlg_handler = function() {
+    $('.taracot-form-ticket-edit-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    dlg_edit.show();
+    $('#ticket_status').val(current_ticket_data.ticket.ticket_status);
+    $('#ticket_prio').val(current_ticket_data.ticket.ticket_prio);
+    $('#ticket_status').focus();
+};
+
+var btn_ticket_edit_save_handler = function() {
+    alert("Priority: " + $('#ticket_status').val());
+    return;
+    dlg_edit.hide();
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/support/ajax/ticket/save',
+        data: {
+            id: current_ticket_id,
+            ticket_status: parseInt($('#ticket_status').val()),
+            ticket_prio: parseInt($('#ticket_prio').val())
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                table_row_click_handler(undefined, current_ticket_id);
+            } else {
+                $.loadingIndicator('hide');
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            $.loadingIndicator('hide');
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+    });
+};
+
 /*******************************************************************
 
  History API handler
@@ -483,6 +540,8 @@ $(document).ready(function() {
     $('#btn_ticket_reply').click(btn_ticket_reply_handler);
     $('#btn_ticket_reply_cancel').click(btn_ticket_reply_cancel_handler);
     $('#btn_steal_lock').click(btn_steal_lock_handler);
+    $('#btn_ticket_edit_dlg').click(btn_ticket_edit_dlg_handler);
+    $('#btn_ticket_edit_save').click(btn_ticket_edit_save_handler);
     $('#taracot_table').medvedTable({
         col_count: 7,
         sort_mode: -1,
@@ -508,6 +567,8 @@ $(document).ready(function() {
                 $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 6 )').html(moment(msg.ticket_date).format('L LT'));
             if (msg.ticket_status)
                 $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 4 )').html(_lang_vars.status_list[msg.ticket_status - 1]);
+            if (msg.ticket_prio)
+                $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 5 )').html(_lang_vars.status_list[msg.ticket_prio - 1]);
             if (msg.reply_user) {
                 var count = parseInt($('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 2 ) > span.taracot-support-td-reply-count').html()) || 0,
                     origin_user = $('#taracot_table > tbody > tr[rel="' + msg.ticket_id + '"] > td:eq( 1 )').html();

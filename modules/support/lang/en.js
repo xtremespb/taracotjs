@@ -57,5 +57,7 @@
 	"ticket_locked": "Ticket is locked",
 	"ticket_locked_by": "The requested ticked is currently being processed by another user",
 	"close": "Close",
-	"steal_lock": "Steal lock"
+	"steal_lock": "Steal lock",
+	"ticket_edit": "Edit ticket",
+	"save_ticket": "Save"
 }

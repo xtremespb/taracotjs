@@ -113,7 +113,8 @@
     </div>
     <div class="taracot-support-btn-margin">
         <button id="btn_ticket_reply_cancel" class="uk-button"><i class="uk-icon-arrow-left"></i>&nbsp;!{root.lang.__('back_to_ticket_list')}</button>&nbsp;
-        <button id="btn_ticket_reply_dlg" class="uk-button">!{root.lang.__('post_ticket_reply')}</button>
+        <button id="btn_ticket_reply_dlg" class="uk-button">!{root.lang.__('post_ticket_reply')}</button>&nbsp;
+        <button id="btn_ticket_edit_dlg" class="uk-button">!{root.lang.__('ticket_edit')}</button>
     </div>
     <div id="support_replies"></div>
     <div class="uk-modal" id="dlg_ticket_reply">
@@ -157,11 +158,49 @@
 <div id="dlg_locked" class="uk-modal">
     <div class="uk-modal-dialog">
         <div class="uk-modal-header">
-            <h3>!{root.lang.__('ticket_locked')}</h3></div>
+            <h3>!{root.lang.__('ticket_locked')}</h3>
+        </div>
         !{root.lang.__('ticket_locked_by')}:&nbsp;<strong><span id="dlg_locked_user"></span></strong>
         <div class="uk-modal-footer">
             <button class="uk-button uk-modal-close taracot-dlg-locked-button">!{root.lang.__('close')}</button>&nbsp;
             <button id="btn_steal_lock" class="uk-button uk-button-danger taracot-dlg-locked-button">!{root.lang.__('steal_lock')}</button>
+        </div>
+    </div>
+</div>
+<div id="dlg_edit" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h3>!{root.lang.__('ticket_edit')}</h3>
+        </div>
+        <div class="uk-form uk-form-horizontal">
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="ticket_status">
+                    !{root.lang.__('ticket_status')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <select id="ticket_status" class="uk-form-width-small taracot-form-ticket-edit-control">
+                        <option value="1">!{root.lang.__('status_list')[0]}</option>
+                        <option value="2">!{root.lang.__('status_list')[1]}</option>
+                        <option value="3">!{root.lang.__('status_list')[2]}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="uk-form-row">
+                <label class="uk-form-label" for="ticket_prio">
+                    !{root.lang.__('ticket_prio')}&nbsp;<span class="taracot-red-asterisk">*</span>
+                </label>
+                <div class="uk-form-controls">
+                    <select id="ticket_prio" class="uk-form-width-small taracot-form-ticket-edit-control">
+                        <option value="1">!{root.lang.__('ticket_prio_low')}</option>
+                        <option value="2">!{root.lang.__('ticket_prio_medium')}</option>
+                        <option value="3">!{root.lang.__('ticket_prio_high')}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="uk-modal-footer">
+            <button id="btn_ticket_edit_save" class="uk-button uk-button-success taracot-dlg-edit-button">!{root.lang.__('save_ticket')}</button>&nbsp;
+            <button class="uk-button uk-modal-close taracot-dlg-edit-button">!{root.lang.__('cancel')}</button>
         </div>
     </div>
 </div>
