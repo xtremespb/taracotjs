@@ -31,7 +31,8 @@ var config = {
         "prefix": "taracotjs_locale_",
         "httpOnly": false,
         "secure": false,
-        "maxAge": null
+        "maxAge": null,
+        "path": "/"
     },
     "session": {
         "secret": "Dd7nMf1FawoIGPeps4NjVPJeSIqzjkgN",
