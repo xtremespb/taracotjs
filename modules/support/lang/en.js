@@ -59,5 +59,10 @@
 	"close": "Close",
 	"steal_lock": "Steal lock",
 	"ticket_edit": "Edit ticket",
-	"save_ticket": "Save"
+	"save_ticket": "Save",
+	"new_support_message": "New message in support system",
+	"ticket_number": "ticket",
+	"ticket_reply": "Ticket reply",
+	"view_ticket": "View and reply ticket",
+	"on_website": "on website support area"
 }

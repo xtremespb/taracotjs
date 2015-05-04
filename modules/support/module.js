@@ -36,7 +36,6 @@ module.exports = function(app) {
         });
 
     router.get('/', function(req, res) {
-        console.log(req.session.auth);
         if (!req.session.auth || req.session.auth.status < 1) {
             req.session.auth_redirect_host = req.get('host');
             req.session.auth_redirect = '/support';
@@ -144,6 +143,7 @@ module.exports = function(app) {
                             arr.push(items[i].ticket_status);
                             arr.push(items[i].ticket_prio);
                             arr.push(items[i].ticket_date);
+                            arr.push(items[i].ticket_unread);
                             rep.items.push(arr);
                         }
                     }
@@ -363,6 +363,8 @@ module.exports = function(app) {
                     status: 0,
                     error: i18nm.__("unauth")
                 });
+            var unread = 0;
+            if (ticket.user_id != req.session.auth._id) unread = 1;
             var ticket_status = ticket.ticket_status;
             if ((req.session.auth.status == 2 || has_support_group) && ticket_status == 1)
                 ticket_status = 2;
@@ -372,6 +374,7 @@ module.exports = function(app) {
                 $set: {
                     ticket_date: Date.now(),
                     ticket_status: ticket_status,
+                    ticket_unread: unread
                 },
                 $push: {
                     ticket_replies: {
@@ -396,13 +399,17 @@ module.exports = function(app) {
                         groups: {
                             $regex: 'support'
                         }
+                    }, {
+                        _id: new ObjectId(ticket.user_id)
                     }],
                 }).toArray(function(err, users) {
-                    var _multi = redis_client.multi();
-                    if (!err && users && users.length) {
-                        for (var ui in users)
+                    var _multi = redis_client.multi(),
+                        email = '';
+                    if (!err && users && users.length)
+                        for (var ui in users) {
                             _multi.get(config.redis.prefix + 'socketio_online_' + users[ui]._id);
-                    }
+                            if (users[ui]._id == ticket.user_id && users[ui].email) email = users[ui].email;
+                        }
                     _multi.exec(function(err, online) {
                         if (online && online.length)
                             for (var oi in users)
@@ -414,7 +421,34 @@ module.exports = function(app) {
                                         ticket_status: ticket_status,
                                         reply_user: req.session.auth.username
                                     });
-                        return res.send(JSON.stringify(rep));
+                        var mail_data = {
+                                lang: i18nm,
+                                site_title: app.get('settings').site_title,
+                                ticket_num: ticket.ticket_id,
+                                ticket_id: ticket._id,
+                                ticket_subj: ticket.ticket_subj,
+                                ticket_msg: ticket.ticket_msg,
+                                ticket_date: moment(ticket.ticket_date).format('L LT'),
+                                ticket_status: i18nm.__('status_list')[ticket.ticket_status - 1],
+                                ticket_reply: ticket_msg,
+                                view_url: config.protocol + '://' + req.get('host') + '/support?mode=view&ticket_id=' + ticket._id
+                            },
+                            subj = i18nm.__('new_support_message') + ', ' + i18nm.__('ticket_number') + ' ' + ticket.ticket_id + ' (' + app.get('settings').site_title + ')';
+                        if (ticket.user_id == req.session.auth._id) {
+                            mail_data.view_url = config.protocol + '://' + req.get('host') + '/support/dashboard?mode=view&ticket_id=' + ticket._id;
+                            mailer.send(config.mailer.feedback, subj, path.join(__dirname, 'views'), 'mail_newreply_html', 'mail_newreply_txt', mail_data, req, function() {
+                                return res.send(JSON.stringify(rep));
+                            });
+                        } else {
+                            if (email) {
+                                mailer.send(email, subj, path.join(__dirname, 'views'), 'mail_newreply_html', 'mail_newreply_txt', mail_data, req, function() {
+                                    return res.send(JSON.stringify(rep));
+                                });
+                            } else {
+                                return res.send(JSON.stringify(rep));
+                            }
+                        }
+
                     });
                 });
                 // End of message broadcast
@@ -473,15 +507,18 @@ module.exports = function(app) {
                             realname: items[ui].realname,
                             email: items[ui].email
                         };
-                if (!rep.ticket.locked_by && (has_support_group || req.session.auth.status == 2)) {
-                    app.get('mongodb').collection('support').update({
-                        _id: new ObjectId(id)
-                    }, {
-                        $set: {
-                            locked_by: req.session.auth.username
-                        }
-                    }, function(err) {
-                        rep.items = items;
+                var set_data = {};
+                if (req.session.auth._id == rep.ticket.user_id)
+                    set_data.ticket_unread = 0;
+                if (!rep.ticket.locked_by && (has_support_group || req.session.auth.status == 2))
+                    set_data.locked_by = req.session.auth.username;
+                rep.items = items;
+                app.get('mongodb').collection('support').update({
+                    _id: new ObjectId(id)
+                }, {
+                    $set: set_data
+                }, function(err) {
+                    if (!rep.ticket.locked_by && (has_support_group || req.session.auth.status == 2)) {
                         // Get list of users and broadcast a message
                         app.get('mongodb').collection('users').find({
                             $or: [{
@@ -509,10 +546,10 @@ module.exports = function(app) {
                             });
                         });
                         // End of message broadcast
-                    });
-                } else {
-                    return res.send(JSON.stringify(rep));
-                }
+                    } else {
+                        return res.send(JSON.stringify(rep));
+                    }
+                });
             });
         });
     });
@@ -571,7 +608,6 @@ module.exports = function(app) {
                 });
             var ticket = items[0];
             fs.move(app.get('config').dir.tmp + '/' + file.name, path.join(__dirname, 'files', dn + ext), function(err) {
-                console.log(err);
                 if (err) return res.send({
                     status: 0,
                     error: i18nm.__('upload_failed')

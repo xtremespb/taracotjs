@@ -8,7 +8,9 @@ var dlg_ticket_reply = new UIkit.modal("#dlg_ticket_reply", {
         function(val, id) {
             return val;
         },
-        function(val, id) {
+        function(val, id, data) {
+            if (data[6] && parseInt(data[6]) == 1)
+                val = '<i class="uk-icon-envelope taracot-support-unread"></i>' + val;
             return val;
         },
         function(val, id) {

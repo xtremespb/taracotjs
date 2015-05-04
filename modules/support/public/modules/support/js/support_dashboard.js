@@ -130,6 +130,11 @@ var _show_ticket = function(data) {
     $('#support_box_msg').html(data.ticket.ticket_msg);
     $('#support_text_last_modified').html(moment(data.ticket.ticket_date).format('LLL'));
     $('#support_badge_status').html(_lang_vars.status_list[data.ticket.ticket_status - 1]);
+    $('#support_badge_prio').html(_lang_vars.prio_list[data.ticket.ticket_prio - 1]);
+    $('#support_badge_prio').removeClass('uk-badge-warning');
+    $('#support_badge_prio').removeClass('uk-badge-danger');
+    if (data.ticket.ticket_prio == 2) $('#support_badge_prio').addClass('uk-badge-warning');
+    if (data.ticket.ticket_prio == 3) $('#support_badge_prio').addClass('uk-badge-danger');
     $('#support_attachment').hide();
     if (data.ticket.attachment) {
         $('#support_attachment_link').attr('href', '/support/attachment?file=' + data.ticket.attachment);
@@ -307,6 +312,96 @@ var btn_ticket_reply_cancel_handler = function() {
     });
 };
 
+var btn_steal_lock_handler = function() {
+    dlg_locked.hide();
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/support/ajax/ticket/unlock',
+        data: {
+            id: current_ticket_id
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                table_row_click_handler(undefined, current_ticket_id);
+            } else {
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        },
+        complete: function() {
+            $.loadingIndicator('hide');
+        }
+    });
+};
+
+var btn_ticket_edit_dlg_handler = function() {
+    $('.taracot-form-ticket-edit-control').each(function() {
+        $(this).val('');
+        $(this).prop("selectedIndex", 0);
+        $(this).removeClass('uk-form-danger');
+    });
+    dlg_edit.show();
+    $('#ticket_edt_stat').val(current_ticket_data.ticket.ticket_status);
+    $('#ticket_edt_prio').val(current_ticket_data.ticket.ticket_prio);
+    $('#ticket_status').focus();
+};
+
+var btn_ticket_edit_save_handler = function() {
+    // return alert($('#ticket_edt_stat').val());
+    dlg_edit.hide();
+    $.loadingIndicator('show');
+    $.ajax({
+        type: 'POST',
+        url: '/support/ajax/ticket/save',
+        data: {
+            id: current_ticket_id,
+            ticket_status: $('#ticket_edt_stat').val(),
+            ticket_prio: $('#ticket_edt_prio').val()
+        },
+        dataType: "json",
+        success: function(data) {
+            if (data && data.status == 1) {
+                table_row_click_handler(undefined, current_ticket_id);
+            } else {
+                $.loadingIndicator('hide');
+                var msg = _lang_vars.ajax_failed;
+                if (data.err_msg) msg = data.err_msg;
+                UIkit.notify({
+                    message: msg,
+                    status: 'danger',
+                    timeout: 2000,
+                    pos: 'top-center'
+                });
+            }
+        },
+        error: function() {
+            $.loadingIndicator('hide');
+            UIkit.notify({
+                message: _lang_vars.ajax_failed,
+                status: 'danger',
+                timeout: 2000,
+                pos: 'top-center'
+            });
+        }
+    });
+};
+
 /*******************************************************************
 
  Helper functions
@@ -384,97 +479,6 @@ var _ticket_reply_success = function() {
             $('#btn_ticket_reply_loading').hide();
             $('.support-dialog-button').attr('disabled', false);
             dlg_ticket_reply.hide();
-        }
-    });
-};
-
-var btn_steal_lock_handler = function() {
-    dlg_locked.hide();
-    $.loadingIndicator('show');
-    $.ajax({
-        type: 'POST',
-        url: '/support/ajax/ticket/unlock',
-        data: {
-            id: current_ticket_id
-        },
-        dataType: "json",
-        success: function(data) {
-            if (data && data.status == 1) {
-                table_row_click_handler(undefined, current_ticket_id);
-            } else {
-                var msg = _lang_vars.ajax_failed;
-                if (data.err_msg) msg = data.err_msg;
-                UIkit.notify({
-                    message: msg,
-                    status: 'danger',
-                    timeout: 2000,
-                    pos: 'top-center'
-                });
-            }
-        },
-        error: function() {
-            UIkit.notify({
-                message: _lang_vars.ajax_failed,
-                status: 'danger',
-                timeout: 2000,
-                pos: 'top-center'
-            });
-        },
-        complete: function() {
-            $.loadingIndicator('hide');
-        }
-    });
-};
-
-var btn_ticket_edit_dlg_handler = function() {
-    $('.taracot-form-ticket-edit-control').each(function() {
-        $(this).val('');
-        $(this).prop("selectedIndex", 0);
-        $(this).removeClass('uk-form-danger');
-    });
-    dlg_edit.show();
-    $('#ticket_status').val(current_ticket_data.ticket.ticket_status);
-    $('#ticket_prio').val(current_ticket_data.ticket.ticket_prio);
-    $('#ticket_status').focus();
-};
-
-var btn_ticket_edit_save_handler = function() {
-    alert("Priority: " + $('#ticket_status').val());
-    return;
-    dlg_edit.hide();
-    $.loadingIndicator('show');
-    $.ajax({
-        type: 'POST',
-        url: '/support/ajax/ticket/save',
-        data: {
-            id: current_ticket_id,
-            ticket_status: parseInt($('#ticket_status').val()),
-            ticket_prio: parseInt($('#ticket_prio').val())
-        },
-        dataType: "json",
-        success: function(data) {
-            if (data && data.status == 1) {
-                table_row_click_handler(undefined, current_ticket_id);
-            } else {
-                $.loadingIndicator('hide');
-                var msg = _lang_vars.ajax_failed;
-                if (data.err_msg) msg = data.err_msg;
-                UIkit.notify({
-                    message: msg,
-                    status: 'danger',
-                    timeout: 2000,
-                    pos: 'top-center'
-                });
-            }
-        },
-        error: function() {
-            $.loadingIndicator('hide');
-            UIkit.notify({
-                message: _lang_vars.ajax_failed,
-                status: 'danger',
-                timeout: 2000,
-                pos: 'top-center'
-            });
         }
     });
 };

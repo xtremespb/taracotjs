@@ -97,7 +97,7 @@
 <div id="support_area_view_ticket" style="display:none" class="support-area">
     <h1>!{root.lang.__('view_ticket_id')}&nbsp;<span id="support_h1_ticket_id"></span></h1>
     <div class="uk-margin-bottom">
-        <div class="uk-badge uk-float-right" id="support_badge_status"></div>&nbsp;!{root.lang.__('last_modified')}:&nbsp;<span id="support_text_last_modified"></span>
+        <div class="uk-badge uk-float-right" id="support_badge_prio"></div><div class="uk-float-right">&nbsp;</div><div class="uk-badge uk-float-right" id="support_badge_status"></div>&nbsp;!{root.lang.__('last_modified')}:&nbsp;<span id="support_text_last_modified"></span>
     </div>
     <div class="uk-margin-top taracot-support-username">
         <i class="uk-icon-user"></i>&nbsp;<span id="support_username_starter"></span>
@@ -174,11 +174,11 @@
         </div>
         <div class="uk-form uk-form-horizontal">
             <div class="uk-form-row">
-                <label class="uk-form-label" for="ticket_status">
+                <label class="uk-form-label" for="ticket_edt_stat">
                     !{root.lang.__('ticket_status')}&nbsp;<span class="taracot-red-asterisk">*</span>
                 </label>
                 <div class="uk-form-controls">
-                    <select id="ticket_status" class="uk-form-width-small taracot-form-ticket-edit-control">
+                    <select id="ticket_edt_stat" class="uk-form-width-small taracot-form-ticket-edit-control">
                         <option value="1">!{root.lang.__('status_list')[0]}</option>
                         <option value="2">!{root.lang.__('status_list')[1]}</option>
                         <option value="3">!{root.lang.__('status_list')[2]}</option>
@@ -186,11 +186,11 @@
                 </div>
             </div>
             <div class="uk-form-row">
-                <label class="uk-form-label" for="ticket_prio">
+                <label class="uk-form-label" for="ticket_edt_prio">
                     !{root.lang.__('ticket_prio')}&nbsp;<span class="taracot-red-asterisk">*</span>
                 </label>
                 <div class="uk-form-controls">
-                    <select id="ticket_prio" class="uk-form-width-small taracot-form-ticket-edit-control">
+                    <select id="ticket_edt_prio" class="uk-form-width-small taracot-form-ticket-edit-control">
                         <option value="1">!{root.lang.__('ticket_prio_low')}</option>
                         <option value="2">!{root.lang.__('ticket_prio_medium')}</option>
                         <option value="3">!{root.lang.__('ticket_prio_high')}</option>
