@@ -347,12 +347,13 @@ module.exports = function(app) {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
                         register_url: register_url
-                    }, req);
-                    // Success
-                    req.session.captcha_req = false;
-                    res.send(JSON.stringify({
-                        result: 1
-                    }));
+                    }, req, function() {
+                        // Success
+                        req.session.captcha_req = false;
+                        res.send(JSON.stringify({
+                            result: 1
+                        }));
+                    });
                 });
             });
         }]);
@@ -566,12 +567,13 @@ module.exports = function(app) {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
                         reset_url: reset_url
-                    }, req);
-                    // Success
-                    req.session.captcha_req = false;
-                    res.send(JSON.stringify({
-                        result: 1
-                    }));
+                    }, req, function() {
+                        // Success
+                        req.session.captcha_req = false;
+                        res.send(JSON.stringify({
+                            result: 1
+                        }));
+                    });
                 });
         });
     });
@@ -1045,6 +1047,13 @@ module.exports = function(app) {
                                 }));
                                 return;
                             }
+                            var rr = {
+                                result: 1
+                            };
+                            if (realname) {
+                                rr.realname = realname;
+                                req.session.auth.realname = realname;
+                            }
                             if (email_new) {
                                 delete req.session.auth;
                                 var user_id = items[0]._id.toHexString();
@@ -1053,16 +1062,12 @@ module.exports = function(app) {
                                     lang: i18nm,
                                     site_title: app.get('settings').site_title,
                                     register_url: register_url
-                                }, req);
+                                }, req, function() {
+                                    res.send(JSON.stringify(rr));
+                                });
+                            } else {
+                                res.send(JSON.stringify(rr));
                             }
-                            var rr = {
-                                result: 1
-                            };
-                            if (realname) {
-                                rr.realname = realname;
-                                req.session.auth.realname = realname;
-                            }
-                            res.send(JSON.stringify(rr));
                         });
                     } else {
                         res.send(JSON.stringify({

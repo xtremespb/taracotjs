@@ -419,18 +419,6 @@ module.exports = function(app) {
                     app.get('mongodb').collection('users').find({
                         _id: new ObjectId(woitems[0].user_id)
                     }).toArray(function(us_err, usitems) {
-                        if (woitems[0].order_status != order_status && !us_err && usitems && usitems.length && usitems[0].email) {
-                            var mail_data = {
-                                lang: i18nm,
-                                order_id: woitems[0].order_id,
-                                order_status_old: i18nm.__('order_status_list')[woitems[0].order_status],
-                                order_status: i18nm.__('order_status_list')[order_status],
-                                ship_track: ship_track || i18nm.__('no_tracking_number_yet'),
-                                view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
-                                subj: i18nm.__('your_order_id') + ' ' + woitems[0].order_id
-                            };
-                            mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + woitems[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req);
-                        }
                         app.get('mongodb').collection('warehouse_orders').update({
                             _id: new ObjectId(id)
                         }, {
@@ -446,7 +434,22 @@ module.exports = function(app) {
                                 locked_by: undefined
                             }
                         }, function() {
-                            res.send(JSON.stringify(rep));
+                            if (woitems[0].order_status != order_status && !us_err && usitems && usitems.length && usitems[0].email) {
+                                var mail_data = {
+                                    lang: i18nm,
+                                    order_id: woitems[0].order_id,
+                                    order_status_old: i18nm.__('order_status_list')[woitems[0].order_status],
+                                    order_status: i18nm.__('order_status_list')[order_status],
+                                    ship_track: ship_track || i18nm.__('no_tracking_number_yet'),
+                                    view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + id,
+                                    subj: i18nm.__('your_order_id') + ' ' + woitems[0].order_id
+                                };
+                                mailer.send(usitems[0].email, i18nm.__('your_order_id') + ' ' + woitems[0].order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_statuschange_html', 'mail_statuschange_txt', mail_data, req, function() {
+                                    res.send(JSON.stringify(rep));
+                                });
+                            } else {
+                                res.send(JSON.stringify(rep));
+                            }
                         });
                     });
                 }

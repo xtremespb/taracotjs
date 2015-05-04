@@ -106,11 +106,22 @@ module.exports = function(app) {
                             view_url: config.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + order._id,
                             subj: i18nm.__('your_order_id') + ' ' + order.order_id
                         };
-                        if (!us_err && users && users.length && users[0].email) mailer.send(users[0].email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
-                        mail_data.subj = i18nm.__('order_id') + ' ' + order.order_id;
-                        mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
-                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req);
-                        return res.send("OK" + InvId);
+                        if (!us_err && users && users.length && users[0].email) {
+                            mailer.send(users[0].email, i18nm.__('your_order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req, function() {
+                                mail_data.subj = i18nm.__('order_id') + ' ' + order.order_id;
+                                mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                                mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req, function() {
+                                    return res.send("OK" + InvId);
+                                });
+                            });
+                        } else {
+                            mail_data.subj = i18nm.__('order_id') + ' ' + order.order_id;
+                            mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                            mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order.order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_success_html', 'mail_success_txt', mail_data, req, function() {
+                                return res.send("OK" + InvId);
+                            });
+                        }
+
                     });
                 });
         });

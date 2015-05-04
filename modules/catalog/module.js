@@ -641,73 +641,6 @@ module.exports = function(app) {
                                             // Everything's fine, order has been placed
                                             // Clean up cart
                                             req.session.catalog_cart = [];
-                                            // Send mail to the user
-                                            if (req.session.auth.email) {
-                                                var _rows_html = '',
-                                                    _rows_txt = '';
-                                                for (var key in cart) {
-                                                    _rows_html += pt_mail_neworder_orders_table_row_html(gaikan, {
-                                                        lang: i18nm,
-                                                        item: ucitems_hash[key],
-                                                        amount: cart[key]
-                                                    }, undefined);
-                                                    _rows_txt += ucitems_hash[key] + "\t" + cart[key] + "\n";
-                                                }
-                                                var _order_table = pt_mail_neworder_orders_table_html(gaikan, {
-                                                    lang: i18nm,
-                                                    rows: _rows_html,
-                                                    col1: i18nm.__('item_title'),
-                                                    col2: i18nm.__('item_amount')
-                                                }, undefined);
-                                                var items_txt = i18nm.__('item_title') + "\t" + i18nm.__('item_amount') + "\n" + _rows_txt;
-                                                var summary = pt_mail_neworder_summary_html(gaikan, {
-                                                    lang: i18nm,
-                                                    subtotal: subtotal,
-                                                    total: total,
-                                                    currency: whcurs[0][_locale]
-                                                }, undefined);
-                                                var summary_txt = i18nm.__('subtotal') + "\t" + subtotal + ' ' + whcurs[0][_locale] + "\n" + i18nm.__('total') + "\t" + total + ' ' + whcurs[0][_locale];
-                                                var addr = '',
-                                                    addr_txt = '',
-                                                    country_full = '',
-                                                    ship_method_title = '';
-                                                for (var i = 0; i < countries.length; i++)
-                                                    if (shipping_address.ship_country && countries[i] == shipping_address.ship_country) country_full = i18nm.__('country_list')[i];
-                                                for (var wsi = 0; wsi < whship.length; wsi++)
-                                                    if (whship[wsi].id == ship_method) ship_method_title = whship[wsi][_locale];
-                                                if (shipping_address.ship_name) {
-                                                    addr = shipping_address.ship_name + '<br>' + shipping_address.ship_street + '<br>' + shipping_address.ship_city + '<br>' + shipping_address.ship_region + '<br>' + shipping_address.ship_zip + ' ' + country_full;
-                                                    addr_txt = shipping_address.ship_name + "\n" + shipping_address.ship_street + "\n" + shipping_address.ship_city + "\n" + shipping_address.ship_region + "\n" + shipping_address.ship_zip + ' ' + country_full;
-                                                }
-                                                var shipping = pt_mail_neworder_shipping_html(gaikan, {
-                                                    lang: i18nm,
-                                                    shipping_method: ship_method_title || ship_method,
-                                                    ship_phone: shipping_address.ship_phone || '-',
-                                                    ship_comment: ship_comment || '-',
-                                                    addr: addr
-                                                }, undefined);
-                                                var mail_data = {
-                                                    lang: i18nm,
-                                                    site_title: app.get('settings').site_title,
-                                                    order_id: order_id,
-                                                    order_date: moment(Date.now()).format('L LT'),
-                                                    items: _order_table,
-                                                    items_txt: items_txt,
-                                                    summary: summary,
-                                                    summary_txt: summary_txt,
-                                                    shipping: shipping,
-                                                    view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
-                                                    shipping_method: ship_method_title || ship_method,
-                                                    ship_phone: shipping_address.ship_phone || '-',
-                                                    ship_comment: ship_comment || '-',
-                                                    addr_txt: addr_txt,
-                                                    subj: i18nm.__('your_order_id') + ' ' + order_id
-                                                };
-                                                mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
-                                                mail_data.subj = i18nm.__('order_id') + ' ' + order_id;
-                                                mail_data.view_url = app.get('config').protocol + '://' + req.get('host') + '/cp/catalog_orders';
-                                                mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req);
-                                            }
                                             // Try to store shipping address in the database
                                             app.get('mongodb').collection('warehouse_addr').update({
                                                 user_id: req.session.auth._id,
@@ -718,12 +651,88 @@ module.exports = function(app) {
                                                 upsert: true,
                                                 safe: false
                                             }, function() {
-                                                // Return success
-                                                return res.send(JSON.stringify({
-                                                    status: 1,
-                                                    order_id_hex: insit[0]._id,
-                                                    order_id: order_id
-                                                }));
+                                                // Send mail to the user
+                                                if (req.session.auth.email) {
+                                                    var _rows_html = '',
+                                                        _rows_txt = '';
+                                                    for (var key in cart) {
+                                                        _rows_html += pt_mail_neworder_orders_table_row_html(gaikan, {
+                                                            lang: i18nm,
+                                                            item: ucitems_hash[key],
+                                                            amount: cart[key]
+                                                        }, undefined);
+                                                        _rows_txt += ucitems_hash[key] + "\t" + cart[key] + "\n";
+                                                    }
+                                                    var _order_table = pt_mail_neworder_orders_table_html(gaikan, {
+                                                        lang: i18nm,
+                                                        rows: _rows_html,
+                                                        col1: i18nm.__('item_title'),
+                                                        col2: i18nm.__('item_amount')
+                                                    }, undefined);
+                                                    var items_txt = i18nm.__('item_title') + "\t" + i18nm.__('item_amount') + "\n" + _rows_txt;
+                                                    var summary = pt_mail_neworder_summary_html(gaikan, {
+                                                        lang: i18nm,
+                                                        subtotal: subtotal,
+                                                        total: total,
+                                                        currency: whcurs[0][_locale]
+                                                    }, undefined);
+                                                    var summary_txt = i18nm.__('subtotal') + "\t" + subtotal + ' ' + whcurs[0][_locale] + "\n" + i18nm.__('total') + "\t" + total + ' ' + whcurs[0][_locale];
+                                                    var addr = '',
+                                                        addr_txt = '',
+                                                        country_full = '',
+                                                        ship_method_title = '';
+                                                    for (var i = 0; i < countries.length; i++)
+                                                        if (shipping_address.ship_country && countries[i] == shipping_address.ship_country) country_full = i18nm.__('country_list')[i];
+                                                    for (var wsi = 0; wsi < whship.length; wsi++)
+                                                        if (whship[wsi].id == ship_method) ship_method_title = whship[wsi][_locale];
+                                                    if (shipping_address.ship_name) {
+                                                        addr = shipping_address.ship_name + '<br>' + shipping_address.ship_street + '<br>' + shipping_address.ship_city + '<br>' + shipping_address.ship_region + '<br>' + shipping_address.ship_zip + ' ' + country_full;
+                                                        addr_txt = shipping_address.ship_name + "\n" + shipping_address.ship_street + "\n" + shipping_address.ship_city + "\n" + shipping_address.ship_region + "\n" + shipping_address.ship_zip + ' ' + country_full;
+                                                    }
+                                                    var shipping = pt_mail_neworder_shipping_html(gaikan, {
+                                                        lang: i18nm,
+                                                        shipping_method: ship_method_title || ship_method,
+                                                        ship_phone: shipping_address.ship_phone || '-',
+                                                        ship_comment: ship_comment || '-',
+                                                        addr: addr
+                                                    }, undefined);
+                                                    var mail_data = {
+                                                        lang: i18nm,
+                                                        site_title: app.get('settings').site_title,
+                                                        order_id: order_id,
+                                                        order_date: moment(Date.now()).format('L LT'),
+                                                        items: _order_table,
+                                                        items_txt: items_txt,
+                                                        summary: summary,
+                                                        summary_txt: summary_txt,
+                                                        shipping: shipping,
+                                                        view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
+                                                        shipping_method: ship_method_title || ship_method,
+                                                        ship_phone: shipping_address.ship_phone || '-',
+                                                        ship_comment: ship_comment || '-',
+                                                        addr_txt: addr_txt,
+                                                        subj: i18nm.__('your_order_id') + ' ' + order_id
+                                                    };
+                                                    mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req, function() {
+                                                        mail_data.subj = i18nm.__('order_id') + ' ' + order_id;
+                                                        mail_data.view_url = app.get('config').protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                                                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req, function() {
+                                                            // Return success
+                                                            return res.send(JSON.stringify({
+                                                                status: 1,
+                                                                order_id_hex: insit[0]._id,
+                                                                order_id: order_id
+                                                            }));
+                                                        });
+                                                    });
+                                                } else {
+                                                    // Return success
+                                                    return res.send(JSON.stringify({
+                                                        status: 1,
+                                                        order_id_hex: insit[0]._id,
+                                                        order_id: order_id
+                                                    }));
+                                                }
                                             });
                                         }
                                     });

@@ -155,8 +155,9 @@ module.exports = function(app) {
                                             amount: order.order_sum + ' ' + currency,
                                             subj: i18nm.__('mail_funds_subj')
                                         };
-                                    mailer.send(order.order_email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'payment_views'), 'mail_funds_html', 'mail_funds_txt', mail_data, req);
-                                    return res.send('YES');
+                                    mailer.send(order.order_email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'payment_views'), 'mail_funds_html', 'mail_funds_txt', mail_data, req, function() {
+                                        return res.send('YES');
+                                    });
                                 });
                             });
                         });

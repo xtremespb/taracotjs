@@ -48,7 +48,7 @@ module.exports = function(app) {
                 error: i18nm.__("invalid_form_data")
             }));
         }
-        if (crypto.createHash('md5').update(app.get('config').salt + JSON.stringify(form_data)).digest('hex') != form_checksum)
+        if (crypto.createHash('md5').update(app.get('config').salt + JSON.stringify(form_data) + lng).digest('hex') != form_checksum)
             return res.send(JSON.stringify({
                 result: 0,
                 field: 'captcha',
@@ -109,17 +109,16 @@ module.exports = function(app) {
             }, undefined);
             fields_txt += email_data[fa].label + ":\t" + email_data[fa].value + "\n";
         }
-
         mailer.send(config.mailer.feedback, i18nm.__('mail_feedback_on') + ': ' + app.get('settings').site_title, path.join(__dirname, 'views'), 'mail_feedback_html', 'mail_feedback_txt', {
             lang: i18nm,
             fields_html: fields_html,
             fields_txt: fields_txt,
             site_title: app.get('settings').site_title
-        }, req);
-        return res.send(JSON.stringify({
-            result: 1
-        }));
-
+        }, req, function() {
+            return res.send(JSON.stringify({
+                result: 1
+            }));
+        });
     });
     return router;
 };
