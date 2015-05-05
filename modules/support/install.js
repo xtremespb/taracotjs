@@ -1,14 +1,38 @@
-var fs = require('fs-extra');
+var fs = require('fs-extra'),
+    async = require('async');
 
 module.exports = function(db, ensure_indexes, config) {
     var is = {
         name: 'support',
-        version: '0.5.91',
+        version: '0.5.125',
         collections: function(_callback) {
-            _callback();
+            // Create collections
+            async.series([
+                function(callback) {
+                    db.createCollection('support', function(err, collection) {
+                        if (err) return callback(err);
+                        callback();
+                    });
+                }
+            ], function(err) {
+                if (err) return _callback(err);
+                _callback();
+            });
+
         },
         indexes: function(_callback) {
-            _callback();
+            // Create indexes
+            async.series([
+                function(callback) {
+                    ensure_indexes('support', ['ticket_id', 'user_id'], null, true, function() {
+                        callback();
+                    });
+                }
+            ], function(err) {
+                if (err) return _callback(err);
+                _callback();
+            });
+
         },
         defaults: function(_callback) {
             db.collection('counters').remove({

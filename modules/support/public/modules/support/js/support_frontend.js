@@ -303,7 +303,7 @@ var table_row_click_handler = function(evnt, _id) {
                 $('#support_badge_status').html(_lang_vars.status_list[data.ticket.ticket_status - 1]);
                 $('#support_attachment').hide();
                 if (data.ticket.attachment) {
-                    $('#support_attachment_link').attr('href', '/support/attachment?file=' + data.ticket.attachment);
+                    $('#support_attachment_link').attr('href', '/support/attachment/' + data.ticket.attachment);
                     $('#support_attachment_link').html(data.ticket.attachment);
                     $('#support_attachment').show();
                 }
@@ -319,7 +319,7 @@ var table_row_click_handler = function(evnt, _id) {
                     for (var tr in data.ticket.ticket_replies) {
                         var attachment = '';
                         if (data.ticket.ticket_replies[tr].attachment)
-                            attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment?file=' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
+                            attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment/' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
                         $('#support_replies').append('<div class="uk-margin-top taracot-support-username"><i class="uk-icon-user"></i>&nbsp;' + (data.users[data.ticket.ticket_replies[tr].reply_user].realname || data.users[data.ticket.ticket_replies[tr].reply_user].username) + '&nbsp;<span class="taracot-support-reply-date">[' + moment(data.ticket.ticket_replies[tr].reply_date).format('LLL') + ']</span></div><div class="uk-panel uk-panel-box">' + data.ticket.ticket_replies[tr].reply_msg + '</div>' + attachment);
                     }
                 }
@@ -491,7 +491,7 @@ var _ticket_reply_success = function() {
                     for (var tr in data.ticket.ticket_replies) {
                         var attachment = '';
                         if (data.ticket.ticket_replies[tr].attachment)
-                            attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment?file=' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
+                            attachment = '<div class="taracot-support-attachment"><i class="uk-icon-paperclip"></i>&nbsp;<a href="/support/attachment/' + data.ticket.ticket_replies[tr].attachment + '">' + data.ticket.ticket_replies[tr].attachment + '</a></div>';
                         $('#support_replies').append('<div class="uk-margin-top taracot-support-username"><i class="uk-icon-user"></i>&nbsp;' + (data.users[data.ticket.ticket_replies[tr].reply_user].realname || data.users[data.ticket.ticket_replies[tr].reply_user].username) + '&nbsp;<span class="taracot-support-reply-date">[' + moment(data.ticket.ticket_replies[tr].reply_date).format('LLL') + ']</span></div><div class="uk-panel uk-panel-box">' + data.ticket.ticket_replies[tr].reply_msg + '</div>' + attachment);
                     }
                 }

@@ -310,21 +310,43 @@ module.exports = function(app) {
                 ticket_subj: ticket_subj,
                 ticket_prio: ticket_prio,
                 ticket_msg: ticket_msg,
+                ticket_lang: req.session.current_locale,
+                ticket_host: req.get('host'),
                 ticket_replies: []
-            }, function(err) {
+            }, function(err, ir) {
                 if (err) {
                     rep.status = 0;
                     rep.error = i18nm.__("database_error");
                     return res.send(JSON.stringify(rep));
                 }
+                var ticket = {};
+                if (ir && ir.length) ticket = ir[0];
                 rep.ticket_id = ticket_id;
-                return res.send(JSON.stringify(rep));
+                moment.lang(ticket.ticket_lang || req.session.current_locale);
+                var mail_data = {
+                        lang: i18nm,
+                        site_title: app.get('settings').site_title,
+                        ticket_num: ticket_id,
+                        ticket_id: ticket._id,
+                        ticket_subj: ticket.ticket_subj,
+                        ticket_msg: ticket.ticket_msg,
+                        ticket_date: moment(ticket.ticket_date).format('L LT'),
+                        ticket_status: i18nm.__('status_list')[ticket.ticket_status - 1],
+                        ticket_reply: '—',
+                        view_url: config.protocol + '://' + req.get('host') + '/support?mode=view&ticket_id=' + ticket._id
+                    },
+                    subj = i18nm.__('new_support_message') + ', ' + i18nm.__('ticket_number') + ' ' + ticket.ticket_id + ' (' + app.get('settings').site_title + ')';
+                mail_data.view_url = config.protocol + '://' + req.get('host') + '/support/dashboard?mode=view&ticket_id=' + ticket._id;
+                mailer.send(config.mailer.feedback, subj, path.join(__dirname, 'views'), 'mail_newreply_html', 'mail_newreply_txt', mail_data, req, function() {
+                    return res.send(JSON.stringify(rep));
+                });
             });
         });
     });
 
     router.post('/ajax/ticket/reply', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
+        moment.lang(req.session.current_locale);
         var rep = {
             status: 1
         };
@@ -421,7 +443,10 @@ module.exports = function(app) {
                                         ticket_status: ticket_status,
                                         reply_user: req.session.auth.username
                                     });
-                        var mail_data = {
+                        moment.lang(ticket.ticket_lang || req.session.current_locale);
+                        i18nm.setLocale(ticket.ticket_lang || req.session.current_locale);
+                        var host = ticket.ticket_host || req.get('host'),
+                            mail_data = {
                                 lang: i18nm,
                                 site_title: app.get('settings').site_title,
                                 ticket_num: ticket.ticket_id,
@@ -431,11 +456,11 @@ module.exports = function(app) {
                                 ticket_date: moment(ticket.ticket_date).format('L LT'),
                                 ticket_status: i18nm.__('status_list')[ticket.ticket_status - 1],
                                 ticket_reply: ticket_msg,
-                                view_url: config.protocol + '://' + req.get('host') + '/support?mode=view&ticket_id=' + ticket._id
+                                view_url: config.protocol + '://' + host + '/support?mode=view&ticket_id=' + ticket._id
                             },
                             subj = i18nm.__('new_support_message') + ', ' + i18nm.__('ticket_number') + ' ' + ticket.ticket_id + ' (' + app.get('settings').site_title + ')';
                         if (ticket.user_id == req.session.auth._id) {
-                            mail_data.view_url = config.protocol + '://' + req.get('host') + '/support/dashboard?mode=view&ticket_id=' + ticket._id;
+                            mail_data.view_url = config.protocol + '://' + host + '/support/dashboard?mode=view&ticket_id=' + ticket._id;
                             mailer.send(config.mailer.feedback, subj, path.join(__dirname, 'views'), 'mail_newreply_html', 'mail_newreply_txt', mail_data, req, function() {
                                 return res.send(JSON.stringify(rep));
                             });
@@ -448,7 +473,6 @@ module.exports = function(app) {
                                 return res.send(JSON.stringify(rep));
                             }
                         }
-
                     });
                 });
                 // End of message broadcast
@@ -650,8 +674,8 @@ module.exports = function(app) {
         });
     });
 
-    router.get('/attachment', function(req, res, next) {
-        var file = req.query.file;
+    router.get('/attachment/:filename', function(req, res, next) {
+        var file = req.params.filename;
         if (!file || !check_filename(file) || !req.session.auth || req.session.auth.status < 1) return res.status(404) && next();
         fs.exists(path.join(__dirname, 'files', file), function(ex) {
             if (!ex) return res.status(404) && next();

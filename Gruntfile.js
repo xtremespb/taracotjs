@@ -243,6 +243,16 @@ module.exports = function(grunt) {
                 files: {
                     'modules/billing_frontend/public/modules/billing_frontend/js/billing_frontend.min.js': ['public/js/moment.min.js', 'public/js/helper.js', 'public/js/uikit/addons/notify.min.js', 'public/js/uikit/addons/tooltip.min.js', 'public/js/uikit/addons/accordion.min.js', 'modules/billing_frontend/public/modules/billing_frontend/js/billing_frontend.js']
                 }
+            },
+            support_dashboard: {
+                files: {
+                    'modules/support/public/modules/support/js/dashboard.min.js': ['public/js/jquery.medved.loading.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/addons/notify.min.js', 'public/js/moment.min.js', 'public/js/helper.js', 'public/js/jquery.history.min.js', 'public/js/socket.io.min.js', 'modules/support/public/modules/support/js/support_dashboard.js']
+                }
+            },
+            support_frontend: {
+                files: {
+                    'modules/support/public/modules/support/js/frontend.min.js': ['public/js/jquery.medved.loading.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/addons/notify.min.js', 'public/js/moment.min.js', 'public/js/helper.js', 'public/js/jquery.history.min.js', 'modules/support/public/modules/support/js/support_frontend.js']
+                }
             }
         }
     });
