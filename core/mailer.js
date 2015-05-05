@@ -22,6 +22,7 @@ module.exports = function(app) {
                     site_title: site_title,
                     site_url: config.protocol + '://' + req.get('host')
                 });
+            if (data_txt) data_txt = data_txt.replace(/<br>/gmi, '\n');
             var mailOptions = {
                 from: config.mailer.sender,
                 to: to,
