@@ -23,6 +23,7 @@
     "html-entities": "^1.1.1",
     "html-to-text": "^0.1.0",
     "i18n-2": "^0.4.6",
+    "iconv-lite": "^0.4.8",
     "merge": "^1.2.0",
     "mime": "~1.2.7",
     "moment": "^2.8.3",

@@ -1,7 +1,7 @@
 {
 	"process_payment": "Обработка платежа",
 	"invalid_order_id": "Неверный идентификатор заказа или статус. Пожалуйста, проверьте параметры платежа.",
-	"payment_for_order": "Оплата заказа",
+	"payment_for_order": "Oplata zakaza",
 	"payment_error": "Ошибка оплаты",
 	"payment_success": "Оплата успешно выполнена",
 	"payment": "Платеж",
