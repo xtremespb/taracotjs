@@ -3,7 +3,7 @@ module.exports = function(db, ensure_indexes, config) {
         fs = require('fs-extra'),
         is = {
             name: 'catalog',
-            version: '0.5.91',
+            version: '0.5.125',
             collections: function(_callback) {
                 // Create collections
                 async.series([
