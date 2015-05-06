@@ -1,62 +1,133 @@
-html, body {
+html,
+body {
     background: #43464c;
 }
-textarea:focus, input:focus{
+
+textarea:focus,
+input:focus {
     outline: 0;
 }
+
 .tc-margin-bottom {
     margin-bottom: 30px;
 }
+
 .uk-navbar {
-    -webkit-box-shadow: 0 0 2px 0 rgba(50, 50, 50, 0.29);
-    -moz-box-shadow: 0 0 2px 0 rgba(50, 50, 50, 0.29);
-    box-shadow: 0 0 2px 0 rgba(50, 50, 50, 0.29);
-    background: linear-gradient(to bottom, #333, #454545) repeat scroll 0 0 border-box #424242;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 1px 5px rgba(0, 0, 0, .075);
+    border-color: #333 #333 -moz-use-text-color;
+    border-radius: 4px 4px 0 0;
+    border-style: solid solid none;
+    border-width: 1px 1px 0;
+    margin-bottom: 0;
+    background: #222;
+    height: 30px
 }
-.uk-navbar-nav > li {
-    background: linear-gradient(to bottom, #333, #454545) repeat scroll 0 0 border-box #424242;
+
+.uk-navbar-nav>li {
+    border-color: #333 #333 -moz-use-text-color;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 1px 5px rgba(0, 0, 0, .075);
+    margin-bottom: 0;
+    background: #222;
+    height: 30px
 }
-.uk-navbar-nav > li > a {
+
+.uk-navbar-nav>li>a {
     text-shadow: none;
-    color: #ccc;
+    color: #bbb;
+    height: 31px;
+    line-height: 30px;
+    font-size: 90%
 }
-.uk-navbar-nav > li:hover > a, .uk-navbar-nav > li > a:focus, .uk-navbar-nav > li.uk-open > a {
-    color: #fff;
+
+.uk-navbar-nav>li>a>i {
+    font-size: 10px
 }
-.uk-navbar-nav > li.uk-active > a {
-    background: linear-gradient(to bottom, #222, #333) repeat scroll 0 0 border-box #424242;
+
+.uk-navbar-nav>li.uk-open>a,
+.uk-navbar-nav>li:hover>a,
+.uk-navbar-nav>li>a:active,
+.uk-navbar-nav>li>a:focus {
     color: #ddd;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 1px 5px rgba(0, 0, 0, .075);
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 1px 5px rgba(0, 0, 0, .075);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 1px 5px rgba(0, 0, 0, .075);
+    background: #444;
+    border-left: 1px solid #1a1a1a;
+    border-right: 1px solid #1a1a1a
 }
-.uk-navbar-nav > li > a:active {
-    background: linear-gradient(to bottom, #333, #454545) repeat scroll 0 0 border-box #424242;
-    color: #eee;
+
+.uk-navbar-nav>li.uk-active>a {
+    background: #292929;
+    -webkit-box-shadow: inset 0 13px 5px 4px rgba(0, 0, 0, .75);
+    -moz-box-shadow: inset 0 13px 5px 4px rgba(0, 0, 0, .75);
+    box-shadow: inset 0 13px 10px 4px rgba(0, 0, 0, .55);
+    border: 0;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    color: #bbb
 }
+
 .uk-dropdown-navbar {
-    margin-top: 1px;
-    background: #eee;
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    margin-top: 0;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .28);
+    -moz-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .28);
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .28)
 }
+
+.uk-nav-divider {
+    border-top: 1px solid #ccc;
+    box-shadow: 0 1px 0 #ccc
+}
+
+.uk-navbar-toggle:active,
+.uk-navbar-toggle:focus,
+.uk-navbar-toggle:hover {
+    height: 40px;
+    margin-top: 0;
+    text-shadow: none;
+    color: #fff
+}
+
+.taracot_menu_item_>a {
+    cursor: pointer;
+}
+
+.taracot_menu_item_submenu__,
+.uk-navbar-nav>li>a[href="#"] {
+    cursor: pointer
+}
+
 .tc-auth-top {
     padding-top: 10px;
     text-align: right;
 }
-.taracot-img-logo {
-    width: 280px !important;
-    height: 45px;
-}
-input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {
+
+input[type="submit"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner {
     border: 0;
 }
-input[type="submit"]:focus, input[type="button"]:focus {
+
+input[type="submit"]:focus,
+input[type="button"]:focus {
     outline: none;
 }
-input:focus, textarea:focus, select:focus {
+
+input:focus,
+textarea:focus,
+select:focus {
     -webkit-box-shadow: 0 0 5px #ccc;
     -moz-box-shadow: 0 0 5px #ccc;
     box-shadow: 0 0 5px #ccc;
 }
+
+.taracot-img-logo {
+    margin-top: 20px;
+}
+
 .taracot-content {
     background: #fdfdfd;
     padding: 15px;
@@ -71,147 +142,112 @@ input:focus, textarea:focus, select:focus {
     border-bottom-left-radius: 5px;
     min-height: 500px;
 }
+
 .taracot-footer {
     color: #eee;
     font-size: 80%;
 }
+
 .taracot-footer > a {
     color: #eee;
     text-decoration: none;
     padding: 0 3px 0 3px;
     border-bottom: 1px dotted #999;
 }
+
 .taracot-footer > a:hover {
     color: #eee;
     background: #333;
 }
-.taracot-box-shadow {
-    position: relative;
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-}
-.taracot-box-shadow:before, .taracot-box-shadow:after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    top: 50%;
-    bottom: 0;
-    left: 10px;
-    right: 10px;
-    -moz-border-radius: 100px / 10px;
-    border-radius: 100px / 10px;
-}
-.taracot-box-shadow:after {
-    right: 10px;
-    left: auto;
-    -webkit-transform: skew(8deg) rotate(3deg);
-    -moz-transform: skew(8deg) rotate(3deg);
-    -ms-transform: skew(8deg) rotate(3deg);
-    -o-transform: skew(8deg) rotate(3deg);
-    transform: skew(8deg) rotate(3deg);
-}
-.taracot-auth-block-login, .taracot-auth-block-register, .taracot-auth-block-profile, .taracot-auth-block-logout, .taracot-lang-block-select {
-    color: #eee;
-    margin-top: -2px;
-    text-decoration: none;
-    background: #333;
-    outline: none;
-    text-shadow: 0;
-    text-shadow: 0px 0px rgba(0, 0, 0, 0.05), 0px 1px rgba(0, 0, 0, 0.05), 1px 0px rgba(0, 0, 0, 0.05), 0px 0px rgba(0, 0, 0, 0.05);
-}
-.taracot-auth-block-login:hover, .taracot-auth-block-register:hover, .taracot-auth-block-profile:hover, .taracot-auth-block-logout:hover, .taracot-auth-block-login:active, .taracot-auth-block-register:active, .taracot-auth-block-profile:active, .taracot-auth-block-logout:active, .taracot-auth-block-login:focus, .taracot-auth-block-register:focus, .taracot-auth-block-profile:focus, .taracot-auth-block-logout:focus, .taracot-lang-block-select:active, .taracot-lang-block-select:hover, .taracot-lang-block-select:focus {
-    color: #eee;
-    text-decoration: none;
-    background: #252525;
-    outline: none;
-}
+
 .taracot-error-box {
     width: 250px;
     color: #f5f5f5;
 }
+
 .taracot-error-box-head {
     font-size: 200%;
     color: #fff;
     font-weight: bold;
     padding-bottom: 20px;
 }
+
 .taracot-error-box-head-sm {
     font-size: 50%;
     padding-bottom: 10px;
 }
+
 .taracot-error-box-head-logo {
     width: 40px;
     height: 40px;
     margin-bottom: 20px;
 }
+
 .taracot-error-box-head-p1 {
     letter-spacing: 2px;
     margin-bottom: 10px;
 }
+
 .taracot-error-box-head-p2 {
     letter-spacing: 4px;
     margin-bottom: 10px;
 }
+
 .taracot-error-box-msg {
     color: #eee;
     background: #333;
     padding: 5px;
 }
+
 .uk-navbar-toggle {
     height: 40px;
     margin-top: 0;
     text-shadow: none;
     color: #ccc;
 }
-.uk-navbar-toggle:hover, .uk-navbar-toggle:focus, .uk-navbar-toggle:active {
+
+.uk-navbar-toggle:hover,
+.uk-navbar-toggle:focus,
+.uk-navbar-toggle:active {
     height: 40px;
     margin-top: 0;
     text-shadow: none;
     color: #fff;
 }
+
 .taracot_logo_small {
     width: 40px;
     height: 40px;
 }
-.taracot-mobile-line {
-    background: #666;
-    height: 5px;
-    border-left: #666 6px solid;
-    border-right: #666 6px solid;
-    border-top: #666 1px solid;
-    z-index: 100;
-    -webkit-border-top-right-radius: 5px;
-    -webkit-border-top-left-radius: 5px;
-    -moz-border-radius-topright: 5px;
-    -moz-border-radius-topleft: 5px;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-}
+
 .uk-container {
     padding: 0 10px;
 }
+
 .flag {
     width: 16px;
     height: 11px;
     background: url(/modules/lang/images/flags.png) no-repeat;
 }
+
 .flag.flag-de {
     background-position: -16px 0
 }
+
 .flag.flag-en {
     background-position: -32px 0
 }
+
 .flag.flag-ru {
     background-position: 0 -11px
 }
+
 .flag.flag-us {
     background-position: -16px -11px
 }
+
 .taracot-header-search-box {
+    margin-top: 20px;
     background: url(/modules/search/images/search_white.png) no-repeat 10px 6px #444;
     border: 0 none;
     color: #d7d7d7;
@@ -229,6 +265,7 @@ input:focus, textarea:focus, select:focus {
     -o-transition: all 0.3s ease 0s;
     transition: all 0.3s ease 0s;
 }
+
 .taracot-header-search-box:focus {
     background: url(/modules/search/images/search_dark.png) no-repeat 10px 6px #fcfcfc;
     color: #333;
@@ -238,6 +275,28 @@ input:focus, textarea:focus, select:focus {
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
     text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
+
 .taracot-offcanvas-search-box {
     margin: 10px;
+}
+
+@media (max-width: 767px) {
+    .taracot-content {
+        border: 0;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+        margin: 0;
+    }
+    .uk-container {
+        padding: 0;
+    }
+    .taracot-img-logo {
+        text-align: center;
+        padding-right: 20px;
+        margin-top: 0;
+    }
+    .taracot-footer {
+        padding: 10px;
+    }
 }

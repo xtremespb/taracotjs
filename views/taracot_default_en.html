@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="utf-8">
@@ -21,18 +21,18 @@
 </head>
 
 <body>
-    <div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
+    <div class="uk-container uk-container-center">
         <div class="uk-grid">
             <div class="uk-width-large-1-4 uk-width-medium-1-1 uk-width-small-1-1 uk-margin-top uk-margin-bottom">
+                <a class="uk-navbar-toggle uk-hidden-large uk-hidden-medium uk-float-left" data-uk-offcanvas="" href="#taracot-nav-offcanvas"></a>
                 <div class="taracot-img-logo">
-                    <a class="uk-navbar-toggle uk-hidden-large" data-uk-offcanvas="" href="#taracot-nav-offcanvas"></a>
                     <a href="/">
                         <img src="/images/logo_taracot.png">
                     </a>
                 </div>
             </div>
             <div class="uk-width-large-3-4 uk-hidden-medium uk-hidden-small uk-margin-top tc-auth-top">
-                !{root.blocks.auth.top}&nbsp;!{root.blocks.lang.top}&nbsp;!{root.blocks.search.top}
+                !{root.blocks.search.top}
             </div>
         </div>
         <div id="taracot-nav-offcanvas" class="uk-offcanvas">
@@ -48,13 +48,15 @@
                 </ul>
             </div>
         </div>
-        <div class="uk-width-1-1 uk-hidden-small uk-hidden-medium">
+        <div class="uk-width-1-1 uk-hidden-small">
             <nav class="uk-navbar">
                 !{root.blocks.menu.menu_uikit}
+                <div class="uk-navbar-flip">
+                    <ul class="uk-navbar-nav">!{root.blocks.auth.li}!{root.blocks.lang.submenu}</ul>
+                </div>
             </nav>
         </div>
-        <div class="uk-width-1-1 uk-hidden-large taracot-mobile-line"></div>
-        <div class="uk-width-1-1 taracot-content taracot-box-shadow">
+        <div class="taracot-content">
             !{root.content}
         </div>
         <div class="uk-width-1-1 uk-margin-top uk-margin-bottom taracot-footer">
