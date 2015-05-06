@@ -2,7 +2,7 @@ module.exports = function(db, ensure_indexes, config) {
     var async = require('async'),
         is = {
             name: 'menu',
-            version: '0.5.125',
+            version: '0.5.126',
             collections: function(_callback) {
                 // Create collections
                 async.series([
