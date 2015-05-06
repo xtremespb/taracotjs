@@ -68,7 +68,7 @@
         opacity: 0;
     }
     100% {
-    	opacity: 1;
+        opacity: 1;
     }
 }
 
@@ -80,13 +80,17 @@
         opacity: 0;
     }
     100% {
-    	opacity: 1;
+        opacity: 1;
     }
 }
 
 .taracot-support-unread {
     animation: envAnimation 2s linear infinite;
     -webkit-animation: envAnimation 2s linear infinite;
-    color:#FCB417;
+    color: #FCB417;
     padding-right: 10px;
+}
+
+#taracot_table > tbody > tr > td, #taracot_table > thead > tr > th {
+	white-space: nowrap;
 }

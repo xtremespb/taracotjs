@@ -3,21 +3,23 @@
     <div class="uk-margin-bottom">
         <button class="uk-button uk-button-success" id="btn_new_ticket">!{root.lang.__('new_ticket')}</button>
     </div>
-    <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
-        <thead>
-            <tr>
-                <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}</th>
-                <th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
-                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
-                <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
-                <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}
-                    <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div class="uk-overflow-container">
+        <table class="uk-table uk-table-striped uk-table-hover taracot-data-table" id="taracot_table">
+            <thead>
+                <tr>
+                    <th style="width:80px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_id">!{root.lang.__('ticket_id')}</th>
+                    <th class="taracot_table_sortable" rel="taracot_table_sortable_ticket_subj">!{root.lang.__('ticket_subj')}</th>
+                    <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_status')}</th>
+                    <th style="width:120px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_status">!{root.lang.__('ticket_prio')}</th>
+                    <th style="width:140px" class="taracot_table_sortable" rel="taracot_table_sortable_ticket_date">!{root.lang.__('ticket_date')}
+                        <span class="taracot-sort-marker">&nbsp;<i class="uk-icon-sort-desc"></i></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
     <div class="taracot-loading uk-hidden uk-vertical-align uk-text-center">
         <div class="uk-vertical-align-middle">
             <img src="/modules/user/images/loading_36x36.gif" width="36" height="36" alt="">

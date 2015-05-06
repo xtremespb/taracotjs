@@ -6,12 +6,6 @@
 	-khtml-opacity: 0.8;
 	opacity: 0.8;
 }
-.taracot-buttons-area {
-	padding: 10px;
-	margin-top: 30px;
-	border-top: 1px solid #ddd;
-	text-align: right;
-}
 th.taracot_table_sortable {
 	cursor: pointer;
 }

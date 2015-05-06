@@ -50,3 +50,6 @@
 .taracot-subj-box {
 	background: #ccc;
 }
+#taracot_table > tbody > tr > td, #taracot_table > thead > tr > th {
+	white-space: nowrap;
+}

@@ -324,6 +324,7 @@ module.exports = function(app) {
                     email: email,
                     realname: realname,
                     status: status,
+                    groups: groups,
                     password: password_md5,
                     regdate: Date.now()
                 }, function() {

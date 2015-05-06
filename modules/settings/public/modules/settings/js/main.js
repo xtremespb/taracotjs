@@ -86,8 +86,8 @@ var load_edit_data = function(id) {
 var edit_item = function(id) {
 	current_id = id;
 	edit_modal.show();
-	$('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
-	$('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
+	$('.taracot-edit-field').removeClass('uk-form-danger');
+	$('.taracot-edit-field').val('');
 	$('#taracot-modal-edit-wrap').addClass('uk-hidden');
 	$('#taracot-modal-edit-loading').removeClass('uk-hidden');
 	$('#taracot-modal-edit-loading-error').addClass('uk-hidden');
@@ -100,14 +100,14 @@ var add_item = function(id) {
 	$('#taracot-modal-edit-wrap').removeClass('uk-hidden');
 	$('#taracot-modal-edit-loading').addClass('uk-hidden');
 	$('#taracot-modal-edit-loading-error').addClass('uk-hidden');
-	$('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
-	$('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').val('');
+	$('.taracot-edit-field').removeClass('uk-form-danger');
+	$('.taracot-edit-field').val('');
 	$('#status').val('1');
 	$('#oname').focus();
 };
 
 $('#taracot-edit-btn-save').click(function() {
-	$('#taracot-modal-edit-wrap > form.uk-form > fieldset > div.uk-form-row > input').removeClass('uk-form-danger');
+	$('.taracot-edit-field').removeClass('uk-form-danger');
 	var errors = false;
 	if (!$('#oname').val().match(/^[A-Za-z0-9_\-]{3,20}$/)) {
 		$('#oname').addClass('uk-form-danger');
@@ -228,7 +228,7 @@ var delete_item = function(ids) {
 	}
 };
 
-$('.taracot-edit-form > fieldset > .uk-form-row > input, .taracot-edit-form > fieldset > .uk-form-row > select').bind('keypress', function(e) {
+$('.taracot-edit-field').bind('keypress', function(e) {
 	if (submitOnEnter(e)) {
 		$('#taracot-edit-btn-save').click();
 	}

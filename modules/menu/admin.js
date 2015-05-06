@@ -19,9 +19,7 @@ module.exports = function(app) {
             res.redirect(303, "/auth/cp?rnd=" + Math.random().toString().replace('.', ''));
             return;
         }
-        app.get('mongodb').collection('pages').find({
-            plang: req.session.current_locale
-        }, {
+        app.get('mongodb').collection('pages').find({}, {
             limit: 100
         }).sort({
             ptitle: 1
@@ -30,7 +28,7 @@ module.exports = function(app) {
             if (typeof items != 'undefined' && !err) {
                 for (var i = 0; i < items.length; i++) {
                     var item = {};
-                    if (items[i].ptitle) item.ptitle = items[i].ptitle;
+                    if (items[i].pdata[req.session.current_locale].ptitle) item.ptitle = items[i].pdata[req.session.current_locale].ptitle;
                     if (items[i].pfolder) item.purl = items[i].pfolder;
                     if (items[i].pfolder != '/') item.purl += '/';
                     if (items[i].pfilename) item.purl += items[i].pfilename;
