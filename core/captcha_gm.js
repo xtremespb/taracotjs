@@ -3,7 +3,7 @@ var gm = require('gm');
 var captcha = {
 	generate: function(cn) {
 		var res = {};
-		var pic = gm(100, 50, '#f5f5f5').setFormat('png');
+		var pic = gm(100, 50, '#fefefe').setFormat('png');
 		pic.font('../fonts/serrific_grunge.ttf');
 		var offset = 10;
 		for (var n = 0; n < 10; n++) {
