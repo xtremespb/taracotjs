@@ -322,7 +322,7 @@ module.exports = function(app) {
                 var ticket = {};
                 if (ir && ir.length) ticket = ir[0];
                 rep.ticket_id = ticket_id;
-                moment.lang(ticket.ticket_lang || req.session.current_locale);
+                moment.locale(ticket.ticket_lang || req.session.current_locale);
                 var mail_data = {
                         lang: i18nm,
                         site_title: app.get('settings').site_title,
@@ -346,7 +346,7 @@ module.exports = function(app) {
 
     router.post('/ajax/ticket/reply', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
-        moment.lang(req.session.current_locale);
+        moment.locale(req.session.current_locale);
         var rep = {
             status: 1
         };
@@ -443,7 +443,7 @@ module.exports = function(app) {
                                         ticket_status: ticket_status,
                                         reply_user: req.session.auth.username
                                     });
-                        moment.lang(ticket.ticket_lang || req.session.current_locale);
+                        moment.locale(ticket.ticket_lang || req.session.current_locale);
                         i18nm.setLocale(ticket.ticket_lang || req.session.current_locale);
                         var host = ticket.ticket_host || req.get('host'),
                             mail_data = {

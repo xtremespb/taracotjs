@@ -28,7 +28,7 @@ module.exports = function(app) {
             if (typeof items != 'undefined' && !err) {
                 for (var i = 0; i < items.length; i++) {
                     var item = {};
-                    if (items[i].pdata[req.session.current_locale].ptitle) item.ptitle = items[i].pdata[req.session.current_locale].ptitle;
+                    if (items[i].pdata && items[i].pdata[req.session.current_locale] && items[i].pdata[req.session.current_locale].ptitle) item.ptitle = items[i].pdata[req.session.current_locale].ptitle;
                     if (items[i].pfolder) item.purl = items[i].pfolder;
                     if (items[i].pfolder != '/') item.purl += '/';
                     if (items[i].pfilename) item.purl += items[i].pfilename;
