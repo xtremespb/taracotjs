@@ -636,7 +636,7 @@ var push_state = function(p1, p2) {
 ********************************************************************/
 
 $(document).ready(function() {
-    moment.lang(current_locale);
+    moment.locale(current_locale);
     $('#taracot_table').medvedTable({
         col_count: 3,
         sort_mode: 1,

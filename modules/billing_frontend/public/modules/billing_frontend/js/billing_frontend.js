@@ -709,7 +709,7 @@ var btn_billing_payment_save_handler = function() {
 ********************************************************************/
 
 $(document).ready(function() {
-    moment.lang(current_locale);
+    moment.locale(current_locale);
     $('.taracot-form-profile-control').each(function() {
         $(this).val('');
     });
