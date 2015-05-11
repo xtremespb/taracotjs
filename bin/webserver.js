@@ -4,6 +4,7 @@ var config = require('../config'),
 var app = require('../app'),
     http = require('http').Server(app),
     io = require('socket.io')(http),
+    crypto = require('crypto'),
     port = config.port || process.env.PORT || 3000,
     redis_client = app.get('redis_client'),
     redis_subscriber;
@@ -44,12 +45,24 @@ var server = http.listen(port, function() {
 });
 
 io.on('connection', function(socket) {
-
-    socket.on('set_session', function(userid, userid_hash) {
+    socket.on('set_session', function(userid, userid_hash, username) {
         if (userid && userid.match(/^[0-9a-z]{24}$/) && userid_hash && userid_hash.match(/^[0-9a-z]{32}$/)) {
+            if (userid_hash != crypto.createHash('md5').update(config.salt + '.' + userid).digest('hex')) return;
             var sid = userid + userid_hash;
+            if (username) {
+                redis_client.lrem(config.redis.prefix + 'socketio_users_online', 0, username);
+                redis_client.rpush(config.redis.prefix + 'socketio_users_online', username);
+            }
             redis_client.set(config.redis.prefix + 'socketio_online_' + userid, 1);
-            redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({ msgtype: 'taracot_user_online', msg: { id: userid } }));
+            if (username) redis_client.set(config.redis.prefix + 'socketio_data_username_' + userid, username);
+            redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
+                msgtype: 'taracot_user_online',
+                msg: {
+                    id: userid,
+                    username: username,
+                    timestamp: Date.now()
+                }
+            }));
             redis_client.get(config.redis.prefix + 'socketio_sessions_' + sid, function(err, _sessions) {
                 var sessions = [];
                 if (_sessions) sessions = _sessions.split(',');
@@ -65,11 +78,20 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         if (socket.id)
             var socket_id = socket.id;
-            redis_client.get(config.redis.prefix + 'socketio_sid_' + socket.id, function(err, _sid) {
-                if (!_sid) return;
-                var _userid = _sid.substr(0, 24);
-                redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({ msgtype: 'taracot_user_offline', msg: { id: _userid } }));
-                redis_client.set(config.redis.prefix + 'socketio_online_' + _userid, 0);
+        redis_client.get(config.redis.prefix + 'socketio_sid_' + socket.id, function(err, _sid) {
+            if (!_sid) return;
+            var _userid = _sid.substr(0, 24);
+            redis_client.get(config.redis.prefix + 'socketio_data_username_' + _userid, function(err, _username) {
+                var username = '';
+                if (_username) username = _username;
+                redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
+                    msgtype: 'taracot_user_offline',
+                    msg: {
+                        id: _userid,
+                        username: username,
+                        timestamp: Date.now()
+                    }
+                }));
                 redis_client.get(config.redis.prefix + 'socketio_sessions_' + _sid, function(err, _sessions) {
                     if (!_sessions) return;
                     var sessions = _sessions.split(',');
@@ -77,9 +99,17 @@ io.on('connection', function(socket) {
                         if (!io.sockets.connected[sessions[i]]) sessions.splice(i, 1);
                     redis_client.set(config.redis.prefix + 'socketio_sessions_' + _sid, sessions.join(','));
                     redis_client.del(config.redis.prefix + 'socketio_sid_' + socket_id);
-                    if (!sessions.length) redis_client.del(config.redis.prefix + 'socketio_sessions_' + _sid);
+                    if (!sessions.length) {
+                        redis_client.del(config.redis.prefix + 'socketio_sessions_' + _sid);
+                        redis_client.del(config.redis.prefix + 'socketio_online_' + _userid);
+                        if (_username) {
+                            redis_client.del(config.redis.prefix + 'socketio_data_username_' + _userid);
+                            redis_client.lrem(config.redis.prefix + 'socketio_users_online', 0, _username);
+                        }
+                    }
                 });
             });
+        });
     });
 
 });
