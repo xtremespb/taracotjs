@@ -1,0 +1,82 @@
+.uk-notify {
+    z-index: 5000;
+}
+
+.uk-notify-message {
+    text-align: center;
+    color: #fff;
+}
+
+.uk-notify-message-danger {
+    background: red;
+}
+
+.uk-notify-message-success {
+    background: green;
+}
+
+.taracot-chat-tabs {
+    border: 1px solid #eee;
+    border-top: 0;
+    padding: 15px;
+}
+
+.taracot-chat-box-area {
+	overflow: auto;
+}
+
+.taracot-chat-reply-wrap {
+    padding: 15px 0 15px 0;
+}
+
+.taracot-chat-msg-timestamp {
+    font-size: 80%;
+    margin-right: 10px;
+}
+
+.taracot-chat-system-msg, .taracot-chat-msg {
+	margin-bottom: 4px;
+}
+
+.taracot-chat-system-msg {
+    font-weight: bold;
+    color: #4E73E3;
+}
+
+@-webkit-keyframes envAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes envAnimation {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.taracot-support-unread {
+    animation: envAnimation 2s linear infinite;
+    -webkit-animation: envAnimation 2s linear infinite;
+    color: #FCB417;
+    padding-right: 10px;
+}
+
+.taracot-chat-users-online {
+	padding: 10px;
+	margin-top: 37px;
+	border: 1px solid #eee;
+	overflow: auto;
+}
