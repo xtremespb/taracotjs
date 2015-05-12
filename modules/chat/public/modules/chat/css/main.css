@@ -31,7 +31,8 @@
 
 .taracot-chat-msg-timestamp {
     font-size: 80%;
-    margin-right: 10px;
+    margin-right: 8px;
+    margin-left: 5px;
 }
 
 .taracot-chat-system-msg, .taracot-chat-msg {
@@ -76,7 +77,16 @@
 
 .taracot-chat-users-online {
 	padding: 10px;
-	margin-top: 37px;
+	margin-top: 36px;
 	border: 1px solid #eee;
 	overflow: auto;
 }
+
+.taracot-chat-user-online {
+	cursor: pointer;
+	padding: 3px 3px 3px 8px;
+}
+
+.taracot-chat-user-online:hover {
+	background: #eee;
+};

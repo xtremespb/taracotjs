@@ -26,25 +26,29 @@ module.exports = function(app) {
             return;
         }
         i18nm.setLocale(req.session.current_locale);
-        var data = {
-                title: i18nm.__('module_name'),
-                page_title: i18nm.__('module_name'),
-                keywords: '',
-                description: '',
-                extra_css: '<link rel="stylesheet" href="/modules/chat/css/main.css" type="text/css">'
-            },
-            render = renderer.render_file(path.join(__dirname, 'views'), 'chat', {
-                lang: i18nm,
-                data: data,
-                current_locale: req.session.current_locale,
-                current_username: req.session.auth.username,
-                current_user: JSON.stringify({
-                    id: req.session.auth._id,
-                    id_hash: crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex')
-                })
-            }, req);
-        data.content = render;
-        app.get('renderer').render(res, undefined, data, req);
+        redis_client.lrange(config.redis.prefix + 'socketio_users_online', 0, 100, function(err, reply) {
+            if (!reply) reply = [];
+            var data = {
+                    title: i18nm.__('module_name'),
+                    page_title: i18nm.__('module_name'),
+                    keywords: '',
+                    description: '',
+                    extra_css: '<link rel="stylesheet" href="/modules/chat/css/main.css" type="text/css">'
+                },
+                render = renderer.render_file(path.join(__dirname, 'views'), 'chat', {
+                    lang: i18nm,
+                    data: data,
+                    current_locale: req.session.current_locale,
+                    current_username: req.session.auth.username,
+                    current_user: JSON.stringify({
+                        id: req.session.auth._id,
+                        id_hash: crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex')
+                    }),
+                    users_online: JSON.stringify(reply)
+                }, req);
+            data.content = render;
+            app.get('renderer').render(res, undefined, data, req);
+        });
     });
 
     router.post('/ajax/msg', function(req, res) {

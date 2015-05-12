@@ -1,22 +1,23 @@
-<h1>!{root.lang.__('module_name')}</h1>
-<div class="uk-grid uk-grid-small">
-    <div class="uk-width-large-8-10 uk-width-medium-8-10 uk-width-small-1-1">
-        <ul id="taracot_chat_box_sw" class="uk-tab" data-uk-tab="{connect:'#taracot_chat_box_tabs'}">
-            <li id="taracot_chat_public"><a href="">!{root.lang.__('public_room')}</a></li>
-        </ul>
-        <ul id="taracot_chat_box_tabs" class="uk-switcher taracot-chat-tabs">
-            <li>
-                <div class="taracot-chat-box-area taracot-chat-box">
-                </div>
-            </li>
-        </ul>
-        <div class="taracot-chat-reply-wrap uk-form">
-            <input type="text" class="uk-width-1-1" id="taracot_chat_reply">
+<div class="taracot-chat">
+    <h1>!{root.lang.__('module_name')}</h1>
+    <div class="uk-grid uk-grid-small">
+        <div class="uk-width-large-8-10 uk-width-medium-8-10 uk-width-small-1-1">
+            <ul id="taracot_chat_box_sw" class="uk-tab" data-uk-tab="{connect:'#taracot_chat_box_tabs'}">
+                <li id="taracot_chat_public"><a href="">!{root.lang.__('public_room')}</a></li>
+            </ul>
+            <ul id="taracot_chat_box_tabs" class="uk-switcher taracot-chat-tabs">
+                <li>
+                    <div class="taracot-chat-box-area taracot-chat-box">
+                    </div>
+                </li>
+            </ul>
+            <div class="taracot-chat-reply-wrap uk-form">
+                <input type="text" class="uk-width-1-1" id="taracot_chat_reply">
+            </div>
         </div>
-    </div>
-    <div class="uk-width-large-2-10 uk-width-medium-2-10 uk-width-small-1-1">
-        <div class="taracot-chat-users-online">
-
+        <div class="uk-width-large-2-10 uk-width-medium-2-10 uk-width-small-1-1 uk-hidden-small">
+            <div class="taracot-chat-users-online">
+            </div>
         </div>
     </div>
 </div>
@@ -26,6 +27,9 @@ var current_username = "!{root.current_username}",
         root.current_user
     },
     current_locale = "!{root.current_locale}",
+    users_online = !{
+        root.users_online
+    },
     _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
         user: "!{root.lang.__('user')}",
