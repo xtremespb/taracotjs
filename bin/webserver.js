@@ -51,21 +51,24 @@ io.on('connection', function(socket) {
             var sid = userid + userid_hash;
             if (username) {
                 redis_client.lrem(config.redis.prefix + 'socketio_users_online', 0, username);
-                redis_client.rpush(config.redis.prefix + 'socketio_users_online', username);
+                redis_client.lpush(config.redis.prefix + 'socketio_users_online', username);
             }
             redis_client.set(config.redis.prefix + 'socketio_online_' + userid, 1);
             if (username) redis_client.set(config.redis.prefix + 'socketio_data_username_' + userid, username);
-            redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
-                msgtype: 'taracot_user_online',
-                msg: {
-                    id: userid,
-                    username: username,
-                    timestamp: Date.now()
-                }
-            }));
             redis_client.get(config.redis.prefix + 'socketio_sessions_' + sid, function(err, _sessions) {
                 var sessions = [];
-                if (_sessions) sessions = _sessions.split(',');
+                if (_sessions) {
+                    sessions = _sessions.split(',');
+                } else {
+                    redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
+                        msgtype: 'taracot_user_online',
+                        msg: {
+                            id: userid,
+                            username: username,
+                            timestamp: Date.now()
+                        }
+                    }));
+                }
                 sessions.push(socket.id);
                 for (var i = 0; i < sessions.length; i++)
                     if (!io.sockets.connected[sessions[i]]) sessions.splice(i, 1);
@@ -84,14 +87,6 @@ io.on('connection', function(socket) {
             redis_client.get(config.redis.prefix + 'socketio_data_username_' + _userid, function(err, _username) {
                 var username = '';
                 if (_username) username = _username;
-                redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
-                    msgtype: 'taracot_user_offline',
-                    msg: {
-                        id: _userid,
-                        username: username,
-                        timestamp: Date.now()
-                    }
-                }));
                 redis_client.get(config.redis.prefix + 'socketio_sessions_' + _sid, function(err, _sessions) {
                     if (!_sessions) return;
                     var sessions = _sessions.split(',');
@@ -106,6 +101,14 @@ io.on('connection', function(socket) {
                             redis_client.del(config.redis.prefix + 'socketio_data_username_' + _userid);
                             redis_client.lrem(config.redis.prefix + 'socketio_users_online', 0, _username);
                         }
+                        redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
+                            msgtype: 'taracot_user_offline',
+                            msg: {
+                                id: _userid,
+                                username: username,
+                                timestamp: Date.now()
+                            }
+                        }));
                     }
                 });
             });

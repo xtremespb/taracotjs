@@ -88,7 +88,7 @@ module.exports = function(app) {
             if (signature != SignatureValue) return res.send("Invalid signature");
             i18nm.setLocale(order.order_locale);
             app.get('mongodb').collection('billing_payment').update({
-                    order_id: InvId
+                    order_id: parseInt(InvId)
                 }, {
                     $set: {
                         order_status: 1
@@ -100,7 +100,7 @@ module.exports = function(app) {
                             _id: new ObjectId(order.user_id)
                         }, {
                             $inc: {
-                                billing_funds: order.order_sum
+                                billing_funds: parseFloat(order.order_sum)
                             }
                         },
                         function() {
