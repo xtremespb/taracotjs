@@ -1,6 +1,7 @@
 var last_message_timestamp, channels = {},
     current_channel = '',
-    _block_switcher_event;
+    _block_switcher_event,
+    history_loaded = {};
 
 var _chatbox_resize = function() {
     $('.taracot-chat-box-area').height($('.taracot-content').height() - $('.taracot-chat-reply-wrap').height());
@@ -27,7 +28,7 @@ var _init_socket_io = function() {
         if (msg && msg.id && msg.username && msg.timestamp) {
             _publish_system_msg(msg.username, msg.timestamp, _lang_vars.user + ' ' + msg.username + ' ' + _lang_vars.is_now_online);
             if ($.inArray(msg.username, users_online) == -1) {
-            	users_online.push(msg.username);
+                users_online.push(msg.username);
                 _add_online_user(msg.username);
                 _online_user_rebind();
             }
@@ -43,14 +44,26 @@ var _init_socket_io = function() {
 };
 
 var _publish_msg = function(channel, username, timestamp, msg) {
-    var ca = '.taracot-chat-box';
+    var ca = '.taracot-chat-box',
+        dt;
+    if (moment(timestamp).format('D') != moment().format('D') && Date.now() > timestamp) {
+        dt = moment(timestamp).format('L LT');
+    } else {
+        dt = moment(timestamp).format('LT');
+    }
     if (channel) ca += '-' + channel;
-    $(ca).append('<div class="taracot-chat-msg"><b>' + username + ':&nbsp;</b><div class="uk-badge taracot-chat-msg-timestamp uk-float-right">' + moment(msg.timestamp).format('LT') + '</div>' + msg + '</div>');
+    $(ca).append('<div class="taracot-chat-msg"><b>' + username + ':&nbsp;</b><div class="taracot-chat-msg-timestamp taracot-chat-msg-timestamp-normal uk-float-right">' + dt + '</div>' + msg + '</div>');
     $('.taracot-chat-box-area').scrollTop(1000000);
 };
 
 var _publish_system_msg = function(username, timestamp, msg) {
-    var html = '<div class="taracot-chat-system-msg"><div class="uk-badge taracot-chat-msg-timestamp uk-float-right">' + moment(msg.timestamp).format('LT') + '</div>' + msg + '</div>';
+    var dt;
+    if (moment(timestamp).format('D') != moment().format('D') && Date.now() > timestamp) {
+        dt = moment(timestamp).format('L LT');
+    } else {
+        dt = moment(timestamp).format('LT');
+    }
+    var html = '<div class="taracot-chat-system-msg"><div class="uk-badge uk-badge-warning taracot-chat-msg-timestamp uk-float-right">' + dt + '</div>' + msg + '</div>';
     $('.taracot-chat-box').append(html);
     if (channels[username]) $('.taracot-chat-box-' + username).append(html);
     $('.taracot-chat-box-area').scrollTop(1000000);
@@ -59,7 +72,7 @@ var _publish_system_msg = function(username, timestamp, msg) {
 var _create_channel = function(channel) {
     if (channels[channel]) return;
     channels[channel] = true;
-    $('#taracot_chat_box_sw').append('<li id="taracot_chat_cn' + channel + '"><a href=""><i class="uk-icon-envelope taracot-support-unread" style="display:none"></i>' + channel + '&nbsp;<i class="uk-close taracot-chat-tab-close" rel="' + channel + '"></i></a></li>');
+    $('#taracot_chat_box_sw').append('<li id="taracot_chat_cn' + channel + '"><a href=""><i class="uk-icon-envelope taracot-support-unread" style="display:none"></i>' + channel + '&nbsp;<i class="uk-icon-close taracot-chat-tab-close" rel="' + channel + '"></i></a></li>');
     $('#taracot_chat_box_tabs').append('<li><div class="taracot-chat-box-area taracot-chat-box-' + channel + '"></div></li>');
     $('.taracot-chat-tab-close').unbind();
     $('.taracot-chat-tab-close').click(_close_channel_handler);
@@ -104,11 +117,20 @@ var _close_channel_handler = function(e) {
     $('#taracot_chat_cn' + channel).remove();
     $('.taracot-chat-box-' + channel).parent().remove();
     $('#taracot_chat_reply').focus();
+    delete history_loaded[channel];
+    $.ajax({
+        type: 'POST',
+        url: '/chat/ajax/channel/close',
+        data: {
+            channel: channel
+        },
+        dataType: "json"
+    });
 };
 
 var _post_msg = function() {
     $('#taracot_chat_reply').removeClass('uk-form-danger');
-    var msg = $('#taracot_chat_reply').val();
+    var msg = $.trim($('#taracot_chat_reply').val());
     if (!msg || msg.length < 2) return $('#taracot_chat_reply').addClass('uk-form-danger');
     $('#taracot_chat_reply').attr('disabled', true);
     $.ajax({
@@ -165,19 +187,71 @@ var _chat_box_tab_switch_handler = function(event, area_) {
     $('#taracot_chat_cn' + current_channel + ' > a > .taracot-support-unread').hide();
     $('#taracot_chat_reply').removeClass('uk-form-danger');
     $('#taracot_chat_reply').focus();
+    if (!history_loaded[current_channel]) {
+        _chat_loading_indicator(true);
+        history_loaded[current_channel] = 1;
+        $.ajax({
+            type: 'POST',
+            url: '/chat/ajax/channel/history',
+            data: {
+                channel: current_channel
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data && data.status == 1) {
+                    var messages = data.messages[current_channel];
+                    for (var mi in messages)
+                        _publish_msg(current_channel, messages[mi].username, messages[mi].timestamp, messages[mi].message);
+                    $('.taracot-chat-box-area').scrollTop(1000000);
+                }
+            },
+            complete: function() {
+                _chat_loading_indicator(false);
+            }
+        });
+    } else {
+    	$('.taracot-chat-box-area').scrollTop(1000000);
+    }
 };
 
 var _chat_reply_handler = function(e) {
     if (submitOnEnter(e)) _post_msg();
 };
 
+var _restore_history_messages = function() {
+    Object.keys(messages_data).forEach(function(channel) {
+        history_loaded[channel] = 1;
+        var messages = messages_data[channel];
+        if (channel && channel.length && !channels[channel]) _create_channel(channel);
+        for (var mi in messages)
+            _publish_msg(channel, messages[mi].username, messages[mi].timestamp, messages[mi].message);
+    });
+};
+
+var _chat_loading_indicator = function(show) {
+    if (show) {
+        var destination = $('#taracot-chat-grid').offset();
+        $('.taracot-loading').css({
+            top: destination.top,
+            left: destination.left,
+            width: $('#taracot-chat-grid').width(),
+            height: $('#taracot-chat-grid').height()
+        });
+        $('.taracot-loading').show();
+    } else {
+        $('.taracot-loading').hide();
+    }
+};
+
+
 $(document).ready(function() {
     moment.locale(current_locale);
-    _init_socket_io();
     $('#taracot_chat_box_sw').on('show.uk.switcher', _chat_box_tab_switch_handler);
     $('#taracot_chat_reply').bind('keypress', _chat_reply_handler);
     $('#taracot_chat_reply').focus();
     for (var ui in users_online) _add_online_user(users_online[ui]);
     _online_user_rebind();
     _chatbox_resize();
+    _restore_history_messages();
+    _init_socket_io();
 });
