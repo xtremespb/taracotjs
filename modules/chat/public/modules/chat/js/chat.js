@@ -70,7 +70,7 @@ var _publish_system_msg = function(username, timestamp, msg) {
 };
 
 var _create_channel = function(channel) {
-    if (channels[channel]) return;
+    if (!channel || !channel.length || channels[channel]) return;
     channels[channel] = true;
     $('#taracot_chat_box_sw').append('<li id="taracot_chat_cn' + channel + '"><a href=""><i class="uk-icon-envelope taracot-support-unread" style="display:none"></i>' + channel + '&nbsp;<i class="uk-icon-close taracot-chat-tab-close" rel="' + channel + '"></i></a></li>');
     $('#taracot_chat_box_tabs').append('<li><div class="taracot-chat-box-area taracot-chat-box-' + channel + '"></div></li>');
@@ -249,9 +249,9 @@ $(document).ready(function() {
     $('#taracot_chat_box_sw').on('show.uk.switcher', _chat_box_tab_switch_handler);
     $('#taracot_chat_reply').bind('keypress', _chat_reply_handler);
     $('#taracot_chat_reply').focus();
-    for (var ui in users_online) _add_online_user(users_online[ui]);
     _online_user_rebind();
     _chatbox_resize();
+    for (var ui in users_online) _add_online_user(users_online[ui]);
     _restore_history_messages();
     _init_socket_io();
 });

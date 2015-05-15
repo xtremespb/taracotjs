@@ -4,7 +4,7 @@ var fs = require('fs-extra'),
 module.exports = function(db, ensure_indexes, config) {
     var is = {
         name: 'support',
-        version: '0.5.126',
+        version: '0.5.135',
         collections: function(_callback) {
             // Create collections
             async.series([

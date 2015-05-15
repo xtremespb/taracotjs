@@ -3,7 +3,7 @@ module.exports = function(db, ensure_indexes, config) {
         ObjectId = require('mongodb').ObjectID,
         is = {
             name: 'feedback',
-            version: '0.5.126',
+            version: '0.5.135',
             collections: function(_callback) {
                 // Create collections
                 _callback();
