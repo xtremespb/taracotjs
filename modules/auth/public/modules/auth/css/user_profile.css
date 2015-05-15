@@ -1,27 +1,41 @@
 #profile_set_avatar {
-	cursor: pointer;
+    cursor: pointer;
 }
+
 .uk-notify {
-	z-index: 5000;
+    z-index: 5000;
 }
+
 .uk-notify-message {
-	text-align: center;
-	color: #fff;
+    text-align: center;
+    color: #fff;
 }
+
 .uk-notify-message-danger {
-	background: red;
+    background: red;
 }
+
 .uk-notify-message-success {
-	background: green;
+    background: green;
 }
-#profile_set_avatar:hover, #profile_set_avatar:active, #profile_set_avatar:focus {
-	color: #fff;
-	outline: 0;
+
+#profile_set_avatar:hover,
+#profile_set_avatar:active,
+#profile_set_avatar:focus {
+    color: #fff;
+    outline: 0;
 }
+
 #taracot_oauth_finish_wrap {
-	margin-top: 30px;
-	margin-bottom: 25px;
+    margin-top: 30px;
+    margin-bottom: 25px;
 }
+
 .taracot_oauth_finish {
-	border: 1px solid #bbb;
+    border: 1px solid #bbb;
+}
+
+.uk-form-help-block {
+	font-size: 80%;
+	color: #666;
 }

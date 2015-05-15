@@ -74,24 +74,18 @@
             <p>!{root.lang.__('set_realname_hint')}</p>
             <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_rn_error"></div>
             <div class="uk-form uk-form-horizontal">
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('realname')}:</label>
-                        <input class="uk-form-width-medium taracot_rn_field" id="rn_realname" type="text" id="rn_realname">
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
-                        <input class="uk-form-width-small taracot_rn_field" id="rn_password_current" type="password" id="current_password">
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                        <button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>
-                        <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                    </div>
-                </fieldset>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('realname')}:</label>
+                    <input class="uk-form-width-medium taracot_rn_field" id="rn_realname" type="text" id="rn_realname">
+                </div>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+                    <input class="uk-form-width-small taracot_rn_field" id="rn_password_current" type="password" id="current_password">
+                </div>
+                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                    <button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>
+                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+                </div>
             </div>
         </div>
     </div>
@@ -105,33 +99,27 @@
             <p>!{root.lang.__('set_password_hint')}</p>
             <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_pc_error"></div>
             <div class="uk-form uk-form-stacked">
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
-                        <input class="uk-form-width-medium taracot_pc_field" id="pc_password_current" type="password" id="current_password">
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+                    <input class="uk-form-width-medium taracot_pc_field" id="pc_password_current" type="password" id="current_password">
+                </div>
+                <div class="uk-form-row">
+                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
+                    <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
+                    <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">&nbsp;&nbsp;
+                    <span class="uk-icon-check uk-icon-medium" style="color:#eee" id="pc_password_match"></span>
+                    <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
+                </div>
+                <div class="uk-form-row">
+                    <label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
+                    <div class="uk-progress">
+                        <div class="uk-progress-bar" id="pc_password_strength" style="width:0"></div>
                     </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-form-row">
-                        <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
-                        <input class="uk-form-width-small taracot_pc_field" id="pc_password" type="password" id="password">
-                        <input class="uk-form-width-small taracot_pc_field" id="pc_password_repeat" type="password" id="password-repeat">&nbsp;&nbsp;
-                        <span class="uk-icon-check uk-icon-medium" style="color:#eee" id="pc_password_match"></span>
-                        <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
-                    </div>
-                    <div class="uk-form-row">
-                        <label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
-                        <div class="uk-progress">
-                            <div class="uk-progress-bar" id="pc_password_strength" style="width:0"></div>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                        <button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>
-                        <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                    </div>
-                </fieldset>
+                </div>
+                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                    <button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>
+                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+                </div>
             </div>
         </div>
     </div>
@@ -149,30 +137,22 @@
             </p>
             <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_ec_error"></div>
             <div class="uk-form uk-form-horizontal">
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('current_email')}:</label>
-                        <input class="uk-form-width-medium uk-disabled" disabled="disabled" type="email" value="!{root.auth.email}">
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('new_email')}:</label>
-                        <input class="uk-form-width-medium taracot_ec_field" id="ec_email" type="email" id="ec_email">
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
-                        <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                        <button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
-                        <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                    </div>
-                </fieldset>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('current_email')}:</label>
+                    <input class="uk-form-width-medium uk-disabled" disabled="disabled" type="email" value="!{root.auth.email}">
+                </div>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('new_email')}:</label>
+                    <input class="uk-form-width-medium taracot_ec_field" id="ec_email" type="email" id="ec_email">
+                </div>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
+                    <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
+                </div>
+                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                    <button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
+                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+                </div>
             </div>
         </div>
     </div>
@@ -186,34 +166,28 @@
             <p>!{root.lang.__('set_username_password_hint')}</p>
             <div class="uk-alert uk-alert-danger" style="display:none" id="taracot_set_error"></div>
             <div class="uk-form uk-form-stacked">
-                <fieldset>
-                    <div class="uk-form-row" data-uk-margin>
-                        <label class="uk-form-label">!{root.lang.__('new_username')}:</label>
-                        <input class="uk-form-width-medium taracot_set_field" id="set_username" type="text">
-                        <p class="uk-form-help-block">!{root.lang.__('new_username_hint')}</p>
+                <div class="uk-form-row" data-uk-margin>
+                    <label class="uk-form-label">!{root.lang.__('new_username')}:</label>
+                    <input class="uk-form-width-medium taracot_set_field" id="set_username" type="text">
+                    <p class="uk-form-help-block">!{root.lang.__('new_username_hint')}</p>
+                </div>
+                <div class="uk-form-row">
+                    <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
+                    <input class="uk-form-width-small taracot_set_field" id="set_password" type="password" id="password">
+                    <input class="uk-form-width-small taracot_set_field" id="set_password_repeat" type="password" id="password-repeat">&nbsp;&nbsp;
+                    <span class="uk-icon-check uk-icon-medium" style="color:#eee" id="set_password_match"></span>
+                    <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
+                </div>
+                <div class="uk-form-row">
+                    <label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
+                    <div class="uk-progress">
+                        <div class="uk-progress-bar" id="set_password_strength" style="width:0"></div>
                     </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-form-row">
-                        <label class="uk-form-label">!{root.lang.__('password_twice')}:</label>
-                        <input class="uk-form-width-small taracot_set_field" id="set_password" type="password" id="password">
-                        <input class="uk-form-width-small taracot_set_field" id="set_password_repeat" type="password" id="password-repeat">&nbsp;&nbsp;
-                        <span class="uk-icon-check uk-icon-medium" style="color:#eee" id="set_password_match"></span>
-                        <p class="uk-form-help-block">!{root.lang.__('password_hint')}</p>
-                    </div>
-                    <div class="uk-form-row">
-                        <label class="uk-form-label">!{root.lang.__('password_strength')}:</label>
-                        <div class="uk-progress">
-                            <div class="uk-progress-bar" id="set_password_strength" style="width:0"></div>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                        <button class="uk-button" id="btn_set_save">!{root.lang.__('save')}</button>
-                        <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                    </div>
-                </fieldset>
+                </div>
+                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                    <button class="uk-button" id="btn_set_save">!{root.lang.__('save')}</button>
+                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
+                </div>
             </div>
         </div>
     </div>
