@@ -73,8 +73,14 @@ module.exports = function(app) {
             if (_config_auth[key].clientSecret) delete _config_auth[key].clientSecret;
         }
         if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) _config_auth = [];
-        var redirect_host = '';
-        if (req.session.auth_redirect_host) redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
+        var redirect_host = config.protocol + '://' + req.get('host');
+        if (req.session.auth_redirect_host) {
+            redirect_host = config.protocol + '://' + req.session.auth_redirect_host;
+        } else {
+            req.session.auth_redirect_host = req.get('host');
+        }
+        if (!req.session.auth_redirect)
+            req.session.auth_redirect = '/auth/profile?rnd=' + Math.random().toString().replace('.', '');
         var render = renderer.render_file(path.join(__dirname, 'views'), 'login_user', {
             lang: i18nm,
             captcha: _cap,

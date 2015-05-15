@@ -1,18 +1,18 @@
 module.exports = function(app) {
-    var router = app.get('express').Router();
-    var request = require('request');
-    var crypto = require('crypto');
-    var config = app.get('config');
-    var fs = require("fs");
-    var gm = false;
-    if (app.get('config').graphicsmagick) {
+    var router = app.get('express').Router(),
+        request = require('request'),
+        crypto = require('crypto'),
+        config = app.get('config'),
+        fs = require("fs"),
+        gm = false;
+    if (config.graphicsmagick) {
         gm = require('gm');
     }
     router.get('/google', function(req, res) {
-        if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+        if (app.get('settings') && app.get('settings').site_mode && (app.get('settings').site_mode == 'private' || app.get('settings').site_mode == 'invites')) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
         var config_auth = app.get('config_auth');
         var code = req.query.code;
-        if (!code) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+        if (!code) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
         var url = 'https://accounts.google.com/o/oauth2/token';
         request.post(url, {
             form: {
@@ -23,19 +23,19 @@ module.exports = function(app) {
                 grant_type: 'authorization_code'
             }
         }, function(error, response, body) {
-            if (error || !body) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            if (error || !body) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
             var data = JSON.parse(body);
-            if (!data.access_token) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+            if (!data.access_token) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
             var data_url = 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + data.access_token;
             request.get(data_url, function(error, response, body) {
-                if (error || response.statusCode != 200) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+                if (error || response.statusCode != 200) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
                 var user_data = JSON.parse(body);
                 app.get('mongodb').collection('users').find({
                     email: user_data.email
                 }, {
                     limit: 1
                 }).toArray(function(err, items) {
-                    if (err) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+                    if (err) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
                     if (typeof items == 'undefined' || !items || !items.length) {
                         var _now = Date.now();
                         var user = {
@@ -49,69 +49,47 @@ module.exports = function(app) {
                             status: 1
                         };
                         app.get('mongodb').collection('users').insert(user, function(err, items) {
-                            if (err) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+                            if (err) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
                             var user_id = items[0]._id.toHexString();
-                            if (!user_id) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+                            if (!user_id) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
                             app.get('mongodb').collection('users').find({
                                 _id: items[0]._id
                             }, {
                                 limit: 1
                             }).toArray(function(err, items) {
-                                if (err || typeof items == 'undefined' || !items || !items.length) return res.redirect(303, "/auth?rnd=" + Math.random().toString().replace('.', ''));
+                                if (err || typeof items == 'undefined' || !items || !items.length) return res.redirect(303, config.protocol + '://' + (req.session.auth_redirect_host || req.get('host')) + "/auth?rnd=" + Math.random().toString().replace('.', ''));
                                 req.session.auth = items[0];
                                 req.session.auth.timestamp = Date.now();
                                 delete req.session.auth.password;
-                                if (!gm) {
-                                    if (req.session.auth_redirect) {
-                                        var host = config.protocol + '://' + req.session.auth_redirect_host || '';
-                                        return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
-                                    }
-                                    return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
-                                }
+                                if (!gm) return _redirect(req, res);
                                 var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
-                                var file = fs.createWriteStream(app.get('config').dir.avatars + '/' + afn + '.jpg');
+                                var file = fs.createWriteStream(config.dir.avatars + '/' + afn + '.jpg');
                                 if (user_data.picture) {
                                     request.get(user_data.picture).pipe(file).on('close', function() {
-                                        if (!fs.existsSync(app.get('config').dir.avatars + '/' + afn + '.jpg')) {
-                                            if (req.session.auth_redirect) {
-                                                var host = config.protocol + '://' + req.session.auth_redirect_host || '';
-                                                return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
-                                            }
-                                            return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
-                                        }
-                                        var img = gm(app.get('config').dir.avatars + '/' + afn + '.jpg');
-                                        img.size(function(err, size) {
-                                            if (!err) {
-                                                if (size.width >= size.height) {
-                                                    img.resize(null, 128);
-                                                    img.crop(128, 128, 0, 0);
-                                                } else {
-                                                    img.resize(128, null);
-                                                    img.crop(128, 128, 0, 0);
-                                                }
-                                                img.setFormat('jpeg');
-                                                img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
-                                                    if (req.session.auth_redirect) {
-                                                        var host = config.protocol + '://' + req.session.auth_redirect_host || '';
-                                                        return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
+                                        fs.exists(config.dir.avatars + '/' + afn + '.jpg', function(fe) {
+                                            if (!fe) return _redirect(req, res);
+                                            var img = gm(config.dir.avatars + '/' + afn + '.jpg');
+                                            img.size(function(err, size) {
+                                                if (!err) {
+                                                    if (size.width >= size.height) {
+                                                        img.resize(null, 128);
+                                                        img.crop(128, 128, 0, 0);
+                                                    } else {
+                                                        img.resize(128, null);
+                                                        img.crop(128, 128, 0, 0);
                                                     }
-                                                    return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
-                                                });
-                                            } else {
-                                                if (req.session.auth_redirect) {
-                                                    var host = config.protocol + '://' + req.session.auth_redirect_host || '';
-                                                    return res.redirect(303, host + req.session.auth_redirect + "?rnd=" + Math.random().toString().replace('.', ''));
+                                                    img.setFormat('jpeg');
+                                                    img.write(config.dir.avatars + '/' + afn + '.jpg', function(err) {
+                                                        return _redirect(req, res);
+                                                    });
+                                                } else {
+                                                    return _redirect(req, res);
                                                 }
-                                                return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
-                                            }
+                                            });
                                         });
                                     });
                                 } else {
-                                    if (req.session.auth_redirect) {
-                                        var r_host = req.session.auth_redirect_host || '';
-                                        return res.redirect(303, r_host + req.session.auth_redirect + "?rnd=" + Maoth.random().toString().replace('.', ''));
-                                    }
-                                    return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                                    return _redirect(req, res);
                                 }
                             });
                         });
@@ -119,11 +97,22 @@ module.exports = function(app) {
                         req.session.auth = items[0];
                         req.session.auth.timestamp = Date.now();
                         delete req.session.auth.password;
-                        return res.redirect(303, "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+                        return _redirect(req, res);
                     }
                 });
             });
         });
     });
+
+    var _redirect = function(req, res) {
+        // Redirect
+        var redirect_host = config.protocol + '://' + (req.session.auth_redirect_host || req.get('host'));
+        if (req.session.auth_redirect) {
+            return res.redirect(303, redirect_host + req.session.auth_redirect);
+        } else {
+            return res.redirect(303, redirect_host + "/auth/profile?rnd=" + Math.random().toString().replace('.', ''));
+        }
+    };
+
     return router;
 };
