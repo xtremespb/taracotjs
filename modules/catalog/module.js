@@ -1232,95 +1232,115 @@ module.exports = function(app) {
                     var primary_img = '/modules/catalog/images/placeholder_300.png',
                         primary_img_full = '#',
                         thumb_img = '';
-                    if (whitem.pimages && whitem.pimages.length) {
-                        if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg'))
-                            primary_img = app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[0] + '.jpg';
-                        if (fs.existsSync(app.get('config').dir.storage + '/warehouse/' + whitem.pimages[0] + '.jpg'))
-                            primary_img_full = app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[0] + '.jpg';
-                        if (whitem.pimages.length > 1)
-                            for (var pi = 1; pi < whitem.pimages.length; pi++)
-                                if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg'))
-                                    thumb_img += pt_tn_img(gaikan, {
-                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[pi] + '.jpg',
-                                        url: app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[pi] + '.jpg'
+                    async.series([
+                        function(callback) {
+                            if (whitem.pimages && whitem.pimages.length) {
+                                fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg', function(ex1) {
+                                    if (ex1) primary_img = app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[0] + '.jpg';
+                                    fs.exists(app.get('config').dir.storage + '/warehouse/' + whitem.pimages[0] + '.jpg', function(ex2) {
+                                        if (ex2) primary_img_full = app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[0] + '.jpg';
                                     });
-                    }
-                    var pchars = '',
-                        pgeninfo = '';
-                    if (whitem.pchars && whitem.pchars.length) {
-                        var pci = '';
-                        for (var wip = 0; wip < whitem.pchars.length; wip++) {
-                            pci += pt_desc_list_item(gaikan, {
-                                par: items_hash[whitem.pchars[wip].id] || whitem.pchars[wip].id,
-                                val: whitem.pchars[wip].val || '&nbsp;'
+                                    if (whitem.pimages.length > 1) {
+                                        async.eachSeries(whitem.pimages, function(pimage, pcallback) {
+                                            fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + pimage + '.jpg', function(ex3) {
+                                                if (ex3)
+                                                    thumb_img += pt_tn_img(gaikan, {
+                                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + pimage + '.jpg',
+                                                        url: app.get('config').dir.storage_url + '/warehouse/' + pimage + '.jpg'
+                                                    });
+                                                pcallback();
+                                            });
+                                        }, function() {
+                                            callback();
+                                        });
+                                    } else {
+                                        callback();
+                                    }
+                                });
+                            } else {
+                                callback();
+                            }
+                        },
+                        function(callback) {
+                            var pchars = '',
+                                pgeninfo = '';
+                            if (whitem.pchars && whitem.pchars.length) {
+                                var pci = '';
+                                for (var wip = 0; wip < whitem.pchars.length; wip++) {
+                                    pci += pt_desc_list_item(gaikan, {
+                                        par: items_hash[whitem.pchars[wip].id] || whitem.pchars[wip].id,
+                                        val: whitem.pchars[wip].val || '&nbsp;'
+                                    }, undefined);
+                                }
+                                pchars = pt_desc_list(gaikan, {
+                                    items: pci
+                                }, undefined);
+                            }
+                            // Generate general (item) info
+                            pgeninfo += pt_desc_list_item(gaikan, {
+                                par: i18nm.__('sku'),
+                                val: whitem.pfilename
                             }, undefined);
+                            var item_avail = i18nm.__('item_avail');
+                            if (parseInt(whitem.pamount) === 0) item_avail = i18nm.__('item_not_avail');
+                            pgeninfo += pt_desc_list_item(gaikan, {
+                                par: i18nm.__('avail'),
+                                val: item_avail
+                            }, undefined);
+                            pgeninfo += pt_desc_list_item(gaikan, {
+                                par: i18nm.__('item_weight'),
+                                val: whitem.pweight + ' ' + misc_hash.weight_units
+                            }, undefined);
+                            pgeninfo = pt_desc_list(gaikan, {
+                                items: pgeninfo
+                            }, undefined);
+                            if (parseInt(whitem.pamount) === 0) {
+                                btn_buy = pt_btn_disabled(gaikan, {
+                                    lang: i18nm
+                                }, undefined);
+                            } else {
+                                btn_buy = pt_btn(gaikan, {
+                                    lang: i18nm
+                                }, undefined);
+                            }
+                            whitem.pcurs = curs_hash[whitem.pcurs] || whitem.pcurs;
+                            var catalog_cart = req.session.catalog_cart || [];
+                            var total_cart_items_count = 0;
+                            if (catalog_cart.length)
+                                for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
+                            var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (init_cat || '') + '&find=' + (init_find || '');
+                            var out_html = catalog_item_view(gaikan, {
+                                lang: i18nm,
+                                whitem: whitem,
+                                bread: bread,
+                                primary_img: primary_img,
+                                primary_img_full: primary_img_full,
+                                thumb_img: thumb_img,
+                                btn_buy: btn_buy,
+                                pchars: pchars,
+                                pgeninfo: pgeninfo,
+                                init_sort: sort,
+                                init_view: show_all,
+                                init_path: init_cat,
+                                init_page: page,
+                                init_find: init_find,
+                                url_data: url_data,
+                                cart_items_count: total_cart_items_count
+                            });
+                            var data = {
+                                title: whitem.ptitle,
+                                current_lang: _locale,
+                                page_title: whitem.ptitle,
+                                content: out_html,
+                                keywords: whitem.pkeywords,
+                                description: whitem.pdesc,
+                                extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                            };
+                            var layout = whitem.playout || undefined;
+                            app.get('renderer').render(res, layout, data, req);
+                            return callback();
                         }
-                        pchars = pt_desc_list(gaikan, {
-                            items: pci
-                        }, undefined);
-                    }
-                    // Generate general (item) info
-                    pgeninfo += pt_desc_list_item(gaikan, {
-                        par: i18nm.__('sku'),
-                        val: whitem.pfilename
-                    }, undefined);
-                    var item_avail = i18nm.__('item_avail');
-                    if (parseInt(whitem.pamount) === 0) item_avail = i18nm.__('item_not_avail');
-                    pgeninfo += pt_desc_list_item(gaikan, {
-                        par: i18nm.__('avail'),
-                        val: item_avail
-                    }, undefined);
-                    pgeninfo += pt_desc_list_item(gaikan, {
-                        par: i18nm.__('item_weight'),
-                        val: whitem.pweight + ' ' + misc_hash.weight_units
-                    }, undefined);
-                    pgeninfo = pt_desc_list(gaikan, {
-                        items: pgeninfo
-                    }, undefined);
-                    if (parseInt(whitem.pamount) === 0) {
-                        btn_buy = pt_btn_disabled(gaikan, {
-                            lang: i18nm
-                        }, undefined);
-                    } else {
-                        btn_buy = pt_btn(gaikan, {
-                            lang: i18nm
-                        }, undefined);
-                    }
-                    whitem.pcurs = curs_hash[whitem.pcurs] || whitem.pcurs;
-                    var catalog_cart = req.session.catalog_cart || [];
-                    var total_cart_items_count = 0;
-                    if (catalog_cart.length)
-                        for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
-                    var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (init_cat || '') + '&find=' + (init_find || '');
-                    var out_html = catalog_item_view(gaikan, {
-                        lang: i18nm,
-                        whitem: whitem,
-                        bread: bread,
-                        primary_img: primary_img,
-                        primary_img_full: primary_img_full,
-                        thumb_img: thumb_img,
-                        btn_buy: btn_buy,
-                        pchars: pchars,
-                        pgeninfo: pgeninfo,
-                        init_sort: sort,
-                        init_view: show_all,
-                        init_path: init_cat,
-                        init_page: page,
-                        init_find: init_find,
-                        url_data: url_data,
-                        cart_items_count: total_cart_items_count
-                    });
-                    var data = {
-                        title: whitem.ptitle,
-                        current_lang: _locale,
-                        page_title: whitem.ptitle,
-                        content: out_html,
-                        keywords: whitem.pkeywords,
-                        description: whitem.pdesc,
-                        extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
-                    };
-                    var layout = whitem.playout || undefined;
-                    return app.get('renderer').render(res, layout, data, req);
+                    ]);
                 });
             }); // Load warehouse categories
         }); // Load warehouse configuration
@@ -1485,187 +1505,211 @@ module.exports = function(app) {
                     }).sort(sort_query).toArray(function(wh_err, whitems) {
                         var warehouse_count = 0,
                             current_cat_bread = get_bread(warehouse_categories, current_cat_id, req),
-                            catalog_items_html = '';
+                            catalog_items_html = '',
+                            images_exists_hash = {};
                         if (!whc_err) warehouse_count = parseInt(_whcount);
-                        if (warehouse_count > 0) { // There is something in the warehouse
-                            for (var wi = 0; wi < whitems.length; wi++) {
-                                if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
-                                var title = whitems[wi].ptitle,
-                                    thumb = '/modules/catalog/images/placeholder_50.png',
-                                    desc = whitems[wi].pshortdesc || '',
-                                    sku = whitems[wi].pfilename || '0',
-                                    price = whitems[wi].pprice,
-                                    amount = parseInt(whitems[wi].pamount),
-                                    currency = curs_hash[whitems[wi].pcurs],
-                                    btn_buy = '';
-                                if (whitems[wi].pimages && whitems[wi].pimages.length)
-                                    if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg'))
-                                        thumb = app.get('config').dir.storage_url + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg';
-                                if (amount === 0) {
-                                    btn_buy = pt_btn_mini_disabled(gaikan, {
-                                        lang: i18nm
-                                    }, undefined);
+                        async.series([
+                            function(callback) {
+                                if (warehouse_count > 0) {
+                                    async.eachSeries(whitems, function(whitem, escallback) {
+                                        if (whitem.pimages && whitem.pimages.length) {
+                                            fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg', function(ex) {
+                                                if (ex) images_exists_hash[whitem.pimages[0]] = 1;
+                                                escallback();
+                                            });
+                                        } else {
+                                            escallback();
+                                        }
+                                    }, function() {
+                                        callback();
+                                    });
                                 } else {
-                                    btn_buy = pt_btn_mini(gaikan, {
-                                        lang: i18nm,
-                                        sku: sku,
-                                        cat: (current_path || '/')
-                                    }, undefined);
+                                    callback();
                                 }
-                                catalog_items_html += catalog_item(gaikan, {
+                            },
+                            function(callback) {
+                                if (warehouse_count > 0) { // There is something in the warehouse
+                                    for (var wi = 0; wi < whitems.length; wi++) {
+                                        if (whitems[wi].pdata[req.session.current_locale]) whitems[wi] = merge(whitems[wi], whitems[wi].pdata[req.session.current_locale]);
+                                        var title = whitems[wi].ptitle,
+                                            thumb = '/modules/catalog/images/placeholder_50.png',
+                                            desc = whitems[wi].pshortdesc || '',
+                                            sku = whitems[wi].pfilename || '0',
+                                            price = whitems[wi].pprice,
+                                            amount = parseInt(whitems[wi].pamount),
+                                            currency = curs_hash[whitems[wi].pcurs],
+                                            btn_buy = '';
+                                        if (amount === 0) {
+                                            btn_buy = pt_btn_mini_disabled(gaikan, {
+                                                lang: i18nm
+                                            }, undefined);
+                                        } else {
+                                            btn_buy = pt_btn_mini(gaikan, {
+                                                lang: i18nm,
+                                                sku: sku,
+                                                cat: (current_path || '/')
+                                            }, undefined);
+                                        }
+                                        if (whitems[wi].pimages && whitems[wi].pimages.length)
+                                            if (images_exists_hash[whitems[wi].pimages[0]])
+                                                thumb = app.get('config').dir.storage_url + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg';
+                                        catalog_items_html += catalog_item(gaikan, {
+                                            lang: i18nm,
+                                            thumb: thumb,
+                                            title: title,
+                                            sku: sku,
+                                            price: price,
+                                            btn_buy: btn_buy,
+                                            currency: currency,
+                                            item_url: '/catalog/item/' + sku + '?page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + (search_query || '') + '&cat=' + (current_path || '/'),
+                                            desc: desc
+                                        }, undefined);
+                                    }
+                                } else { // No warehouse items in current category
+                                    catalog_items_html = i18nm.__('no_items_found');
+                                }
+                                // Pagination begin
+                                var num_pages = Math.ceil(warehouse_count / items_per_page),
+                                    pgnt = '';
+                                if (num_pages > 1) {
+                                    if (num_pages > max_pages) {
+                                        if (page > 1) {
+                                            var _p = page - 1;
+                                            pgnt += pt_page_normal(gaikan, {
+                                                url: page_url + _p,
+                                                text: 'В«'
+                                            }, undefined);
+                                        }
+                                        if (page > 3) {
+                                            pgnt += pt_page_normal(gaikan, {
+                                                url: '/blog?page=1',
+                                                text: '1'
+                                            }, undefined);
+                                        }
+                                        var _st = page - 2;
+                                        if (_st < 1) {
+                                            _st = 1;
+                                        }
+                                        if (_st - 1 > 1) {
+                                            pgnt += pt_page_span(gaikan, {
+                                                class: 'taracot-dots',
+                                                text: '...'
+                                            }, undefined);
+                                        }
+                                        var _en = page + 2;
+                                        if (_en > num_pages) {
+                                            _en = num_pages;
+                                        }
+                                        for (var i = _st; i <= _en; i++) {
+                                            if (page == i) {
+                                                pgnt += pt_page_span(gaikan, {
+                                                    class: 'active',
+                                                    text: i
+                                                }, undefined);
+                                            } else {
+                                                pgnt += pt_page_normal(gaikan, {
+                                                    url: page_url + i,
+                                                    text: i
+                                                }, undefined);
+                                            }
+                                        }
+                                        if (_en < num_pages - 1) {
+                                            pgnt += pt_page_span(gaikan, {
+                                                class: 'taracot-dots',
+                                                text: '...'
+                                            }, undefined);
+                                        }
+                                        if (page <= num_pages - 3) {
+                                            pgnt += pt_page_normal(gaikan, {
+                                                url: page_url + num_pages,
+                                                text: num_pages
+                                            }, undefined);
+                                        }
+                                        if (page < num_pages) {
+                                            var _pg = page + 1;
+                                            pgnt += pt_page_normal(gaikan, {
+                                                url: page_url + _pg,
+                                                text: '»'
+                                            }, undefined);
+                                        }
+                                    } else {
+                                        for (var i2 = 1; i2 <= num_pages; i2++) {
+                                            if (i2 == page) {
+                                                pgnt += pt_page_span(gaikan, {
+                                                    class: 'active',
+                                                    text: i2
+                                                }, undefined);
+                                            } else {
+                                                pgnt += pt_page_normal(gaikan, {
+                                                    url: page_url + i2,
+                                                    text: i2
+                                                }, undefined);
+                                            }
+                                        }
+                                    }
+                                } // Pagination needed
+                                // Pagination end
+                                var filter_show = '',
+                                    filter_sort = '';
+                                if (show_all == '1') {
+                                    filter_show += _get_html_li_a('uk-active', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
+                                    filter_show += _get_html_li_a('', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
+                                } else {
+                                    filter_show += _get_html_li_a('', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
+                                    filter_show += _get_html_li_a('uk-active', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
+                                }
+                                if (sort == 't') {
+                                    filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
+                                }
+                                if (sort == 'u') {
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                                    filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
+                                }
+                                if (sort == 'd') {
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
+                                    filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
+                                    filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
+                                }
+                                var catalog_cart = req.session.catalog_cart || [];
+                                var total_cart_items_count = 0;
+                                if (catalog_cart.length)
+                                    for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
+                                var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (current_path || '') + '&find=' + (search_query || '');
+                                out_html = catalog(gaikan, {
                                     lang: i18nm,
-                                    thumb: thumb,
-                                    title: title,
-                                    sku: sku,
-                                    price: price,
-                                    btn_buy: btn_buy,
-                                    currency: currency,
-                                    item_url: '/catalog/item/' + sku + '?page=' + page + '&sort=' + sort + '&show_all=' + show_all + '&find=' + (search_query || '') + '&cat=' + (current_path || '/'),
-                                    desc: desc
-                                }, undefined);
+                                    current_cat_title: current_cat_title,
+                                    current_cat_bread: current_cat_bread,
+                                    current_neighborhood_html: current_neighborhood_html,
+                                    catalog_items: catalog_items_html,
+                                    pagination: pt_pagination(gaikan, {
+                                        pages: pgnt
+                                    }, undefined),
+                                    filter_show: filter_show,
+                                    filter_sort: filter_sort,
+                                    init_sort: sort,
+                                    init_view: show_all,
+                                    init_path: current_path,
+                                    init_page: page,
+                                    init_find: search_query,
+                                    url_data: url_data,
+                                    cart_items_count: total_cart_items_count
+                                });
+                                var data = {
+                                    title: current_cat_title,
+                                    current_lang: _locale,
+                                    page_title: current_cat_title,
+                                    content: out_html,
+                                    keywords: '',
+                                    description: '',
+                                    extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
+                                };
+                                app.get('renderer').render(res, undefined, data, req);
+                                return callback();
                             }
-                        } else { // No warehouse items in current category
-                            catalog_items_html = i18nm.__('no_items_found');
-                        }
-                        // Pagination begin
-                        var num_pages = Math.ceil(warehouse_count / items_per_page),
-                            pgnt = '';
-                        if (num_pages > 1) {
-                            if (num_pages > max_pages) {
-                                if (page > 1) {
-                                    var _p = page - 1;
-                                    pgnt += pt_page_normal(gaikan, {
-                                        url: page_url + _p,
-                                        text: 'В«'
-                                    }, undefined);
-                                }
-                                if (page > 3) {
-                                    pgnt += pt_page_normal(gaikan, {
-                                        url: '/blog?page=1',
-                                        text: '1'
-                                    }, undefined);
-                                }
-                                var _st = page - 2;
-                                if (_st < 1) {
-                                    _st = 1;
-                                }
-                                if (_st - 1 > 1) {
-                                    pgnt += pt_page_span(gaikan, {
-                                        class: 'taracot-dots',
-                                        text: '...'
-                                    }, undefined);
-                                }
-                                var _en = page + 2;
-                                if (_en > num_pages) {
-                                    _en = num_pages;
-                                }
-                                for (var i = _st; i <= _en; i++) {
-                                    if (page == i) {
-                                        pgnt += pt_page_span(gaikan, {
-                                            class: 'active',
-                                            text: i
-                                        }, undefined);
-                                    } else {
-                                        pgnt += pt_page_normal(gaikan, {
-                                            url: page_url + i,
-                                            text: i
-                                        }, undefined);
-                                    }
-                                }
-                                if (_en < num_pages - 1) {
-                                    pgnt += pt_page_span(gaikan, {
-                                        class: 'taracot-dots',
-                                        text: '...'
-                                    }, undefined);
-                                }
-                                if (page <= num_pages - 3) {
-                                    pgnt += pt_page_normal(gaikan, {
-                                        url: page_url + num_pages,
-                                        text: num_pages
-                                    }, undefined);
-                                }
-                                if (page < num_pages) {
-                                    var _pg = page + 1;
-                                    pgnt += pt_page_normal(gaikan, {
-                                        url: page_url + _pg,
-                                        text: '»'
-                                    }, undefined);
-                                }
-                            } else {
-                                for (var i2 = 1; i2 <= num_pages; i2++) {
-                                    if (i2 == page) {
-                                        pgnt += pt_page_span(gaikan, {
-                                            class: 'active',
-                                            text: i2
-                                        }, undefined);
-                                    } else {
-                                        pgnt += pt_page_normal(gaikan, {
-                                            url: page_url + i2,
-                                            text: i2
-                                        }, undefined);
-                                    }
-                                }
-                            }
-                        } // Pagination needed
-                        // Pagination end
-                        var filter_show = '',
-                            filter_sort = '';
-                        if (show_all == '1') {
-                            filter_show += _get_html_li_a('uk-active', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
-                            filter_show += _get_html_li_a('', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
-                        } else {
-                            filter_show += _get_html_li_a('', _get_url(current_path, '1', sort, page, search_query), i18nm.__('all'));
-                            filter_show += _get_html_li_a('uk-active', _get_url(current_path, '0', sort, page, search_query), i18nm.__('stock_only'));
-                        }
-                        if (sort == 't') {
-                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
-                        }
-                        if (sort == 'u') {
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
-                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
-                        }
-                        if (sort == 'd') {
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 't', page, search_query), i18nm.__('title'));
-                            filter_sort += _get_html_li_a('', _get_url(current_path, show_all, 'u', page, search_query), i18nm.__('price_up'));
-                            filter_sort += _get_html_li_a('uk-active', _get_url(current_path, show_all, 'd', page, search_query), i18nm.__('price_down'));
-                        }
-                        var catalog_cart = req.session.catalog_cart || [];
-                        var total_cart_items_count = 0;
-                        if (catalog_cart.length)
-                            for (var cc = 0; cc < catalog_cart.length; cc++) total_cart_items_count += parseInt(catalog_cart[cc].amount);
-                        var url_data = '?sort=' + sort + '&page=' + page + '&show_all=' + show_all + '&cat=' + (current_path || '') + '&find=' + (search_query || '');
-                        out_html = catalog(gaikan, {
-                            lang: i18nm,
-                            current_cat_title: current_cat_title,
-                            current_cat_bread: current_cat_bread,
-                            current_neighborhood_html: current_neighborhood_html,
-                            catalog_items: catalog_items_html,
-                            pagination: pt_pagination(gaikan, {
-                                pages: pgnt
-                            }, undefined),
-                            filter_show: filter_show,
-                            filter_sort: filter_sort,
-                            init_sort: sort,
-                            init_view: show_all,
-                            init_path: current_path,
-                            init_page: page,
-                            init_find: search_query,
-                            url_data: url_data,
-                            cart_items_count: total_cart_items_count
-                        });
-                        var data = {
-                            title: current_cat_title,
-                            current_lang: _locale,
-                            page_title: current_cat_title,
-                            content: out_html,
-                            keywords: '',
-                            description: '',
-                            extra_css: '<link rel="stylesheet" href="/modules/catalog/css/frontend.css" type="text/css">'
-                        };
-                        return app.get('renderer').render(res, undefined, data, req);
+                        ]);
                     });
                 });
             });

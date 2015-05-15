@@ -103,21 +103,23 @@ module.exports = function(app) {
         }
         // Check if template exists
         var template = template_id.replace(/__/g, '/') + '.html';
-        if (!fs.existsSync('../' + template)) {
-            rep.status = 0;
-            rep.error = i18nm.__("invalid_template");
-            return res.send(JSON.stringify(rep));
-        }
-        // Get template
-        fs.readFile('../' + template, 'utf8', function(err, data) {
-            if (err) {
+        fs.exists('../' + template, function(ex) {
+            if (!ex) {
                 rep.status = 0;
-                rep.error = err;
+                rep.error = i18nm.__("invalid_template");
                 return res.send(JSON.stringify(rep));
             }
-            rep.data.pvalue = data;
-            rep.data.id = template_id;
-            return res.send(JSON.stringify(rep));
+            // Get template
+            fs.readFile('../' + template, 'utf8', function(err, data) {
+                if (err) {
+                    rep.status = 0;
+                    rep.error = err;
+                    return res.send(JSON.stringify(rep));
+                }
+                rep.data.pvalue = data;
+                rep.data.id = template_id;
+                return res.send(JSON.stringify(rep));
+            });
         });
     });
     router.post('/data/save', function(req, res) {
@@ -144,17 +146,19 @@ module.exports = function(app) {
             rep.err_fields.push('pvalue');
         }
         var template = id.replace(/__/g, '/') + '.html';
-        if (!fs.existsSync('../' + template)) {
-            rep.status = 0;
-            rep.err_fields.push('pvalue');
-        }
-        if (rep.status === 0) return res.send(JSON.stringify(rep));
-        fs.writeFile('../' + template, pvalue, function(err) {
-            if (err) {
+        fs.exists('../' + template, function(ex) {
+            if (!ex) {
                 rep.status = 0;
                 rep.err_fields.push('pvalue');
             }
-            return res.send(JSON.stringify(rep));
+            if (rep.status === 0) return res.send(JSON.stringify(rep));
+            fs.writeFile('../' + template, pvalue, function(err) {
+                if (err) {
+                    rep.status = 0;
+                    rep.err_fields.push('pvalue');
+                }
+                return res.send(JSON.stringify(rep));
+            });
         });
     });
 

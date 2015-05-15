@@ -891,53 +891,56 @@ module.exports = function(app) {
 
             var img = gm(app.get('config').dir.tmp + '/' + file.name);
             if (!img) {
-                fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                res.send(JSON.stringify({
-                    result: 0,
-                    field: "",
-                    error: i18nm.__("unsupported_image_format")
-                }));
-                return;
-            }
-            img.autoOrient();
-            var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
-            img.size(function(err, size) {
-                if (!err) {
-                    if (size.width >= size.height) {
-                        img.resize(null, 128);
-                        img.crop(128, 128, 0, 0);
-                    } else {
-                        img.resize(128, null);
-                        img.crop(128, 128, 0, 0);
-                    }
-                    img.setFormat('jpeg');
-                    img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
-                        if (err) {
-                            fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                            res.send(JSON.stringify({
-                                result: 0,
-                                field: "",
-                                error: i18nm.__("unsupported_image_format")
-                            }));
-                            return;
-                        }
-                        res.send(JSON.stringify({
-                            result: 1,
-                            avatar_id: afn
-                        }));
-                        fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                        return;
-                    });
-                } else {
-                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                    res.send(JSON.stringify({
+                fs.unlink(app.get('config').dir.tmp + '/' + file.name, function() {
+                    return res.send(JSON.stringify({
                         result: 0,
                         field: "",
                         error: i18nm.__("unsupported_image_format")
                     }));
-                    return;
-                }
-            });
+                });
+            } else {
+                img.autoOrient();
+                var afn = crypto.createHash('md5').update(config.salt + '.' + req.session.auth._id).digest('hex');
+                img.size(function(err, size) {
+                    if (!err) {
+                        if (size.width >= size.height) {
+                            img.resize(null, 128);
+                            img.crop(128, 128, 0, 0);
+                        } else {
+                            img.resize(128, null);
+                            img.crop(128, 128, 0, 0);
+                        }
+                        img.setFormat('jpeg');
+                        img.write(app.get('config').dir.avatars + '/' + afn + '.jpg', function(err) {
+                            if (err) {
+                                fs.unlink(app.get('config').dir.tmp + '/' + file.name, function() {
+                                    return res.send(JSON.stringify({
+                                        result: 0,
+                                        field: "",
+                                        error: i18nm.__("unsupported_image_format")
+                                    }));
+                                });
+                            } else {
+                                res.send(JSON.stringify({
+                                    result: 1,
+                                    avatar_id: afn
+                                }));
+                                fs.unlink(app.get('config').dir.tmp + '/' + file.name, function() {
+                                    return;
+                                });
+                            }
+                        });
+                    } else {
+                        fs.unlink(app.get('config').dir.tmp + '/' + file.name, function() {
+                            return res.send(JSON.stringify({
+                                result: 0,
+                                field: "",
+                                error: i18nm.__("unsupported_image_format")
+                            }));
+                        });
+                    }
+                });
+            }
         } else { // Profile settings
             var username = req.session.auth.username;
             var password = req.body.password;

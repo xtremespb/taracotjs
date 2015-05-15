@@ -556,7 +556,7 @@ module.exports = function(app) {
                         stitle: pd.title,
                         slang: pd.lang,
                         item_id: warehouse_data._id,
-                        surl: '/catalog/item' + (warehouse_data.pcategory + '/' + warehouse_data.pfilename).replace(/(\/+)/, '/').replace(/\s/g,''),
+                        surl: '/catalog/item' + (warehouse_data.pcategory + '/' + warehouse_data.pfilename).replace(/(\/+)/, '/').replace(/\s/g, ''),
                         space: 'warehouse'
                     };
                     app.get('mongodb').collection('search_index').update({
@@ -642,28 +642,38 @@ module.exports = function(app) {
         var _extension = file.extension || '';
         if (_filename) _filename = _filename.toLowerCase();
         if (_extension) _extension = _extension.toLowerCase();
-        var img = gm(app.get('config').dir.tmp + '/' + file.name);
+        var img = gm(app.get('config').dir.tmp + '/' + file.name),
+            size;
         img.autoOrient();
-        img.size(function(err, size) {
-            if (err) {
-                rep.status = 0;
-                rep.error = i18nm.__("upload_failed");
-                fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                return res.send(JSON.stringify(rep));
-            }
-            img.setFormat('jpeg');
-            if (size.width >= size.height) {
-                img.resize(null, 800);
-            } else {
-                img.resize(800, null);
-            }
-            img.write(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg', function(err) {
-                if (err) {
-                    rep.status = 0;
-                    rep.error = i18nm.__("upload_failed");
-                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                    return res.send(JSON.stringify(rep));
+        async.series([
+            function(callback) {
+                img.size(function(err, _size) {
+                    if (err) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("upload_failed");
+                        callback(true);
+                    }
+                    size = _size;
+                    callback();
+                });
+            },
+            function(callback) {
+                img.setFormat('jpeg');
+                if (size.width >= size.height) {
+                    img.resize(null, 800);
+                } else {
+                    img.resize(800, null);
                 }
+                img.write(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg', function(err) {
+                    if (err) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("upload_failed");
+                        callback(true);
+                    }
+                    callback();
+                });
+            },
+            function(callback) {
                 if (size.width >= size.height) {
                     img.resize(null, 300);
                     img.crop(300, 300, 0, 0);
@@ -675,15 +685,16 @@ module.exports = function(app) {
                     if (err) {
                         rep.status = 0;
                         rep.error = i18nm.__("upload_failed");
-                        fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                        return res.send(JSON.stringify(rep));
+                        callback(true);
                     }
-                    fs.unlinkSync(app.get('config').dir.tmp + '/' + file.name);
-                    rep.status = 1;
-                    rep.id = _filename;
-                    res.send(JSON.stringify(rep));
-                    return;
+                    callback();
                 });
+            }
+        ], function(err) {
+            fs.unlink(app.get('config').dir.tmp + '/' + file.name, function() {
+                rep.status = 1;
+                rep.id = _filename;
+                return res.send(JSON.stringify(rep));
             });
         });
     });
@@ -715,13 +726,16 @@ module.exports = function(app) {
         } else {
             pimages = [];
         }
-        for (var i = 0; i < pimages.length; i++) {
-            var _filename = pimages[i];
-            if (fs.existsSync(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg')) fs.unlinkSync(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg');
-            if (fs.existsSync(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg')) fs.unlinkSync(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg');
-        }
-        rep.status = 1;
-        res.send(JSON.stringify(rep));
+        async.eachSeries(pimages, function(_filename, callback) {
+            fs.unlink(app.get('config').dir.storage + '/warehouse/' + _filename + '.jpg', function() {
+                fs.unlink(app.get('config').dir.storage + '/warehouse/tn_' + _filename + '.jpg', function() {
+                    callback();
+                });
+            });
+        }, function(err) {
+            rep.status = 1;
+            return res.send(JSON.stringify(rep));
+        });
     });
 
     var dummy = function() {};

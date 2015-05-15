@@ -31,54 +31,57 @@ module.exports = function(app) {
             auth: req.session.auth,
             log_html: ''
         };
-        if (!fs.existsSync(app.get('config').log.file.filename)) {
-            log_data.log_html = i18nm.__('no_log_file_available_yet');
-            return app.get('cp').render(req, res, {
-                body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
-                css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
-            }, i18nm, 'log', req.session.auth);
-        }
-        fs.readFile(app.get('config').log.file.filename, function(err, data) {
-            if (err) {
-                log_data.log_html = i18nm.__('cannot_read_log');
+        fs.exists(app.get('config').log.file.filename, function(ex) {
+            if (!ex) {
+                log_data.log_html = i18nm.__('no_log_file_available_yet');
                 return app.get('cp').render(req, res, {
                     body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
                     css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
                 }, i18nm, 'log', req.session.auth);
             }
-            var log_arr = data.toString().split("\n"),
-                log_html = '';
-            if (log_arr) log_arr = log_arr.reverse();
-            for (var i in log_arr)
-                if (i <= max_log_items) {
-                    var item_json;
-                    try {
-                        item_json = JSON.parse(log_arr[i]);
-                    } catch (ex) {}
-                    if (item_json) {
-                        var stack_btn = '';
-                        if (item_json.stack) stack_btn = parts_stack_btn(gaikan, {
-                            lang: i18nm,
-                            stack: item_json.stack
-                        }, undefined);
-                        log_html += parts_table_tr(gaikan, {
-                            lang: i18nm,
-                            item: item_json,
-                            stack_btn: stack_btn
-                        }, undefined);
-                    }
+            fs.readFile(app.get('config').log.file.filename, function(err, data) {
+                if (err) {
+                    log_data.log_html = i18nm.__('cannot_read_log');
+                    return app.get('cp').render(req, res, {
+                        body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
+                        css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
+                    }, i18nm, 'log', req.session.auth);
                 }
-            if (log_html.length) log_data.log_html = parts_table(gaikan, {
-                lang: i18nm,
-                rows: log_html,
-                total: log_arr.length - 1
-            }, undefined);
-            if (!log_html) log_data.log_html = i18nm.__('no_log_file_available_yet');
-            return app.get('cp').render(req, res, {
-                body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
-                css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
-            }, i18nm, 'log', req.session.auth);
+                var log_arr = data.toString().split("\n"),
+                    log_html = '';
+                if (log_arr) log_arr = log_arr.reverse();
+                for (var i in log_arr)
+                    if (i <= max_log_items) {
+                        var item_json;
+                        try {
+                            item_json = JSON.parse(log_arr[i]);
+                        } catch (ex) {}
+                        if (item_json) {
+                            var stack_btn = '';
+                            if (item_json.stack) stack_btn = parts_stack_btn(gaikan, {
+                                lang: i18nm,
+                                stack: item_json.stack
+                            }, undefined);
+                            log_html += parts_table_tr(gaikan, {
+                                lang: i18nm,
+                                item: item_json,
+                                stack_btn: stack_btn
+                            }, undefined);
+                        }
+                    }
+                if (log_html.length) log_data.log_html = parts_table(gaikan, {
+                    lang: i18nm,
+                    rows: log_html,
+                    total: log_arr.length - 1
+                }, undefined);
+                if (!log_html) log_data.log_html = i18nm.__('no_log_file_available_yet');
+                return app.get('cp').render(req, res, {
+                    body: app.get('renderer').render_file(path.join(__dirname, 'views'), 'log', log_data, req),
+                    css: '<link rel="stylesheet" href="/modules/log/css/main.css">'
+                }, i18nm, 'log', req.session.auth);
+            });
         });
+
     });
     return router;
 };

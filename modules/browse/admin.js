@@ -13,6 +13,7 @@ module.exports = function(app) {
         archiver = require('archiver'),
         unzip = require('unzip2'),
         crypto = require('crypto'),
+        async = require('async'),
         gm = false;
 
     if (app.get('config').graphicsmagick) {
@@ -52,15 +53,13 @@ module.exports = function(app) {
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         var req_dir = req.body.dir;
         if (req_dir && !check_directory(req_dir)) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_dir");
-            res.send(JSON.stringify(rep));
-            return;
+            return res.send(JSON.stringify(rep));
         }
         if (req_dir) {
             req_dir = '/' + req_dir;
@@ -68,56 +67,63 @@ module.exports = function(app) {
             req_dir = '';
         }
         var dir = app.get('config').dir.storage + req_dir;
-        if (!fs.existsSync(dir)) {
-            rep.status = 0;
-            rep.error = i18nm.__("dir_not_exists");
-            res.send(JSON.stringify(rep));
-            return;
-        }
-        var browse = fs.readdirSync(dir);
-        var fa = [];
-        var da = [];
-        browse.forEach(function(file) {
-            var item = {
-                name: file
-            };
-            var stat = fs.statSync(dir + '/' + file);
-            if (stat.isFile() && !file.match(/^\./) && !file.match(/^___thumb_/)) {
-                var file_mime = mime.lookup(dir + '/' + file);
-                if (file_mime == 'image/png' || file_mime == 'image/jpeg') {
-                    var md5 = crypto.createHash('md5');
-                    var fn = md5.update(file).digest('hex');
-                    if (fs.existsSync(dir + '/___thumb_' + fn + '.jpg')) {
-                        item.thumb = fn;
-                    }
-                }
-                item.type = 'f';
-                item.size = stat.size;
-                item.mime = file_mime;
-                if (io) {
-                    if (file_mime.match(/image\//)) fa.push(item);
-                } else {
-                    fa.push(item);
-                }
+        fs.exists(dir, function(dx) {
+            if (!dx) {
+                rep.status = 0;
+                rep.error = i18nm.__("dir_not_exists");
+                return res.send(JSON.stringify(rep));
+            } else {
+                var fa = [],
+                    da = [];
+                fs.readdir(dir, function(err, browse) {
+                    if (!browse) browse = [];
+                    async.eachSeries(browse, function(file, callback) {
+                        var item = {
+                            name: file
+                        };
+                        fs.stat(dir + '/' + file, function(err, stat) {
+                            if (err || !stat) return callback();
+                            if (stat.isFile() && !file.match(/^\./) && !file.match(/^___thumb_/)) {
+                                var file_mime = mime.lookup(dir + '/' + file),
+                                    fn = crypto.createHash('md5').update(file).digest('hex');
+                                fs.exists(dir + '/___thumb_' + fn + '.jpg', function(ex) {
+                                    if (ex) item.thumb = fn;
+                                    item.type = 'f';
+                                    item.size = stat.size;
+                                    item.mime = file_mime;
+                                    if (io) {
+                                        if (file_mime.match(/image\//)) fa.push(item);
+                                    } else {
+                                        fa.push(item);
+                                    }
+                                    return callback();
+                                });
+                            } else {
+                                if (stat.isDirectory() && !file.match(/^\./)) {
+                                    item.type = 'd';
+                                    item.size = '0';
+                                    item.mime = '';
+                                    da.push(item);
+                                }
+                                return callback();
+                            }
+                        });
+                    }, function(err) {
+                        da.sort(function(a, b) {
+                            if (!a.name || !b.name) return a.name.localeCompare(b.name);
+                            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                        });
+                        fa.sort(function(a, b) {
+                            if (!a.name || !b.name) return a.name.localeCompare(b.name);
+                            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                        });
+                        rep.files = da.concat(fa);
+                        rep.status = 1;
+                        res.send(JSON.stringify(rep));
+                    });
+                });
             }
-            if (stat.isDirectory() && !file.match(/^\./)) {
-                item.type = 'd';
-                item.size = '0';
-                item.mime = '';
-                da.push(item);
-            }
         });
-        da.sort(function(a, b) {
-            if (!a.name || !b.name) return a.name.localeCompare(b.name);
-            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-        });
-        fa.sort(function(a, b) {
-            if (!a.name || !b.name) return a.name.localeCompare(b.name);
-            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-        });
-        rep.files = da.concat(fa);
-        rep.status = 1;
-        res.send(JSON.stringify(rep));
     });
     // Helper functions (regexp)
     var check_filename = function(_fn) {

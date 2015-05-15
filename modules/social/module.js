@@ -142,21 +142,29 @@ module.exports = function(app) {
                     return res.send(JSON.stringify(rep));
                 }
                 rep.items = items;
-                var _multi = redis_client.multi();
-                for (var j = 0; j < rep.items.length; j++) {
+                var _multi = redis_client.multi(),
+                    afn_hash = {};
+                for (var j = 0; j < rep.items.length; j++)
                     _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
-                }
-                _multi.exec(function(err, online) {
-                    if (err || !online) online = [];
-                    for (var i = 0; i < rep.items.length; i++) {
-                        if (rep.items[i].password) delete rep.items[i].password;
-                        rep.items[i].avatar = "/images/avatars/default.png";
-                        rep.items[i].user_online = '0';
-                        if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
-                        var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
-                        if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
-                    }
-                    return res.send(JSON.stringify(rep));
+                async.eachSeries(rep.items, function(item, callback) {
+                    var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item._id.toHexString()).digest('hex');
+                    fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                        if (ex) afn_hash[afn] = 1;
+                        callback();
+                    });
+                }, function() {
+                    _multi.exec(function(err, online) {
+                        if (err || !online) online = [];
+                        for (var i = 0; i < rep.items.length; i++) {
+                            if (rep.items[i].password) delete rep.items[i].password;
+                            rep.items[i].avatar = "/images/avatars/default.png";
+                            rep.items[i].user_online = '0';
+                            if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
+                            var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
+                            if (afn_hash[afn]) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
+                        }
+                        return res.send(JSON.stringify(rep));
+                    });
                 });
             });
         });
@@ -222,10 +230,12 @@ module.exports = function(app) {
                 if (user.email) delete user.email;
                 user.avatar = "/images/avatars/default.png";
                 var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + user._id.toHexString()).digest('hex');
-                if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) user.avatar = '/images/avatars/' + afn + '.jpg';
-                rep.user = user;
-                rep.friendship = friendship;
-                return res.send(JSON.stringify(rep));
+                fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                    if (ex) user.avatar = '/images/avatars/' + afn + '.jpg';
+                    rep.user = user;
+                    rep.friendship = friendship;
+                    return res.send(JSON.stringify(rep));
+                });
             });
         });
     });
@@ -519,21 +529,29 @@ module.exports = function(app) {
                         return res.send(JSON.stringify(rep));
                     }
                     rep.items = items;
-                    var _multi = redis_client.multi();
-                    for (var j = 0; j < rep.items.length; j++) {
+                    var _multi = redis_client.multi(),
+                        afn_hash = {};
+                    for (var j = 0; j < rep.items.length; j++)
                         _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
-                    }
-                    _multi.exec(function(err, online) {
-                        if (err || !online) online = [];
-                        for (var i = 0; i < rep.items.length; i++) {
-                            if (rep.items[i].password) delete rep.items[i].password;
-                            rep.items[i].user_online = '0';
-                            if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
-                            rep.items[i].avatar = "/images/avatars/default.png";
-                            var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
-                            if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
-                        }
-                        return res.send(JSON.stringify(rep));
+                    async.eachSeries(rep.items, function(item, callback) {
+                        var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item._id.toHexString()).digest('hex');
+                        fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                            if (ex) afn_hash[afn] = 1;
+                            callback();
+                        });
+                    }, function() {
+                        _multi.exec(function(err, online) {
+                            if (err || !online) online = [];
+                            for (var i = 0; i < rep.items.length; i++) {
+                                if (rep.items[i].password) delete rep.items[i].password;
+                                rep.items[i].avatar = "/images/avatars/default.png";
+                                rep.items[i].user_online = '0';
+                                if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
+                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
+                                if (afn_hash[afn]) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
+                            }
+                            return res.send(JSON.stringify(rep));
+                        });
                     });
                 });
             });
@@ -604,21 +622,29 @@ module.exports = function(app) {
                         return res.send(JSON.stringify(rep));
                     }
                     rep.items = items;
-                    var _multi = redis_client.multi();
-                    for (var j = 0; j < rep.items.length; j++) {
+                    var _multi = redis_client.multi(),
+                        afn_hash = {};
+                    for (var j = 0; j < rep.items.length; j++)
                         _multi.get(app.get('config').redis.prefix + 'socketio_online_' + rep.items[j]._id);
-                    }
-                    _multi.exec(function(err, online) {
-                        if (err || !online) online = [];
-                        for (var i = 0; i < rep.items.length; i++) {
-                            rep.items[i].user_online = '0';
-                            if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
-                            if (rep.items[i].password) delete rep.items[i].password;
-                            rep.items[i].avatar = "/images/avatars/default.png";
-                            var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
-                            if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
-                        }
-                        return res.send(JSON.stringify(rep));
+                    async.eachSeries(rep.items, function(item, callback) {
+                        var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item._id.toHexString()).digest('hex');
+                        fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                            if (ex) afn_hash[afn] = 1;
+                            callback();
+                        });
+                    }, function() {
+                        _multi.exec(function(err, online) {
+                            if (err || !online) online = [];
+                            for (var i = 0; i < rep.items.length; i++) {
+                                if (rep.items[i].password) delete rep.items[i].password;
+                                rep.items[i].avatar = "/images/avatars/default.png";
+                                rep.items[i].user_online = '0';
+                                if (online && online[i] && online[i] == 1) rep.items[i].user_online = '1';
+                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.items[i]._id.toHexString()).digest('hex');
+                                if (afn_hash[afn]) rep.items[i].avatar = '/images/avatars/' + afn + '.jpg';
+                            }
+                            return res.send(JSON.stringify(rep));
+                        });
                     });
                 });
             });
@@ -761,9 +787,11 @@ module.exports = function(app) {
                                         }, update, function(err) {});
                                     });
                                     var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + rep.user._id.toHexString()).digest('hex');
-                                    if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
-                                    callback();
-                                    return res.send(JSON.stringify(rep));
+                                    fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                                        if (ex) rep.user.avatar = '/images/avatars/' + afn + '.jpg';
+                                        res.send(JSON.stringify(rep));
+                                        return callback();
+                                    });
                                 });
                             });
                         });
@@ -905,44 +933,61 @@ module.exports = function(app) {
                         rep.error = i18nm.__("cannot_load_conversation");
                         return res.send(JSON.stringify(rep));
                     }
-                    var users_hash = {};
-                    for (var u = 0; u < users.length; u++) {
-                        users[u].avatar = "/images/avatars/default.png";
-                        var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + users[u]._id.toHexString()).digest('hex');
-                        if (fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'))) users[u].avatar = '/images/avatars/' + afn + '.jpg';
-                        users_hash[users[u]._id] = users[u];
-                    }
-                    var conv = [];
-                    var _multi = redis_client.multi();
-                    for (var j = 0; j < conversations.length; j++) {
-                        var usr = conversations[j].u1;
-                        if (usr == req.session.auth._id) usr = conversations[j].u2;
-                        _multi.get(app.get('config').redis.prefix + 'socketio_online_' + usr);
-                    }
-                    _multi.exec(function(err, online) {
-                        if (err || !online) online = [];
-                        for (var c = 0; c < conversations.length; c++) {
-                            var user = conversations[c].u1;
-                            if (user == req.session.auth._id) user = conversations[c].u2;
-                            var uid = 'u1_unread_flag';
-                            if (conversations[c].u2 == req.session.auth._id) uid = 'u2_unread_flag';
-                            var unread_flag = '0';
-                            if (uid in conversations[c] && conversations[c][uid] == '1') unread_flag = '1';
-                            var ci = {
-                                user_id: user,
-                                avatar: users_hash[user].avatar,
-                                name: users_hash[user].realname || users_hash[user].username,
-                                last_tstamp: conversations[c].last_tstamp || Date.now(),
-                                msg_count: conversations[c].msg_count || 0,
-                                unread_flag: unread_flag,
-                                user_online: '0'
-                            };
-                            if (online && online[c] && online[c] == 1) ci.user_online = '1';
-                            conv.push(ci);
+                    var users_hash = {},
+                        afn_hash = {};
+                    async.series([
+                        function(callback) {
+                            async.eachSeries(users, function(user, escallback) {
+                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + user._id.toHexString()).digest('hex');
+                                fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
+                                    if (ex) afn_hash[afn] = 1;
+                                    escallback();
+                                });
+                            }, function() {
+                                callback();
+                            });
+                        },
+                        function(callback) {
+                            for (var u = 0; u < users.length; u++) {
+                                users[u].avatar = "/images/avatars/default.png";
+                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + users[u]._id.toHexString()).digest('hex');
+                                if (afn_hash[afn]) users[u].avatar = '/images/avatars/' + afn + '.jpg';
+                                users_hash[users[u]._id] = users[u];
+                            }
+                            var conv = [];
+                            var _multi = redis_client.multi();
+                            for (var j = 0; j < conversations.length; j++) {
+                                var usr = conversations[j].u1;
+                                if (usr == req.session.auth._id) usr = conversations[j].u2;
+                                _multi.get(app.get('config').redis.prefix + 'socketio_online_' + usr);
+                            }
+                            _multi.exec(function(err, online) {
+                                if (err || !online) online = [];
+                                for (var c = 0; c < conversations.length; c++) {
+                                    var user = conversations[c].u1;
+                                    if (user == req.session.auth._id) user = conversations[c].u2;
+                                    var uid = 'u1_unread_flag';
+                                    if (conversations[c].u2 == req.session.auth._id) uid = 'u2_unread_flag';
+                                    var unread_flag = '0';
+                                    if (uid in conversations[c] && conversations[c][uid] == '1') unread_flag = '1';
+                                    var ci = {
+                                        user_id: user,
+                                        avatar: users_hash[user].avatar,
+                                        name: users_hash[user].realname || users_hash[user].username,
+                                        last_tstamp: conversations[c].last_tstamp || Date.now(),
+                                        msg_count: conversations[c].msg_count || 0,
+                                        unread_flag: unread_flag,
+                                        user_online: '0'
+                                    };
+                                    if (online && online[c] && online[c] == 1) ci.user_online = '1';
+                                    conv.push(ci);
+                                }
+                                rep.conversations = conv;
+                                res.send(JSON.stringify(rep));
+                                return callback();
+                            });
                         }
-                        rep.conversations = conv;
-                        return res.send(JSON.stringify(rep));
-                    });
+                    ]);
                 });
             } else {
                 rep.conversations = [];
