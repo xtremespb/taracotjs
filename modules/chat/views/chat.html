@@ -38,15 +38,23 @@ var current_username = "!{root.current_username}",
     messages_data = !{
         root.messages_data
     },
+    chat_users_data = !{
+        root.chat_users_data
+    },
     _lang_vars = {
         ajax_failed: "!{root.lang.__('ajax_failed')}",
         user: "!{root.lang.__('user')}",
         is_now_online: "!{root.lang.__('is_now_online')}",
-        is_now_offline: "!{root.lang.__('is_now_offline')}"
+        is_now_offline: "!{root.lang.__('is_now_offline')}",
+        cmd_list: !{
+            root.cmd_list
+        }
     };
 </script>
-<script type="text/javascript" src="/js/helper.js"></script>
+<!--<script type="text/javascript" src="/js/helper.js"></script>
 <script type="text/javascript" src="/js/socket.io.min.js"></script>
 <script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/string.min.js"></script>
 <script type="text/javascript" src="/js/uikit/addons/notify.min.js"></script>
-<script type="text/javascript" src="/modules/chat/js/chat.js"></script>
+<script type="text/javascript" src="/modules/chat/js/chat.js"></script>-->
+<script type="text/javascript" src="/modules/chat/js/chat.min.js"></script>

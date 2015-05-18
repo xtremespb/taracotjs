@@ -39,13 +39,25 @@
     margin-left: 5px;
 }
 
-.taracot-chat-system-msg, .taracot-chat-msg {
+.taracot-chat-system-msg, .taracot-chat-system-cmd, .taracot-chat-msg {
 	margin-bottom: 4px;
 }
 
-.taracot-chat-system-msg {
+.taracot-chat-system-msg, .taracot-chat-system-cmd {
     font-weight: bold;
+}
+
+.taracot-chat-system-msg {
     color: #4E73E3;
+}
+
+.taracot-chat-system-cmd {
+    color: #F8970D;
+}
+
+.taracot-chat-system-msg-danger {
+    font-weight: bold;
+    color: #C51E3C;
 }
 
 @-webkit-keyframes envAnimation {
