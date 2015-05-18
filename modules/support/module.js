@@ -621,11 +621,14 @@ module.exports = function(app) {
             return;
         }
         ext = ext.toLowerCase();
-        app.get('mongodb').collection('support').find({
-            ticket_id: id,
-            user_id: req.session.auth._id
-        }).toArray(function(err, items) {
-            if (err || !items || items.length != 1)
+        var up_query = {
+            ticket_id: id
+        };
+        var has_support_group;
+        if (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.support) has_support_group = 1;
+        if (req.session.auth.status < 2 && !has_support_group) up_query.user_id = req.session.auth._id;
+        app.get('mongodb').collection('support').find(up_query).toArray(function(err, items) {
+            if (err || !items || !items.length || items.length > 1)
                 return res.send({
                     status: 0,
                     error: i18nm.__("invalid_ticket")
