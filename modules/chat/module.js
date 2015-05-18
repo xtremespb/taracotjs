@@ -33,6 +33,7 @@ module.exports = function(app) {
             users_history = [],
             messages_data = {};
         async.series([
+
             function(callback) {
                 redis_client.lrange(config.redis.prefix + 'socketio_users_online', 0, 100, function(err, reply) {
                     if (reply && reply.length) users_online = reply;
@@ -154,8 +155,10 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_msg");
             return res.send(JSON.stringify(rep));
         }
-        var user_data = {};
+        var user_data = {},
+            user_id;
         async.series([
+
             function(callback) {
                 if (channel && channel.length) {
                     app.get('mongodb').collection('users').find({
@@ -167,6 +170,7 @@ module.exports = function(app) {
                             res.send(JSON.stringify(rep));
                             return callback(true);
                         }
+                        user_id = users[0]._id;
                         callback();
                     });
                 } else {
@@ -177,7 +181,9 @@ module.exports = function(app) {
                 app.get('mongodb').collection('users').find({
                     username: req.session.auth.username
                 }).toArray(function(err, users) {
-                    if (users && users.length && users[0].chat_data) user_data = users[0].chat_data;
+                    if (users && users.length && users[0].chat_data) {
+                        user_data = users[0].chat_data;
+                    }
                     callback();
                 });
             },
@@ -218,10 +224,14 @@ module.exports = function(app) {
             },
             function(callback) {
                 rep.msg_data.channel = channel;
-                redis_client.publish(config.redis.prefix + 'medved_broadcast', JSON.stringify({
-                    msgtype: 'taracot_chat_message',
-                    msg: rep.msg_data
-                }));
+                if (channel) {
+                    socketsender.emit(user_id, 'taracot_chat_message', rep.msg_data);
+                } else {
+                    redis_client.publish(config.redis.prefix + 'medved_broadcast', JSON.stringify({
+                        msgtype: 'taracot_chat_message',
+                        msg: rep.msg_data
+                    }));
+                }
                 res.send(JSON.stringify(rep));
                 return callback();
             },
@@ -254,6 +264,7 @@ module.exports = function(app) {
         }
         rep.cmd_timestamp = Date.now();
         async.series([
+
             function(callback) {
                 if (cmd_0 == 'color') {
                     if (cmd_arr.length != 2 || !cmd_arr[1].match(/^#(?:[0-9a-f]{3}){1,2}$/i)) {
@@ -293,6 +304,7 @@ module.exports = function(app) {
                     var username = cmd_arr[1].toLowerCase(),
                         chat_data = {};
                     async.series([
+
                         function(asc) {
                             if (req.session.auth.status == 2) return asc();
                             app.get('mongodb').collection('users').find({
@@ -361,6 +373,7 @@ module.exports = function(app) {
                     var username = cmd_arr[1].toLowerCase(),
                         chat_data = {};
                     async.series([
+
                         function(asc) {
                             if (req.session.auth.status == 2) return asc();
                             app.get('mongodb').collection('users').find({
@@ -433,6 +446,7 @@ module.exports = function(app) {
                         for (var cai = 2; cai < cmd_arr.length; cai++)
                             reason_arr.push(cmd_arr[cai]);
                     async.series([
+
                         function(asc) {
                             if (req.session.auth.status == 2) return asc();
                             app.get('mongodb').collection('users').find({
@@ -506,6 +520,7 @@ module.exports = function(app) {
                         for (var cai = 2; cai < cmd_arr.length; cai++)
                             reason_arr.push(cmd_arr[cai]);
                     async.series([
+
                         function(asc) {
                             if (req.session.auth.status == 2) return asc();
                             app.get('mongodb').collection('users').find({
