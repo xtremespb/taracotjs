@@ -253,6 +253,11 @@ module.exports = function(grunt) {
                 files: {
                     'modules/support/public/modules/support/js/frontend.min.js': ['public/js/jquery.medved.loading.js', 'public/js/jquery.medved.table.js', 'public/js/uikit/addons/notify.min.js', 'public/js/moment.min.js', 'public/js/helper.js', 'public/js/jquery.history.min.js', 'modules/support/public/modules/support/js/support_frontend.js']
                 }
+            },
+            chat: {
+                files: {
+                    'modules/chat/public/modules/chat/js/chat.min.js': ['public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/moment.min.js', 'public/js/string.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/chat/public/modules/chat/js/chat.js']
+                }
             }
         }
     });
