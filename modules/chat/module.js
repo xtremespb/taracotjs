@@ -171,7 +171,8 @@ module.exports = function(app) {
             rep.error = i18nm.__("invalid_channel");
             return res.send(JSON.stringify(rep));
         }
-        if (msg.length < 2 && msg.length > 1024) {
+        var lwl = msg.split(/ /).reduce(function (x, y) { return x.length > y.length ? x : y; }).length;
+        if (msg.length < 2 || msg.length > 1024 || lwl > 30) {
             rep.status = 0;
             rep.error = i18nm.__("invalid_msg");
             return res.send(JSON.stringify(rep));
@@ -284,7 +285,6 @@ module.exports = function(app) {
         }
         rep.cmd_timestamp = Date.now();
         async.series([
-
             function(callback) {
                 if (cmd_0 == 'color') {
                     if (cmd_arr.length != 2 || !cmd_arr[1].match(/^#(?:[0-9a-f]{3}){1,2}$/i)) {
