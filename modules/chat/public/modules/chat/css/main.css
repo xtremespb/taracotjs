@@ -22,7 +22,7 @@
 }
 
 .taracot-chat-box-area {
-	overflow: auto;
+    overflow: auto;
 }
 
 .taracot-chat-reply-wrap {
@@ -30,8 +30,8 @@
 }
 
 .taracot-chat-msg-timestamp-normal {
-	color: #666;
-	font-size: 70%;
+    color: #666;
+    font-size: 70%;
 }
 
 .taracot-chat-msg-timestamp {
@@ -39,11 +39,14 @@
     margin-left: 5px;
 }
 
-.taracot-chat-system-msg, .taracot-chat-system-cmd, .taracot-chat-msg {
-	margin-bottom: 4px;
+.taracot-chat-system-msg,
+.taracot-chat-system-cmd,
+.taracot-chat-msg {
+    margin-bottom: 4px;
 }
 
-.taracot-chat-system-msg, .taracot-chat-system-cmd {
+.taracot-chat-system-msg,
+.taracot-chat-system-cmd {
     font-weight: bold;
 }
 
@@ -92,36 +95,134 @@
 }
 
 .taracot-chat-users-online {
-	padding: 10px;
-	margin-top: 36px;
-	border: 1px solid #eee;
-	overflow: auto;
+    padding: 10px;
+    margin-top: 36px;
+    border: 1px solid #eee;
+    overflow: auto;
 }
 
 .taracot-chat-user-online {
-	cursor: pointer;
-	padding: 3px 3px 3px 8px;
+    cursor: pointer;
+    padding: 3px 3px 3px 8px;
 }
 
 .taracot-chat-user-online:hover {
-	background: #eee;
+    background: #eee;
 }
 
 .taracot-loading {
-	position: absolute;
-	background: #fff;
-	filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
-	-moz-opacity: 0.8;
-	-khtml-opacity: 0.8;
-	opacity: 0.8;
-	z-index: 1000;
+    position: absolute;
+    background: #fff;
+    filter: progid: DXImageTransform.Microsoft.Alpha(opacity=80);
+    -moz-opacity: 0.8;
+    -khtml-opacity: 0.8;
+    opacity: 0.8;
+    z-index: 1000;
 }
 
 .taracot-chat-tab-close {
-	color: #999;
-	font-size:90%;
+    color: #999;
+    font-size: 90%;
 }
 
 .taracot-chat-tab-close:hover {
-	color: #666;
+    color: #666;
+}
+
+.taracot-chat-face-angel,
+.taracot-chat-face-crying,
+.taracot-chat-face-devilish,
+.taracot-chat-face-glasses,
+.taracot-chat-face-grin,
+.taracot-chat-face-kiss,
+.taracot-chat-face-monkey,
+.taracot-chat-face-plain,
+.taracot-chat-face-sad,
+.taracot-chat-face-smile-big,
+.taracot-chat-face-smile,
+.taracot-chat-face-surprise,
+.taracot-chat-face-wink {
+    display: inline-block;
+    background: url('/modules/chat/images/emoticons.png') no-repeat;
+    overflow: hidden;
+    text-indent: -9999px;
+    text-align: left;
+}
+
+.taracot-chat-face-angel {
+    background-position: -0px -0px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-crying {
+    background-position: -16px -0px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-devilish {
+    background-position: -32px -0px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-glasses {
+    background-position: -0px -16px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-grin {
+    background-position: -16px -16px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-kiss {
+    background-position: -32px -16px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-monkey {
+    background-position: -0px -32px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-plain {
+    background-position: -16px -32px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-sad {
+    background-position: -32px -32px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-smile-big {
+    background-position: -0px -48px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-smile {
+    background-position: -16px -48px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-surprise {
+    background-position: -32px -48px;
+    width: 16px;
+    height: 16px;
+}
+
+.taracot-chat-face-wink {
+    background-position: -0px -64px;
+    width: 16px;
+    height: 16px;
 }

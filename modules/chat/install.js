@@ -1,7 +1,7 @@
 module.exports = function(db, ensure_indexes, config) {
     var is = {
             name: 'chat',
-            version: '0.5.138',
+            version: '0.5.139',
             collections: function(_callback) {
                 // Create collections
                 _callback();

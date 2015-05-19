@@ -18,7 +18,7 @@ module.exports = function(app) {
             devMode: config.locales.dev_mode
         }),
         history_length = 50,
-        cmd_avail = ['color', 'mod_set', 'mod_unset', 'ban_set', 'ban_unset'];
+        cmd_avail = ['color', 'mod_set', 'mod_unset', 'ban_set', 'ban_unset', 'nick'];
 
     router.get('/', function(req, res) {
         if (!req.session.auth || req.session.auth.status < 1) {
@@ -28,12 +28,25 @@ module.exports = function(app) {
             return;
         }
         i18nm.setLocale(req.session.current_locale);
+        if (req.session.auth.need_finish) {
+            var data = {
+                    title: i18nm.__('module_name'),
+                    page_title: i18nm.__('module_name'),
+                    keywords: '',
+                    description: '',
+                    extra_css: '<link rel="stylesheet" href="/modules/chat/css/main.css" type="text/css">'
+                },
+                render = renderer.render_file(path.join(__dirname, 'views'), 'need_finish', {
+                    lang: i18nm
+                }, req);
+            data.content = render;
+            return app.get('renderer').render(res, undefined, data, req);
+        }
         var users_online = [],
             users_data = {},
             users_history = [],
             messages_data = {};
         async.series([
-
             function(callback) {
                 redis_client.lrange(config.redis.prefix + 'socketio_users_online', 0, 100, function(err, reply) {
                     if (reply && reply.length) users_online = reply;
@@ -89,15 +102,23 @@ module.exports = function(app) {
                         query.push({
                             username: users_history[ui]
                         });
+                    for (var oi in users_online)
+                        if (users_history.indexOf(users_online[oi]) == -1)
+                            query.push({
+                                username: users_online[oi]
+                            });
                     app.get('mongodb').collection('users').find({
-                        $or: query,
-                        chat_data: {
-                            $exists: true
-                        }
+                        $or: query
                     }).toArray(function(err, users) {
                         if (users && users.length)
-                            for (var ui in users)
-                                users_data[users[ui].username] = users[ui].chat_data;
+                            for (var ui in users) {
+                                if (users[ui].chat_data) {
+                                    users_data[users[ui].username] = users[ui].chat_data;
+                                } else {
+                                    users_data[users[ui].username] = {};
+                                }
+                                if (users[ui].status == 2) users_data[users[ui].username].mod_flag = true;
+                            }
                         callback();
                     });
                 } else {
@@ -137,12 +158,12 @@ module.exports = function(app) {
         var rep = {
             status: 1
         };
-        if (!req.session.auth || req.session.auth.status < 1) {
+        if (!req.session.auth || req.session.auth.status < 1 || req.session.auth.need_finish) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
-        var msg = S(req.body.msg || '').stripTags().s.replace(/[\n\r\t]/gm, ''),
+        var msg = S(req.body.msg || '').stripTags().decodeHTMLEntities().s.replace(/[\n\r\t]/gm, ''),
             channel = req.body.channel || '',
             timestamp = Date.now();
         if (channel && (!channel.match(/^[A-Za-z0-9_\-]{3,20}$/) || channel == req.session.auth.username)) {
@@ -158,7 +179,6 @@ module.exports = function(app) {
         var user_data = {},
             user_id;
         async.series([
-
             function(callback) {
                 if (channel && channel.length) {
                     app.get('mongodb').collection('users').find({
@@ -210,7 +230,7 @@ module.exports = function(app) {
                     channel_id: channel_id
                 };
                 app.get('mongodb').collection('chat_messages').insert(rep.msg_data, function() {
-                    if (user_data.color) rep.msg_data.data.color = user_data.color;
+                    if (user_data) rep.msg_data.data = user_data;
                     return callback();
                 });
             },
@@ -242,12 +262,12 @@ module.exports = function(app) {
         var rep = {
             status: 1
         };
-        if (!req.session.auth || req.session.auth.status < 1) {
+        if (!req.session.auth || req.session.auth.status < 1 || req.session.auth.need_finish) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
         }
-        var cmd = S(req.body.cmd || '').stripTags().s.replace(/[\n\r\t]/gm, ''),
+        var cmd = S(req.body.cmd || '').stripTags().decodeHTMLEntities().s.replace(/[\n\r\t]/gm, ''),
             timestamp = Date.now();
         if (cmd.length < 2 && cmd.length > 1024) {
             rep.status = 0;
@@ -578,6 +598,61 @@ module.exports = function(app) {
                 } else {
                     callback();
                 }
+            },
+            function(callback) {
+                if (cmd_0 == 'nick') {
+                    if (cmd_arr.length != 2) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("cmd_mod_invalid_nickname");
+                        return callback(true);
+                    }
+                    var nickname = S(cmd_arr[1]).stripTags().decodeHTMLEntities().s.replace(/[\n\r\t'\"]/gm, ''),
+                        chat_data = {};
+                    if (nickname.length < 2 || nickname.length > 20) {
+                        rep.status = 0;
+                        rep.error = i18nm.__("cmd_mod_invalid_nickname");
+                        return callback(true);
+                    }
+                    async.series([
+                        function(asc) {
+                            app.get('mongodb').collection('users').find({
+                                _id: new ObjectId(req.session.auth._id)
+                            }).toArray(function(err, users) {
+                                if (users && users.length && users[0].chat_data) chat_data = users[0].chat_data;
+                                return asc();
+                            });
+                        },
+                        function(asc) {
+                            chat_data.nickname = nickname;
+                            app.get('mongodb').collection('users').update({
+                                _id: new ObjectId(req.session.auth._id)
+                            }, {
+                                $set: {
+                                    chat_data: chat_data
+                                }
+                            }, function(err) {
+                                if (!err) {
+                                    rep.cmd = cmd_0;
+                                    rep.cmd_index = cmd_index;
+                                    rep.cmd_data = {
+                                        "username": req.session.auth.username,
+                                        "nickname": nickname
+                                    };
+                                    return asc();
+                                } else {
+                                    rep.status = 0;
+                                    rep.error = i18nm.__("cmd_database_error");
+                                    return asc(true);
+                                }
+                            });
+                        }
+                    ], function(pf) {
+                        if (!pf) return callback('insert');
+                        return callback(true);
+                    });
+                } else {
+                    callback();
+                }
             }
         ], function(pf) {
             if (pf) {
@@ -613,7 +688,7 @@ module.exports = function(app) {
         var rep = {
             status: 1
         };
-        if (!req.session.auth || req.session.auth.status < 1) {
+        if (!req.session.auth || req.session.auth.status < 1 || req.session.auth.need_finish) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
@@ -633,7 +708,7 @@ module.exports = function(app) {
         var rep = {
             status: 1
         };
-        if (!req.session.auth || req.session.auth.status < 1) {
+        if (!req.session.auth || req.session.auth.status < 1 || req.session.auth.need_finish) {
             rep.status = 0;
             rep.error = i18nm.__("unauth");
             return res.send(JSON.stringify(rep));
@@ -652,10 +727,11 @@ module.exports = function(app) {
         app.get('mongodb').collection('chat_messages').find({
             channel_id: channel_id
         }).count(function(err, msg_count) {
-            if (err) return esc(true);
             if (!msg_count) msg_count = 0;
             var skip = 0;
             if (msg_count > history_length) skip = msg_count - history_length;
+            var users_history = [],
+                users_data = {};
             app.get('mongodb').collection('chat_messages').find({
                 channel_id: channel_id
             }).skip(skip).sort({
@@ -663,6 +739,8 @@ module.exports = function(app) {
             }).toArray(function(err, messages) {
                 if (messages && messages.length) {
                     for (var mi in messages) {
+                        if (messages[mi].username)
+                            if (users_history.indexOf(messages[mi].username) == -1) users_history.push(messages[mi].username);
                         messages[mi].channel = channel;
                         if (!messages_data[channel]) messages_data[channel] = [];
                         delete messages[mi].channel_id;
@@ -670,8 +748,36 @@ module.exports = function(app) {
                         messages_data[channel].push(messages[mi]);
                     }
                 }
-                rep.messages = messages_data;
-                res.send(JSON.stringify(rep));
+                async.series([
+                    function(callback) {
+                        if (users_history.length) {
+                            var query = [];
+                            for (var ui in users_history)
+                                query.push({
+                                    username: users_history[ui]
+                                });
+                            app.get('mongodb').collection('users').find({
+                                $or: query,
+                                chat_data: {
+                                    $exists: true
+                                }
+                            }).toArray(function(err, users) {
+                                if (users && users.length)
+                                    for (var ui in users)
+                                        users_data[users[ui].username] = users[ui].chat_data;
+                                callback();
+                            });
+                        } else {
+                            callback();
+                        }
+                    },
+                    function(callback) {
+                        rep.users_data = users_data;
+                        rep.messages = messages_data;
+                        res.send(JSON.stringify(rep));
+                        return callback();
+                    }
+                ]);
             });
         });
     });
