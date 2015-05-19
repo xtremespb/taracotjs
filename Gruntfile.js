@@ -256,7 +256,7 @@ module.exports = function(grunt) {
             },
             chat: {
                 files: {
-                    'modules/chat/public/modules/chat/js/chat.min.js': ['public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/moment.min.js', 'public/js/string.min.js', 'public/js/uikit/addons/notify.min.js', 'modules/chat/public/modules/chat/js/chat.js']
+                    'modules/chat/public/modules/chat/js/chat.min.js': ['public/js/helper.js', 'public/js/socket.io.min.js', 'public/js/moment.min.js', 'public/js/string.min.js', 'public/js/uikit/addons/notify.min.js', 'public/js/uikit/addons/tooltip.min.js', 'modules/chat/public/modules/chat/js/chat.js']
                 }
             }
         }
