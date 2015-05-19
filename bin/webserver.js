@@ -7,6 +7,7 @@ var app = require('../app'),
     crypto = require('crypto'),
     port = config.port || process.env.PORT || 3000,
     redis_client = app.get('redis_client'),
+    ObjectId = require('mongodb').ObjectID,
     redis_subscriber;
 
 if (config.redis.active) {
@@ -60,14 +61,28 @@ io.on('connection', function(socket) {
                 if (_sessions) {
                     sessions = _sessions.split(',');
                 } else {
-                    redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
-                        msgtype: 'taracot_user_online',
-                        msg: {
-                            id: userid,
-                            username: username,
-                            timestamp: Date.now()
+                    app.get('mongodb').collection('users').find({
+                        _id: new ObjectId(userid)
+                    }).toArray(function(err, users) {
+                        var user_data = {};
+                        if (!err && users && users.length) {
+                            user_data = users[0];
+                            delete user_data.email;
+                            delete user_data.regdate;
+                            delete user_data.password;
+                            delete user_data._id;
+                            delete user_data.billing_funds;
                         }
-                    }));
+                        redis_client.publish(app.get('config').redis.prefix + 'medved_broadcast', JSON.stringify({
+                            msgtype: 'taracot_user_online',
+                            msg: {
+                                id: userid,
+                                username: username,
+                                user_data: user_data,
+                                timestamp: Date.now()
+                            }
+                        }));
+                    });
                 }
                 sessions.push(socket.id);
                 for (var i = 0; i < sessions.length; i++)
