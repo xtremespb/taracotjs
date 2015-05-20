@@ -22,7 +22,7 @@ module.exports = function(db, ensure_indexes, config) {
             // Create indexes
             async.series([
                 function(callback) {
-                    ensure_indexes('chat', ['channel_id', 'timestamp'], null, null, function() {
+                    ensure_indexes('chat', ['channel_id', 'timestamp', 'msg_deleted'], null, null, function() {
                         callback();
                     });
                 }

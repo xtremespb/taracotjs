@@ -13,17 +13,21 @@
 		"{{username}} has changed the nickname color to {{color}}",
 		"{{moderator}} has set the new chat moderator: {{new_moderator}}",
 		"{{moderator}} has removed moderator rights from {{new_moderator}}",
-		"{{user_banned}} was banned by {{moderator}} (reason: {{reason}})",
-		"{{user_banned}} was un-banned by {{moderator}}",
-		"{{username}} has changed the nickname to {{nickname}}"
+		"{{user_ro}} is set to read-only mode by {{moderator}} (reason: {{reason}})",
+		"{{user_ro}} is set to read-write mode by {{moderator}}",
+		"{{username}} has changed the nickname to {{nickname}}",
+		"{{user_ban}} is now banned by {{moderator}} (reason: {{reason}})",
+		"{{user_ban}} un-banned by {{moderator}}",
+		"Moderator {{moderator}} has cleaned up public channel history"
 	],
 	"cmd_color_invalid_value": "Invalid color value",
 	"cmd_database_error": "Database error",
 	"cmd_mod_invalid_username": "Invalid username, could not set a new moderator",
 	"cmd_err_not_moderator": "Not a moderator: cannot remove moderator rights",
 	"cmd_mod_insufficent_rights": "Insuficcent right to run a moderator-level command",
-	"your_account_is_banned": "Your account is banned in chat",
+	"your_account_is_ro": "Your account is in read-only mode",
 	"need_finish_notice": "You've created your account and logged in using a social network or service. Your account is fully functional, but to use the chat features you need to set your username and password.",
 	"btn_set_username": "Go to profile page",
-	"cmd_mod_invalid_nickname": "Invalid nickname"
+	"cmd_mod_invalid_nickname": "Invalid nickname",
+	"banned_notice": "Your account is banned by chat moderator. Please contact website administrator if you think that's wrong."
 }
