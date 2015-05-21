@@ -44,7 +44,8 @@ var config = {
             "sMerchantLogin": "",
             "sIncCurrLabel": "BANKOCEAN2R",
             "sMerchantPass1": "",
-            "sMerchantPass2": ""
+            "sMerchantPass2": "",
+            "discount_percent": 7
         },
         "webmoney": {
             "LMI_PAYEE_PURSE": "R704413344646",

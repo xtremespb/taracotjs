@@ -59,9 +59,12 @@ module.exports = function(app) {
                 return app.get('renderer').render(res, undefined, render_data, req);
             }
             var order = items[0],
-                signature = crypto.createHash('md5').update(config.billing_frontend.robokassa.sMerchantLogin + ':' + order.order_sum + ':' + invid + ':' + config.billing_frontend.robokassa.sMerchantPass1).digest('hex').toUpperCase();
+                order_sum = order.order_sum;
+            if (config.billing_frontend.robokassa.discount_percent)
+                order_sum = order_sum - (order_sum / 100 * config.billing_frontend.robokassa.discount_percent);
+            var signature = crypto.createHash('md5').update(config.billing_frontend.robokassa.sMerchantLogin + ':' + order_sum + ':' + invid + ':' + config.billing_frontend.robokassa.sMerchantPass1).digest('hex').toUpperCase();
             req.session.billing_frontend_payment_redirect_host = req.get('host');
-            return res.redirect(303, config.billing_frontend.robokassa.url + "?MrchLogin=" + config.billing_frontend.robokassa.sMerchantLogin + "&OutSum=" + order.order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + ' ' + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.billing_frontend.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
+            return res.redirect(303, config.billing_frontend.robokassa.url + "?MrchLogin=" + config.billing_frontend.robokassa.sMerchantLogin + "&OutSum=" + order_sum + "&InvId=" + invid + "&Desc=" + i18nm.__('payment_for_order') + ' ' + invid + "&SignatureValue=" + signature + "&IncCurrLabel=" + config.billing_frontend.robokassa.sIncCurrLabel + "&Culture=" + req.session.current_locale + "&rnd=" + Math.random().toString().replace('.', ''));
         });
     });
 
