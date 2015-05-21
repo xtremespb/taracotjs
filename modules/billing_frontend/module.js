@@ -502,20 +502,24 @@ module.exports = function(app) {
                         });
                     }
                 ], function(err) {
-                    if (err && typeof err == 'string') logger.log('error', err);
-                    rep.account = account_data;
-                    var mail_data = {
-                        lang: i18nm,
-                        site_title: app.get('settings').site_title,
-                        username: baccount,
-                        password: bpwd,
-                        panel_url: config.billing_frontend.hosting_panel_url,
-                        days: bexp_add * 30,
-                        subj: i18nm.__('mail_hosting_add')
-                    };
-                    mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_add_html', 'mail_hosting_add_txt', mail_data, req, function() {
+                    if (err && typeof err == 'string') {
+                        logger.log('error', err);
                         return res.send(JSON.stringify(rep));
-                    });
+                    } else {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            username: baccount,
+                            password: bpwd,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            days: bexp_add * 30,
+                            subj: i18nm.__('mail_hosting_add')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_add_html', 'mail_hosting_add_txt', mail_data, req, function() {
+                            return res.send(JSON.stringify(rep));
+                        });
+                    }
                 });
             });
         });
@@ -728,19 +732,23 @@ module.exports = function(app) {
                         });
                     }
                 ], function(err) {
-                    if (err && typeof err == 'string') logger.log('error', err);
-                    rep.account = account_data;
-                    var mail_data = {
-                        lang: i18nm,
-                        site_title: app.get('settings').site_title,
-                        username: baccount,
-                        panel_url: config.billing_frontend.hosting_panel_url,
-                        days: bexp_add * 30,
-                        subj: i18nm.__('mail_hosting_up')
-                    };
-                    mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_up_html', 'mail_hosting_up_txt', mail_data, req, function() {
+                    if (err && typeof err == 'string') {
+                        logger.log('error', err);
                         return res.send(JSON.stringify(rep));
-                    });
+                    } else {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            username: baccount,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            days: bexp_add * 30,
+                            subj: i18nm.__('mail_hosting_up')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_hosting_up_html', 'mail_hosting_up_txt', mail_data, req, function() {
+                            return res.send(JSON.stringify(rep));
+                        });
+                    }
                 });
             });
         });
@@ -972,18 +980,22 @@ module.exports = function(app) {
                         });
                     }
                 ], function(err) {
-                    if (err && typeof err == 'string') logger.log('error', err);
-                    rep.account = account_data;
-                    var mail_data = {
-                        lang: i18nm,
-                        site_title: app.get('settings').site_title,
-                        domain_name: baccount + '.' + bplan,
-                        panel_url: config.billing_frontend.hosting_panel_url,
-                        subj: i18nm.__('mail_domain_add')
-                    };
-                    mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_add_html', 'mail_domain_add_txt', mail_data, req, function() {
+                    if (err && typeof err == 'string') {
+                        logger.log('error', err);
                         return res.send(JSON.stringify(rep));
-                    });
+                    } else {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_add')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_add_html', 'mail_domain_add_txt', mail_data, req, function() {
+                            return res.send(JSON.stringify(rep));
+                        });
+                    }
                 });
             });
         });
@@ -1172,18 +1184,22 @@ module.exports = function(app) {
                         });
                     }
                 ], function(err) {
-                    if (err && typeof err == 'string') logger.log('error', err);
-                    rep.account = account_data;
-                    var mail_data = {
-                        lang: i18nm,
-                        site_title: app.get('settings').site_title,
-                        domain_name: baccount + '.' + bplan,
-                        panel_url: config.billing_frontend.hosting_panel_url,
-                        subj: i18nm.__('mail_domain_up')
-                    };
-                    mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_up_html', 'mail_domain_up_txt', mail_data, req, function() {
+                    if (err && typeof err == 'string') {
+                        logger.log('error', err);
                         return res.send(JSON.stringify(rep));
-                    });
+                    } else {
+                        rep.account = account_data;
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_up')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_up_html', 'mail_domain_up_txt', mail_data, req, function() {
+                            return res.send(JSON.stringify(rep));
+                        });
+                    }
                 });
             });
         });
@@ -1333,21 +1349,25 @@ module.exports = function(app) {
                         });
                     }
                 ], function(err) {
-                    if (err && typeof err == 'string') logger.log('error', err);
-                    var mail_data = {
-                        lang: i18nm,
-                        site_title: app.get('settings').site_title,
-                        domain_name: baccount + '.' + bplan,
-                        ns1: bns0,
-                        ns2: bns1,
-                        ns1_ip: bns0_ip,
-                        ns2_ip: bns1_ip,
-                        panel_url: config.billing_frontend.hosting_panel_url,
-                        subj: i18nm.__('mail_domain_ns')
-                    };
-                    mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_ns_html', 'mail_domain_ns_txt', mail_data, req, function() {
+                    if (err && typeof err == 'string') {
+                        logger.log('error', err);
                         return res.send(JSON.stringify(rep));
-                    });
+                    } else {
+                        var mail_data = {
+                            lang: i18nm,
+                            site_title: app.get('settings').site_title,
+                            domain_name: baccount + '.' + bplan,
+                            ns1: bns0,
+                            ns2: bns1,
+                            ns1_ip: bns0_ip,
+                            ns2_ip: bns1_ip,
+                            panel_url: config.billing_frontend.hosting_panel_url,
+                            subj: i18nm.__('mail_domain_ns')
+                        };
+                        mailer.send(req.session.auth.email, mail_data.subj + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_domain_ns_html', 'mail_domain_ns_txt', mail_data, req, function() {
+                            return res.send(JSON.stringify(rep));
+                        });
+                    }
                 });
             });
         });
