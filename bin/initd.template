@@ -25,7 +25,7 @@ stop)
   exec forever stop $taracot_dir/bin/webserver.js
   ;;
 *)
-  echo "Usage: /etc/init.d/taracot_!{root.pname} {start|stop}"
+  echo "Usage: /etc/init.d/taracot-!{root.pname} {start|stop}"
   exit 1
   ;;
 esac

@@ -56,7 +56,7 @@ async.series([
 			  	data.servername = _servername;
 			  	console.log('* Server name(s) set to: ' + data.servername);
 			  	var fns = data.servername.split(' ');
-				data.pname = fns[0];
+				data.pname = fns[0].replace(/\./g, '_').replace(/\-/g, '_');
 			  	callback();
 			});
 		},
