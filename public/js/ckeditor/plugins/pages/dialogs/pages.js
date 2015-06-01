@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2014 Michael A. Matveev
 */
 CKEDITOR.dialog.add('pages', function(editor) {

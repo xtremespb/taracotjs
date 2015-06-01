@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2014 Michael A. Matveev
 */
 CKEDITOR.plugins.setLang( 'pages', 'ru', {

@@ -1,7 +1,7 @@
 module.exports = function(db, ensure_indexes, config) {
     var is = {
             name: 'browse',
-            version: '0.5.135',
+            version: '0.5.152',
             collections: function(_callback) {
                 // Create collections
                 _callback();

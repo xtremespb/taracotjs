@@ -1,7 +1,7 @@
 check process nodejs with pidfile "/var/run/!{root.pname}.pid"
 	start program = "/etc/init.d/taracot-!{root.pname} start"
 	stop program = "/etc/init.d/taracot-!{root.pname} stop"
-	if failed port true protocol HTTP
+	if failed port !{root.taracot_port} protocol HTTP
 		request /
 		with timeout 10 seconds
 		then restart

@@ -3,7 +3,7 @@ module.exports = function(db, ensure_indexes, config) {
         ObjectId = require('mongodb').ObjectID,
         is = {
             name: 'pages',
-            version: '0.5.135',
+            version: '0.5.152',
             collections: function(_callback) {
                 // Create collections
                 async.series([
