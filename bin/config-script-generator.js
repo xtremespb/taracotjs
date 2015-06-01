@@ -1,9 +1,9 @@
-var program = require('commander');
-var async = require('async');
-var config = require('../config');
-var path = require('path');
-var gaikan = require('gaikan');
-var fs = require('fs');
+var program = require('commander'),
+	async = require('async'),
+	config = require('../config'),
+	path = require('path'),
+	gaikan = require('gaikan'),
+	fs = require('fs');
 
 var data = {
 	taracot_port : config.port,
@@ -12,7 +12,9 @@ var data = {
 	listen_ip    : '127.0.0.1',
 	listen_port  : '80',
 	servername   : '',
-	pname		 : ''
+	first_name   : '',
+	pname		 : '',
+	user         : config.uid || 'root'
 };
 
 program
@@ -57,6 +59,7 @@ async.series([
 			  	console.log('* Server name(s) set to: ' + data.servername);
 			  	var fns = data.servername.split(' ');
 				data.pname = fns[0].replace(/\./g, '_').replace(/\-/g, '_');
+				data.first_name = fns[0];
 			  	callback();
 			});
 		},
@@ -77,7 +80,7 @@ async.series([
 			console.log("\nGenerating init.d script...");
 			var initd_render = gaikan.compileFromFile('initd.template');
 			var initd = initd_render(gaikan, data, undefined);
-			var filename = data.pname.replace(/\./g, '_');
+			var filename = data.pname.replace(/\./g, '_').replace(/\-/g, '_');
 			fs.writeFile("./init.d/taracot-" + filename, initd, function(err) {
 			    if(err) {
 			        return callback(err);
@@ -91,7 +94,7 @@ async.series([
 			console.log("\nGenerating monit script...");
 			var monit_render = gaikan.compileFromFile('monit.template');
 			var monit = monit_render(gaikan, data, undefined);
-			var filename = data.pname.replace(/\./g, '_');
+			var filename = data.pname.replace(/\./g, '_').replace(/\-/g, '_');
 			fs.writeFile("./monit/" + filename + '.monit', monit, function(err) {
 			    if(err) {
 			        return callback(err);

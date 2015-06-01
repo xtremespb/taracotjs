@@ -1,4 +1,4 @@
-check process nodejs with pidfile "/var/run/!{root.pname}.pid"
+check process nodejs with pidfile "/var/run/taracot-!{root.pname}.pid"
 	start program = "/etc/init.d/taracot-!{root.pname} start"
 	stop program = "/etc/init.d/taracot-!{root.pname} stop"
 	if failed port !{root.taracot_port} protocol HTTP
