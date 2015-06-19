@@ -23,5 +23,8 @@
 	"database_error": "Database error",
 	"save_success": "Saved successfully",
 	"important": "Important",
-	"menu_not_realtime_displayed": "Menu is not real-time updated in fronted. It takes up to several minutes for changes to take an effect."
+	"menu_not_realtime_displayed": "Menu is not real-time updated in fronted. It takes up to several minutes for changes to take an effect.",
+	"edit_menu_item": "Edit menu item",
+	"delete_menu_item": "Delete menu item",
+	"site_menu": "Site menu"
 }

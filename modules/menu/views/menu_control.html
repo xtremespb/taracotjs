@@ -25,6 +25,9 @@
 </div>
 <div class="uk-margin-bottom">!{root.lang.__('menu_control_hint')}</div>
 <div class="uk-margin-bottom"><span class="uk-badge uk-badge-danger">!{root.lang.__('important')}</span>&nbsp;!{root.lang.__('menu_not_realtime_displayed')}</div>
+<div class="uk-margin-bottom">
+    <span class="uk-badge uk-badge-warning">!{root.lang.__('hint')}</span>&nbsp;!{root.lang.__('menu_edit_hint')}
+</div>
 <div class="uk-form uk-panel uk-panel-box">
     <fieldset data-uk-margin>!{root.lang.__('language')}:
         <select id="menu_lang"></select>&nbsp;
@@ -33,13 +36,14 @@
     </fieldset>
 </div>
 <div class="uk-margin-top uk-hidden" id="menu_editor">
-    <h2>!{root.lang.__('menu_edit_lang')} (
-		<span id="menu_edit_lang"></span>)</h2>
+    <h2>!{root.lang.__('menu_edit_lang')} (<span id="menu_edit_lang"></span>)</h2>
     <div class="uk-margin-bottom">
-        <button id="btn_item_add" class="uk-button uk-button-success" data-uk-tooltip title="!{root.lang.__('add_menu_item')}"><i class="uk-icon-plus"></i>
+        <button id="btn_item_add" class="uk-button uk-button-success taracot-treectl-button" data-uk-tooltip title="!{root.lang.__('add_menu_item')}"><i class="uk-icon-plus"></i>
         </button>&nbsp;
-        <button id="btn_item_delall" class="uk-button uk-button-danger" data-uk-tooltip title="!{root.lang.__('delete_all_menu_items')}"><i class="uk-icon-trash-o"></i>
-        </button>
+        <button id="btn_item_edit" class="uk-button taracot-treectl-button" data-uk-tooltip title="!{root.lang.__('edit_menu_item')}"><i class="uk-icon-pencil"></i>
+        </button>&nbsp;
+        <button id="btn_item_del" class="uk-button uk-button-danger taracot-treectl-button" data-uk-tooltip title="!{root.lang.__('delete_menu_item')}"><i class="uk-icon-trash"></i>
+        </button>&nbsp;
         <div class="uk-button-group">
             <button id="btn_menu_save" class="uk-button"><i class="uk-icon-save"></i>
                 <span class="uk-hidden-small">&nbsp;!{root.lang.__('save_menu_changes')}</span>
@@ -47,10 +51,12 @@
             <button id="btn_menu_save_cancel" class="uk-button uk-button-danger">!{root.lang.__('cancel')}</button>
         </div>
     </div>
-    <div class="uk-margin-bottom">
-        <span class="uk-badge uk-badge-warning">!{root.lang.__('hint')}</span>&nbsp;!{root.lang.__('menu_edit_hint')}</div>
-    <div class="uk-panel uk-panel-box" id="menu_nest_wrap">
-        <ul class="uk-nestable" id="menu_nest" data-uk-nestable="{maxDepth:2}"></ul>
+    <div class="uk-panel uk-panel-box">
+        <div id="jstree_menu"></div>
+    </div>
+    <div class="uk-margin-top">
+        <button id="btn_item_delall" class="uk-button uk-button-danger uk-button-small"><i class="uk-icon-trash-o"></i>&nbsp;!{root.lang.__('delete_all_menu_items')}
+        </button>
     </div>
 </div>
 <div class="taracot-progress uk-hidden uk-vertical-align uk-text-center">
@@ -65,7 +71,8 @@ var _lang_vars = {
     confirm_menu_deleteall: "!{root.lang.__('confirm_menu_deleteall')}",
     confirm_menu_cancel: "!{root.lang.__('confirm_menu_cancel')}",
     form_contains_errors: "!{root.lang.__('form_contains_errors')}",
-    save_success: "!{root.lang.__('save_success')}"
+    save_success: "!{root.lang.__('save_success')}",
+    site_menu: "!{root.lang.__('site_menu')}"
 };
 var locales = !{
     root.locales
@@ -81,4 +88,5 @@ for (var i = 0; i < pages.length; i++) {
 }
 </script>
 <script src="/js/uikit/addons/nestable.min.js"></script>
+<script src="/js/jstree/jstree.min.js"></script>
 <script src="/modules/menu/js/menu.min.js"></script>

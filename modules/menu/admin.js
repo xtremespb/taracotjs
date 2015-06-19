@@ -45,7 +45,7 @@ module.exports = function(app) {
             }, req);
             app.get('cp').render(req, res, {
                 body: body,
-                css: '<link rel="stylesheet" href="/modules/menu/css/main.css">'
+                css: '<link rel="stylesheet" href="/modules/menu/css/main.css">' + '<link rel="stylesheet" href="/js/jstree/theme/style.min.css">'
             }, i18nm, 'menu', req.session.auth);
         });
     });
@@ -96,13 +96,9 @@ module.exports = function(app) {
             menu_uikit_offcanvas = req.body.menu_uikit_offcanvas || '',
             menu_raw = req.body.menu_raw || '';
         menu_source = menu_source.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
-        menu_uikit = menu_uikit.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
-        menu_uikit_offcanvas = menu_uikit_offcanvas.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
-        menu_raw = menu_raw.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ').replace(/\n/g, '');
         var _lng = app.get('config').locales.avail[0];
-        for (var i = 0; i < app.get('config').locales.avail.length; i++) {
+        for (var i = 0; i < app.get('config').locales.avail.length; i++)
             if (lng == app.get('config').locales.avail[i]) _lng = app.get('config').locales.avail[i];
-        }
         lng = _lng;
         if (!req.session.auth || req.session.auth.status < 2) {
             rep.status = 0;
@@ -123,10 +119,7 @@ module.exports = function(app) {
             }
             var data = {
                 lang: lng,
-                menu_source: menu_source,
-                menu_raw: menu_raw,
-                menu_uikit: menu_uikit,
-                menu_uikit_offcanvas: menu_uikit_offcanvas
+                menu_source: menu_source
             };
             if (typeof items != 'undefined' && items && items.length) {
                 app.get('mongodb').collection('menu').update({

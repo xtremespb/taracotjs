@@ -8,11 +8,9 @@
 	-ms-user-select: none;
 	user-select: none;
 }
-[data-nestable-action="toggle"]:after {
-	padding-left: 6px;
-}
 #menu_nest_wrap {
 	padding-bottom: 5px;
+	background-color: #fff;
 }
 .taracot-progress {
 	position: absolute;
