@@ -10,6 +10,7 @@ module.exports = function(app) {
         async = require('async'),
         mailer = app.get('mailer'),
         merge = require('merge'),
+        config = app.get('config'),
         original, cloned;
 
     var catalog = (fs.existsSync(path.join(__dirname, 'views') + '/custom_catalog.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_catalog.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/catalog.html'),
@@ -44,10 +45,10 @@ module.exports = function(app) {
         pt_mail_neworder_shipping_html = (fs.existsSync(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_shipping_html.html')) ? gaikan.compileFromFile(path.join(__dirname, 'views') + '/custom_parts_mail_neworder_shipping_html.html') : gaikan.compileFromFile(path.join(__dirname, 'views') + '/parts_mail_neworder_shipping_html.html');
 
     var i18nm = new(require('i18n-2'))({
-        locales: app.get('config').locales.avail,
+        locales: config.locales.avail,
         directory: path.join(__dirname, 'lang'),
         extension: '.js',
-        devMode: app.get('config').locales.dev_mode
+        devMode: config.locales.dev_mode
     });
 
     var _default_folders_hash = [{
@@ -67,8 +68,12 @@ module.exports = function(app) {
     if (!catalog_config && fs.existsSync(path.join(__dirname, 'dist_config.js'))) catalog_config = require('./dist_config');
     if (catalog_config)
         for (var attrname in catalog_config) {
-            app.get('config')[attrname] = catalog_config[attrname];
+            config[attrname] = catalog_config[attrname];
         }
+
+    var payment_system = config.catalog_payment.api,
+        _m = require(path.join(__dirname, 'api', payment_system, 'module.js'))(app);
+    if (_m) app.use('/catalog/api/payment/', _m);
 
     router.post('/ajax/cancel', function(req, res) {
         i18nm.setLocale(req.session.current_locale);
@@ -297,7 +302,7 @@ module.exports = function(app) {
                         if (rep.shipping_address.ship_country && countries[i] == rep.shipping_address.ship_country) rep.shipping_address.ship_country_full = i18nm.__('country_list')[i];
                     rep.order_timestamp = moment(rep.order_timestamp).format('L LT');
                     if (whcurs && whcurs.length) rep.currency = whcurs[0][_locale];
-                    rep.payment_enabled = (app.get('config').catalog_payment && app.get('config').catalog_payment.enabled && rep.order_status === 0);
+                    rep.payment_enabled = (config.catalog_payment && config.catalog_payment.enabled && rep.order_status === 0);
                     if (rep.ship_method && ship_hash[rep.ship_method]) rep.ship_method = ship_hash[rep.ship_method];
                     rep.order_status_text = i18nm.__('order_status_list')[rep.order_status];
                     return res.send(JSON.stringify(rep));
@@ -706,7 +711,7 @@ module.exports = function(app) {
                                                         summary: summary,
                                                         summary_txt: summary_txt,
                                                         shipping: shipping,
-                                                        view_url: app.get('config').protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
+                                                        view_url: config.protocol + '://' + req.get('host') + '/catalog/orders?mode=view&order_id=' + insit[0]._id,
                                                         shipping_method: ship_method_title || ship_method,
                                                         ship_phone: shipping_address.ship_phone || '-',
                                                         ship_comment: ship_comment || '-',
@@ -715,8 +720,8 @@ module.exports = function(app) {
                                                     };
                                                     mailer.send(req.session.auth.email, i18nm.__('your_order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req, function() {
                                                         mail_data.subj = i18nm.__('order_id') + ' ' + order_id;
-                                                        mail_data.view_url = app.get('config').protocol + '://' + req.get('host') + '/cp/catalog_orders';
-                                                        mailer.send(app.get('config').mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req, function() {
+                                                        mail_data.view_url = config.protocol + '://' + req.get('host') + '/cp/catalog_orders';
+                                                        mailer.send(config.mailer.feedback, i18nm.__('order_id') + ' ' + order_id + ' (' + app.get('settings').site_title + ')', path.join(__dirname, 'views'), 'mail_neworder_html', 'mail_neworder_txt', mail_data, req, function() {
                                                             // Return success
                                                             return res.send(JSON.stringify({
                                                                 status: 1,
@@ -896,7 +901,7 @@ module.exports = function(app) {
                         shipping_address: JSON.stringify(shipping_address),
                         bread: bread,
                         cart_items_count: total_cart_items_count,
-                        payment_enabled: (app.get('config').catalog_payment && app.get('config').catalog_payment.enabled)
+                        payment_enabled: (config.catalog_payment && config.catalog_payment.enabled)
                     }, undefined);
                     var data = {
                         title: i18nm.__('checkout'),
@@ -1235,27 +1240,27 @@ module.exports = function(app) {
                     async.series([
                         function(callback) {
                             if (whitem.pimages && whitem.pimages.length) {
-                                fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg', function(ex1) {
-                                    if (ex1) primary_img = app.get('config').dir.storage_url + '/warehouse/tn_' + whitem.pimages[0] + '.jpg';
-                                    fs.exists(app.get('config').dir.storage + '/warehouse/' + whitem.pimages[0] + '.jpg', function(ex2) {
-                                        if (ex2) primary_img_full = app.get('config').dir.storage_url + '/warehouse/' + whitem.pimages[0] + '.jpg';
-                                    });
-                                    if (whitem.pimages.length > 1) {
-                                        async.eachSeries(whitem.pimages, function(pimage, pcallback) {
-                                            fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + pimage + '.jpg', function(ex3) {
-                                                if (ex3)
-                                                    thumb_img += pt_tn_img(gaikan, {
-                                                        src: app.get('config').dir.storage_url + '/warehouse/tn_' + pimage + '.jpg',
-                                                        url: app.get('config').dir.storage_url + '/warehouse/' + pimage + '.jpg'
-                                                    });
-                                                pcallback();
+                                fs.exists(path.join(__dirname, 'public', 'modules', 'catalog', 'files', 'tn_' + whitem.pimages[0] + '.jpg'), function(ex1) {
+                                    if (ex1) primary_img = '/modules/catalog/files/tn_' + whitem.pimages[0] + '.jpg';
+                                    fs.exists(path.join(__dirname, 'public', 'modules', 'catalog', 'files', whitem.pimages[0] + '.jpg'), function(ex2) {
+                                        if (ex2) primary_img_full = '/modules/catalog/files/' + whitem.pimages[0] + '.jpg';
+                                        if (whitem.pimages.length > 1) {
+                                            async.eachSeries(whitem.pimages, function(pimage, pcallback) {
+                                                fs.exists(path.join(__dirname, 'public', 'modules', 'catalog', 'files') + '/tn_' + pimage + '.jpg', function(ex3) {
+                                                    if (ex3)
+                                                        thumb_img += pt_tn_img(gaikan, {
+                                                            src: '/modules/catalog/files/tn_' + pimage + '.jpg',
+                                                            url: '/modules/catalog/files/' + pimage + '.jpg'
+                                                        });
+                                                    pcallback();
+                                                });
+                                            }, function() {
+                                                callback();
                                             });
-                                        }, function() {
+                                        } else {
                                             callback();
-                                        });
-                                    } else {
-                                        callback();
-                                    }
+                                        }
+                                    });
                                 });
                             } else {
                                 callback();
@@ -1513,7 +1518,7 @@ module.exports = function(app) {
                                 if (warehouse_count > 0) {
                                     async.eachSeries(whitems, function(whitem, escallback) {
                                         if (whitem.pimages && whitem.pimages.length) {
-                                            fs.exists(app.get('config').dir.storage + '/warehouse/tn_' + whitem.pimages[0] + '.jpg', function(ex) {
+                                            fs.exists(path.join(__dirname, 'public', 'modules', 'catalog', 'files', 'tn_' + whitem.pimages[0] + '.jpg'), function(ex) {
                                                 if (ex) images_exists_hash[whitem.pimages[0]] = 1;
                                                 escallback();
                                             });
@@ -1552,7 +1557,7 @@ module.exports = function(app) {
                                         }
                                         if (whitems[wi].pimages && whitems[wi].pimages.length)
                                             if (images_exists_hash[whitems[wi].pimages[0]])
-                                                thumb = app.get('config').dir.storage_url + '/warehouse/tn_' + whitems[wi].pimages[0] + '.jpg';
+                                                thumb = '/modules/catalog/files/tn_' + whitems[wi].pimages[0] + '.jpg';
                                         catalog_items_html += catalog_item(gaikan, {
                                             lang: i18nm,
                                             thumb: thumb,
@@ -1779,7 +1784,7 @@ module.exports = function(app) {
             var pi = {
                 name: fldrs_hash[id].text
             };
-            var locales = app.get('config').locales.avail;
+            var locales = config.locales.avail;
             if (fldrs_hash[id].data && fldrs_hash[id].data.lang) {
                 for (var i = 0; i < locales.length; i++) {
                     pi[locales[i]] = fldrs_hash[id].data.lang[locales[i]];

@@ -3,7 +3,7 @@ module.exports = function(db, ensure_indexes, config) {
         fs = require('fs-extra'),
         is = {
             name: 'catalog',
-            version: '0.5.152',
+            version: '0.5.169',
             collections: function(_callback) {
                 // Create collections
                 async.series([
@@ -479,13 +479,7 @@ module.exports = function(db, ensure_indexes, config) {
             },
             misc: function(_callback) {
                 // Other things to do
-                if (!fs.existsSync('../public/files/warehouse')) {
-                    fs.copy('../modules/catalog/files/warehouse', '../public/files/warehouse', function(err) {
-                        _callback();
-                    });
-                } else {
-                    _callback();
-                }
+                _callback();
             },
             uninstall: function(_callback) {
                 async.series([
@@ -501,16 +495,6 @@ module.exports = function(db, ensure_indexes, config) {
                                 if (err) return asc(err);
                                 asc();
                             });
-                        },
-                        function(asc) {
-                            if (fs.existsSync('../public/files/warehouse')) {
-                                fs.remove('../public/files/warehouse', function(err) {
-                                    if (err) return asc(err);
-                                    asc();
-                                });
-                            } else {
-                                asc();
-                            }
                         }
                     ],
                     function(err) {

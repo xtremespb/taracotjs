@@ -134,7 +134,7 @@ var taracot_catalog_checkout_btn_orders_handler = function() {
 
 var taracot_catalog_checkout_btn_pay_handler = function() {
     if (!placed_order_id_num) return;
-    location.href = '/api/catalog_payment/invoice/' + placed_order_id_num + '?rnd=' + Math.random().toString().replace('.', '');
+    location.href = '/catalog/api/payment/invoice/' + placed_order_id_num + '?rnd=' + Math.random().toString().replace('.', '');
 };
 
 $(document).ready(function() {

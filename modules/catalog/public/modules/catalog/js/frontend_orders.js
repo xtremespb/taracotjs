@@ -79,7 +79,7 @@ var taracot_catalog_orders_tr_handler = function(evnt, _id) {
 
 var taracot_catalog_checkout_btn_pay_handler = function() {
     if (!current_num) return;
-    location.href = '/api/catalog_payment/invoice/' + current_num + '?rnd=' + Math.random().toString().replace('.', '');
+    location.href = '/catalog/api/payment/invoice/' + current_num + '?rnd=' + Math.random().toString().replace('.', '');
 };
 
 var catalog_addr_edit_handler = function() {
