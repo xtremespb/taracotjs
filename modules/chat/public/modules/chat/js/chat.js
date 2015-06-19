@@ -420,8 +420,12 @@ $(document).ready(function() {
     _online_user_rebind();
     _chatbox_resize();
     for (var ui in users_online) {
-        var nickname = chat_users_data[users_online[ui]].nickname || '',
+        var nickname = '',
+            mod_flag = '';
+        if (chat_users_data[users_online[ui]]) {
+            nickname = chat_users_data[users_online[ui]].nickname || '';
             mod_flag = chat_users_data[users_online[ui]].mod_flag || false;
+        }
         _add_online_user(users_online[ui], nickname, mod_flag);
     }
     _restore_history_messages();
