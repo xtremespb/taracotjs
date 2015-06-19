@@ -261,9 +261,7 @@ var init_jstree = function(data, root) {
 		}
 	});
 	jstree_categories.on('loaded.jstree', function(e, data) {
-		// if (root) {
-		//     jstree_insert_root();
-		// }
+		if (root) jstree_insert_root();
 		jstree_categories.jstree(true).open_all('#');
 		jstree_find_root();
 	});
