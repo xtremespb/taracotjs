@@ -67,7 +67,8 @@
 </div>
 <div id="dlg_realname" class="uk-modal">
     <div class="uk-modal-dialog">
-        <h1 class="uk-modal-header">!{root.lang.__('set_realname_dlg')}</h1>
+        <div class="uk-modal-header">
+            <h1>!{root.lang.__('set_realname_dlg')}</h1></div>
         <div id="taracot_rn_loading">
             <img src="/modules/auth/images/loading_16x16.gif" width="16" height="16" alt="">&nbsp;!{root.lang.__('loading_data')}</div>
         <div id="dlg_realname_form_wrap">
@@ -82,10 +83,10 @@
                     <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
                     <input class="uk-form-width-small taracot_rn_field" id="rn_password_current" type="password" id="current_password">
                 </div>
-                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                    <button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>
-                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                </div>
+            </div>
+            <div class="uk-margin-top uk-modal-footer">
+                <button class="uk-button" id="btn_rn_save">!{root.lang.__('save')}</button>&nbsp;
+                <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
             </div>
         </div>
     </div>
@@ -116,10 +117,10 @@
                         <div class="uk-progress-bar" id="pc_password_strength" style="width:0"></div>
                     </div>
                 </div>
-                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                    <button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>
-                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                </div>
+            </div>
+            <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                <button class="uk-button" id="btn_pc_save">!{root.lang.__('save')}</button>&nbsp;
+                <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
             </div>
         </div>
     </div>
@@ -149,10 +150,10 @@
                     <label class="uk-form-label">!{root.lang.__('current_password')}:</label>
                     <input class="uk-form-width-small taracot_ec_field" id="ec_password_current" type="password" id="current_password">
                 </div>
-                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                    <button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>
-                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                </div>
+            </div>
+            <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                <button class="uk-button" id="btn_ec_save">!{root.lang.__('save')}</button>&nbsp;
+                <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
             </div>
         </div>
     </div>
@@ -184,20 +185,20 @@
                         <div class="uk-progress-bar" id="set_password_strength" style="width:0"></div>
                     </div>
                 </div>
-                <div class="uk-margin-top uk-modal-footer" data-uk-margin>
-                    <button class="uk-button" id="btn_set_save">!{root.lang.__('save')}</button>
-                    <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
-                </div>
+            </div>
+            <div class="uk-margin-top uk-modal-footer" data-uk-margin>
+                <button class="uk-button" id="btn_set_save">!{root.lang.__('save')}</button>&nbsp;
+                <button class="uk-button uk-button-danger uk-modal-close">!{root.lang.__('cancel')}</button>
             </div>
         </div>
     </div>
 </div>
 <script>
-var auth_status = "!{root.auth.status}";
-var auth_username = "!{root.auth.username}";
-var auth_email = "!{root.auth.email}";
-var auth_realname = "!{root.auth.realname}";
-var auth_need_finish = "!{root.auth.need_finish}";
+var auth_status = "!{root.auth.status}",
+    auth_username = "!{root.auth.username}",
+    auth_email = "!{root.auth.email}",
+    auth_realname = "!{root.auth.realname}",
+    auth_need_finish = "!{root.auth.need_finish}";
 if (auth_need_finish) $('#taracot_oauth_finish_wrap').show();
 if (!auth_email) $('#profile_email').html("!{root.lang.__('email_not_set')}");
 if (auth_status == 1) $('#profile_status').html("!{root.lang.__('status_1')}");
