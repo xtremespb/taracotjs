@@ -41,7 +41,8 @@ var gaikan = require('gaikan'),
     captcha = require('./core/' + config.captcha),
     multer = require('multer'),
     bodyParser = require('body-parser'),
-    mailer = require('./core/mailer')(app);
+    mailer = require('./core/mailer')(app),
+    langCookieName = config.cookie.prefix + 'lang';
 
 /* Enable trusted proxy */
 
@@ -139,7 +140,7 @@ for (var md in modules) app.use(express.static(path.join(__dirname, 'modules/' +
 
 I18n.expressBind(app, {
     locales: config.locales.avail,
-    cookieName: config.cookie.prefix,
+    cookieName: langCookieName,
     directory: path.join(__dirname, 'core', 'lang'),
     extension: '.js',
     devMode: app.get('config').locales.dev_mode
@@ -213,10 +214,6 @@ app.use(function(req, res, next) {
         next(err);
         return;
     }
-    /* Set locales from query and from cookie */
-    if (app.get('config').locales.detect_from_cookie) req.i18n.setLocaleFromCookie();
-    if (app.get('config').locales.detect_from_subdomain) req.i18n.setLocaleFromSubdomain();
-    if (app.get('config').locales.detect_from_query) req.i18n.setLocaleFromQuery();
     /* Logging */
     logger.info(req.ip + " " + res.statusCode + " " + req.method + ' ' + req.url, {});
     /* Clear auth_redirect if already authorized */
@@ -231,8 +228,24 @@ app.use(function(req, res, next) {
 var _timestamp_settings_query = {};
 
 app.use(function(req, res, next) {
-    var _lng = req.i18n.getLocale();
-    req.session.current_locale = _lng;
+
+    /* Get current language depending on cookies, url or subdomain */
+    var _lng;
+    if (req.query.lang) {
+        if (app.get('config').locales.detect_from_query) req.i18n.setLocaleFromQuery();
+        _lng = req.query.lang;
+        res.cookie(langCookieName, _lng);
+    } else {
+        /* Set locales from query and from cookie */
+        if (app.get('config').locales.detect_from_cookie) req.i18n.setLocaleFromCookie();
+        if (app.get('config').locales.detect_from_subdomain) req.i18n.setLocaleFromSubdomain();
+        _lng = req.i18n.getLocale();
+    }
+    if (req.session) {
+        req.session.current_locale = _lng;
+    }
+
+
     if (_timestamp_settings_query._lng && Date.now() - _timestamp_settings_query._lng <= 60000) {
         next();
         return;
