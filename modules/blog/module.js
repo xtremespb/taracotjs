@@ -660,16 +660,6 @@ module.exports = function(app) {
                     for (var u = 0; u < users_db.length; u++) users_db_hash[users_db[u]._id.toHexString()] = users_db[u].username;
                     async.series([
                         function(callback) {
-                            async.eachSeries(Object.keys(users_db_hash), function(key) {
-                                var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + key).digest('hex');
-                                fs.exists(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg'), function(ex) {
-                                    if (ex) avatars_hash[key] = '/images/avatars/' + afn + '.jpg';
-                                });
-                            }, function(err) {
-                                callback();
-                            });
-                        },
-                        function(callback) {
                             try {
                                 blog_areas = JSON.parse(app.set('settings').blog_areas);
                             } catch (ex) {
@@ -779,7 +769,12 @@ module.exports = function(app) {
                                     } else {
                                         timestamp = Date.now();
                                     }
-                                    var avatar_url = avatars_hash[item.comment_user_id] || "/images/avatars/default.png";
+                                    var avatar_url;
+                                    var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item.comment_user_id).digest('hex');
+									if(fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg')))
+										avatar_url = "/images/avatars/" + afn + ".png";
+									else
+										avatar_url = "/images/avatars/default.png";
                                     var delete_btn = '';
                                     if (mb) {
                                         delete_btn = parts_comment_delete(gaikan, {
