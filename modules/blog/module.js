@@ -658,197 +658,197 @@ module.exports = function(app) {
                     var users_db_hash = {};
                     for (var u = 0; u < users_db.length; u++) users_db_hash[users_db[u]._id.toHexString()] = users_db[u].username;
                     try {
-						blog_areas = JSON.parse(app.set('settings').blog_areas);
-					} catch (ex) {
-						blog_areas = [];
-					}
-					var post_area = '';
-					for (var a = 0; a < blog_areas.length; a++) {
-						if (blog_areas[a].id == items[0].post_area) post_area = blog_areas[a][_locale];
-					}
-					var timestamp = '',
-						badges = '';
-					if (items[0].post_timestamp) {
-						timestamp = moment(items[0].post_timestamp).fromNow();
-					} else {
-						timestamp = moment(Date.now()).fromNow();
-					}
-					badges += parts_badge(gaikan, {
-						icon: 'clock-o',
-						text: timestamp
-					}, undefined);
-					if (users_db_hash[items[0].post_user_id]) {
-						badges += parts_badge_link(gaikan, {
-							icon: 'user',
-							text: users_db_hash[items[0].post_user_id],
-							url: '/blog/user/' + users_db_hash[items[0].post_user_id]
-						}, undefined);
-					}
-					var keywords = '';
-					if (items[0].post_keywords) {
-						var keywords_arr = items[0].post_keywords.split(',');
-						for (var kw = 0; kw < keywords_arr.length; kw++) {
-							var keyword = keywords_arr[kw].replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-							keywords += ', ' + parts_keyword(gaikan, {
-								url: '/blog/keywords/' + keyword,
-								text: keyword
-							});
-						}
-						keywords = keywords.replace(/, /, '');
-					}
-					var buttons = '';
-					var id_session;
-					if (req.session.auth) id_session = String(req.session.auth._id);
-					var id_post = String(items[0].post_user_id);
-					if ((req.session.auth && id_session === id_post) || (req.session.auth && req.session.auth.status == 2) || (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator)) {
-						buttons += parts_button_class(gaikan, {
-							icon: 'pencil',
-							text: i18nm.__('edit_post'),
-							class: 'button-small',
-							url: '/blog/post/edit/' + items[0]._id.toHexString()
-						}, undefined);
-					}
-					if (req.session.auth && req.session.auth.status == 2) {
-						buttons += parts_button_delete_post(gaikan, {
-							text: i18nm.__('delete_post'),
-							post_del_confirm: i18nm.__('post_del_confirm'),
-							url: '/blog/post/moderate/delete/' + items[0]._id.toHexString()
-						}, undefined);
-					}
-					var mode = app.set('settings').blog_mode || 'private';
+                        blog_areas = JSON.parse(app.set('settings').blog_areas);
+                    } catch (ex) {
+                        blog_areas = [];
+                    }
+                    var post_area = '';
+                    for (var a = 0; a < blog_areas.length; a++) {
+                        if (blog_areas[a].id == items[0].post_area) post_area = blog_areas[a][_locale];
+                    }
+                    var timestamp = '',
+                        badges = '';
+                    if (items[0].post_timestamp) {
+                        timestamp = moment(items[0].post_timestamp).fromNow();
+                    } else {
+                        timestamp = moment(Date.now()).fromNow();
+                    }
+                    badges += parts_badge(gaikan, {
+                        icon: 'clock-o',
+                        text: timestamp
+                    }, undefined);
+                    if (users_db_hash[items[0].post_user_id]) {
+                        badges += parts_badge_link(gaikan, {
+                            icon: 'user',
+                            text: users_db_hash[items[0].post_user_id],
+                            url: '/blog/user/' + users_db_hash[items[0].post_user_id]
+                        }, undefined);
+                    }
+                    var keywords = '';
+                    if (items[0].post_keywords) {
+                        var keywords_arr = items[0].post_keywords.split(',');
+                        for (var kw = 0; kw < keywords_arr.length; kw++) {
+                            var keyword = keywords_arr[kw].replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+                            keywords += ', ' + parts_keyword(gaikan, {
+                                url: '/blog/keywords/' + keyword,
+                                text: keyword
+                            });
+                        }
+                        keywords = keywords.replace(/, /, '');
+                    }
+                    var buttons = '';
+                    var id_session;
+                    if (req.session.auth) id_session = String(req.session.auth._id);
+                    var id_post = String(items[0].post_user_id);
+                    if ((req.session.auth && id_session === id_post) || (req.session.auth && req.session.auth.status == 2) || (req.session.auth && req.session.auth.groups_hash && req.session.auth.groups_hash.blog_moderator)) {
+                        buttons += parts_button_class(gaikan, {
+                            icon: 'pencil',
+                            text: i18nm.__('edit_post'),
+                            class: 'button-small',
+                            url: '/blog/post/edit/' + items[0]._id.toHexString()
+                        }, undefined);
+                    }
+                    if (req.session.auth && req.session.auth.status == 2) {
+                        buttons += parts_button_delete_post(gaikan, {
+                            text: i18nm.__('delete_post'),
+                            post_del_confirm: i18nm.__('post_del_confirm'),
+                            url: '/blog/post/moderate/delete/' + items[0]._id.toHexString()
+                        }, undefined);
+                    }
+                    var mode = app.set('settings').blog_mode || 'private';
 
-					if (mode == 'moderation') {
-						if (mb && !items[0].post_moderated) buttons += parts_button_class(gaikan, {
-							icon: 'unlock',
-							text: i18nm.__('allow_post'),
-							class: 'button-small',
-							url: '/blog/post/moderate/allow/' + items[0]._id.toHexString()
-						}, undefined);
-						if (mb && items[0].post_moderated) buttons += parts_button_class(gaikan, {
-							icon: 'lock',
-							text: i18nm.__('disallow_post'),
-							class: 'button-small',
-							url: '/blog/post/moderate/disallow/' + items[0]._id.toHexString()
-						}, undefined);
-					}
-					if (buttons) {
-						buttons = parts_buttons_wrap(gaikan, {
-							buttons: buttons
-						}, undefined);
-					}
+                    if (mode == 'moderation') {
+                        if (mb && !items[0].post_moderated) buttons += parts_button_class(gaikan, {
+                            icon: 'unlock',
+                            text: i18nm.__('allow_post'),
+                            class: 'button-small',
+                            url: '/blog/post/moderate/allow/' + items[0]._id.toHexString()
+                        }, undefined);
+                        if (mb && items[0].post_moderated) buttons += parts_button_class(gaikan, {
+                            icon: 'lock',
+                            text: i18nm.__('disallow_post'),
+                            class: 'button-small',
+                            url: '/blog/post/moderate/disallow/' + items[0]._id.toHexString()
+                        }, undefined);
+                    }
+                    if (buttons) {
+                        buttons = parts_buttons_wrap(gaikan, {
+                            buttons: buttons
+                        }, undefined);
+                    }
 
-					var _move_comment_to_parent = function(comment_to_move, parent_id, _area) {
-						var area = _area || cm_items;
-						for (var i = 0; i < area.length; i++) {
-							if (area[i] && area[i].children) _move_comment_to_parent(comment_to_move, parent_id, area[i].children);
-							if (area[i] && area[i]._id.toHexString() == parent_id) {
-								if (!area[i].children) area[i].children = [];
-								area[i].children.push(comment_to_move);
-							}
-						}
-					};
+                    var _move_comment_to_parent = function(comment_to_move, parent_id, _area) {
+                        var area = _area || cm_items;
+                        for (var i = 0; i < area.length; i++) {
+                            if (area[i] && area[i].children) _move_comment_to_parent(comment_to_move, parent_id, area[i].children);
+                            if (area[i] && area[i]._id.toHexString() == parent_id) {
+                                if (!area[i].children) area[i].children = [];
+                                area[i].children.push(comment_to_move);
+                            }
+                        }
+                    };
 
-					for (var c = 0; c < cm_items.length; c++) {
-						if (cm_items[c] && cm_items[c].comment_parent) {
-							_move_comment_to_parent(cm_items[c], String(cm_items[c].comment_parent));
-							delete cm_items[c];
-						}
-					}
+                    for (var c = 0; c < cm_items.length; c++) {
+                        if (cm_items[c] && cm_items[c].comment_parent) {
+                            _move_comment_to_parent(cm_items[c], String(cm_items[c].comment_parent));
+                            delete cm_items[c];
+                        }
+                    }
 
-					var comments = '';
+                    var comments = '';
 
-					var _get_comments = function(item, level) {
-						if (!level) level = 0;
-						if (item) {
-							var timestamp;
-							if (item.comment_timestamp) {
-								timestamp = item.comment_timestamp;
-							} else {
-								timestamp = Date.now();
-							}
-							var avatar_url;
-							var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item.comment_user_id).digest('hex');
-							if(fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg')))
-								avatar_url = "/images/avatars/" + afn + ".png";
-							else
-								avatar_url = "/images/avatars/default.png";
-							var delete_btn = '';
-							if (mb) {
-								delete_btn = parts_comment_delete(gaikan, {
-									id: item._id.toHexString(),
-									text_delete: i18nm.__('delete_comment')
-								}, undefined);
-							}
-							if (item.comment_deleted) {
-								comments += parts_comment_deleted(gaikan, {
-									comment_id: item._id.toHexString(),
-									level: level * 15,
-									deleted_text: i18nm.__('comment_deleted')
-								});
-							} else {
-								comments += parts_comment(gaikan, {
-									username: users_db_hash[item.comment_user_id],
-									comment: item.comment_text,
-									reply_link: i18nm.__('reply_link'),
-									comment_id: item._id.toHexString(),
-									timestamp: moment(timestamp).format('L LT'),
-									level: level * 15,
-									avatar_url: avatar_url,
-									delete_btn: delete_btn
-								});
-							}
-							if (item.children)
-								for (var i = 0; i < item.children.length; i++) _get_comments(item.children[i], level + 1);
-						}
-					};
+                    var _get_comments = function(item, level) {
+                        if (!level) level = 0;
+                        if (item) {
+                            var timestamp;
+                            if (item.comment_timestamp) {
+                                timestamp = item.comment_timestamp;
+                            } else {
+                                timestamp = Date.now();
+                            }
+                            var avatar_url;
+                            var afn = crypto.createHash('md5').update(app.get('config').salt + '.' + item.comment_user_id).digest('hex');
+                            if(fs.existsSync(path.join(__dirname, '..', '..', 'public', 'images', 'avatars', afn + '.jpg')))
+                                avatar_url = "/images/avatars/" + afn + ".png";
+                            else
+                                avatar_url = "/images/avatars/default.png";
+                            var delete_btn = '';
+                            if (mb) {
+                                delete_btn = parts_comment_delete(gaikan, {
+                                    id: item._id.toHexString(),
+                                    text_delete: i18nm.__('delete_comment')
+                                }, undefined);
+                            }
+                            if (item.comment_deleted) {
+                                comments += parts_comment_deleted(gaikan, {
+                                    comment_id: item._id.toHexString(),
+                                    level: level * 15,
+                                    deleted_text: i18nm.__('comment_deleted')
+                                });
+                            } else {
+                                comments += parts_comment(gaikan, {
+                                    username: users_db_hash[item.comment_user_id],
+                                    comment: item.comment_text,
+                                    reply_link: i18nm.__('reply_link'),
+                                    comment_id: item._id.toHexString(),
+                                    timestamp: moment(timestamp).format('L LT'),
+                                    level: level * 15,
+                                    avatar_url: avatar_url,
+                                    delete_btn: delete_btn
+                                });
+                            }
+                            if (item.children)
+                                for (var i = 0; i < item.children.length; i++) _get_comments(item.children[i], level + 1);
+                        }
+                    };
 
-					for (var c = 0; c < cm_items.length; c++) _get_comments(cm_items[c]);
+                    for (var c = 0; c < cm_items.length; c++) _get_comments(cm_items[c]);
 
-					if (items[0].post_title) items[0].post_title = items[0].post_title.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-					if (items[0].post_keywords) items[0].post_keywords = items[0].post_keywords.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-					if (items[0].post_area) items[0].post_area = items[0].post_area.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
-					if (items[0].post_content) items[0].post_content = items[0].post_content.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    if (items[0].post_title) items[0].post_title = items[0].post_title.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                    if (items[0].post_keywords) items[0].post_keywords = items[0].post_keywords.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                    if (items[0].post_area) items[0].post_area = items[0].post_area.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\n\r\t]/g, '');
+                    if (items[0].post_content) items[0].post_content = items[0].post_content.replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-					var title_ex = items[0].post_title;
-					if (!items[0].post_moderated) title_ex += parts_moderation_badge(gaikan, {
-						notice: i18nm.__('post_needs_moderation')
-					}, undefined);
+                    var title_ex = items[0].post_title;
+                    if (!items[0].post_moderated) title_ex += parts_moderation_badge(gaikan, {
+                        notice: i18nm.__('post_needs_moderation')
+                    }, undefined);
 
-					var comments_form = '',
-						comments_flow = '';
+                    var comments_form = '',
+                        comments_flow = '';
 
-					if (req.session.auth && req.session.auth.status > 0 && items[0].post_comments) {
-						comments_form = parts_comments_form(gaikan, {
-							lang: i18nm
-						}, undefined);
-					}
+                    if (req.session.auth && req.session.auth.status > 0 && items[0].post_comments) {
+                        comments_form = parts_comments_form(gaikan, {
+                            lang: i18nm
+                        }, undefined);
+                    }
 
-					var data = {
-						title: items[0].post_title + ' | ' + i18nm.__('module_name'),
-						page_title: items[0].post_title + ' | ' + i18nm.__('module_name'),
-						keywords: '',
-						description: '',
-						extra_css: '<link rel="stylesheet" href="/modules/blog/css/frontend.css">',
-						lang: i18nm,
-						current_locale: _locale,
-						post_title: title_ex,
-						post_content: items[0].post_content_html,
-						post_area_id: items[0].post_area,
-						post_area: post_area,
-						post_keywords: keywords,
-						blog_text: i18nm.__('module_name'),
-						post_id: items[0]._id.toHexString(),
-						buttons: buttons,
-						post_badges: badges,
-						comments_form: comments_form,
-						comments_flow: comments
-					};
-					var render = renderer.render_file(path.join(__dirname, 'views'), 'post_view', {
-						lang: i18nm,
-						data: data
-					}, req);
-					data.content = render;
-					app.get('renderer').render(res, undefined, data, req);
+                    var data = {
+                        title: items[0].post_title + ' | ' + i18nm.__('module_name'),
+                        page_title: items[0].post_title + ' | ' + i18nm.__('module_name'),
+                        keywords: '',
+                        description: '',
+                        extra_css: '<link rel="stylesheet" href="/modules/blog/css/frontend.css">',
+                        lang: i18nm,
+                        current_locale: _locale,
+                        post_title: title_ex,
+                        post_content: items[0].post_content_html,
+                        post_area_id: items[0].post_area,
+                        post_area: post_area,
+                        post_keywords: keywords,
+                        blog_text: i18nm.__('module_name'),
+                        post_id: items[0]._id.toHexString(),
+                        buttons: buttons,
+                        post_badges: badges,
+                        comments_form: comments_form,
+                        comments_flow: comments
+                    };
+                    var render = renderer.render_file(path.join(__dirname, 'views'), 'post_view', {
+                        lang: i18nm,
+                        data: data
+                    }, req);
+                    data.content = render;
+                    app.get('renderer').render(res, undefined, data, req);
                 });
             });
         });
