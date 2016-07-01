@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=2.0,user-scalable=0">
+    <meta name="format-detection" content="telephone=no">
+    <link name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>!{root.title} | !{root.site_title}</title>
+    <meta name="description" content="!{root.description}">
+    <meta name="keywords" content="!{root.keywords}">
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/uikit/uikit.min.css">!{root.extra_css}
+    <link rel="stylesheet" href="/css/taracot_default.css">
+    <!--[if lt IE 10]>
+		<link rel="stylesheet" href="/css/taracot_default_ie.css">
+		<![endif]-->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/uikit/uikit.min.js"></script>
+</head>
+
+<body>
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid">
+            <div class="uk-width-large-1-4 uk-width-medium-1-1 uk-width-small-1-1 uk-margin-top uk-margin-bottom">
+                <a class="uk-navbar-toggle uk-hidden-large uk-hidden-medium uk-float-left" data-uk-offcanvas="" href="#taracot-nav-offcanvas"></a>
+                <div class="taracot-img-logo">
+                    <a href="/">
+                        <img src="/images/logo_taracot.png">
+                    </a>
+                </div>
+            </div>
+            <div class="uk-width-large-3-4 uk-hidden-medium uk-hidden-small uk-margin-top tc-auth-top">
+                !{root.blocks.search.top}
+            </div>
+        </div>
+        <div id="taracot-nav-offcanvas" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                    !{root.blocks.search.li}
+                    <li class="uk-nav-header">!{root._lang.__('authorization')}</li>
+                    !{root.blocks.auth.li}
+                    <li class="uk-nav-header">!{root._lang.__('language')}</li>
+                    !{root.blocks.lang.li}
+                    <li class="uk-nav-header">!{root._lang.__('navigation')}</li>
+                    !{root.blocks.menu.uikit_offcanvas}
+                </ul>
+            </div>
+        </div>
+        <div class="uk-width-1-1 uk-hidden-small">
+            <nav class="uk-navbar">
+                !{root.blocks.menu.uikit}
+                <div class="uk-navbar-flip">
+                    <ul class="uk-navbar-nav">!{root.blocks.auth.li}!{root.blocks.lang.submenu}</ul>
+                </div>
+            </nav>
+        </div>
+        <div class="taracot-content">
+            !{root.content}
+        </div>
+        <div class="uk-width-1-1 uk-margin-top uk-margin-bottom taracot-footer">
+            <a href="http://taracot.org">TaracotJS</a> &copy; 2014-2015 Michael A. Matveev
+            <br>Licensed under the terms of <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License V3</a> (or any further version)
+        </div>
+    </div>
+    <script>
+    var _u = ".taracot_menu_item_" + ($(location).attr("pathname").split(/\//)[1] || '').replace(/\/$/, "").replace(/\//g, "_").replace(/^_/, "").replace(/[^a-zA-Z0-9_\-]/g, ""),
+        _taracot_auth_username = "!{root.auth.username}";
+    $(_u).addClass("uk-active");
+    $(_u + '_').addClass("uk-active");
+    if ($(_u) && $(_u).attr("rel")) $("." + _r).addClass("uk-active");
+    </script>
+</body>
+
+</html>
