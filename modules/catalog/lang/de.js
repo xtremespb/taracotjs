@@ -1,5 +1,5 @@
 {
-	"module_name": "Katalog",
+	"module_name": "Shop",
 	"all_catalog_items": "Alle Katalog Artikel",
 	"sku": "SKU",
 	"btn_buy": "Artikel kaufen",
@@ -40,7 +40,7 @@
 	"place_order": "Bestellung aufgeben",
 	"back_to_cart": "Zurück zum Warenkorb",
 	"order_summary": "Bestellübersicht",
-	"checkout_hint": "Please check your order details and click &quot;Place order&quot; button to continue.",
+	"checkout_hint": "Bitte überprüfen Sie Ihre Auftragsdetails und klicken Sie auf &quot;Place order&quot; Button , um fortzufahren.",
 	"shipment_options": "Sendung",
 	"shipping_method": "Versandart",
 	"ship_name": "Vor- und Nachname",
