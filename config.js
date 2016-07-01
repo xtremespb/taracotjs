@@ -15,8 +15,9 @@ var config = {
         "detect_from_query": false,
         "detect_from_cookie": false,
         "avail": [
+            "en",
             "ru",
-            "en"
+            "de"
         ]
     },
     "dir": {
