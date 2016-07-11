@@ -6,6 +6,7 @@ var app = require('../app'),
     io = require('socket.io')(http),
     crypto = require('crypto'),
     port = config.port || process.env.PORT || 3000,
+    ip = config.ip || process.env.IP || "127.0.0.1",
     redis_client = app.get('redis_client'),
     ObjectId = require('mongodb').ObjectID,
     redis_subscriber;
@@ -38,7 +39,7 @@ if (config.redis.active) {
     });
 }
 
-var server = http.listen(port, function() {
+var server = http.listen(port, ip, function() {
     if (config.gid) process.setgid(config.gid);
     if (config.uid) process.setuid(config.uid);
     console.log(" _____                         _     ___ _____ \n" + "|_   _|                       | |   |_  /  ___|\n" + "  | | __ _ _ __ __ _  ___ ___ | |_    | \\ `--. \n" + "  | |/ _` | '__/ _` |/ __/ _ \\| __|   | |`--. \\\n" + "  | | (_| | | | (_| | (_| (_) | |_/\\__/ /\\__/ /\n" + "  \\_/\\__,_|_|  \\__,_|\\___\\___/ \\__\\____/\\____/ \n");
