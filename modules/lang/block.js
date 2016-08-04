@@ -25,7 +25,9 @@ module.exports = function(app) {
                     lang_list_html: ''
                 },
                 langs_html = '';
-            var host = req.get('host').replace(new RegExp('^' + default_lng + '\.'), '').replace(new RegExp('^' + lng + '\.'), '');
+
+            var host = typeof req.get('host') === 'undefined' ? app.get('config').ip : req.get('host').replace(new RegExp('^' + default_lng + '\.'), '').replace(new RegExp('^' + lng + '\.'), '');
+
             for (var i = 0; i < app.get('config').locales.avail.length; i++) {
                 var _host = host;
                 if (app.get('config').locales.avail[i] != default_lng) _host = app.get('config').locales.avail[i] + '.' + host;
